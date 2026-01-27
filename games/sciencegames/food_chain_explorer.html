@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Chain Explorer - Ecosystem Adventure</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #228b22 0%,
+          #32cd32 50%,
+          #90ee90 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 900px;
+        width: 100%;
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(90deg, #228b22, #ffd700, #32cd32);
+      }
+
+      h1 {
+        color: #2e8b57;
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #228b22;
+        font-size: 1.2em;
+        margin-bottom: 30px;
+        font-weight: bold;
+      }
+
+      .game-area {
+        background: #f0fff0;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 3px solid #90ee90;
+      }
+
+      .ecosystem-display {
+        text-align: center;
+        font-size: 1.3em;
+        color: #2e8b57;
+        margin-bottom: 20px;
+        font-weight: bold;
+        padding: 15px;
+        background: #e6ffe6;
+        border-radius: 15px;
+      }
+
+      .chain-builder {
+        min-height: 200px;
+        background: #ffffff;
+        border: 3px dashed #90ee90;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .chain-item {
+        background: #98fb98;
+        border: 2px solid #32cd32;
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #2e8b57;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .chain-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .chain-arrow {
+        font-size: 1.5em;
+        color: #2e8b57;
+        margin: 0 5px;
+      }
+
+      .organism-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .organism-card {
+        background: #f5f5dc;
+        border: 3px solid #deb887;
+        border-radius: 15px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .organism-card:hover {
+        background: #ffe4b5;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .organism-card.selected {
+        background: #98fb98;
+        border-color: #32cd32;
+      }
+
+      .organism-card.used {
+        background: #d3d3d3;
+        border-color: #a9a9a9;
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .organism-icon {
+        font-size: 2em;
+        margin-bottom: 10px;
+      }
+
+      .organism-name {
+        font-weight: bold;
+        color: #2e8b57;
+        margin-bottom: 5px;
+      }
+
+      .organism-type {
+        font-size: 0.9em;
+        color: #666;
+        font-style: italic;
+      }
+
+      .score-board {
+        display: flex;
+        justify-content: space-between;
+        background: #f0e68c;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-label {
+        font-size: 0.9em;
+        color: #2e8b57;
+        margin-bottom: 5px;
+      }
+
+      .score-value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #228b22;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .control-btn {
+        padding: 15px 30px;
+        font-size: 1.1em;
+        background: #32cd32;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-weight: bold;
+      }
+
+      .control-btn:hover {
+        background: #228b22;
+        transform: translateY(-3px);
+      }
+
+      .control-btn:disabled {
+        background: #a9a9a9;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .feedback {
+        text-align: center;
+        font-size: 1.2em;
+        margin: 20px 0;
+        font-weight: bold;
+        min-height: 30px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .feedback.correct {
+        color: #32cd32;
+        background: #f0fff0;
+        border: 2px solid #90ee90;
+      }
+
+      .feedback.incorrect {
+        color: #ff6347;
+        background: #fff0f0;
+        border: 2px solid #ffb6c1;
+      }
+
+      .ecosystem-info {
+        background: #e6f3ff;
+        border-left: 4px solid #4169e1;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+        font-style: italic;
+        color: #2f4f4f;
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #32cd32;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .back-btn:hover {
+        background: #228b22;
+      }
+
+      .instructions {
+        background: #fffacd;
+        border: 2px solid #deb887;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #8b4513;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .organism-options {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .chain-builder {
+          min-height: 150px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="../games.html" class="back-btn">← Back to Games</a>
+
+      <h1>🌱 Food Chain Explorer</h1>
+      <p class="subtitle">Build food chains and learn about ecosystems!</p>
+
+      <div class="score-board">
+        <div class="score-item">
+          <div class="score-label">Score</div>
+          <div class="score-value" id="score">0</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Ecosystem</div>
+          <div class="score-value" id="ecosystem">1</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Chains Built</div>
+          <div class="score-value" id="chains">0</div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        🎯 Click organisms in the correct order to build a food chain!<br />
+        Start with producers (plants) → Primary consumers → Secondary consumers
+        → Top predators
+      </div>
+
+      <div class="game-area">
+        <div class="ecosystem-display" id="ecosystemDisplay">
+          🦁 Savanna Ecosystem
+        </div>
+
+        <div class="chain-builder" id="chainBuilder">
+          <div style="color: #2e8b57; font-size: 1.2em">
+            Click organisms below to build your food chain...
+          </div>
+        </div>
+
+        <div class="organism-options" id="organismOptions">
+          <!-- Organisms will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <div class="controls">
+        <button
+          class="control-btn"
+          onclick="checkChain()"
+          id="checkBtn"
+          disabled
+        >
+          Check Food Chain
+        </button>
+        <button class="control-btn" onclick="clearChain()">Clear Chain</button>
+        <button class="control-btn" onclick="nextEcosystem()">
+          Next Ecosystem
+        </button>
+        <button class="control-btn" onclick="resetGame()">New Game</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+      const ecosystems = [
+        {
+          name: "🦁 Savanna Ecosystem",
+          organisms: [
+            { name: "Grass", type: "Producer", icon: "🌱", level: 1 },
+            { name: "Zebra", type: "Primary Consumer", icon: "🦓", level: 2 },
+            { name: "Lion", type: "Secondary Consumer", icon: "🦁", level: 3 },
+            { name: "Acacia Tree", type: "Producer", icon: "🌳", level: 1 },
+            { name: "Gazelle", type: "Primary Consumer", icon: "🦌", level: 2 },
+            {
+              name: "Cheetah",
+              type: "Secondary Consumer",
+              icon: "🐆",
+              level: 3,
+            },
+          ],
+          chains: [
+            ["Grass", "Zebra", "Lion"],
+            ["Acacia Tree", "Gazelle", "Cheetah"],
+            ["Grass", "Gazelle", "Lion"],
+          ],
+        },
+        {
+          name: "🌊 Ocean Ecosystem",
+          organisms: [
+            { name: "Kelp", type: "Producer", icon: "🌿", level: 1 },
+            {
+              name: "Small Fish",
+              type: "Primary Consumer",
+              icon: "🐠",
+              level: 2,
+            },
+            { name: "Shark", type: "Secondary Consumer", icon: "🦈", level: 3 },
+            { name: "Phytoplankton", type: "Producer", icon: "🦠", level: 1 },
+            { name: "Tuna", type: "Primary Consumer", icon: "🐟", level: 2 },
+            { name: "Whale", type: "Secondary Consumer", icon: "🐋", level: 3 },
+          ],
+          chains: [
+            ["Kelp", "Small Fish", "Shark"],
+            ["Phytoplankton", "Tuna", "Shark"],
+            ["Phytoplankton", "Small Fish", "Whale"],
+          ],
+        },
+        {
+          name: "🌲 Forest Ecosystem",
+          organisms: [
+            { name: "Oak Tree", type: "Producer", icon: "🌳", level: 1 },
+            { name: "Rabbit", type: "Primary Consumer", icon: "🐰", level: 2 },
+            { name: "Fox", type: "Secondary Consumer", icon: "🦊", level: 3 },
+            { name: "Berry Bush", type: "Producer", icon: "🫐", level: 1 },
+            { name: "Deer", type: "Primary Consumer", icon: "🦌", level: 2 },
+            { name: "Wolf", type: "Secondary Consumer", icon: "🐺", level: 3 },
+          ],
+          chains: [
+            ["Oak Tree", "Rabbit", "Fox"],
+            ["Berry Bush", "Deer", "Wolf"],
+            ["Oak Tree", "Deer", "Wolf"],
+          ],
+        },
+      ];
+
+      let currentEcosystem = 0;
+      let currentChain = [];
+      let score = 0;
+      let chainsBuilt = 0;
+      let usedOrganisms = [];
+
+      function displayEcosystem() {
+        const ecosystem = ecosystems[currentEcosystem];
+        document.getElementById("ecosystemDisplay").textContent =
+          ecosystem.name;
+
+        const optionsContainer = document.getElementById("organismOptions");
+        optionsContainer.innerHTML = "";
+
+        ecosystem.organisms.forEach((organism, index) => {
+          const card = document.createElement("div");
+          card.className = `organism-card ${
+            usedOrganisms.includes(organism.name) ? "used" : ""
+          }`;
+          card.onclick = () => selectOrganism(organism);
+
+          card.innerHTML = `
+                    <div class="organism-icon">${organism.icon}</div>
+                    <div class="organism-name">${organism.name}</div>
+                    <div class="organism-type">${organism.type}</div>
+                `;
+
+          optionsContainer.appendChild(card);
+        });
+      }
+
+      function selectOrganism(organism) {
+        if (usedOrganisms.includes(organism.name)) return;
+
+        currentChain.push(organism);
+        updateChainDisplay();
+
+        // Mark organism as used
+        usedOrganisms.push(organism.name);
+        displayEcosystem();
+
+        document.getElementById("checkBtn").disabled = currentChain.length < 3;
+      }
+
+      function updateChainDisplay() {
+        const chainBuilder = document.getElementById("chainBuilder");
+
+        if (currentChain.length === 0) {
+          chainBuilder.innerHTML =
+            '<div style="color: #2E8B57; font-size: 1.2em;">Click organisms below to build your food chain...</div>';
+          return;
+        }
+
+        chainBuilder.innerHTML = "";
+
+        currentChain.forEach((organism, index) => {
+          const chainItem = document.createElement("div");
+          chainItem.className = "chain-item";
+          chainItem.innerHTML = `${organism.icon} ${organism.name}`;
+          chainBuilder.appendChild(chainItem);
+
+          if (index < currentChain.length - 1) {
+            const arrow = document.createElement("div");
+            arrow.className = "chain-arrow";
+            arrow.textContent = "→";
+            chainBuilder.appendChild(arrow);
+          }
+        });
+      }
+
+      function checkChain() {
+        const ecosystem = ecosystems[currentEcosystem];
+        const chainNames = currentChain.map((org) => org.name);
+
+        // Check if chain follows correct trophic levels
+        let isValidChain = true;
+        let feedbackText = "";
+
+        for (let i = 0; i < currentChain.length - 1; i++) {
+          if (currentChain[i].level >= currentChain[i + 1].level) {
+            isValidChain = false;
+            break;
+          }
+        }
+
+        // Check if it's a valid predefined chain or follows rules
+        const isKnownChain = ecosystem.chains.some(
+          (chain) => JSON.stringify(chain) === JSON.stringify(chainNames)
+        );
+
+        if (isValidChain && (isKnownChain || currentChain.length >= 3)) {
+          score += currentChain.length * 25;
+          chainsBuilt++;
+
+          feedbackText = `🎉 Excellent! You built a valid food chain!\n`;
+          feedbackText += `${currentChain[0].name} → ${currentChain[1].name} → ${currentChain[2].name}`;
+
+          if (currentChain.length > 3) {
+            feedbackText += ` → ${currentChain[3].name}`;
+          }
+
+          document.getElementById("feedback").textContent = feedbackText;
+          document.getElementById("feedback").className = "feedback correct";
+
+          const ecosystemInfo = document.createElement("div");
+          ecosystemInfo.className = "ecosystem-info";
+          ecosystemInfo.textContent = `🌱 Energy flows from producers to consumers in this food chain. Each level gets about 10% of the energy from the level below.`;
+          document.getElementById("feedback").appendChild(ecosystemInfo);
+        } else {
+          feedbackText = "❌ This doesn't form a valid food chain. Remember:\n";
+          feedbackText += "🌱 Start with producers (plants)\n";
+          feedbackText += "🦌 Add primary consumers (herbivores)\n";
+          feedbackText += "🦁 End with secondary consumers (carnivores)";
+
+          document.getElementById("feedback").textContent = feedbackText;
+          document.getElementById("feedback").className = "feedback incorrect";
+        }
+
+        updateDisplay();
+        setTimeout(() => clearChain(), 3000);
+      }
+
+      function clearChain() {
+        currentChain = [];
+        usedOrganisms = [];
+        updateChainDisplay();
+        displayEcosystem();
+        document.getElementById("checkBtn").disabled = true;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+      }
+
+      function nextEcosystem() {
+        currentEcosystem = (currentEcosystem + 1) % ecosystems.length;
+        clearChain();
+        displayEcosystem();
+        updateDisplay();
+      }
+
+      function updateDisplay() {
+        document.getElementById("score").textContent = score;
+        document.getElementById("ecosystem").textContent = currentEcosystem + 1;
+        document.getElementById("chains").textContent = chainsBuilt;
+      }
+
+      function resetGame() {
+        score = 0;
+        chainsBuilt = 0;
+        currentEcosystem = 0;
+        clearChain();
+        updateDisplay();
+        displayEcosystem();
+      }
+
+      // Initialize game
+      resetGame();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShuleAI Admin Login</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .login-container {
+        background: white;
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 450px;
+      }
+
+      .login-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .login-header h1 {
+        color: #2e7d4a;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .login-header p {
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #2e7d4a;
+      }
+
+      .login-btn {
+        width: 100%;
+        background: #2e7d4a;
+        color: white;
+        border: none;
+        padding: 17px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .login-btn:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+      }
+
+      .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 20px;
+        text-align: center;
+        display: none;
+      }
+
+      @media (max-width: 480px) {
+        .login-container {
+          padding: 30px 20px;
+          margin: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-header">
+        <h1>ShuleAI Admin</h1>
+        <p>Payment Verification System</p>
+      </div>
+
+      <form id="loginForm" onsubmit="login(event)">
+        <div class="form-group">
+          <label for="adminEmail">Admin Email</label>
+          <input
+            type="email"
+            id="adminEmail"
+            placeholder="shuleaiadmin@memeyai.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="adminKey">Admin Secret Key</label>
+          <input
+            type="password"
+            id="adminKey"
+            placeholder="Enter admin secret key"
+            required
+          />
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+
+      <div class="error-message" id="errorMessage">
+        Invalid credentials. Please check your email and admin key.
+      </div>
+    </div>
+
+    <script>
+      const ALLOWED_ADMIN_EMAIL = "shuleaiadmin@memeyai.com";
+      const ADMIN_SECRET = "shuleai_admin_key"; // Should match your .env ADMIN_SECRET
+
+      async function login(event) {
+        event.preventDefault();
+
+        const adminEmail = document
+          .getElementById("adminEmail")
+          .value.trim()
+          .toLowerCase();
+        const adminKey = document.getElementById("adminKey").value;
+        const errorElement = document.getElementById("errorMessage");
+
+        try {
+          // Validate admin email and key
+          if (adminEmail === ALLOWED_ADMIN_EMAIL && adminKey === ADMIN_SECRET) {
+            // Save admin credentials
+            localStorage.setItem("admin_token", btoa(adminKey));
+            localStorage.setItem("admin_email", adminEmail);
+            localStorage.setItem("admin_logged_in", "true");
+
+            // Redirect to dashboard
+            window.location.href = "admin-dashboard.html";
+          } else {
+            // Show error for invalid credentials
+            if (adminEmail !== ALLOWED_ADMIN_EMAIL) {
+              errorElement.textContent =
+                "Unauthorized email. Only shuleaiadmin@memeyai.com is allowed.";
+            } else {
+              errorElement.textContent =
+                "Invalid admin secret key. Please try again.";
+            }
+            errorElement.style.display = "block";
+
+            // Clear password field
+            document.getElementById("adminKey").value = "";
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          errorElement.textContent = "An error occurred. Please try again.";
+          errorElement.style.display = "block";
+        }
+      }
+
+      // Hide error message when user starts typing
+      document.getElementById("adminEmail")?.addEventListener("input", () => {
+        document.getElementById("errorMessage").style.display = "none";
+      });
+
+      document.getElementById("adminKey")?.addEventListener("input", () => {
+        document.getElementById("errorMessage").style.display = "none";
+      });
+    </script>
+  </body>
+</html>

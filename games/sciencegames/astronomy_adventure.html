@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Astronomy Adventure: Cosmic Explorer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0c0032 0%,
+          #190061 30%,
+          #240090 60%,
+          #3500d3 100%
+        );
+        min-height: 100vh;
+        padding: 20px;
+        color: white;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in;
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      }
+
+      .header p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        color: #bb86fc;
+      }
+
+      .game-area {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 25px;
+        margin-bottom: 20px;
+      }
+
+      .observatory {
+        background: rgba(13, 17, 23, 0.9);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 0 50px rgba(77, 150, 255, 0.3);
+        border: 2px solid #4d96ff;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .control-panel {
+        background: rgba(13, 17, 23, 0.9);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 0 50px rgba(77, 150, 255, 0.3);
+        border: 2px solid #4d96ff;
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 25px rgba(30, 58, 138, 0.4);
+        border: 1px solid #4d96ff;
+      }
+
+      .stat-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #ffd93d;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        color: #bb86fc;
+      }
+
+      .telescope-view {
+        width: 100%;
+        height: 500px;
+        background: radial-gradient(circle at 30% 30%, #1a1b4b 0%, #0c0c0c 70%);
+        border-radius: 15px;
+        position: relative;
+        border: 3px solid #4d96ff;
+        margin-bottom: 25px;
+        overflow: hidden;
+      }
+
+      .celestial-body {
+        position: absolute;
+        border-radius: 50%;
+        transition: all 0.5s ease;
+        cursor: pointer;
+        filter: drop-shadow(0 0 10px currentColor);
+      }
+
+      .celestial-body:hover {
+        transform: scale(1.2);
+        z-index: 10;
+      }
+
+      .star {
+        background: radial-gradient(circle, #ffd93d, #ff6b6b);
+      }
+      .planet {
+        background: radial-gradient(circle, #6bcf7f, #4d96ff);
+      }
+      .nebula {
+        background: radial-gradient(circle, #bb86fc, #e91e63);
+        opacity: 0.7;
+      }
+      .galaxy {
+        background: radial-gradient(circle, #4d96ff, #190061);
+        opacity: 0.8;
+      }
+      .black-hole {
+        background: radial-gradient(circle, #000000, #3500d3);
+      }
+
+      .body-label {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #333;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .celestial-body:hover .body-label {
+        opacity: 1;
+      }
+
+      .space-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .btn {
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #3730a3 0%, #1e3a8a 100%);
+        color: white;
+        border: 1px solid #4d96ff;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(77, 150, 255, 0.4);
+        background: linear-gradient(135deg, #4d96ff 0%, #3730a3 100%);
+      }
+
+      .btn-scan {
+        background: linear-gradient(135deg, #6bcf7f 0%, #4caf50 100%);
+        border-color: #6bcf7f;
+      }
+
+      .btn-scan:hover {
+        background: linear-gradient(135deg, #4caf50 0%, #6bcf7f 100%);
+        box-shadow: 0 8px 25px rgba(107, 207, 127, 0.4);
+      }
+
+      .btn-research {
+        background: linear-gradient(135deg, #ff6b6b 0%, #f44336 100%);
+        border-color: #ff6b6b;
+      }
+
+      .btn-research:hover {
+        background: linear-gradient(135deg, #f44336 0%, #ff6b6b 100%);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      }
+
+      .mission-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .mission-option {
+        background: rgba(30, 58, 138, 0.3);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid #4d96ff;
+      }
+
+      .mission-option:hover {
+        background: rgba(77, 150, 255, 0.2);
+        transform: scale(1.05);
+      }
+
+      .mission-option.selected {
+        border-color: #ffd93d;
+        background: rgba(255, 217, 61, 0.1);
+        box-shadow: 0 0 20px rgba(255, 217, 61, 0.3);
+      }
+
+      .mission-icon {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        filter: drop-shadow(0 0 10px currentColor);
+      }
+
+      .info-section {
+        background: rgba(30, 58, 138, 0.2);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #4d96ff;
+      }
+
+      .info-title {
+        color: #ffd93d;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+      }
+
+      .info-content {
+        line-height: 1.7;
+        color: #e2e8f0;
+        font-size: 1rem;
+      }
+
+      .celestial-data {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .data-point {
+        background: rgba(30, 58, 138, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #4d96ff;
+      }
+
+      .data-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #ffd93d;
+        margin-bottom: 5px;
+      }
+
+      .data-label {
+        font-size: 0.9rem;
+        color: #bb86fc;
+      }
+
+      .discovery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .discovery-card {
+        background: rgba(30, 58, 138, 0.3);
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #4d96ff;
+        transition: all 0.3s ease;
+      }
+
+      .discovery-card.discovered {
+        border-color: #ffd93d;
+        background: rgba(255, 217, 61, 0.1);
+      }
+
+      .discovery-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+
+      .mission-log {
+        background: rgba(13, 17, 23, 0.8);
+        border-radius: 10px;
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #4d96ff;
+        margin-top: 20px;
+      }
+
+      .log-entry {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background: rgba(30, 58, 138, 0.2);
+        border-radius: 8px;
+        border-left: 3px solid #ffd93d;
+        font-size: 0.9rem;
+      }
+
+      .achievement {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(30, 58, 138, 0.2);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #4d96ff;
+      }
+
+      .achievement.locked {
+        opacity: 0.4;
+      }
+
+      .achievement-icon {
+        font-size: 1.8rem;
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+
+      .cosmic-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(255, 217, 61, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(77, 150, 255, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 40%,
+            rgba(255, 107, 107, 0.05) 0%,
+            transparent 50%
+          );
+        animation: cosmicPulse 8s ease-in-out infinite;
+      }
+
+      .shooting-star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: white;
+        box-shadow: 0 0 10px 2px white;
+        animation: shoot 3s linear infinite;
+      }
+
+      @keyframes cosmicPulse {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      @keyframes shoot {
+        0% {
+          transform: translateX(-100px) translateY(-100px);
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(1000px) translateY(1000px);
+          opacity: 0;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(13, 17, 23, 0.95);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 30px rgba(255, 217, 61, 0.4);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        max-width: 350px;
+        border: 1px solid #ffd93d;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-color: #ffd93d;
+      }
+
+      .notification.warning {
+        border-color: #ff6b6b;
+      }
+
+      .telescope-power {
+        width: 100%;
+        height: 20px;
+        background: rgba(30, 58, 138, 0.3);
+        border-radius: 10px;
+        margin: 20px 0;
+        overflow: hidden;
+        border: 1px solid #4d96ff;
+      }
+
+      .power-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff);
+        transition: width 0.5s ease;
+        box-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+      }
+
+      @media (max-width: 768px) {
+        .game-area {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .space-controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔭 Astronomy Adventure: Cosmic Explorer</h1>
+        <p>
+          Journey through the cosmos and unlock the secrets of the universe!
+        </p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-value" id="researchPoints">0</div>
+          <div class="stat-label">📚 Research Points</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="celestialDiscovered">0</div>
+          <div class="stat-label">🪐 Objects Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="telescopePower">100%</div>
+          <div class="stat-label">🔭 Telescope Power</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="missionProgress">0%</div>
+          <div class="stat-label">🚀 Mission Progress</div>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="observatory">
+          <div class="telescope-view" id="telescopeView">
+            <div class="cosmic-background"></div>
+            <!-- Celestial bodies will be dynamically added here -->
+          </div>
+
+          <div class="telescope-power">
+            <div class="power-fill" id="powerFill" style="width: 100%"></div>
+          </div>
+
+          <div class="space-controls">
+            <button class="btn" onclick="scanCelestialObject()">
+              🔍 Deep Scan
+            </button>
+            <button class="btn btn-scan" onclick="launchProbe()">
+              🛰️ Launch Probe
+            </button>
+            <button class="btn btn-research" onclick="conductResearch()">
+              🔬 Research Data
+            </button>
+          </div>
+
+          <div class="mission-selector">
+            <div
+              class="mission-option selected"
+              onclick="selectMission('solar')"
+            >
+              <div class="mission-icon" style="color: #ffd93d">☀️</div>
+              <div>Solar System</div>
+            </div>
+            <div class="mission-option" onclick="selectMission('deep_space')">
+              <div class="mission-icon" style="color: #bb86fc">🌌</div>
+              <div>Deep Space</div>
+            </div>
+            <div class="mission-option" onclick="selectMission('exoplanets')">
+              <div class="mission-icon" style="color: #6bcf7f">🪐</div>
+              <div>Exoplanets</div>
+            </div>
+          </div>
+
+          <div class="mission-log" id="missionLog">
+            <div class="log-entry">
+              🚀 Mission control initialized. Ready for cosmic exploration!
+            </div>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <div class="info-section">
+            <div class="info-title">
+              <span id="selectedObjectIcon">🌌</span>
+              <span id="selectedObjectName">Cosmic Explorer</span>
+            </div>
+            <div class="info-content" id="objectInfo">
+              Welcome to the Cosmic Observatory! Select missions, scan celestial
+              objects, and conduct research to unlock the mysteries of the
+              universe. Each discovery brings us closer to understanding our
+              cosmic origins.
+            </div>
+            <div class="celestial-data">
+              <div class="data-point">
+                <div class="data-value" id="objectDistance">-</div>
+                <div class="data-label">Distance</div>
+              </div>
+              <div class="data-point">
+                <div class="data-value" id="objectSize">-</div>
+                <div class="data-label">Size</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🌟 Mission Discoveries</div>
+            <div class="discovery-grid" id="discoveryGrid">
+              <!-- Discovery cards will be dynamically added here -->
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🏆 Cosmic Achievements</div>
+            <div id="achievementsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      <div id="notificationText"></div>
+    </div>
+
+    <script>
+      // Astronomy data
+      const missions = {
+        solar: {
+          name: "Solar System Mission",
+          icon: "☀️",
+          description:
+            "Explore our cosmic neighborhood - planets, moons, and the Sun.",
+          objects: [
+            {
+              name: "Mercury",
+              icon: "🪐",
+              type: "planet",
+              discovered: false,
+              distance: "57.9M km",
+              size: "4,879 km",
+              info: "The smallest and innermost planet. Has extreme temperature variations.",
+              fact: "Mercury has no atmosphere to retain heat, causing 430°C days and -180°C nights!",
+              researchValue: 50,
+            },
+            {
+              name: "Venus",
+              icon: "🪐",
+              type: "planet",
+              discovered: false,
+              distance: "108.2M km",
+              size: "12,104 km",
+              info: "Earth's sister planet with a thick, toxic atmosphere and runaway greenhouse effect.",
+              fact: "Venus rotates backwards - a day there is longer than its year!",
+              researchValue: 75,
+            },
+            {
+              name: "Mars",
+              icon: "🪐",
+              type: "planet",
+              discovered: false,
+              distance: "227.9M km",
+              size: "6,779 km",
+              info: "The Red Planet with polar ice caps and evidence of ancient water.",
+              fact: "Mars has the largest volcano in the solar system - Olympus Mons!",
+              researchValue: 100,
+            },
+            {
+              name: "Jupiter",
+              icon: "🪐",
+              type: "planet",
+              discovered: false,
+              distance: "778.5M km",
+              size: "139,820 km",
+              info: "Gas giant with a Great Red Spot storm larger than Earth.",
+              fact: "Jupiter's magnetic field is 20,000 times stronger than Earth's!",
+              researchValue: 150,
+            },
+            {
+              name: "Io",
+              icon: "🌕",
+              type: "moon",
+              discovered: false,
+              distance: "628M km",
+              size: "3,643 km",
+              info: "Jupiter's volcanic moon with over 400 active volcanoes.",
+              fact: "Io is the most volcanically active body in the solar system!",
+              researchValue: 80,
+            },
+          ],
+        },
+        deep_space: {
+          name: "Deep Space Mission",
+          icon: "🌌",
+          description:
+            "Journey beyond our solar system to distant galaxies and nebulae.",
+          objects: [
+            {
+              name: "Orion Nebula",
+              icon: "💫",
+              type: "nebula",
+              discovered: false,
+              distance: "1,344 ly",
+              size: "24 ly",
+              info: "A stellar nursery where new stars are being born from gas and dust.",
+              fact: "The Orion Nebula is visible to the naked eye as part of Orion's sword!",
+              researchValue: 200,
+            },
+            {
+              name: "Andromeda Galaxy",
+              icon: "🌌",
+              type: "galaxy",
+              discovered: false,
+              distance: "2.5M ly",
+              size: "220,000 ly",
+              info: "Our nearest spiral galaxy, on a collision course with the Milky Way.",
+              fact: "Andromeda contains about 1 trillion stars - twice as many as Milky Way!",
+              researchValue: 300,
+            },
+            {
+              name: "Crab Nebula",
+              icon: "💫",
+              type: "nebula",
+              discovered: false,
+              distance: "6,500 ly",
+              size: "11 ly",
+              info: "Supernova remnant with a pulsar at its center spinning 30 times per second.",
+              fact: "The Crab Nebula explosion was observed by Chinese astronomers in 1054 AD!",
+              researchValue: 180,
+            },
+            {
+              name: "Black Hole Cygnus X-1",
+              icon: "⚫",
+              type: "black_hole",
+              discovered: false,
+              distance: "6,070 ly",
+              size: "44 km",
+              info: "Stellar-mass black hole in a binary system with a blue supergiant star.",
+              fact: "Cygnus X-1 was the first astronomical object identified as a black hole!",
+              researchValue: 400,
+            },
+          ],
+        },
+        exoplanets: {
+          name: "Exoplanet Mission",
+          icon: "🪐",
+          description:
+            "Discover planets orbiting distant stars and search for habitable worlds.",
+          objects: [
+            {
+              name: "Kepler-186f",
+              icon: "🪐",
+              type: "exoplanet",
+              discovered: false,
+              distance: "582 ly",
+              size: "1.17 Earths",
+              info: "Earth-sized planet in the habitable zone of a red dwarf star.",
+              fact: "First Earth-sized planet discovered in a habitable zone!",
+              researchValue: 250,
+            },
+            {
+              name: "HD 209458 b",
+              icon: "🪐",
+              type: "exoplanet",
+              discovered: false,
+              distance: "159 ly",
+              size: "1.38 Jupiters",
+              info: "Hot Jupiter with an evaporating atmosphere leaving a comet-like tail.",
+              fact: "First exoplanet discovered transiting its star!",
+              researchValue: 220,
+            },
+            {
+              name: "TRAPPIST-1 System",
+              icon: "🌟",
+              type: "star_system",
+              discovered: false,
+              distance: "39 ly",
+              size: "7 planets",
+              info: "Ultra-cool dwarf star with seven Earth-sized terrestrial planets.",
+              fact: "Three TRAPPIST-1 planets are in the habitable zone!",
+              researchValue: 350,
+            },
+            {
+              name: "Proxima Centauri b",
+              icon: "🪐",
+              type: "exoplanet",
+              discovered: false,
+              distance: "4.24 ly",
+              size: "1.27 Earths",
+              info: "Closest known exoplanet, orbiting in Proxima Centauri's habitable zone.",
+              fact: "Proxima b receives similar stellar energy as Earth gets from the Sun!",
+              researchValue: 280,
+            },
+          ],
+        },
+      };
+
+      // Research technologies
+      const researchTech = [
+        {
+          name: "Spectroscopy Analysis",
+          description: "Analyze light spectra to determine composition",
+          cost: 100,
+          effect: "Increases discovery chances",
+        },
+        {
+          name: "Radio Telescope Array",
+          description: "Combine multiple telescopes for higher resolution",
+          cost: 200,
+          effect: "Reveals more detailed information",
+        },
+        {
+          name: "Infrared Imaging",
+          description: "See through cosmic dust with infrared technology",
+          cost: 150,
+          effect: "Discovers hidden objects",
+        },
+        {
+          name: "Gravitational Wave Detection",
+          description: "Detect ripples in spacetime from cosmic events",
+          cost: 300,
+          effect: "Reveals black holes and neutron stars",
+        },
+      ];
+
+      // Achievements
+      const achievements = [
+        {
+          id: 1,
+          name: "First Discovery",
+          icon: "🔭",
+          description: "Discover your first celestial object",
+          earned: false,
+        },
+        {
+          id: 2,
+          name: "Solar System Explorer",
+          icon: "🌞",
+          description: "Discover all solar system objects",
+          earned: false,
+        },
+        {
+          id: 3,
+          name: "Deep Space Pioneer",
+          icon: "🚀",
+          description: "Discover 5 deep space objects",
+          earned: false,
+        },
+        {
+          id: 4,
+          name: "Exoplanet Hunter",
+          icon: "🪐",
+          description: "Discover all exoplanet mission objects",
+          earned: false,
+        },
+        {
+          id: 5,
+          name: "Master Astronomer",
+          icon: "🏆",
+          description: "Reach 1000 research points",
+          earned: false,
+        },
+      ];
+
+      // Game state
+      let currentMission = "solar";
+      let researchPoints = 0;
+      let celestialDiscovered = 0;
+      let telescopePower = 100;
+      let missionProgress = 0;
+      let totalObjectsDiscovered = 0;
+      let currentTechLevel = 0;
+
+      function initGame() {
+        generateCelestialObjects();
+        updateStats();
+        updateAchievements();
+        updateDiscoveryGrid();
+        startShootingStars();
+      }
+
+      function generateCelestialObjects() {
+        const view = document.getElementById("telescopeView");
+        const mission = missions[currentMission];
+
+        // Clear existing objects (keep background)
+        const existingObjects = view.querySelectorAll(".celestial-body");
+        existingObjects.forEach((el) => el.remove());
+
+        // Add mission objects
+        mission.objects.forEach((obj) => {
+          if (obj.discovered || Math.random() < 0.3) {
+            // Show some undiscovered objects
+            const body = document.createElement("div");
+            body.className = `celestial-body ${obj.type}`;
+
+            // Size based on type
+            const sizes = {
+              planet: 40,
+              moon: 20,
+              nebula: 80,
+              galaxy: 60,
+              black_hole: 30,
+              exoplanet: 35,
+              star_system: 50,
+            };
+
+            const size = sizes[obj.type] || 30;
+            const left = 10 + Math.random() * 80;
+            const top = 10 + Math.random() * 70;
+
+            body.style.width = `${size}px`;
+            body.style.height = `${size}px`;
+            body.style.left = `${left}%`;
+            body.style.top = `${top}%`;
+
+            // Add label
+            const label = document.createElement("div");
+            label.className = "body-label";
+            label.textContent = obj.discovered ? obj.name : "Unknown Object";
+            label.style.top = `-30px`;
+            label.style.left = `-20px`;
+            body.appendChild(label);
+
+            body.onclick = () => selectCelestialObject(obj);
+            view.appendChild(body);
+          }
+        });
+      }
+
+      function selectCelestialObject(obj) {
+        document.getElementById("selectedObjectName").textContent =
+          obj.discovered ? obj.name : "Unknown Object";
+        document.getElementById("selectedObjectIcon").textContent =
+          obj.discovered ? obj.icon : "❓";
+        document.getElementById("objectInfo").textContent = obj.discovered
+          ? obj.info
+          : "This object has not been identified yet. Use deep scan to reveal its secrets.";
+
+        if (obj.discovered) {
+          document.getElementById("objectDistance").textContent = obj.distance;
+          document.getElementById("objectSize").textContent = obj.size;
+        } else {
+          document.getElementById("objectDistance").textContent = "-";
+          document.getElementById("objectSize").textContent = "-";
+        }
+      }
+
+      function selectMission(mission) {
+        // Update UI
+        document
+          .querySelectorAll(".mission-option")
+          .forEach((el) => el.classList.remove("selected"));
+        event.target.closest(".mission-option").classList.add("selected");
+
+        currentMission = mission;
+        generateCelestialObjects();
+        updateStats();
+        updateDiscoveryGrid();
+      }
+
+      function scanCelestialObject() {
+        if (telescopePower < 20) {
+          showNotification(
+            "warning",
+            "⚠️ Telescope power too low! Wait for recharge."
+          );
+          return;
+        }
+
+        telescopePower -= 20;
+        const mission = missions[currentMission];
+        const undiscovered = mission.objects.filter((obj) => !obj.discovered);
+
+        if (undiscovered.length === 0) {
+          showNotification(
+            "warning",
+            "All objects in this mission have been discovered!"
+          );
+          updateStats();
+          return;
+        }
+
+        // Chance to discover based on tech level
+        const discoveryChance = 0.4 + currentTechLevel * 0.1;
+
+        if (Math.random() < discoveryChance) {
+          const obj =
+            undiscovered[Math.floor(Math.random() * undiscovered.length)];
+          obj.discovered = true;
+          celestialDiscovered++;
+          totalObjectsDiscovered++;
+          researchPoints += obj.researchValue;
+
+          showNotification(
+            "success",
+            `🔭 Discovered ${obj.name}! +${obj.researchValue} research`
+          );
+          addLogEntry(`🌟 New discovery: ${obj.name} - ${obj.fact}`);
+
+          generateCelestialObjects();
+          updateDiscoveryGrid();
+        } else {
+          showNotification(
+            "error",
+            "🔍 Scan inconclusive! Object remains unidentified."
+          );
+          addLogEntry(
+            "📡 Deep scan: Collected data but identification failed."
+          );
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function launchProbe() {
+        if (telescopePower < 30) {
+          showNotification(
+            "warning",
+            "⚠️ Insufficient power for probe launch!"
+          );
+          return;
+        }
+
+        telescopePower -= 30;
+        const mission = missions[currentMission];
+        const undiscovered = mission.objects.filter((obj) => !obj.discovered);
+
+        if (undiscovered.length === 0) {
+          showNotification(
+            "warning",
+            "No unidentified objects remain in this mission!"
+          );
+          updateStats();
+          return;
+        }
+
+        // Higher chance with probe
+        if (Math.random() < 0.7) {
+          const obj =
+            undiscovered[Math.floor(Math.random() * undiscovered.length)];
+          obj.discovered = true;
+          celestialDiscovered++;
+          totalObjectsDiscovered++;
+          researchPoints += obj.researchValue + 50; // Bonus for probe
+
+          showNotification(
+            "success",
+            `🛰️ Probe mission successful! Discovered ${obj.name}! +${
+              obj.researchValue + 50
+            } research`
+          );
+          addLogEntry(`🛰️ Probe data: ${obj.name} - ${obj.fact}`);
+
+          generateCelestialObjects();
+          updateDiscoveryGrid();
+        } else {
+          showNotification(
+            "error",
+            "🛰️ Probe lost signal! No new discoveries."
+          );
+          addLogEntry("🛰️ Probe mission: Signal lost in transmission.");
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function conductResearch() {
+        if (researchPoints < 50) {
+          showNotification(
+            "warning",
+            "❌ Need at least 50 research points to conduct studies!"
+          );
+          return;
+        }
+
+        const researchGain = 30 + Math.floor(Math.random() * 40);
+        researchPoints += researchGain;
+        telescopePower = Math.min(100, telescopePower + 10);
+
+        showNotification(
+          "success",
+          `🔬 Research breakthrough! +${researchGain} research points`
+        );
+        addLogEntry(
+          "📊 Astronomical research: New insights gained from collected data."
+        );
+
+        // Chance to unlock new tech
+        if (Math.random() < 0.3 && currentTechLevel < researchTech.length) {
+          currentTechLevel++;
+          const tech = researchTech[currentTechLevel - 1];
+          showNotification(
+            "success",
+            `💡 Technology unlocked: ${tech.name}! ${tech.effect}`
+          );
+          addLogEntry(`🔧 New technology: ${tech.name} - ${tech.description}`);
+        }
+
+        // Chance for bonus discovery
+        if (Math.random() < 0.2) {
+          const mission = missions[currentMission];
+          const undiscovered = mission.objects.filter((obj) => !obj.discovered);
+          if (undiscovered.length > 0) {
+            const obj =
+              undiscovered[Math.floor(Math.random() * undiscovered.length)];
+            obj.discovered = true;
+            celestialDiscovered++;
+            totalObjectsDiscovered++;
+            researchPoints += obj.researchValue;
+
+            showNotification("success", `🎯 Research identified ${obj.name}!`);
+            addLogEntry(
+              `🔍 Research discovery: ${obj.name} detected through data analysis`
+            );
+
+            generateCelestialObjects();
+            updateDiscoveryGrid();
+          }
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function addLogEntry(message) {
+        const log = document.getElementById("missionLog");
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.textContent = message;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function updateStats() {
+        document.getElementById("researchPoints").textContent = researchPoints;
+        document.getElementById("celestialDiscovered").textContent =
+          celestialDiscovered;
+        document.getElementById("telescopePower").textContent =
+          Math.round(telescopePower) + "%";
+
+        // Update mission progress
+        const mission = missions[currentMission];
+        const discovered = mission.objects.filter(
+          (obj) => obj.discovered
+        ).length;
+        const total = mission.objects.length;
+        missionProgress = Math.round((discovered / total) * 100);
+        document.getElementById("missionProgress").textContent =
+          missionProgress + "%";
+
+        // Update power bar
+        document.getElementById("powerFill").style.width = telescopePower + "%";
+
+        // Recharge telescope power over time
+        if (telescopePower < 100) {
+          setTimeout(() => {
+            telescopePower = Math.min(100, telescopePower + 1);
+            updateStats();
+          }, 1000);
+        }
+      }
+
+      function updateDiscoveryGrid() {
+        const grid = document.getElementById("discoveryGrid");
+        const mission = missions[currentMission];
+
+        let html = "";
+        mission.objects.forEach((obj) => {
+          html += `
+                    <div class="discovery-card ${
+                      obj.discovered ? "discovered" : ""
+                    }">
+                        <div class="discovery-icon">${
+                          obj.discovered ? obj.icon : "❓"
+                        }</div>
+                        <div style="font-size: 0.8rem; font-weight: bold;">${
+                          obj.discovered ? obj.name : "???"
+                        }</div>
+                    </div>
+                `;
+        });
+
+        grid.innerHTML = html;
+      }
+
+      function updateAchievements() {
+        const achievementsList = document.getElementById("achievementsList");
+        achievementsList.innerHTML = achievements
+          .map(
+            (achievement) => `
+                    <div class="achievement ${
+                      achievement.earned ? "" : "locked"
+                    }">
+                        <div class="achievement-icon" style="color: ${
+                          achievement.earned ? "#ffd93d" : "#475569"
+                        }">${achievement.icon}</div>
+                        <div>
+                            <div style="font-weight: bold; color: ${
+                              achievement.earned ? "#ffd93d" : "#94a3b8"
+                            }">${achievement.name}</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">${
+                              achievement.description
+                            }</div>
+                        </div>
+                    </div>
+                `
+          )
+          .join("");
+      }
+
+      function checkAchievements() {
+        // First Discovery
+        if (celestialDiscovered >= 1 && !achievements[0].earned) {
+          achievements[0].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: First Discovery!"
+          );
+        }
+
+        // Solar System Explorer
+        const solarObjects = missions.solar.objects;
+        const allSolarDiscovered = solarObjects.every((obj) => obj.discovered);
+        if (allSolarDiscovered && !achievements[1].earned) {
+          achievements[1].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Solar System Explorer!"
+          );
+        }
+
+        // Deep Space Pioneer
+        const deepSpaceDiscovered = missions.deep_space.objects.filter(
+          (obj) => obj.discovered
+        ).length;
+        if (deepSpaceDiscovered >= 5 && !achievements[2].earned) {
+          achievements[2].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Deep Space Pioneer!"
+          );
+        }
+
+        // Exoplanet Hunter
+        const exoplanetObjects = missions.exoplanets.objects;
+        const allExoplanetsDiscovered = exoplanetObjects.every(
+          (obj) => obj.discovered
+        );
+        if (allExoplanetsDiscovered && !achievements[3].earned) {
+          achievements[3].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Exoplanet Hunter!"
+          );
+        }
+
+        // Master Astronomer
+        if (researchPoints >= 1000 && !achievements[4].earned) {
+          achievements[4].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Master Astronomer!"
+          );
+        }
+
+        updateAchievements();
+      }
+
+      function startShootingStars() {
+        setInterval(() => {
+          if (Math.random() < 0.3) {
+            createShootingStar();
+          }
+        }, 2000);
+      }
+
+      function createShootingStar() {
+        const view = document.getElementById("telescopeView");
+        const star = document.createElement("div");
+        star.className = "shooting-star";
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        view.appendChild(star);
+
+        setTimeout(() => {
+          if (star.parentNode) {
+            star.parentNode.removeChild(star);
+          }
+        }, 3000);
+      }
+
+      function showNotification(type, message) {
+        const notification = document.getElementById("notification");
+        notification.className = `notification ${type} show`;
+        document.getElementById("notificationText").textContent = message;
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 4000);
+      }
+
+      // Initialize the game
+      initGame();
+    </script>
+  </body>
+</html>

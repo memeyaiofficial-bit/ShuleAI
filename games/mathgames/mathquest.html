@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quest: Number Navigator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            color: #f5f5f5;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .quest-area {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ff6b6b;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .math-world {
+            width: 100%;
+            height: 450px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            position: relative;
+            border: 3px solid #4ecdc4;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .math-challenge {
+            position: absolute;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid #ff6b6b;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .challenge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .challenge-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .challenge-problem {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-input {
+            width: 80px;
+            padding: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 2px solid #4ecdc4;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .submit-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .arithmetic { top: 20%; left: 20%; }
+        .algebra { top: 30%; left: 60%; }
+        .geometry { top: 60%; left: 30%; }
+        .puzzles { top: 50%; left: 70%; }
+
+        .quest-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #45b7d1 0%, #96ceb4 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .topic-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .topic-option {
+            background: #f5f5f5;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .topic-option:hover {
+            background: #e8f5e9;
+            transform: scale(1.05);
+        }
+
+        .topic-option.selected {
+            border-color: #4ecdc4;
+            background: #e0f7fa;
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .topic-icon {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        .info-section {
+            background: #e0f7fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4ecdc4;
+        }
+
+        .info-title {
+            color: #00897b;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-content {
+            line-height: 1.7;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        .math-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .data-point {
+            background: rgba(78, 205, 196, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #4ecdc4;
+        }
+
+        .data-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00897b;
+            margin-bottom: 5px;
+        }
+
+        .data-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .skill-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .skill-card.mastered {
+            border-color: #4ecdc4;
+            background: #e0f7fa;
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .quest-log {
+            background: #e0f7fa;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #4ecdc4;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #4ecdc4;
+            font-size: 0.9rem;
+        }
+
+        .achievement {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #4ecdc4;
+        }
+
+        .achievement.locked {
+            opacity: 0.4;
+        }
+
+        .achievement-icon {
+            font-size: 1.8rem;
+        }
+
+        .math-effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .number-particle {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            animation: floatNumber 3s ease-in-out infinite;
+            font-family: 'Courier New', monospace;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: rotateShape 10s linear infinite;
+        }
+
+        @keyframes floatNumber {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes rotateShape {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 350px;
+            border-left: 5px solid #4ecdc4;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-color: #4ecdc4;
+        }
+
+        .notification.warning {
+            border-color: #ff6b6b;
+        }
+
+        .notification.error {
+            border-color: #ff5252;
+        }
+
+        .difficulty-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #00897b;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .energy-level {
+            width: 100%;
+            height: 20px;
+            background: rgba(78, 205, 196, 0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 1px solid #4ecdc4;
+        }
+
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #45b7d1, #96ceb4);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+
+        .hint-box {
+            background: #fff3e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #ffb74d;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quest-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .topic-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Math Quest: Number Navigator</h1>
+            <p>Embark on an adventure through the magical world of mathematics!</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="mathPoints">0</div>
+                <div class="stat-label">⭐ Math Points</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="problemsSolved">0</div>
+                <div class="stat-label">✅ Problems Solved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="brainPower">100%</div>
+                <div class="stat-label">🧠 Brain Power</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">🎯 Accuracy</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="quest-area">
+                <div class="difficulty-indicator" id="difficultyIndicator">Easy</div>
+                <div class="math-world" id="mathWorld">
+                    <div class="math-effects"></div>
+                    <!-- Math challenges will be dynamically added here -->
+                </div>
+
+                <div class="energy-level">
+                    <div class="energy-fill" id="energyFill" style="width: 100%"></div>
+                </div>
+
+                <div class="quest-controls">
+                    <button class="btn btn-primary" onclick="generateChallenge()">
+                        🎯 New Challenge
+                    </button>
+                    <button class="btn btn-secondary" onclick="getHint()">
+                        💡 Get Hint
+                    </button>
+                    <button class="btn btn-warning" onclick="practiceSkills()">
+                        📚 Practice Skills
+                    </button>
+                </div>
+
+                <div class="hint-box" id="hintBox">
+                    <strong>💡 Hint:</strong> <span id="hintText"></span>
+                </div>
+
+                <div class="topic-selector">
+                    <div class="topic-option selected" onclick="selectTopic('arithmetic')">
+                        <div class="topic-icon">➕</div>
+                        <div>Arithmetic</div>
+                    </div>
+                    <div class="topic-option" onclick="selectTopic('algebra')">
+                        <div class="topic-icon">𝑥</div>
+                        <div>Algebra</div>
+                    </div>
+                    <div class="topic-option" onclick="selectTopic('geometry')">
+                        <div class="topic-icon">📐</div>
+                        <div>Geometry</div>
+                    </div>
+                    <div class="topic-option" onclick="selectTopic('puzzles')">
+                        <div class="topic-icon">🎲</div>
+                        <div>Puzzles</div>
+                    </div>
+                </div>
+
+                <div class="quest-log" id="questLog">
+                    <div class="log-entry">🧮 Math Quest initialized. Ready to solve some problems!</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="info-section">
+                    <div class="info-title">
+                        <span id="selectedTopicIcon">➕</span>
+                        <span id="selectedTopicName">Arithmetic</span>
+                    </div>
+                    <div class="info-content" id="topicInfo">
+                        Welcome to Arithmetic! This is the foundation of all mathematics. 
+                        Practice addition, subtraction, multiplication, and division to build 
+                        your mathematical skills and earn points.
+                    </div>
+                    <div class="math-data">
+                        <div class="data-point">
+                            <div class="data-value" id="topicLevel">1</div>
+                            <div class="data-label">Topic Level</div>
+                        </div>
+                        <div class="data-point">
+                            <div class="data-value" id="problemsInTopic">0</div>
+                            <div class="data-label">Problems Solved</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-title">📊 Math Skills</div>
+                    <div class="skills-grid" id="skillsGrid">
+                        <!-- Skill cards will be dynamically added here -->
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-title">🏆 Math Achievements</div>
+                    <div id="achievementsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div id="notificationText"></div>
+    </div>
+
+    <script>
+        // Math topics and problems
+        const mathTopics = {
+            arithmetic: {
+                name: "Arithmetic",
+                icon: "➕",
+                description: "Master the basics: addition, subtraction, multiplication, and division.",
+                problems: [
+                    {
+                        type: "addition",
+                        problem: "15 + 27 = ?",
+                        answer: 42,
+                        hint: "Add the tens first, then the ones",
+                        points: 10
+                    },
+                    {
+                        type: "subtraction",
+                        problem: "89 - 34 = ?",
+                        answer: 55,
+                        hint: "Subtract tens, then ones",
+                        points: 10
+                    },
+                    {
+                        type: "multiplication",
+                        problem: "7 × 8 = ?",
+                        answer: 56,
+                        hint: "Remember your times tables",
+                        points: 15
+                    },
+                    {
+                        type: "division",
+                        problem: "63 ÷ 9 = ?",
+                        answer: 7,
+                        hint: "How many times does 9 go into 63?",
+                        points: 15
+                    },
+                    {
+                        type: "mixed",
+                        problem: "(12 + 8) × 3 = ?",
+                        answer: 60,
+                        hint: "Solve inside parentheses first",
+                        points: 20
+                    }
+                ],
+                level: 1,
+                problemsSolved: 0
+            },
+            algebra: {
+                name: "Algebra",
+                icon: "𝑥",
+                description: "Solve for unknown variables and understand equations.",
+                problems: [
+                    {
+                        type: "simple_equation",
+                        problem: "2x + 5 = 15",
+                        answer: 5,
+                        hint: "Subtract 5 from both sides first",
+                        points: 20
+                    },
+                    {
+                        type: "variables",
+                        problem: "If y = 3x + 2 and x = 4, then y = ?",
+                        answer: 14,
+                        hint: "Substitute x with 4",
+                        points: 25
+                    },
+                    {
+                        type: "word_problem",
+                        problem: "A number plus 7 equals 15. What's the number?",
+                        answer: 8,
+                        hint: "Set up equation: x + 7 = 15",
+                        points: 30
+                    },
+                    {
+                        type: "inequality",
+                        problem: "Solve: 3x - 4 > 11",
+                        answer: 5,
+                        hint: "Add 4 to both sides, then divide by 3",
+                        points: 35
+                    }
+                ],
+                level: 1,
+                problemsSolved: 0
+            },
+            geometry: {
+                name: "Geometry",
+                icon: "📐",
+                description: "Explore shapes, angles, areas, and spatial relationships.",
+                problems: [
+                    {
+                        type: "area",
+                        problem: "Area of rectangle: length=8, width=5",
+                        answer: 40,
+                        hint: "Area = length × width",
+                        points: 25
+                    },
+                    {
+                        type: "perimeter",
+                        problem: "Perimeter of square with side=6",
+                        answer: 24,
+                        hint: "Perimeter = 4 × side",
+                        points: 25
+                    },
+                    {
+                        type: "angles",
+                        problem: "Third angle in triangle: 45° and 55°",
+                        answer: 80,
+                        hint: "Triangle angles sum to 180°",
+                        points: 30
+                    },
+                    {
+                        type: "circle",
+                        problem: "Circumference: radius=7 (use π=3.14)",
+                        answer: 43.96,
+                        hint: "Circumference = 2 × π × radius",
+                        points: 35
+                    }
+                ],
+                level: 1,
+                problemsSolved: 0
+            },
+            puzzles: {
+                name: "Math Puzzles",
+                icon: "🎲",
+                description: "Challenge your logical thinking with fun math puzzles.",
+                problems: [
+                    {
+                        type: "sequence",
+                        problem: "Next number: 2, 4, 8, 16, ?",
+                        answer: 32,
+                        hint: "Each number doubles the previous",
+                        points: 40
+                    },
+                    {
+                        type: "logic",
+                        problem: "If 3 cats catch 3 mice in 3 minutes, how long for 100 cats?",
+                        answer: 3,
+                        hint: "Each cat works independently",
+                        points: 50
+                    },
+                    {
+                        type: "pattern",
+                        problem: "1, 1, 2, 3, 5, 8, ? (Fibonacci)",
+                        answer: 13,
+                        hint: "Each number is sum of two previous",
+                        points: 45
+                    },
+                    {
+                        type: "riddle",
+                        problem: "I am an odd number. Take away one letter and I become even. What number am I?",
+                        answer: 7,
+                        hint: "Think about Roman numerals",
+                        points: 60
+                    }
+                ],
+                level: 1,
+                problemsSolved: 0
+            }
+        };
+
+        // Math skills
+        const mathSkills = {
+            arithmetic: [
+                { name: "Addition", level: 1, icon: "➕", mastered: false },
+                { name: "Subtraction", level: 1, icon: "➖", mastered: false },
+                { name: "Multiplication", level: 1, icon: "✖️", mastered: false },
+                { name: "Division", level: 1, icon: "➗", mastered: false }
+            ],
+            algebra: [
+                { name: "Equations", level: 1, icon: "⚖️", mastered: false },
+                { name: "Variables", level: 1, icon: "𝑥", mastered: false },
+                { name: "Inequalities", level: 1, icon: "≠", mastered: false }
+            ],
+            geometry: [
+                { name: "Shapes", level: 1, icon: "🔺", mastered: false },
+                { name: "Angles", level: 1, icon: "📐", mastered: false },
+                { name: "Area", level: 1, icon: "📏", mastered: false }
+            ],
+            puzzles: [
+                { name: "Logic", level: 1, icon: "🧠", mastered: false },
+                { name: "Patterns", level: 1, icon: "🔍", mastered: false },
+                { name: "Sequences", level: 1, icon: "➡️", mastered: false }
+            ]
+        };
+
+        // Achievements
+        const achievements = [
+            { id: 1, name: "First Problem", icon: "✅", description: "Solve your first math problem", earned: false },
+            { id: 2, name: "Arithmetic Ace", icon: "➕", description: "Solve 10 arithmetic problems", earned: false },
+            { id: 3, name: "Algebra Master", icon: "𝑥", description: "Reach level 3 in algebra", earned: false },
+            { id: 4, name: "Geometry Genius", icon: "📐", description: "Master all geometry skills", earned: false },
+            { id: 5, name: "Math Wizard", icon: "🧙", description: "Reach 1000 math points", earned: false }
+        ];
+
+        // Game state
+        let currentTopic = 'arithmetic';
+        let mathPoints = 0;
+        let problemsSolved = 0;
+        let brainPower = 100;
+        let accuracy = 0;
+        let totalProblems = 0;
+        let correctProblems = 0;
+        let currentProblem = null;
+        let difficulty = 1;
+
+        function initGame() {
+            generateMathEffects();
+            updateStats();
+            updateAchievements();
+            updateSkillsGrid();
+            startBrainRecharge();
+        }
+
+        function generateMathEffects() {
+            const effects = document.querySelector('.math-effects');
+            
+            // Create floating numbers
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    createFloatingNumber();
+                }, i * 200);
+            }
+            
+            // Create geometric shapes
+            createGeometricShapes();
+        }
+
+        function createFloatingNumber() {
+            const effects = document.querySelector('.math-effects');
+            const number = document.createElement('div');
+            number.className = 'number-particle';
+            number.textContent = Math.floor(Math.random() * 20) + 1;
+            number.style.left = `${Math.random() * 100}%`;
+            number.style.top = `${Math.random() * 100}%`;
+            number.style.animationDelay = `${Math.random() * 2}s`;
+            effects.appendChild(number);
+            
+            setTimeout(() => {
+                if (number.parentNode) {
+                    number.parentNode.removeChild(number);
+                }
+            }, 3000);
+        }
+
+        function createGeometricShapes() {
+            const effects = document.querySelector('.math-effects');
+            const shapes = ['▲', '●', '■', '◆'];
+            
+            shapes.forEach((shape, index) => {
+                const shapeElement = document.createElement('div');
+                shapeElement.className = 'shape';
+                shapeElement.textContent = shape;
+                shapeElement.style.fontSize = `${50 + Math.random() * 50}px`;
+                shapeElement.style.left = `${20 + index * 20}%`;
+                shapeElement.style.top = `${30 + Math.random() * 40}%`;
+                shapeElement.style.color = `rgba(78, 205, 196, ${0.1 + Math.random() * 0.2})`;
+                effects.appendChild(shapeElement);
+            });
+        }
+
+        function selectTopic(topic) {
+            // Update UI
+            document.querySelectorAll('.topic-option').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.topic-option').classList.add('selected');
+            
+            currentTopic = topic;
+            const topicData = mathTopics[topic];
+            
+            document.getElementById('selectedTopicName').textContent = topicData.name;
+            document.getElementById('selectedTopicIcon').textContent = topicData.icon;
+            document.getElementById('topicInfo').textContent = topicData.description;
+            document.getElementById('topicLevel').textContent = topicData.level;
+            document.getElementById('problemsInTopic').textContent = topicData.problemsSolved;
+            
+            updateSkillsGrid();
+        }
+
+        function generateChallenge() {
+            if (brainPower < 20) {
+                showNotification('warning', '⚠️ Not enough brain power! Take a break.');
+                return;
+            }
+            
+            brainPower -= 20;
+            const topic = mathTopics[currentTopic];
+            const problems = topic.problems;
+            
+            // Select random problem
+            currentProblem = problems[Math.floor(Math.random() * problems.length)];
+            
+            // Clear previous challenges
+            const world = document.getElementById('mathWorld');
+            const existingChallenges = world.querySelectorAll('.math-challenge');
+            existingChallenges.forEach(el => el.remove());
+            
+            // Create new challenge
+            const challenge = document.createElement('div');
+            challenge.className = `math-challenge ${currentTopic}`;
+            challenge.innerHTML = `
+                <div class="challenge-icon">${topic.icon}</div>
+                <div class="challenge-title">${topic.name} Challenge</div>
+                <div class="challenge-problem">${currentProblem.problem}</div>
+                <input type="number" class="answer-input" id="answerInput" placeholder="?">
+                <button class="submit-btn" onclick="checkAnswer()">Submit Answer</button>
+            `;
+            
+            // Position randomly
+            const left = 10 + Math.random() * 70;
+            const top = 10 + Math.random() * 70;
+            challenge.style.left = `${left}%`;
+            challenge.style.top = `${top}%`;
+            
+            world.appendChild(challenge);
+            
+            // Hide hint box
+            document.getElementById('hintBox').style.display = 'none';
+            
+            showNotification('success', `🎯 New ${topic.name} challenge generated!`);
+            addLogEntry(`📝 New problem: ${currentProblem.problem}`);
+            
+            updateStats();
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            const userAnswer = parseFloat(input.value);
+            
+            if (isNaN(userAnswer)) {
+                showNotification('error', '❌ Please enter a valid number!');
+                return;
+            }
+            
+            totalProblems++;
+            const topic = mathTopics[currentTopic];
+            
+            if (Math.abs(userAnswer - currentProblem.answer) < 0.01) {
+                // Correct answer
+                correctProblems++;
+                mathPoints += currentProblem.points * difficulty;
+                problemsSolved++;
+                topic.problemsSolved++;
+                
+                showNotification('success', `✅ Correct! +${currentProblem.points * difficulty} points`);
+                addLogEntry(`🎉 Solved: ${currentProblem.problem} = ${currentProblem.answer}`);
+                
+                // Level up check
+                if (topic.problemsSolved >= topic.level * 5) {
+                    topic.level++;
+                    difficulty = Math.min(3, topic.level);
+                    document.getElementById('difficultyIndicator').textContent = 
+                        difficulty === 1 ? 'Easy' : difficulty === 2 ? 'Medium' : 'Hard';
+                    showNotification('success', `🎊 Level up! ${topic.name} now level ${topic.level}`);
+                }
+                
+                // Skill progression
+                updateSkillProgress(currentProblem.type);
+            } else {
+                showNotification('error', `❌ Incorrect. The answer was ${currentProblem.answer}`);
+                addLogEntry(`💭 Attempted: ${currentProblem.problem} = ${userAnswer} (Correct: ${currentProblem.answer})`);
+            }
+            
+            accuracy = Math.round((correctProblems / totalProblems) * 100);
+            updateStats();
+            checkAchievements();
+            
+            // Clear the challenge
+            const world = document.getElementById('mathWorld');
+            const challenge = world.querySelector('.math-challenge');
+            if (challenge) {
+                challenge.remove();
+            }
+        }
+
+        function getHint() {
+            if (brainPower < 10) {
+                showNotification('warning', '⚠️ Not enough brain power for a hint!');
+                return;
+            }
+            
+            if (!currentProblem) {
+                showNotification('warning', '⚠️ Generate a challenge first!');
+                return;
+            }
+            
+            brainPower -= 10;
+            document.getElementById('hintText').textContent = currentProblem.hint;
+            document.getElementById('hintBox').style.display = 'block';
+            
+            showNotification('info', '💡 Hint revealed!');
+            addLogEntry(`💡 Used hint for: ${currentProblem.problem}`);
+            
+            updateStats();
+        }
+
+        function practiceSkills() {
+            if (brainPower < 15) {
+                showNotification('warning', '⚠️ Not enough brain power for practice!');
+                return;
+            }
+            
+            brainPower -= 15;
+            const practiceGain = 10 + Math.floor(Math.random() * 20);
+            mathPoints += practiceGain;
+            
+            showNotification('success', `📚 Practice session complete! +${practiceGain} points`);
+            addLogEntry('📚 Skill practice: Improved mathematical understanding');
+            
+            // Chance to discover new problem type
+            if (Math.random() < 0.3) {
+                const topic = mathTopics[currentTopic];
+                showNotification('info', '💡 Practice revealed new insights!');
+            }
+            
+            updateStats();
+            checkAchievements();
+        }
+
+        function updateSkillProgress(problemType) {
+            const skills = mathSkills[currentTopic];
+            const skill = skills.find(s => 
+                s.name.toLowerCase().includes(problemType) || 
+                problemType.includes(s.name.toLowerCase())
+            );
+            
+            if (skill) {
+                skill.level = Math.min(5, skill.level + 0.2);
+                if (skill.level >= 5 && !skill.mastered) {
+                    skill.mastered = true;
+                    showNotification('success', `🏆 Mastered ${skill.name}!`);
+                }
+                updateSkillsGrid();
+            }
+        }
+
+        function addLogEntry(message) {
+            const log = document.getElementById('questLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateStats() {
+            document.getElementById('mathPoints').textContent = mathPoints;
+            document.getElementById('problemsSolved').textContent = problemsSolved;
+            document.getElementById('brainPower').textContent = Math.round(brainPower) + '%';
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            
+            // Update topic stats
+            const topic = mathTopics[currentTopic];
+            document.getElementById('topicLevel').textContent = topic.level;
+            document.getElementById('problemsInTopic').textContent = topic.problemsSolved;
+            
+            // Update energy bar
+            document.getElementById('energyFill').style.width = brainPower + '%';
+        }
+
+        function updateSkillsGrid() {
+            const grid = document.getElementById('skillsGrid');
+            const skills = mathSkills[currentTopic];
+            
+            let html = '';
+            skills.forEach(skill => {
+                const levelPercent = (skill.level / 5) * 100;
+                html += `
+                    <div class="skill-card ${skill.mastered ? 'mastered' : ''}">
+                        <div class="skill-icon">${skill.icon}</div>
+                        <div style="font-size: 0.8rem; font-weight: bold;">${skill.name}</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">Level ${Math.floor(skill.level)}</div>
+                        <div style="width: 100%; height: 4px; background: #e0e0e0; border-radius: 2px; margin-top: 5px;">
+                            <div style="width: ${levelPercent}%; height: 100%; background: #4ecdc4; border-radius: 2px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        function updateAchievements() {
+            const achievementsList = document.getElementById('achievementsList');
+            achievementsList.innerHTML = achievements
+                .map(achievement => `
+                    <div class="achievement ${achievement.earned ? '' : 'locked'}">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div>
+                            <div style="font-weight: bold;">${achievement.name}</div>
+                            <div style="font-size: 0.8rem; color: #666;">${achievement.description}</div>
+                        </div>
+                    </div>
+                `)
+                .join('');
+        }
+
+        function checkAchievements() {
+            // First Problem
+            if (problemsSolved >= 1 && !achievements[0].earned) {
+                achievements[0].earned = true;
+                showNotification('success', '🏆 Achievement Unlocked: First Problem!');
+            }
+
+            // Arithmetic Ace
+            if (mathTopics.arithmetic.problemsSolved >= 10 && !achievements[1].earned) {
+                achievements[1].earned = true;
+                showNotification('success', '🏆 Achievement Unlocked: Arithmetic Ace!');
+            }
+
+            // Algebra Master
+            if (mathTopics.algebra.level >= 3 && !achievements[2].earned) {
+                achievements[2].earned = true;
+                showNotification('success', '🏆 Achievement Unlocked: Algebra Master!');
+            }
+
+            // Geometry Genius
+            const geometrySkills = mathSkills.geometry;
+            const allGeometryMastered = geometrySkills.every(skill => skill.mastered);
+            if (allGeometryMastered && !achievements[3].earned) {
+                achievements[3].earned = true;
+                showNotification('success', '🏆 Achievement Unlocked: Geometry Genius!');
+            }
+
+            // Math Wizard
+            if (mathPoints >= 1000 && !achievements[4].earned) {
+                achievements[4].earned = true;
+                showNotification('success', '🏆 Achievement Unlocked: Math Wizard!');
+            }
+
+            updateAchievements();
+        }
+
+        function startBrainRecharge() {
+            setInterval(() => {
+                if (brainPower < 100) {
+                    brainPower = Math.min(100, brainPower + 0.5);
+                    updateStats();
+                }
+            }, 1000);
+        }
+
+        function showNotification(type, message) {
+            const notification = document.getElementById('notification');
+            notification.className = `notification ${type} show`;
+            document.getElementById('notificationText').textContent = message;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Initialize the game
+        initGame();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoSystem Builder: Biodiversity Challenge</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #2e7d32 0%,
+          #1b5e20 50%,
+          #004d40 100%
+        );
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in;
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(45deg, #76ff03, #64dd17, #00c853);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .header p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        color: #e8f5e8;
+      }
+
+      .game-area {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 25px;
+        margin-bottom: 20px;
+      }
+
+      .ecosystem-area {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .control-panel {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 25px rgba(76, 175, 80, 0.4);
+      }
+
+      .stat-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #ffff00;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .ecosystem-display {
+        width: 100%;
+        height: 500px;
+        background: linear-gradient(
+          135deg,
+          #87ceeb 0%,
+          #e8f5e9 50%,
+          #8b4513 100%
+        );
+        border-radius: 15px;
+        position: relative;
+        border: 3px solid #4caf50;
+        margin-bottom: 25px;
+        overflow: hidden;
+      }
+
+      .biome-element {
+        position: absolute;
+        transition: all 0.5s ease;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .biome-element:hover {
+        transform: scale(1.1);
+        z-index: 10;
+      }
+
+      .element-icon {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+      }
+
+      .element-label {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+
+      .sky {
+        top: 10%;
+        left: 20%;
+      }
+      .tree {
+        top: 60%;
+        left: 30%;
+      }
+      .water {
+        top: 70%;
+        left: 60%;
+      }
+      .ground {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: #8b4513;
+      }
+
+      .ecosystem-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .btn {
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+        color: white;
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .biome-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .biome-option {
+        background: #f5f5f5;
+        border: 3px solid transparent;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .biome-option:hover {
+        background: #e8f5e9;
+        transform: scale(1.05);
+      }
+
+      .biome-option.selected {
+        border-color: #4caf50;
+        background: #e8f5e9;
+        box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+      }
+
+      .biome-icon {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+      }
+
+      .info-section {
+        background: #f1f8e9;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 5px solid #4caf50;
+      }
+
+      .info-title {
+        color: #2e7d32;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .info-content {
+        line-height: 1.7;
+        color: #555;
+        font-size: 1rem;
+      }
+
+      .food-web {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .trophic-level {
+        background: rgba(76, 175, 80, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #4caf50;
+      }
+
+      .level-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #2e7d32;
+        margin-bottom: 5px;
+      }
+
+      .level-label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .species-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .species-card {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .species-card.discovered {
+        border-color: #4caf50;
+      }
+
+      .species-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+
+      .environment-log {
+        background: #e8f5e9;
+        border-radius: 10px;
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #4caf50;
+        margin-top: 20px;
+      }
+
+      .log-entry {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background: rgba(76, 175, 80, 0.1);
+        border-radius: 8px;
+        border-left: 3px solid #4caf50;
+        font-size: 0.9rem;
+      }
+
+      .achievement {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(76, 175, 80, 0.1);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #4caf50;
+      }
+
+      .achievement.locked {
+        opacity: 0.4;
+      }
+
+      .achievement-icon {
+        font-size: 1.8rem;
+      }
+
+      .weather-effects {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+      }
+
+      .rain-drop {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.8);
+        width: 2px;
+        height: 15px;
+        animation: rainFall 1s linear infinite;
+      }
+
+      .sun-ray {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 4rem;
+        animation: rotate 10s linear infinite;
+      }
+
+      @keyframes rainFall {
+        0% {
+          transform: translateY(-100px);
+        }
+        100% {
+          transform: translateY(500px);
+        }
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        max-width: 350px;
+        border-left: 5px solid #4caf50;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-color: #4caf50;
+      }
+
+      .notification.warning {
+        border-color: #ff9800;
+      }
+
+      .notification.error {
+        border-color: #f44336;
+      }
+
+      .season-indicator {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: #2e7d32;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .game-area {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .ecosystem-controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🌿 EcoSystem Builder: Biodiversity Challenge</h1>
+        <p>
+          Create balanced ecosystems and discover the wonders of biodiversity!
+        </p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-value" id="biodiversity">0</div>
+          <div class="stat-label">🦋 Biodiversity Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="speciesCount">0</div>
+          <div class="stat-label">🐾 Species Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="ecosystemHealth">100%</div>
+          <div class="stat-label">❤️ Ecosystem Health</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="balance">50%</div>
+          <div class="stat-label">⚖️ Ecological Balance</div>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="ecosystem-area">
+          <div class="season-indicator" id="seasonIndicator">Spring</div>
+          <div class="ecosystem-display" id="ecosystemDisplay">
+            <div class="sun-ray">☀️</div>
+            <div class="ground"></div>
+            <!-- Ecosystem elements will be dynamically added here -->
+          </div>
+
+          <div class="ecosystem-controls">
+            <button class="btn btn-primary" onclick="introduceSpecies()">
+              🐾 Introduce Species
+            </button>
+            <button class="btn btn-secondary" onclick="restoreHabitat()">
+              🌱 Restore Habitat
+            </button>
+            <button class="btn btn-warning" onclick="conductResearch()">
+              🔬 Conduct Research
+            </button>
+          </div>
+
+          <div class="biome-selector">
+            <div class="biome-option selected" onclick="selectBiome('forest')">
+              <div class="biome-icon">🌲</div>
+              <div>Forest Biome</div>
+            </div>
+            <div class="biome-option" onclick="selectBiome('wetland')">
+              <div class="biome-icon">🌊</div>
+              <div>Wetland Biome</div>
+            </div>
+            <div class="biome-option" onclick="selectBiome('grassland')">
+              <div class="biome-icon">🌾</div>
+              <div>Grassland Biome</div>
+            </div>
+          </div>
+
+          <div class="environment-log" id="environmentLog">
+            <div class="log-entry">
+              🌍 Ecosystem initialized. Start building your biodiversity!
+            </div>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <div class="info-section">
+            <div class="info-title">
+              <span id="selectedBiomeIcon">🌲</span>
+              <span id="selectedBiomeName">Forest Biome</span>
+            </div>
+            <div class="info-content" id="biomeInfo">
+              Welcome to the Forest Biome! This ecosystem is characterized by
+              dense tree cover, diverse plant life, and complex food webs. Start
+              by introducing species and maintaining ecological balance.
+            </div>
+            <div class="food-web">
+              <div class="trophic-level">
+                <div class="level-value" id="producerCount">0</div>
+                <div class="level-label">Producers</div>
+              </div>
+              <div class="trophic-level">
+                <div class="level-value" id="consumerCount">0</div>
+                <div class="level-label">Consumers</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🦋 Discovered Species</div>
+            <div class="species-grid" id="speciesGrid">
+              <!-- Species cards will be dynamically added here -->
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🏆 Ecological Achievements</div>
+            <div id="achievementsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      <div id="notificationText"></div>
+    </div>
+
+    <script>
+      // Biome and species data
+      const biomes = {
+        forest: {
+          name: "Forest Biome",
+          icon: "🌲",
+          description:
+            "Dense tree ecosystems with high biodiversity and complex food webs.",
+          species: [
+            {
+              name: "Oak Tree",
+              icon: "🌳",
+              type: "producer",
+              discovered: false,
+              info: "Deciduous tree that provides habitat and food for many forest species.",
+              requirements: ["soil", "sunlight"],
+              role: "Primary producer and habitat provider",
+            },
+            {
+              name: "White-tailed Deer",
+              icon: "🦌",
+              type: "primary_consumer",
+              discovered: false,
+              info: "Herbivore that feeds on plants and serves as prey for carnivores.",
+              requirements: ["plants", "cover"],
+              role: "Primary consumer and seed disperser",
+            },
+            {
+              name: "Red Fox",
+              icon: "🦊",
+              type: "secondary_consumer",
+              discovered: false,
+              info: "Omnivorous predator that helps control small mammal populations.",
+              requirements: ["prey", "shelter"],
+              role: "Secondary consumer and population controller",
+            },
+            {
+              name: "Bald Eagle",
+              icon: "🦅",
+              type: "tertiary_consumer",
+              discovered: false,
+              info: "Apex predator that maintains ecosystem balance from above.",
+              requirements: ["fish", "tall_trees"],
+              role: "Tertiary consumer and scavenger",
+            },
+            {
+              name: "Mushroom",
+              icon: "🍄",
+              type: "decomposer",
+              discovered: false,
+              info: "Fungi that break down organic matter and recycle nutrients.",
+              requirements: ["decaying_matter", "moisture"],
+              role: "Decomposer and nutrient cycler",
+            },
+            {
+              name: "Squirrel",
+              icon: "🐿️",
+              type: "primary_consumer",
+              discovered: false,
+              info: "Small mammal that helps with seed dispersal and soil aeration.",
+              requirements: ["nuts", "trees"],
+              role: "Primary consumer and seed disperser",
+            },
+          ],
+        },
+        wetland: {
+          name: "Wetland Biome",
+          icon: "🌊",
+          description:
+            "Water-saturated ecosystems with unique aquatic and semi-aquatic species.",
+          species: [
+            {
+              name: "Cattail",
+              icon: "🎍",
+              type: "producer",
+              discovered: false,
+              info: "Aquatic plant that provides habitat and filters water pollutants.",
+              requirements: ["water", "sunlight"],
+              role: "Primary producer and water purifier",
+            },
+            {
+              name: "Beaver",
+              icon: "🦫",
+              type: "primary_consumer",
+              discovered: false,
+              info: "Keystone species that creates wetlands through dam building.",
+              requirements: ["trees", "water"],
+              role: "Primary consumer and ecosystem engineer",
+            },
+            {
+              name: "Great Blue Heron",
+              icon: "🦩",
+              type: "secondary_consumer",
+              discovered: false,
+              info: "Wading bird that feeds on fish and amphibians.",
+              requirements: ["fish", "shallow_water"],
+              role: "Secondary consumer and indicator species",
+            },
+            {
+              name: "Bullfrog",
+              icon: "🐸",
+              type: "secondary_consumer",
+              discovered: false,
+              info: "Amphibian that controls insect populations and serves as prey.",
+              requirements: ["water", "insects"],
+              role: "Secondary consumer and pest controller",
+            },
+            {
+              name: "Water Strider",
+              icon: "🚶",
+              type: "primary_consumer",
+              discovered: false,
+              info: "Insect that walks on water surface and feeds on smaller insects.",
+              requirements: ["still_water", "prey"],
+              role: "Primary consumer and surface predator",
+            },
+            {
+              name: "Dragonfly",
+              icon: "🦋",
+              type: "secondary_consumer",
+              discovered: false,
+              info: "Aerial predator that controls mosquito populations.",
+              requirements: ["water", "flying_space"],
+              role: "Secondary consumer and pest controller",
+            },
+          ],
+        },
+        grassland: {
+          name: "Grassland Biome",
+          icon: "🌾",
+          description:
+            "Open ecosystems dominated by grasses with grazing animals and predators.",
+          species: [
+            {
+              name: "Big Bluestem Grass",
+              icon: "🌱",
+              type: "producer",
+              discovered: false,
+              info: "Tall native grass that forms the foundation of grassland ecosystems.",
+              requirements: ["soil", "sunlight"],
+              role: "Primary producer and soil stabilizer",
+            },
+            {
+              name: "American Bison",
+              icon: "🐃",
+              type: "primary_consumer",
+              discovered: false,
+              info: "Large grazer that maintains grassland health through grazing.",
+              requirements: ["grasses", "space"],
+              role: "Primary consumer and grassland manager",
+            },
+            {
+              name: "Prairie Dog",
+              icon: "🐹",
+              type: "primary_consumer",
+              discovered: false,
+              info: "Social rodent that aerates soil and provides prey for predators.",
+              requirements: ["grasses", "burrow_sites"],
+              role: "Primary consumer and soil aerator",
+            },
+            {
+              name: "Coyote",
+              icon: "🐺",
+              type: "secondary_consumer",
+              discovered: false,
+              info: "Adaptable predator that controls small mammal populations.",
+              requirements: ["prey", "territory"],
+              role: "Secondary consumer and population balancer",
+            },
+            {
+              name: "Burrowing Owl",
+              icon: "🦉",
+              type: "secondary_consumer",
+              discovered: false,
+              info: "Bird of prey that uses abandoned burrows for nesting.",
+              requirements: ["burrows", "prey"],
+              role: "Secondary consumer and rodent controller",
+            },
+            {
+              name: "Monarch Butterfly",
+              icon: "🦋",
+              type: "primary_consumer",
+              discovered: false,
+              info: "Pollinator that relies on milkweed plants for reproduction.",
+              requirements: ["milkweed", "nectar"],
+              role: "Primary consumer and pollinator",
+            },
+          ],
+        },
+      };
+
+      // Environmental factors
+      const environmentalFactors = {
+        seasons: ["Spring", "Summer", "Autumn", "Winter"],
+        weather: ["Sunny", "Rainy", "Cloudy", "Stormy"],
+        threats: [
+          "Drought",
+          "Fire",
+          "Pollution",
+          "Invasive Species",
+          "Disease",
+        ],
+      };
+
+      // Achievements
+      const achievements = [
+        {
+          id: 1,
+          name: "First Species",
+          icon: "🐾",
+          description: "Discover your first species",
+          earned: false,
+        },
+        {
+          id: 2,
+          name: "Biome Explorer",
+          icon: "🌍",
+          description: "Discover all species in one biome",
+          earned: false,
+        },
+        {
+          id: 3,
+          name: "Ecosystem Engineer",
+          icon: "👨‍🔬",
+          description: "Maintain 90%+ ecosystem health for 5 turns",
+          earned: false,
+        },
+        {
+          id: 4,
+          name: "Biodiversity Champion",
+          icon: "🏆",
+          description: "Reach 100 biodiversity score",
+          earned: false,
+        },
+        {
+          id: 5,
+          name: "Master Ecologist",
+          icon: "🔬",
+          description: "Discover 15 total species",
+          earned: false,
+        },
+      ];
+
+      // Game state
+      let currentBiome = "forest";
+      let biodiversityScore = 0;
+      let speciesCount = 0;
+      let ecosystemHealth = 100;
+      let ecologicalBalance = 50;
+      let totalSpeciesDiscovered = 0;
+      let turnsAtHighHealth = 0;
+      let currentSeason = "Spring";
+      let currentWeather = "Sunny";
+
+      function initGame() {
+        renderEcosystem();
+        updateStats();
+        updateAchievements();
+        updateSpeciesGrid();
+        startSeasonCycle();
+      }
+
+      function renderEcosystem() {
+        const display = document.getElementById("ecosystemDisplay");
+        const biome = biomes[currentBiome];
+
+        // Clear existing elements (keep sun and ground)
+        const existingElements = display.querySelectorAll(".biome-element");
+        existingElements.forEach((el) => el.remove());
+
+        // Add biome-specific elements
+        biome.species.forEach((species) => {
+          if (species.discovered) {
+            const element = document.createElement("div");
+            element.className = `biome-element ${species.type}`;
+            element.innerHTML = `
+                        <div class="element-icon">${species.icon}</div>
+                        <div class="element-label">${species.name}</div>
+                    `;
+
+            // Random position within reasonable bounds
+            const left = 10 + Math.random() * 80;
+            const top = 20 + Math.random() * 60;
+            element.style.left = `${left}%`;
+            element.style.top = `${top}%`;
+
+            element.onclick = () => showSpeciesInfo(species);
+            display.appendChild(element);
+          }
+        });
+
+        document.getElementById("selectedBiomeName").textContent = biome.name;
+        document.getElementById("selectedBiomeIcon").textContent = biome.icon;
+        document.getElementById("biomeInfo").textContent = biome.description;
+      }
+
+      function showSpeciesInfo(species) {
+        document.getElementById("selectedBiomeName").textContent = species.name;
+        document.getElementById("selectedBiomeIcon").textContent = species.icon;
+        document.getElementById(
+          "biomeInfo"
+        ).textContent = `${species.info}\n\nRole: ${species.role}`;
+      }
+
+      function selectBiome(biome) {
+        // Update UI
+        document
+          .querySelectorAll(".biome-option")
+          .forEach((el) => el.classList.remove("selected"));
+        event.target.closest(".biome-option").classList.add("selected");
+
+        currentBiome = biome;
+        renderEcosystem();
+        updateStats();
+        updateSpeciesGrid();
+      }
+
+      function introduceSpecies() {
+        const biome = biomes[currentBiome];
+        const undiscovered = biome.species.filter((s) => !s.discovered);
+
+        if (undiscovered.length === 0) {
+          showNotification(
+            "warning",
+            "All species in this biome have been discovered!"
+          );
+          return;
+        }
+
+        if (ecosystemHealth < 20) {
+          showNotification(
+            "error",
+            "❌ Ecosystem too unhealthy to support new species!"
+          );
+          return;
+        }
+
+        // Chance to discover new species based on ecosystem health
+        const discoveryChance = ecosystemHealth / 100;
+
+        if (Math.random() < discoveryChance) {
+          const species =
+            undiscovered[Math.floor(Math.random() * undiscovered.length)];
+          species.discovered = true;
+          speciesCount++;
+          totalSpeciesDiscovered++;
+
+          // Calculate biodiversity impact
+          const biodiversityGain = 10 + Math.floor(Math.random() * 15);
+          biodiversityScore += biodiversityGain;
+
+          // Update ecological balance
+          ecologicalBalance = Math.min(100, ecologicalBalance + 5);
+
+          showNotification(
+            "success",
+            `🐾 Discovered ${species.name}! +${biodiversityGain} biodiversity`
+          );
+          addLogEntry(`🦋 New species: ${species.name} (${species.role})`);
+
+          renderEcosystem();
+          updateSpeciesGrid();
+        } else {
+          showNotification(
+            "error",
+            "🔍 Species introduction failed! Environmental conditions not suitable."
+          );
+          addLogEntry("🔍 Species survey: No new species found this time.");
+        }
+
+        advanceGameTurn();
+        updateStats();
+        checkAchievements();
+      }
+
+      function restoreHabitat() {
+        if (ecosystemHealth >= 100) {
+          showNotification("warning", "Habitat already at maximum health!");
+          return;
+        }
+
+        const healthGain = 15 + Math.floor(Math.random() * 20);
+        ecosystemHealth = Math.min(100, ecosystemHealth + healthGain);
+        ecologicalBalance = Math.min(100, ecologicalBalance + 8);
+
+        showNotification(
+          "success",
+          `🌱 Habitat restored! +${healthGain}% ecosystem health`
+        );
+        addLogEntry(
+          "🌿 Habitat restoration: Improved environmental conditions"
+        );
+
+        // Chance to discover new species after restoration
+        if (Math.random() < 0.3) {
+          const biome = biomes[currentBiome];
+          const undiscovered = biome.species.filter((s) => !s.discovered);
+          if (undiscovered.length > 0) {
+            const species =
+              undiscovered[Math.floor(Math.random() * undiscovered.length)];
+            species.discovered = true;
+            speciesCount++;
+            totalSpeciesDiscovered++;
+            biodiversityScore += 10;
+
+            showNotification(
+              "success",
+              `🦋 Restored habitat attracted ${species.name}!`
+            );
+            addLogEntry(`🦜 Habitat restoration attracted ${species.name}`);
+
+            renderEcosystem();
+            updateSpeciesGrid();
+          }
+        }
+
+        advanceGameTurn();
+        updateStats();
+        checkAchievements();
+      }
+
+      function conductResearch() {
+        const researchBonus = 5 + Math.floor(Math.random() * 10);
+        biodiversityScore += researchBonus;
+        ecologicalBalance = Math.min(100, ecologicalBalance + 3);
+
+        showNotification(
+          "success",
+          `🔬 Research conducted! +${researchBonus} biodiversity knowledge`
+        );
+        addLogEntry(
+          "📊 Ecological research: Gained new insights into ecosystem dynamics"
+        );
+
+        // Higher chance to discover species with research
+        if (Math.random() < 0.5) {
+          const biome = biomes[currentBiome];
+          const undiscovered = biome.species.filter((s) => !s.discovered);
+          if (undiscovered.length > 0) {
+            const species =
+              undiscovered[Math.floor(Math.random() * undiscovered.length)];
+            species.discovered = true;
+            speciesCount++;
+            totalSpeciesDiscovered++;
+            biodiversityScore += 15;
+
+            showNotification(
+              "success",
+              `🎯 Research identified ${species.name}!`
+            );
+            addLogEntry(
+              `🔍 Research discovery: ${species.name} population documented`
+            );
+
+            renderEcosystem();
+            updateSpeciesGrid();
+          }
+        }
+
+        advanceGameTurn();
+        updateStats();
+        checkAchievements();
+      }
+
+      function advanceGameTurn() {
+        // Seasonal changes
+        updateSeason();
+
+        // Environmental fluctuations
+        const healthChange = -5 + Math.floor(Math.random() * 11); // -5 to +5
+        ecosystemHealth = Math.max(
+          0,
+          Math.min(100, ecosystemHealth + healthChange)
+        );
+
+        const balanceChange = -3 + Math.floor(Math.random() * 7); // -3 to +3
+        ecologicalBalance = Math.max(
+          0,
+          Math.min(100, ecologicalBalance + balanceChange)
+        );
+
+        // Track high health turns for achievement
+        if (ecosystemHealth >= 90) {
+          turnsAtHighHealth++;
+        } else {
+          turnsAtHighHealth = 0;
+        }
+
+        // Random environmental events
+        if (Math.random() < 0.2) {
+          triggerEnvironmentalEvent();
+        }
+      }
+
+      function updateSeason() {
+        const seasons = environmentalFactors.seasons;
+        const currentIndex = seasons.indexOf(currentSeason);
+        const nextIndex = (currentIndex + 1) % seasons.length;
+        currentSeason = seasons[nextIndex];
+
+        document.getElementById("seasonIndicator").textContent = currentSeason;
+
+        // Season effects
+        switch (currentSeason) {
+          case "Spring":
+            ecosystemHealth += 5;
+            break;
+          case "Summer":
+            // No change
+            break;
+          case "Autumn":
+            ecosystemHealth -= 3;
+            break;
+          case "Winter":
+            ecosystemHealth -= 8;
+            break;
+        }
+
+        ecosystemHealth = Math.max(0, Math.min(100, ecosystemHealth));
+      }
+
+      function triggerEnvironmentalEvent() {
+        const events = [
+          {
+            type: "positive",
+            message: "🌧️ Gentle rains nourish the ecosystem!",
+            effect: () => {
+              ecosystemHealth += 10;
+              ecologicalBalance += 5;
+            },
+          },
+          {
+            type: "negative",
+            message: "🔥 Wildfire threat! Some habitat damaged.",
+            effect: () => {
+              ecosystemHealth -= 15;
+              ecologicalBalance -= 10;
+            },
+          },
+          {
+            type: "negative",
+            message: "🌪️ Storm damage affects species populations!",
+            effect: () => {
+              ecosystemHealth -= 10;
+              biodiversityScore -= 5;
+            },
+          },
+          {
+            type: "positive",
+            message: "🌈 Perfect growing conditions boost biodiversity!",
+            effect: () => {
+              biodiversityScore += 10;
+              ecologicalBalance += 8;
+            },
+          },
+        ];
+
+        const event = events[Math.floor(Math.random() * events.length)];
+        event.effect();
+        showNotification(
+          event.type === "positive" ? "success" : "warning",
+          event.message
+        );
+        addLogEntry(`🌤️ Environmental event: ${event.message}`);
+      }
+
+      function addLogEntry(message) {
+        const log = document.getElementById("environmentLog");
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.textContent = message;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function updateStats() {
+        document.getElementById("biodiversity").textContent = biodiversityScore;
+        document.getElementById("speciesCount").textContent = speciesCount;
+        document.getElementById("ecosystemHealth").textContent =
+          Math.round(ecosystemHealth) + "%";
+        document.getElementById("balance").textContent =
+          Math.round(ecologicalBalance) + "%";
+
+        // Update trophic levels
+        const biome = biomes[currentBiome];
+        const producers = biome.species.filter(
+          (s) => s.discovered && s.type === "producer"
+        ).length;
+        const consumers = biome.species.filter(
+          (s) => s.discovered && s.type.includes("consumer")
+        ).length;
+
+        document.getElementById("producerCount").textContent = producers;
+        document.getElementById("consumerCount").textContent = consumers;
+      }
+
+      function updateSpeciesGrid() {
+        const grid = document.getElementById("speciesGrid");
+        const biome = biomes[currentBiome];
+
+        let html = "";
+        biome.species.forEach((species) => {
+          html += `
+                    <div class="species-card ${
+                      species.discovered ? "discovered" : ""
+                    }">
+                        <div class="species-icon">${
+                          species.discovered ? species.icon : "❓"
+                        }</div>
+                        <div style="font-size: 0.8rem; font-weight: bold;">${
+                          species.discovered ? species.name : "???"
+                        }</div>
+                    </div>
+                `;
+        });
+
+        grid.innerHTML = html;
+      }
+
+      function updateAchievements() {
+        const achievementsList = document.getElementById("achievementsList");
+        achievementsList.innerHTML = achievements
+          .map(
+            (achievement) => `
+                    <div class="achievement ${
+                      achievement.earned ? "" : "locked"
+                    }">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div>
+                            <div style="font-weight: bold;">${
+                              achievement.name
+                            }</div>
+                            <div style="font-size: 0.8rem; color: #666;">${
+                              achievement.description
+                            }</div>
+                        </div>
+                    </div>
+                `
+          )
+          .join("");
+      }
+
+      function checkAchievements() {
+        // First Species
+        if (speciesCount >= 1 && !achievements[0].earned) {
+          achievements[0].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: First Species!"
+          );
+        }
+
+        // Biome Explorer
+        const currentBiomeSpecies = biomes[currentBiome].species;
+        const allDiscovered = currentBiomeSpecies.every((s) => s.discovered);
+        if (allDiscovered && !achievements[1].earned) {
+          achievements[1].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Biome Explorer!"
+          );
+        }
+
+        // Ecosystem Engineer
+        if (turnsAtHighHealth >= 5 && !achievements[2].earned) {
+          achievements[2].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Ecosystem Engineer!"
+          );
+        }
+
+        // Biodiversity Champion
+        if (biodiversityScore >= 100 && !achievements[3].earned) {
+          achievements[3].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Biodiversity Champion!"
+          );
+        }
+
+        // Master Ecologist
+        if (totalSpeciesDiscovered >= 15 && !achievements[4].earned) {
+          achievements[4].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Master Ecologist!"
+          );
+        }
+
+        updateAchievements();
+      }
+
+      function startSeasonCycle() {
+        setInterval(updateSeason, 30000); // Change season every 30 seconds
+      }
+
+      function showNotification(type, message) {
+        const notification = document.getElementById("notification");
+        notification.className = `notification ${type} show`;
+        document.getElementById("notificationText").textContent = message;
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 4000);
+      }
+
+      // Initialize the game
+      initGame();
+    </script>
+  </body>
+</html>

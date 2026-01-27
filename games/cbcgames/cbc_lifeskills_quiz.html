@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChezaAI Life Skills Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #6dd5ed;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a8edea, #fed6e3);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 18px;
+            color: #6dd5ed;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            color: #6dd5ed;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #6dd5ed;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: #6dd5ed;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .option-btn.wrong {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+            transition: transform 0.2s;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .result-screen.active {
+            display: block;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            color: #6dd5ed;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .quiz-screen {
+            display: block;
+        }
+
+        .quiz-screen.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 Life Skills Education Quiz</h1>
+            <p>Grade 4-6 | CBC Curriculum</p>
+        </div>
+
+        <div class="quiz-screen" id="quizScreen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="score-display" id="scoreDisplay">Score: 0/30</div>
+
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">Question 1 of 30</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" disabled>Next Question</button>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-score" id="resultScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="restart-btn" onclick="restartQuiz()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {q: "What does honesty mean?", options: ["Lying to people", "Telling the truth", "Stealing", "Cheating"], answer: 1},
+            {q: "What should you do when you make a mistake?", options: ["Blame others", "Hide it", "Admit and apologize", "Run away"], answer: 2},
+            {q: "What is respect?", options: ["Being rude", "Treating others with kindness", "Ignoring people", "Being selfish"], answer: 1},
+            {q: "How should you treat your friends?", options: ["Bully them", "Kindly and fairly", "Ignore them", "Be mean"], answer: 1},
+            {q: "What is responsibility?", options: ["Avoiding tasks", "Doing your duties", "Being lazy", "Blaming others"], answer: 1},
+            {q: "What should you do if someone bullies you?", options: ["Bully back", "Tell a trusted adult", "Keep quiet forever", "Fight them"], answer: 1},
+            {q: "What is teamwork?", options: ["Working alone", "Working together with others", "Competing always", "Refusing to help"], answer: 1},
+            {q: "How can you show kindness?", options: ["Being mean", "Helping others", "Ignoring people", "Being rude"], answer: 1},
+            {q: "What is self-control?", options: ["Doing whatever you want", "Managing your emotions and actions", "Always crying", "Being angry"], answer: 1},
+            {q: "What should you do when angry?", options: ["Hit people", "Take deep breaths and calm down", "Break things", "Shout at everyone"], answer: 1},
+            {q: "What is empathy?", options: ["Not caring", "Understanding others' feelings", "Being selfish", "Ignoring emotions"], answer: 1},
+            {q: "How should you handle disagreements?", options: ["Fight", "Talk calmly and find solution", "Run away", "Ignore the person"], answer: 1},
+            {q: "What is good communication?", options: ["Not listening", "Speaking and listening clearly", "Shouting", "Interrupting"], answer: 1},
+            {q: "What does perseverance mean?", options: ["Giving up easily", "Keeping trying even when hard", "Being lazy", "Avoiding challenges"], answer: 1},
+            {q: "How can you be a good friend?", options: ["Be loyal and supportive", "Gossip about them", "Ignore them", "Betray them"], answer: 0},
+            {q: "What is gratitude?", options: ["Being ungrateful", "Being thankful", "Complaining", "Being rude"], answer: 1},
+            {q: "What should you do before crossing the road?", options: ["Run across", "Look both ways", "Close your eyes", "Text on phone"], answer: 1},
+            {q: "What is peer pressure?", options: ["Helping friends", "Friends pushing you to do things", "Studying together", "Playing games"], answer: 1},
+            {q: "How should you say no to bad things?", options: ["Just do it", "Firmly refuse", "Feel pressured", "Give in"], answer: 1},
+            {q: "What is self-esteem?", options: ["Hating yourself", "Believing in yourself", "Being arrogant", "Giving up"], answer: 1},
+            {q: "How can you manage stress?", options: ["Worry more", "Talk to someone and relax", "Keep it inside", "Get angry"], answer: 1},
+            {q: "What is a healthy habit?", options: ["Eating junk food", "Exercising and eating well", "Never sleeping", "Avoiding water"], answer: 1},
+            {q: "How should you treat the environment?", options: ["Litter everywhere", "Keep it clean and protect it", "Cut all trees", "Waste water"], answer: 1},
+            {q: "What is patience?", options: ["Being impatient", "Waiting calmly", "Rushing everything", "Being angry"], answer: 1},
+            {q: "How can you help at home?", options: ["Make mess", "Do chores willingly", "Refuse to help", "Be lazy"], answer: 1},
+            {q: "What should you do if you witness bullying?", options: ["Join in", "Tell an adult", "Record and laugh", "Ignore it"], answer: 1},
+            {q: "What is courage?", options: ["Being afraid always", "Facing fears bravely", "Running away", "Giving up"], answer: 1},
+            {q: "How should you handle failure?", options: ["Give up forever", "Learn from it and try again", "Blame others", "Get angry"], answer: 1},
+            {q: "What is trustworthiness?", options: ["Breaking promises", "Being reliable and honest", "Lying", "Betraying trust"], answer: 1},
+            {q: "Why is it important to set goals?", options: ["It's not important", "Gives direction and motivation", "To waste time", "To show off"], answer: 1}
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of 30`;
+            document.getElementById('questionText').textContent = q.q;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('nextBtn').disabled = true;
+            updateProgress();
+        }
+
+        function selectAnswer(selected) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.answer) {
+                    btn.classList.add('correct');
+                }
+                if (index === selected && selected !== q.answer) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selected === q.answer) {
+                score++;
+                document.getElementById('scoreDisplay').textContent = `Score: ${score}/30`;
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+
+            const percentage = (score / questions.length) * 100;
+            let emoji, title, message;
+
+            if (percentage >= 90) {
+                emoji = '🏆';
+                title = 'Character Champion!';
+                message = 'You have excellent life skills!';
+            } else if (percentage >= 75) {
+                emoji = '⭐';
+                title = 'Values Leader!';
+                message = 'Great understanding of life skills!';
+            } else if (percentage >= 60) {
+                emoji = '👍';
+                title = 'Good Character!';
+                message = 'Keep developing your life skills!';
+            } else if (percentage >= 40) {
+                emoji = '💪';
+                title = 'Keep Growing!';
+                message = 'Practice these values daily!';
+            } else {
+                emoji = '📚';
+                title: 'Keep Learning!';
+                message = 'Study and practice life skills!';
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultScore').textContent = `You scored ${score} out of 30`;
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('scoreDisplay').textContent = 'Score: 0/30';
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.remove('active');
+            loadQuestion();
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+        loadQuestion();
+    </script>
+</body>
+</html>

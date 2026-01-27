@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Maasai - Times Tables Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 50%, #FF4500 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: repeating-linear-gradient(
+                90deg,
+                #8B0000 0px,
+                #8B0000 20px,
+                #FFD700 20px,
+                #FFD700 40px,
+                #000000 40px,
+                #000000 60px
+            );
+        }
+
+        h1 {
+            color: #8B0000;
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #DC143C;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .cultural-note {
+            background: linear-gradient(135deg, #FFF8DC, #FAEBD7);
+            border-left: 5px solid #8B0000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            color: #333;
+        }
+
+        .start-screen, .game-screen, .result-screen {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .difficulty-choice {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .difficulty-btn {
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            border: none;
+            padding: 25px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 3px solid #FFD700;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            border: 2px solid #FFD700;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #FFF8DC, #FAEBD7);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 4px solid #8B0000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .counting-method {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #DC143C;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .question {
+            font-size: 3.5em;
+            color: #8B0000;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .answer-btn {
+            background: white;
+            border: 3px solid #8B0000;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #8B0000;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .answer-btn:hover {
+            background: #8B0000;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .answer-btn.correct {
+            background: #32CD32;
+            color: white;
+            border-color: #32CD32;
+        }
+
+        .answer-btn.incorrect {
+            background: #FF4500;
+            color: white;
+            border-color: #FF4500;
+        }
+
+        .feedback {
+            font-size: 1.5em;
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        .correct-feedback {
+            color: #32CD32;
+        }
+
+        .incorrect-feedback {
+            color: #FF4500;
+        }
+
+        .beads-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .bead {
+            width: 30px;
+            height: 30px;
+            background: #8B0000;
+            border-radius: 50%;
+            border: 2px solid #FFD700;
+            animation: beadDrop 0.5s;
+        }
+
+        @keyframes beadDrop {
+            0% { transform: translateY(-50px) scale(0); }
+            50% { transform: translateY(10px) scale(1.1); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 2px solid #8B0000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8B0000, #DC143C, #FF4500);
+            transition: width 0.3s;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+            border: 5px solid #FFD700;
+        }
+
+        .result-box h2 {
+            font-size: 2.8em;
+            margin-bottom: 20px;
+        }
+
+        .result-stats {
+            font-size: 1.4em;
+            margin: 15px 0;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .achievement {
+            background: #FFD700;
+            color: #8B0000;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .restart-btn {
+            background: white;
+            color: #8B0000;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 15px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.2s;
+            border: 3px solid #FFD700;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .maasai-pattern {
+            display: inline-block;
+            color: #8B0000;
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Multiplication Maasai ⚡</h1>
+        <div class="subtitle">Master times tables with traditional Maasai counting methods</div>
+
+        <div id="startScreen" class="start-screen">
+            <div class="cultural-note">
+                <strong>🌍 Did you know?</strong> The Maasai people have traditional counting methods using beads and patterns. 
+                In this game, you'll learn multiplication while exploring how groups and patterns help us count efficiently!
+            </div>
+            
+            <p style="font-size: 1.3em; color: #8B0000; margin: 30px 0; font-weight: bold;">
+                Choose Your Challenge Level:
+            </p>
+            
+            <div class="difficulty-choice">
+                <button class="difficulty-btn" onclick="startGame('easy')">
+                    🌟 Warrior Beginner<br>
+                    <span style="font-size: 0.8em;">Tables 2-5<br>100 Questions</span>
+                </button>
+                <button class="difficulty-btn" onclick="startGame('medium')">
+                    🔥 Warrior Intermediate<br>
+                    <span style="font-size: 0.8em;">Tables 2-10<br>100 Questions</span>
+                </button>
+                <button class="difficulty-btn" onclick="startGame('hard')">
+                    ⚔️ Warrior Master<br>
+                    <span style="font-size: 0.8em;">Tables 2-12<br>100 Questions</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-label">Question</div>
+                    <div class="stat-value"><span id="questionNum">1</span>/100</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="streak">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Beads</div>
+                    <div class="stat-value" id="beadCount">0</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">
+                    <span id="progressText">0%</span>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="counting-method" id="countingMethod">
+                    Think: How many groups are there?
+                </div>
+                
+                <div class="question" id="question">3 × 4 = ?</div>
+                
+                <div class="answer-options" id="answerOptions">
+                    <!-- Options will be generated here -->
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="beads-container" id="beads"></div>
+        </div>
+
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-box">
+                <h2>🎉 Warrior Journey Complete! 🎉</h2>
+                
+                <div class="achievement" id="achievement">
+                    <!-- Achievement will be shown here -->
+                </div>
+                
+                <div class="result-stats">
+                    <div>📊 Questions Answered: <span id="finalTotal">0</span></div>
+                    <div>✅ Correct Answers: <span id="finalCorrect">0</span></div>
+                    <div>⭐ Final Score: <span id="finalScore">0</span></div>
+                    <div>🎯 Accuracy: <span id="accuracy">0</span>%</div>
+                    <div>📿 Beads Collected: <span id="finalBeads">0</span></div>
+                </div>
+                
+                <div style="margin: 20px 0; font-size: 1.2em;">
+                    <strong>Maasai Wisdom:</strong><br>
+                    <em id="wisdomQuote"></em>
+                </div>
+                
+                <button class="restart-btn" onclick="restartGame()">New Warrior Challenge</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by <strong>ChezaAI</strong> - a Product of <strong>MemeyAI</strong>
+        </div>
+    </div>
+
+    <script>
+        let difficulty = '';
+        let currentQuestion = 1;
+        let score = 0;
+        let streak = 0;
+        let correctAnswers = 0;
+        let beadsCollected = 0;
+        let num1, num2, correctAnswer;
+        let maxTable = 5;
+        let answersDisabled = false;
+
+        const wisdomQuotes = [
+            "Unity is strength; division is weakness.",
+            "A tree is known by its fruit; a person by their deeds.",
+            "Patience is the mother of wisdom.",
+            "Knowledge is like a garden: if not cultivated, it cannot be harvested.",
+            "The stick that is at your friend's house will not kill a snake."
+        ];
+
+        function startGame(level) {
+            difficulty = level;
+            currentQuestion = 1;
+            score = 0;
+            streak = 0;
+            correctAnswers = 0;
+            beadsCollected = 0;
+            
+            if (level === 'easy') maxTable = 5;
+            else if (level === 'medium') maxTable = 10;
+            else maxTable = 12;
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            answersDisabled = false;
+            num1 = Math.floor(Math.random() * (maxTable - 1)) + 2;
+            num2 = Math.floor(Math.random() * (maxTable - 1)) + 2;
+            correctAnswer = num1 * num2;
+            
+            document.getElementById('question').textContent = `${num1} × ${num2} = ?`;
+            
+            // Generate cultural counting method hint
+            const hints = [
+                `Think: ${num1} groups of ${num2}`,
+                `Visualize: ${num1} sets with ${num2} items each`,
+                `Count: ${num2} beads, ${num1} times`,
+                `Pattern: Add ${num2} to itself ${num1} times`
+            ];
+            document.getElementById('countingMethod').textContent = hints[Math.floor(Math.random() * hints.length)];
+            
+            generateOptions();
+            document.getElementById('feedback').textContent = '';
+        }
+
+        function generateOptions() {
+            const options = [correctAnswer];
+            
+            while (options.length < 4) {
+                const offset = Math.floor(Math.random() * 20) - 10;
+                const wrongAnswer = correctAnswer + offset;
+                if (wrongAnswer > 0 && !options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            const optionsContainer = document.getElementById('answerOptions');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(answer, btn) {
+            if (answersDisabled) return;
+            answersDisabled = true;
+            
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.querySelectorAll('.answer-btn');
+            
+            if (answer === correctAnswer) {
+                btn.classList.add('correct');
+                feedback.textContent = '✅ Asante! Correct!';
+                feedback.className = 'feedback correct-feedback';
+                score += 10;
+                streak++;
+                correctAnswers++;
+                
+                // Award beads for good streaks
+                if (streak % 5 === 0) {
+                    beadsCollected += 5;
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => addBead(), i * 100);
+                    }
+                }
+            } else {
+                btn.classList.add('incorrect');
+                allButtons.forEach(b => {
+                    if (parseInt(b.textContent) === correctAnswer) {
+                        b.classList.add('correct');
+                    }
+                });
+                feedback.textContent = `❌ Not quite! The answer is ${correctAnswer}`;
+                feedback.className = 'feedback incorrect-feedback';
+                streak = 0;
+            }
+            
+            updateStats();
+            
+            currentQuestion++;
+            
+            const progress = ((currentQuestion - 1) / 100) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '%';
+            
+            if (currentQuestion <= 100) {
+                setTimeout(generateQuestion, 2500);
+            } else {
+                setTimeout(showResults, 2500);
+            }
+        }
+
+        function addBead() {
+            const bead = document.createElement('div');
+            bead.className = 'bead';
+            document.getElementById('beads').appendChild(bead);
+        }
+
+        function updateStats() {
+            document.getElementById('questionNum').textContent = currentQuestion;
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('beadCount').textContent = beadsCollected;
+        }
+
+        function showResults() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            const accuracy = Math.round((correctAnswers / 100) * 100);
+            
+            let achievementText = '';
+            if (accuracy >= 90) {
+                achievementText = '🏆 Warrior Master! Exceptional multiplication skills!';
+            } else if (accuracy >= 75) {
+                achievementText = '⚔️ Skilled Warrior! Great work on your times tables!';
+            } else if (accuracy >= 60) {
+                achievementText = '🌟 Growing Warrior! Keep practicing!';
+            } else {
+                achievementText = '💪 Young Warrior! Practice makes perfect!';
+            }
+            
+            document.getElementById('achievement').textContent = achievementText;
+            document.getElementById('finalTotal').textContent = '100';
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('accuracy').textContent = accuracy;
+            document.getElementById('finalBeads').textContent = beadsCollected;
+            document.getElementById('wisdomQuote').textContent = 
+                wisdomQuotes[Math.floor(Math.random() * wisdomQuotes.length)];
+        }
+
+        function restartGame() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('beads').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

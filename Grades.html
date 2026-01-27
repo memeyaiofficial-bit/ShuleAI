@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChezaAI - Gamified Learning for CBC Curriculum</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, #2e7d4a, #4caf50);
+        color: white;
+        padding: 1rem 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .logo {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffd700;
+      }
+
+      .nav-menu {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: background 0.3s;
+      }
+
+      .nav-menu a:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Main Layout */
+      .main-layout {
+        display: flex;
+        gap: 2rem;
+        padding: 2rem 0;
+        min-height: 80vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 300px;
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        height: fit-content;
+      }
+
+      .filter-section {
+        margin-bottom: 2rem;
+      }
+
+      .filter-title {
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #2e7d4a;
+        font-size: 1.1rem;
+      }
+
+      .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .filter-options label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.3rem;
+        border-radius: 3px;
+        transition: background 0.2s;
+      }
+
+      .filter-options label:hover {
+        background: #e9ecef;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+      }
+
+      .hero-section {
+        background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 2rem;
+        color: white;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .hero-text {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+
+      .cta-button {
+        background: #2e7d4a;
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: transform 0.3s;
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Games Grid */
+      .games-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .games-count {
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      .sort-controls select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .game-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .game-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .game-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      .game-description {
+        color: #666;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .game-tags {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .tag-grade {
+        background: #e3f2fd;
+        color: #1976d2;
+      }
+
+      .tag-subject {
+        background: #f3e5f5;
+        color: #7b1fa2;
+      }
+
+      .tag-cbc {
+        background: #e8f5e8;
+        color: #2e7d4a;
+      }
+
+      .play-button {
+        width: 100%;
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        color: white;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .play-button:hover {
+        background: linear-gradient(135deg, #45a049, #4caf50);
+      }
+
+      /* Footer */
+      .footer {
+        background: #1a1a1a;
+        color: white;
+        padding: 3rem 0 1rem;
+        margin-top: 4rem;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h3 {
+        color: #ffd700;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section ul li a {
+        color: #ccc;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .footer-section ul li a:hover {
+        color: #ffd700;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid #444;
+        color: #999;
+      }
+
+      .partner-logos {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .partner-logo {
+        padding: 0.5rem 1rem;
+        background: #333;
+        border-radius: 5px;
+        color: #ffd700;
+        font-weight: bold;
+      }
+
+      /* Page-specific styles */
+      .page-hero {
+        background: linear-gradient(135deg, #2e7d4a, #4caf50);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .page-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .page-description {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+
+      .resources-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+
+      .resource-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .resource-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: #e3f2fd;
+      }
+
+      .resource-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      .resource-description {
+        color: #666;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      .resource-button {
+        width: 100%;
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        color: white;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .resource-button:hover {
+        background: linear-gradient(135deg, #45a049, #4caf50);
+      }
+
+      .feature-list {
+        margin: 2rem 0;
+      }
+
+      .feature-list li {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+        position: relative;
+      }
+
+      .feature-list li:before {
+        content: "✓";
+        color: #2e7d4a;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .main-layout {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+        }
+
+        .hero-title {
+          font-size: 2rem;
+        }
+
+        .games-header {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .nav-menu {
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">ChezaAI</div>
+          <nav>
+            <ul class="nav-menu">
+              <li><a href="new.html">Home</a></li>
+              <li><a href="subjects.html">Subjects</a></li>
+              <li><a href="grade-levels.html">Grades</a></li>
+              <li><a href="#games">Games</a></li>
+              <li><a href="worksheets.html">Worksheets</a></li>
+              <li><a href="teachers-hub.html">Teachers Hub</a></li>
+              <li><a href="parents-hub.html">Parents Hub</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Home Page Content -->
+      <div id="home-page" class="page-content">
+        <div class="main-layout">
+          <aside class="sidebar">
+            <div class="filter-section">
+              <h3 class="filter-title">Subjects</h3>
+              <div class="filter-options">
+                <label><input type="checkbox" /> Mathematics</label>
+                <label><input type="checkbox" /> English</label>
+                <label><input type="checkbox" /> Kiswahili</label>
+                <label
+                  ><input type="checkbox" /> Science &amp; Technology</label
+                >
+                <label><input type="checkbox" /> Social Studies</label>
+                <label><input type="checkbox" /> Creative Arts</label>
+                <label
+                  ><input type="checkbox" /> Physical &amp; Health
+                  Education</label
+                >
+                <label><input type="checkbox" /> Life Skills Education</label>
+                <label><input type="checkbox" /> Agriculture</label>
+                <label><input type="checkbox" /> Home Science</label>
+                <label><input type="checkbox" /> Computer Science</label>
+                <label><input type="checkbox" /> Business Studies</label>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <h3 class="filter-title">Grade Levels</h3>
+              <div class="filter-options">
+                <label><input type="checkbox" /> Pre-Primary 1 (PP1)</label>
+                <label><input type="checkbox" /> Pre-Primary 2 (PP2)</label>
+                <label><input type="checkbox" /> Grade 1</label>
+                <label><input type="checkbox" /> Grade 2</label>
+                <label><input type="checkbox" /> Grade 3</label>
+                <label><input type="checkbox" /> Grade 4</label>
+                <label><input type="checkbox" /> Grade 5</label>
+                <label><input type="checkbox" /> Grade 6</label>
+                <label><input type="checkbox" /> Grade 7 (JSS 1)</label>
+                <label><input type="checkbox" /> Grade 8 (JSS 2)</label>
+                <label><input type="checkbox" /> Grade 9 (JSS 3)</label>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <h3 class="filter-title">CBC Competencies</h3>
+              <div class="filter-options">
+                <label><input type="checkbox" /> Critical Thinking</label>
+                <label
+                  ><input type="checkbox" /> Creativity &amp; Innovation</label
+                >
+                <label><input type="checkbox" /> Communication</label>
+                <label><input type="checkbox" /> Collaboration</label>
+                <label><input type="checkbox" /> Digital Literacy</label>
+                <label><input type="checkbox" /> Learning to Learn</label>
+                <label><input type="checkbox" /> Citizenship</label>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <h3 class="filter-title">Learning Areas</h3>
+              <div class="filter-options">
+                <label><input type="checkbox" /> Literacy</label>
+                <label><input type="checkbox" /> Numeracy</label>
+                <label><input type="checkbox" /> STEM</label>
+                <label><input type="checkbox" /> Creative Arts</label>
+                <label><input type="checkbox" /> Life Skills</label>
+                <label><input type="checkbox" /> Environmental Education</label>
+              </div>
+            </div>
+          </aside>
+
+          <div class="main-content">
+            <section class="hero-section">
+              <h1 class="hero-title">Gamified Learning Made for CBC</h1>
+              <p class="hero-text">
+                ChezaAI brings you interactive, fun, and curriculum-aligned
+                games designed for Kenyan learners. Master CBC skills through
+                play.
+              </p>
+              <a
+                href="games/math_adventure_webgame (3) (1).html"
+                style="text-decoration: none"
+              >
+                <button class="cta-button">Start Playing Now!</button>
+              </a>
+            </section>
+
+            <div class="games-header">
+              <div class="games-count">Showing 48 educational games</div>
+              <div class="sort-controls">
+                <select>
+                  <option>Most Popular</option>
+                  <option>Newest</option>
+                  <option>Grade Level</option>
+                  <option>Subject</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="games-grid">
+              <!-- Mathematics Games -->
+              <div class="game-card">
+                <div class="game-icon" style="background: #e3f2fd">🔢</div>
+                <h3 class="game-title">Hisabati Safari</h3>
+                <p class="game-description">
+                  Explore addition and subtraction while collecting safari
+                  animals in this Kenyan adventure game.
+                </p>
+                <div class="game-tags">
+                  <span class="tag tag-grade">Grade 1-3</span>
+                  <span class="tag tag-subject">Mathematics</span>
+                  <span class="tag tag-cbc">Numeracy</span>
+                </div>
+                <a
+                  href="games/safari_math_game (3).html"
+                  style="text-decoration: none"
+                >
+                  <button class="play-button">Play Now</button>
+                </a>
+              </div>
+
+              <div class="game-card">
+                <div class="game-icon" style="background: #f3e5f5">✖️</div>
+                <h3 class="game-title">Multiplication Maasai</h3>
+                <p class="game-description">
+                  Master times tables with traditional Maasai counting methods
+                  and cultural elements.
+                </p>
+                <div class="game-tags">
+                  <span class="tag tag-grade">Grade 3-5</span>
+                  <span class="tag tag-subject">Mathematics</span>
+                  <span class="tag tag-cbc">Critical Thinking</span>
+                </div>
+                <a
+                  href="games/maasai_multiplication_game (1).html"
+                  style="text-decoration: none"
+                >
+                  <button class="play-button">Play Now</button>
+                </a>
+              </div>
+
+              <div class="game-card">
+                <div class="game-icon" style="background: #e8f5e8">📐</div>
+                <h3 class="game-title">Geometry Girafes</h3>
+                <p class="game-description">
+                  Learn shapes and angles by building homes for Kenya's wildlife
+                  using geometric principles.
+                </p>
+                <div class="game-tags">
+                  <span class="tag tag-grade">Grade 4-6</span>
+                  <span class="tag tag-subject">Mathematics</span>
+                  <span class="tag tag-cbc">STEM</span>
+                </div>
+                <a
+                  href="games/geometry_giraffes_game (1) (2).html"
+                  style="text-decoration: none"
+                >
+                  <button class="play-button">Play Now</button>
+                </a>
+              </div>
+
+              <!-- English Games -->
+              <div class="game-card">
+                <div class="game-icon" style="background: #fff3e0">📚</div>
+                <h3 class="game-title">English Explorer</h3>
+                <p class="game-description">
+                  Improve reading comprehension through interactive stories set
+                  in Kenyan landscapes.
+                </p>
+                <div class="game-tags">
+                  <span class="tag tag-grade">Grade 1-4</span>
+                  <span class="tag tag-subject">English</span>
+                  <span class="tag tag-cbc">Literacy</span>
+                </div>
+                <a
+                  href="games/kids_english_game (1).html"
+                  style="text-decoration: none"
+                >
+                  <button class="play-button">Play Now</button>
+                </a>
+              </div>
+
+              <div class="game-card">
+                <div class="game-icon" style="background: #e1f5fe">✏️</div>
+                <h3 class="game-title">Grammar Safari</h3>
+                <p class="game-description">
+                  Hunt for correct grammar while exploring Kenya's national
+                  parks and wildlife reserves.
+                </p>
+                <div class="game-tags">
+                  <span class="tag tag-grade">Grade 3-6</span>
+                  <span class="tag tag-subject">English</span>
+                  <span class="tag tag-cbc">Communication</span>
+                </div>
+                <button class="play-button">Play Now</button>
+              </div>
+
+              <div class="game-card">
+                <div class="game-icon" style="background: #f9fbe7">🗣️</div>
+                <h3 class="game-title">Pronunciation Palace</h3>
+                <p class="game-description">
+                  Practice English pronunciation with voice recognition
+                  technology and local contexts.
+                </p>
+                <div class="game-tags">
+                  <span class="tag tag-grade">All Grades</span>
+                  <span class="tag tag-subject">English</span>
+                  <span class="tag tag-cbc">Digital Literacy</span>
+                </div>
+                <button class="play-button">Play Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Grade Levels Page Content -->
+      <div id="grade-levels-page" class="page-content" style="display: none">
+        <section class="page-hero">
+          <h1 class="page-title">CBC Grade Levels</h1>
+          <p class="page-description">
+            Find age-appropriate games, worksheets, and resources for each CBC
+            grade level from Pre-Primary to Junior Secondary
+          </p>
+        </section>
+
+        <div class="grade-grid">
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #e3f2fd">👶</div>
+            <h3 class="grade-title">Pre-Primary 1 (PP1)</h3>
+            <p class="grade-stats">Age 4-5 years • 42 games • 128 worksheets</p>
+            <p class="resource-description">
+              Foundational skills development through play-based learning,
+              focusing on basic literacy, numeracy, and environmental awareness.
+            </p>
+            <button class="grade-button">Explore PP1 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #fff3e0">👧</div>
+            <h3 class="grade-title">Pre-Primary 2 (PP2)</h3>
+            <p class="grade-stats">Age 5-6 years • 56 games • 156 worksheets</p>
+            <p class="resource-description">
+              Enhanced pre-reading, pre-writing, and basic numeracy skills
+              preparing children for primary education.
+            </p>
+            <button class="grade-button">Explore PP2 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #e8f5e8">1️⃣</div>
+            <h3 class="grade-title">Grade 1</h3>
+            <p class="grade-stats">Age 6-7 years • 68 games • 184 worksheets</p>
+            <p class="resource-description">
+              Introduction to formal literacy and numeracy, basic environmental
+              activities, and creative expression.
+            </p>
+            <button class="grade-button">Explore Grade 1 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #e0f2f1">2️⃣</div>
+            <h3 class="grade-title">Grade 2</h3>
+            <p class="grade-stats">Age 7-8 years • 72 games • 192 worksheets</p>
+            <p class="resource-description">
+              Building on literacy and numeracy foundations, introducing basic
+              science and social studies concepts.
+            </p>
+            <button class="grade-button">Explore Grade 2 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #fff8e1">3️⃣</div>
+            <h3 class="grade-title">Grade 3</h3>
+            <p class="grade-stats">Age 8-9 years • 76 games • 204 worksheets</p>
+            <p class="resource-description">
+              Developing reading fluency, mathematical operations, and exploring
+              science and social studies in depth.
+            </p>
+            <button class="grade-button">Explore Grade 3 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #f3e5f5">4️⃣</div>
+            <h3 class="grade-title">Grade 4</h3>
+            <p class="grade-stats">
+              Age 9-10 years • 84 games • 218 worksheets
+            </p>
+            <p class="resource-description">
+              Upper primary foundation with more complex concepts in all
+              subjects and introduction to new learning areas.
+            </p>
+            <button class="grade-button">Explore Grade 4 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #f9fbe7">5️⃣</div>
+            <h3 class="grade-title">Grade 5</h3>
+            <p class="grade-stats">
+              Age 10-11 years • 88 games • 226 worksheets
+            </p>
+            <p class="resource-description">
+              Advanced primary education with emphasis on critical thinking,
+              problem-solving, and creative expression.
+            </p>
+            <button class="grade-button">Explore Grade 5 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #e1f5fe">6️⃣</div>
+            <h3 class="grade-title">Grade 6</h3>
+            <p class="grade-stats">
+              Age 11-12 years • 92 games • 238 worksheets
+            </p>
+            <p class="resource-description">
+              Final year of primary education, preparing learners for transition
+              to junior secondary with comprehensive curriculum coverage.
+            </p>
+            <button class="grade-button">Explore Grade 6 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #fff3e0">7️⃣</div>
+            <h3 class="grade-title">Grade 7 (JSS 1)</h3>
+            <p class="grade-stats">
+              Age 12-13 years • 96 games • 254 worksheets
+            </p>
+            <p class="resource-description">
+              First year of junior secondary with exploratory curriculum, career
+              guidance, and pre-vocational skills.
+            </p>
+            <button class="grade-button">Explore Grade 7 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #e8f5e8">8️⃣</div>
+            <h3 class="grade-title">Grade 8 (JSS 2)</h3>
+            <p class="grade-stats">
+              Age 13-14 years • 98 games • 268 worksheets
+            </p>
+            <p class="resource-description">
+              Intermediate junior secondary with deeper exploration of learning
+              areas and talent development.
+            </p>
+            <button class="grade-button">Explore Grade 8 Resources</button>
+          </div>
+
+          <div class="grade-card">
+            <div class="grade-icon" style="background: #e3f2fd">9️⃣</div>
+            <h3 class="grade-title">Grade 9 (JSS 3)</h3>
+            <p class="grade-stats">
+              Age 14-15 years • 102 games • 284 worksheets
+            </p>
+            <p class="resource-description">
+              Final year of junior secondary, preparing for senior school
+              placement with comprehensive assessment preparation.
+            </p>
+            <button class="grade-button">Explore Grade 9 Resources</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>Educational Tools</h3>
+            <ul>
+              <li><a href="#">Learning Library</a></li>
+              <li><a href="worksheets.html">Worksheets</a></li>
+              <li><a href="#games">Games</a></li>
+              <li><a href="#">Interactive Worksheets</a></li>
+              <li><a href="#">Worksheet Generator</a></li>
+              <li><a href="#">CBC Lesson Plans</a></li>
+              <li><a href="#">CBC Resources</a></li>
+              <li><a href="#">Assessment Tools</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Support</h3>
+            <ul>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">ChezaAI For Schools</a></li>
+              <li><a href="#">Get a Quote</a></li>
+              <li><a href="#">M-Pesa Payment</a></li>
+              <li><a href="#">Airtel Money</a></li>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">CBC Training</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Connect</h3>
+            <ul>
+              <li><a href="#">Blog</a></li>
+              <li><a href="teachers-hub.html">Teacher Community</a></li>
+              <li><a href="parents-hub.html">Parent Resources</a></li>
+              <li><a href="#">Newsletter</a></li>
+              <li><a href="#">WhatsApp Support</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">Twitter</a></li>
+              <li><a href="#">YouTube Channel</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>About</h3>
+            <ul>
+              <li><a href="#">Company</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Press</a></li>
+              <li><a href="#">Reviews</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">CBC Compliance</a></li>
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Data Protection</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Our Network of Schools</h3>
+            <ul>
+              <li><a href="#">Nairobi Academy</a></li>
+              <li><a href="#">Mombasa International School</a></li>
+              <li><a href="#">Nakuru Excellence Academy</a></li>
+              <li><a href="#">Kisumu Learning Center</a></li>
+              <li><a href="#">Eldoret Innovation School</a></li>
+              <li><a href="#">Thika Digital Academy</a></li>
+              <li><a href="#">Machakos CBC School</a></li>
+              <li><a href="#">Join Our Network</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>CBC Partners</h3>
+            <ul>
+              <li><a href="#">KICD - Kenya Institute</a></li>
+              <li><a href="#">Ministry of Education</a></li>
+              <li><a href="#">KNEC - Exam Council</a></li>
+              <li><a href="#">TSC - Teachers Service</a></li>
+              <li><a href="#">UNESCO Kenya</a></li>
+              <li><a href="#">British Council</a></li>
+              <li><a href="#">Code.org Kenya</a></li>
+              <li><a href="#">Microsoft Education</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="partner-logos">
+          <div class="partner-logo">Ministry of Education</div>
+          <div class="partner-logo">KICD</div>
+          <div class="partner-logo">KNEC</div>
+          <div class="partner-logo">TSC</div>
+          <div class="partner-logo">UNESCO</div>
+          <div class="partner-logo">Microsoft</div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>Copyright © 2025 ChezaAI. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Simple page routing for demonstration
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get current page from URL or default to home
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get("page") || "home";
+
+        // Show the appropriate page
+        showPage(page);
+
+        // Update navigation links
+        updateNavigation();
+      });
+
+      function showPage(page) {
+        // Hide all pages
+        document.querySelectorAll(".page-content").forEach((el) => {
+          el.style.display = "none";
+        });
+
+        // Show the requested page
+        const pageElement = document.getElementById(`${page}-page`);
+        if (pageElement) {
+          pageElement.style.display = "block";
+        } else {
+          // Default to home if page not found
+          document.getElementById("home-page").style.display = "block";
+        }
+      }
+
+      function updateNavigation() {
+        // Update navigation links to include page parameter
+        document.querySelectorAll(".nav-menu a").forEach((link) => {
+          const href = link.getAttribute("href");
+          if (href && !href.includes("#")) {
+            const pageName = href.replace(".html", "");
+            link.href = `?page=${pageName}`;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

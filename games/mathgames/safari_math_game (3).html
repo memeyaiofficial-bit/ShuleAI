@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hisabati Safari - Math Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #90EE90 0%, #32CD32 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, #90EE90, #FFA500, #90EE90);
+        }
+
+        h1 {
+            color: #228B22;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #FFA500;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .start-screen, .game-screen, .result-screen {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .operation-choice {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .operation-btn {
+            background: linear-gradient(135deg, #90EE90, #32CD32);
+            border: none;
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .operation-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .operation-btn.subtraction {
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #90EE90, #FFA500);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+        }
+
+        .stat-item {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #FFF8DC, #FFFACD);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 4px solid #FFA500;
+        }
+
+        .question {
+            font-size: 3em;
+            color: #228B22;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .answer-input {
+            font-size: 2em;
+            padding: 15px;
+            border: 4px solid #90EE90;
+            border-radius: 15px;
+            width: 200px;
+            text-align: center;
+            outline: none;
+        }
+
+        .answer-input:focus {
+            border-color: #FFA500;
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            border: none;
+            padding: 20px 50px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .feedback {
+            font-size: 1.5em;
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        .correct {
+            color: #32CD32;
+        }
+
+        .incorrect {
+            color: #FF4500;
+        }
+
+        .animals {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .animal {
+            font-size: 2em;
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #90EE90, #32CD32);
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+        }
+
+        .result-box h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .result-stats {
+            font-size: 1.5em;
+            margin: 15px 0;
+        }
+
+        .restart-btn {
+            background: white;
+            color: #228B22;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #90EE90, #FFA500);
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .safari-emoji {
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦁 Hisabati Safari 🦒</h1>
+        <div class="subtitle">Explore addition and subtraction while collecting safari animals!</div>
+
+        <div id="startScreen" class="start-screen">
+            <p style="font-size: 1.3em; color: #228B22; margin-bottom: 30px;">
+                Choose your safari adventure!
+            </p>
+            <div class="operation-choice">
+                <button class="operation-btn" onclick="startGame('addition')">
+                    ➕ Addition<br>Safari
+                </button>
+                <button class="operation-btn subtraction" onclick="startGame('subtraction')">
+                    ➖ Subtraction<br>Safari
+                </button>
+            </div>
+            <div style="margin-top: 30px; font-size: 1.1em; color: #666;">
+                🎯 100 questions each adventure<br>
+                🏆 Collect safari animals as you answer!
+            </div>
+        </div>
+
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="stats">
+                <div class="stat-item">📝 Question: <span id="questionNum">1</span>/100</div>
+                <div class="stat-item">⭐ Score: <span id="score">0</span></div>
+                <div class="stat-item">🎯 Streak: <span id="streak">0</span></div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question" id="question">5 + 3 = ?</div>
+                <input type="number" id="answerInput" class="answer-input" placeholder="?" autocomplete="off">
+                <br>
+                <button class="submit-btn" onclick="checkAnswer()">Submit Answer</button>
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="animals" id="animals"></div>
+        </div>
+
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-box">
+                <h2>🎉 Safari Complete! 🎉</h2>
+                <div class="result-stats">
+                    <div>Questions Answered: <span id="finalTotal">0</span></div>
+                    <div>Correct Answers: <span id="finalCorrect">0</span></div>
+                    <div>Final Score: <span id="finalScore">0</span></div>
+                    <div>Accuracy: <span id="accuracy">0</span>%</div>
+                    <div>Animals Collected: <span id="animalCount">0</span></div>
+                </div>
+                <div id="finalAnimals" style="font-size: 2em; margin: 20px 0;"></div>
+                <button class="restart-btn" onclick="restartGame()">New Safari Adventure</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by <strong>ChezaAI</strong> - a Product of <strong>MemeyAI</strong>
+        </div>
+    </div>
+
+    <script>
+        const animals = ['🦁', '🦒', '🐘', '🦓', '🦏', '🐆', '🦛', '🐊', '🦅', '🦢'];
+        let currentOperation = '';
+        let currentQuestion = 1;
+        let score = 0;
+        let streak = 0;
+        let correctAnswers = 0;
+        let num1, num2, correctAnswer;
+        let collectedAnimals = [];
+
+        function startGame(operation) {
+            currentOperation = operation;
+            currentQuestion = 1;
+            score = 0;
+            streak = 0;
+            correctAnswers = 0;
+            collectedAnimals = [];
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            if (currentOperation === 'addition') {
+                num1 = Math.floor(Math.random() * 20) + 1;
+                num2 = Math.floor(Math.random() * 20) + 1;
+                correctAnswer = num1 + num2;
+                document.getElementById('question').textContent = `${num1} + ${num2} = ?`;
+            } else {
+                num1 = Math.floor(Math.random() * 20) + 10;
+                num2 = Math.floor(Math.random() * num1) + 1;
+                correctAnswer = num1 - num2;
+                document.getElementById('question').textContent = `${num1} - ${num2} = ?`;
+            }
+
+            document.getElementById('answerInput').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('answerInput').focus();
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answerInput').value);
+            const feedback = document.getElementById('feedback');
+
+            if (isNaN(userAnswer)) {
+                feedback.textContent = '⚠️ Please enter a number!';
+                feedback.className = 'feedback incorrect';
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                feedback.textContent = '🎉 Correct! Great job!';
+                feedback.className = 'feedback correct';
+                score += 10;
+                streak++;
+                correctAnswers++;
+
+                if (streak % 5 === 0) {
+                    const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+                    collectedAnimals.push(randomAnimal);
+                    const animalDiv = document.createElement('span');
+                    animalDiv.className = 'animal';
+                    animalDiv.textContent = randomAnimal;
+                    document.getElementById('animals').appendChild(animalDiv);
+                }
+            } else {
+                feedback.textContent = `❌ Not quite! The answer is ${correctAnswer}`;
+                feedback.className = 'feedback incorrect';
+                streak = 0;
+            }
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+
+            currentQuestion++;
+            document.getElementById('questionNum').textContent = currentQuestion;
+            
+            const progress = ((currentQuestion - 1) / 100) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            if (currentQuestion <= 100) {
+                setTimeout(generateQuestion, 2000);
+            } else {
+                setTimeout(showResults, 2000);
+            }
+        }
+
+        function showResults() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            const accuracy = Math.round((correctAnswers / 100) * 100);
+
+            document.getElementById('finalTotal').textContent = '100';
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('accuracy').textContent = accuracy;
+            document.getElementById('animalCount').textContent = collectedAnimals.length;
+            document.getElementById('finalAnimals').textContent = collectedAnimals.join(' ');
+        }
+
+        function restartGame() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('animals').innerHTML = '';
+        }
+
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>

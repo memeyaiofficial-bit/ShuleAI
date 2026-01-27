@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Giraffes - Wildlife Habitat Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F4A460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: repeating-linear-gradient(
+                90deg,
+                #90EE90 0px,
+                #90EE90 30px,
+                #FFA500 30px,
+                #FFA500 60px
+            );
+        }
+
+        h1 {
+            color: #228B22;
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #FF8C00;
+            font-size: 1.2em;
+            margin-bottom: 25px;
+        }
+
+        .start-screen, .game-screen, .result-screen {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #E8F5E9, #FFF8DC);
+            border-left: 5px solid #228B22;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .category-choice {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .category-btn {
+            background: linear-gradient(135deg, #90EE90, #228B22);
+            border: none;
+            padding: 30px 20px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 3px solid #FFA500;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+
+        .question-container {
+            background: linear-gradient(135deg, #FFFACD, #FFE4B5);
+            padding: 35px;
+            border-radius: 20px;
+            margin: 25px 0;
+            border: 4px solid #228B22;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .animal-header {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #FFA500;
+        }
+
+        .animal-name {
+            font-size: 1.8em;
+            color: #228B22;
+            font-weight: bold;
+        }
+
+        .habitat-hint {
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            color: #333;
+            margin: 20px 0;
+            line-height: 1.5;
+        }
+
+        .shape-visual {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px dashed #32CD32;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shape-display {
+            font-size: 4em;
+        }
+
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .answer-btn {
+            background: white;
+            border: 3px solid #228B22;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #228B22;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .answer-btn:hover {
+            background: #E8F5E9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .answer-btn.correct {
+            background: #32CD32;
+            color: white;
+            border-color: #228B22;
+        }
+
+        .answer-btn.incorrect {
+            background: #FF6347;
+            color: white;
+            border-color: #DC143C;
+        }
+
+        .feedback {
+            font-size: 1.3em;
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 35px;
+        }
+
+        .feedback.correct {
+            color: #32CD32;
+        }
+
+        .feedback.incorrect {
+            color: #FF6347;
+        }
+
+        .habitat-progress {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .habitat-icon {
+            font-size: 2.5em;
+            animation: buildHabitat 0.6s;
+        }
+
+        @keyframes buildHabitat {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .progress-bar {
+            background: #E0E0E0;
+            height: 28px;
+            border-radius: 14px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 2px solid #228B22;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #90EE90, #32CD32, #FFA500);
+            transition: width 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+            border: 5px solid #FFA500;
+        }
+
+        .result-box h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+        }
+
+        .result-stats {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .result-stat {
+            font-size: 1.3em;
+            margin: 12px 0;
+        }
+
+        .achievement-badge {
+            background: #FFD700;
+            color: #228B22;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.4em;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .restart-btn {
+            background: white;
+            color: #228B22;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 15px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: transform 0.2s;
+            border: 3px solid #FFA500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.08);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .geometry-fact {
+            background: linear-gradient(135deg, #E3F2FD, #FFF9C4);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #FFA500;
+            font-size: 0.95em;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦒 Geometry Giraffes 🦒</h1>
+        <div class="subtitle">Build homes for Kenya's wildlife using geometric principles!</div>
+
+        <div id="startScreen" class="start-screen">
+            <div class="info-box">
+                <strong>🏗️ Welcome, Wildlife Architect!</strong><br><br>
+                Your mission is to design and build perfect habitats for Kenya's amazing wildlife! 
+                Each animal needs a special home built with specific geometric shapes and angles. 
+                Use your knowledge of shapes, angles, and geometric principles to create the perfect sanctuaries!
+            </div>
+            
+            <p style="font-size: 1.4em; color: #228B22; margin: 30px 0; font-weight: bold;">
+                Choose Your Building Challenge:
+            </p>
+            
+            <div class="category-choice">
+                <button class="category-btn" onclick="startGame('shapes')">
+                    🔷 Shape Master<br>
+                    <span style="font-size: 0.8em;">Identify 2D & 3D Shapes<br>100 Questions</span>
+                </button>
+                <button class="category-btn" onclick="startGame('angles')">
+                    📐 Angle Expert<br>
+                    <span style="font-size: 0.8em;">Master Angles & Degrees<br>100 Questions</span>
+                </button>
+                <button class="category-btn" onclick="startGame('mixed')">
+                    🎯 Master Builder<br>
+                    <span style="font-size: 0.8em;">Shapes, Angles & More<br>100 Questions</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Question</div>
+                    <div class="stat-value"><span id="questionNum">1</span>/100</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="streak">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Habitats Built</div>
+                    <div class="stat-value" id="habitatCount">0</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">
+                    <span id="progressText">0%</span>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="animal-header">
+                    <div class="animal-name" id="animalName">🦒 Giraffe</div>
+                    <div class="habitat-hint" id="habitatHint">Needs a tall observation tower</div>
+                </div>
+
+                <div class="geometry-fact" id="geometryFact">
+                    Loading geometric principle...
+                </div>
+
+                <div class="question-text" id="questionText">
+                    What shape has 4 equal sides and 4 right angles?
+                </div>
+
+                <div class="shape-visual" id="shapeVisual">
+                    <div class="shape-display" id="shapeDisplay">■</div>
+                </div>
+
+                <div class="answer-grid" id="answerGrid">
+                    <!-- Options will be generated here -->
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="habitat-progress" id="habitatProgress"></div>
+        </div>
+
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-box">
+                <h2>🎉 Wildlife Sanctuary Complete! 🎉</h2>
+                
+                <div class="achievement-badge" id="achievementBadge">
+                    Master Architect Award!
+                </div>
+                
+                <div class="result-stats">
+                    <div class="result-stat">📊 Questions Completed: <span id="finalTotal">100</span></div>
+                    <div class="result-stat">✅ Correct Answers: <span id="finalCorrect">0</span></div>
+                    <div class="result-stat">⭐ Final Score: <span id="finalScore">0</span></div>
+                    <div class="result-stat">🎯 Accuracy: <span id="accuracy">0</span>%</div>
+                    <div class="result-stat">🏠 Habitats Built: <span id="finalHabitats">0</span></div>
+                </div>
+                
+                <div id="finalHabitatDisplay" style="font-size: 2em; margin: 20px 0;"></div>
+                
+                <div style="margin: 20px 0; font-size: 1.1em; font-style: italic;">
+                    "<span id="finalWisdom"></span>"
+                </div>
+                
+                <button class="restart-btn" onclick="restartGame()">Build New Sanctuary</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by <strong>ChezaAI</strong> - a Product of <strong>MemeyAI</strong>
+        </div>
+    </div>
+
+    <script>
+        const animals = [
+            {name: '🦒 Giraffe', hint: 'Needs a tall observation tower', emoji: '🏢'},
+            {name: '🐘 Elephant', hint: 'Requires a spacious mud bath', emoji: '🏊'},
+            {name: '🦁 Lion', hint: 'Needs a comfortable den', emoji: '🏰'},
+            {name: '🦓 Zebra', hint: 'Wants an open grazing field', emoji: '🌾'},
+            {name: '🦏 Rhino', hint: 'Requires a protected enclosure', emoji: '🛡️'},
+            {name: '🐆 Leopard', hint: 'Needs climbing platforms', emoji: '🌳'},
+            {name: '🦛 Hippo', hint: 'Requires a deep water pool', emoji: '💧'},
+            {name: '🦅 Eagle', hint: 'Needs a high nesting area', emoji: '⛰️'}
+        ];
+
+        const shapeQuestions = [
+            {q: 'How many sides does a triangle have?', options: ['2', '3', '4', '5'], correct: 1, visual: '△', fact: 'Triangles are the strongest geometric shape!'},
+            {q: 'How many vertices does a square have?', options: ['3', '4', '5', '6'], correct: 1, visual: '□', fact: 'A vertex is a corner where edges meet.'},
+            {q: 'How many sides does a pentagon have?', options: ['4', '5', '6', '7'], correct: 1, visual: '⬠', fact: 'The Pentagon building has 5 sides!'},
+            {q: 'How many sides does a hexagon have?', options: ['5', '6', '7', '8'], correct: 1, visual: '⬡', fact: 'Honeycombs are made of hexagons!'},
+            {q: 'How many faces does a cube have?', options: ['4', '5', '6', '8'], correct: 2, visual: '⬜', fact: 'Dice are cubes with 6 faces.'},
+            {q: 'How many edges does a triangular pyramid have?', options: ['4', '5', '6', '7'], correct: 2, visual: '🔺', fact: 'The Great Pyramids are based on this shape!'},
+            {q: 'A shape with 8 sides is called a...?', options: ['Hexagon', 'Heptagon', 'Octagon', 'Nonagon'], correct: 2, visual: '⯃', fact: 'Stop signs are octagons!'},
+            {q: 'How many right angles in a rectangle?', options: ['2', '3', '4', '6'], correct: 2, visual: '▭', fact: 'Right angles measure exactly 90 degrees.'}
+        ];
+
+        const angleQuestions = [
+            {q: 'How many degrees in a right angle?', options: ['45°', '60°', '90°', '180°'], correct: 2, visual: '⊾', fact: 'Right angles form perfect corners!'},
+            {q: 'How many degrees in a straight line?', options: ['90°', '120°', '180°', '360°'], correct: 2, visual: '—', fact: 'A straight line is half of a full rotation.'},
+            {q: 'An angle less than 90° is called...?', options: ['Acute', 'Obtuse', 'Right', 'Reflex'], correct: 0, visual: '∠', fact: 'Acute means sharp or narrow!'},
+            {q: 'An angle greater than 90° but less than 180° is...?', options: ['Acute', 'Right', 'Obtuse', 'Straight'], correct: 2, visual: '∠', fact: 'Obtuse means blunt or wide!'},
+            {q: 'How many degrees in a complete circle?', options: ['180°', '270°', '360°', '450°'], correct: 2, visual: '○', fact: 'One full rotation is 360 degrees!'},
+            {q: 'What is 180° - 90°?', options: ['45°', '60°', '90°', '120°'], correct: 2, visual: '📐', fact: 'Complementary angles add to 90°!'},
+            {q: 'Sum of angles in a triangle?', options: ['90°', '180°', '270°', '360°'], correct: 1, visual: '△', fact: 'All triangles have this property!'},
+            {q: 'An angle of 45° is...?', options: ['Acute', 'Right', 'Obtuse', 'Straight'], correct: 0, visual: '∠', fact: '45° is half of a right angle!'}
+        ];
+
+        const wisdomQuotes = [
+            'Every great structure begins with a strong geometric foundation.',
+            'Mathematics is the language of the universe, and geometry is its art.',
+            'Patterns in nature follow geometric principles.',
+            'Understanding shapes helps us build a better world.',
+            'Geometry connects the abstract to the physical world.'
+        ];
+
+        let category = '';
+        let currentQuestion = 1;
+        let score = 0;
+        let streak = 0;
+        let correctAnswers = 0;
+        let habitatsBuilt = 0;
+        let answersDisabled = false;
+        let builtHabitats = [];
+        let currentAnimal = null;
+        let questionBank = [];
+
+        function startGame(cat) {
+            category = cat;
+            currentQuestion = 1;
+            score = 0;
+            streak = 0;
+            correctAnswers = 0;
+            habitatsBuilt = 0;
+            builtHabitats = [];
+            answersDisabled = false;
+
+            if (cat === 'shapes') {
+                questionBank = [...shapeQuestions];
+            } else if (cat === 'angles') {
+                questionBank = [...angleQuestions];
+            } else {
+                questionBank = [...shapeQuestions, ...angleQuestions];
+            }
+
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            answersDisabled = false;
+            
+            currentAnimal = animals[Math.floor(Math.random() * animals.length)];
+            document.getElementById('animalName').textContent = currentAnimal.name;
+            document.getElementById('habitatHint').textContent = currentAnimal.hint;
+
+            const questionData = questionBank[Math.floor(Math.random() * questionBank.length)];
+            
+            document.getElementById('questionText').textContent = questionData.q;
+            document.getElementById('shapeDisplay').textContent = questionData.visual;
+            document.getElementById('geometryFact').innerHTML = '<strong>💡 Geometry Fact:</strong> ' + questionData.fact;
+
+            const answerGrid = document.getElementById('answerGrid');
+            answerGrid.innerHTML = '';
+
+            questionData.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(index, questionData.correct, btn);
+                answerGrid.appendChild(btn);
+            });
+
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+        }
+
+        function checkAnswer(selected, correct, btn) {
+            if (answersDisabled) return;
+            answersDisabled = true;
+
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.querySelectorAll('.answer-btn');
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                feedback.textContent = '✅ Perfect! Habitat structure approved!';
+                feedback.className = 'feedback correct';
+                score += 10;
+                streak++;
+                correctAnswers++;
+
+                if (streak % 5 === 0) {
+                    habitatsBuilt++;
+                    builtHabitats.push(currentAnimal.emoji);
+                    addHabitat(currentAnimal.emoji);
+                }
+            } else {
+                btn.classList.add('incorrect');
+                allButtons[correct].classList.add('correct');
+                feedback.textContent = '❌ Not quite right. Check the correct answer!';
+                feedback.className = 'feedback incorrect';
+                streak = 0;
+            }
+
+            updateStats();
+
+            currentQuestion++;
+
+            const progress = ((currentQuestion - 1) / 100) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '%';
+
+            if (currentQuestion <= 100) {
+                setTimeout(generateQuestion, 2500);
+            } else {
+                setTimeout(showResults, 2500);
+            }
+        }
+
+        function addHabitat(emoji) {
+            const habitat = document.createElement('div');
+            habitat.className = 'habitat-icon';
+            habitat.textContent = emoji;
+            document.getElementById('habitatProgress').appendChild(habitat);
+        }
+
+        function updateStats() {
+            document.getElementById('questionNum').textContent = currentQuestion;
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('habitatCount').textContent = habitatsBuilt;
+        }
+
+        function showResults() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            const accuracy = Math.round((correctAnswers / 100) * 100);
+
+            let badge = '';
+            if (accuracy >= 90) {
+                badge = '🏆 Master Wildlife Architect!';
+            } else if (accuracy >= 75) {
+                badge = '⭐ Expert Habitat Designer!';
+            } else if (accuracy >= 60) {
+                badge = '🌟 Skilled Builder!';
+            } else {
+                badge = '💪 Aspiring Architect!';
+            }
+
+            document.getElementById('achievementBadge').textContent = badge;
+            document.getElementById('finalTotal').textContent = '100';
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('accuracy').textContent = accuracy;
+            document.getElementById('finalHabitats').textContent = habitatsBuilt;
+            document.getElementById('finalHabitatDisplay').textContent = builtHabitats.join(' ');
+            document.getElementById('finalWisdom').textContent = wisdomQuotes[Math.floor(Math.random() * wisdomQuotes.length)];
+        }
+
+        function restartGame() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('habitatProgress').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

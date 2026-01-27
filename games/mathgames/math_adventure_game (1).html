@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Adventure Quest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 15px;
+            margin-top: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .game-area {
+            padding: 30px;
+            min-height: 400px;
+            text-align: center;
+        }
+
+        .welcome-screen h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .welcome-screen p {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #48cae4, #023e8a);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .question-container {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .question {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background: white;
+            border: 3px solid #48cae4;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .option:hover {
+            background: #48cae4;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .option.correct {
+            background: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .option.incorrect {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .level-info {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #feca57;
+        }
+
+        .level-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .level-description {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .celebration {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .celebration h2 {
+            color: #2ecc71;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            font-size: 3em;
+            color: #feca57;
+            margin: 20px 0;
+        }
+
+        .mini-boss {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .timer {
+            font-size: 1.5em;
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .hearts {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .heart {
+            font-size: 2em;
+            color: #e74c3c;
+        }
+
+        .heart.empty {
+            opacity: 0.3;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .question {
+                font-size: 1.5em;
+            }
+            
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .option {
+                font-size: 1.2em;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🌟 Math Adventure Quest 🌟</h1>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Level</div>
+                    <div class="stat-value" id="currentLevel">1</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="totalScore">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="streak">0</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="levelProgress" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <div class="welcome-screen">
+                <h2>Welcome, Math Hero! 🦸‍♀️</h2>
+                <p>Embark on an epic mathematical journey through 20 exciting levels!</p>
+                <p>Solve problems, defeat mini-bosses, and become the ultimate Math Champion!</p>
+                <button class="btn" onclick="startGame()">🚀 Start Adventure</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MathGame {
+            constructor() {
+                this.currentLevel = 1;
+                this.currentQuestion = 0;
+                this.questionsPerLevel = 10;
+                this.totalScore = 0;
+                this.streak = 0;
+                this.lives = 3;
+                this.isTimedLevel = false;
+                this.timeLeft = 0;
+                this.timerInterval = null;
+                this.currentAnswer = null;
+                
+                this.levelData = {
+                    1: { type: 'addition', range: [1, 10], description: 'Basic Addition (1-10)' },
+                    2: { type: 'addition', range: [1, 10], description: 'More Addition Practice (1-10)' },
+                    3: { type: 'subtraction', range: [1, 10], description: 'Basic Subtraction (1-10)' },
+                    4: { type: 'subtraction', range: [1, 10], description: 'More Subtraction Practice (1-10)' },
+                    5: { type: 'mixed_basic', range: [10, 20], description: 'Addition & Subtraction (10-20)', boss: true },
+                    6: { type: 'mixed_basic', range: [10, 20], description: 'More Mixed Practice (10-20)' },
+                    7: { type: 'word_problems', range: [10, 30], description: 'Word Problems (10-30)' },
+                    8: { type: 'word_problems', range: [10, 30], description: 'More Word Problems (10-30)' },
+                    9: { type: 'multiplication', range: [1, 5], description: 'Multiplication Tables (1-5)' },
+                    10: { type: 'multiplication', range: [1, 5], description: 'Multiplication Challenge (1-5)', boss: true },
+                    11: { type: 'division', range: [1, 5], description: 'Division Basics (1-5)' },
+                    12: { type: 'division', range: [1, 5], description: 'More Division Practice (1-5)' },
+                    13: { type: 'mixed_operations', range: [1, 10], description: 'All Operations Mix (1-10)' },
+                    14: { type: 'mixed_operations', range: [1, 10], description: 'Operations Challenge (1-10)' },
+                    15: { type: 'advanced_mult_div', range: [6, 10], description: 'Advanced Multiplication & Division', boss: true },
+                    16: { type: 'advanced_mult_div', range: [6, 10], description: 'More Advanced Practice' },
+                    17: { type: 'word_problems_advanced', range: [1, 25], description: 'Advanced Word Problems (1-25)' },
+                    18: { type: 'word_problems_advanced', range: [1, 25], description: 'Complex Word Problems (1-25)' },
+                    19: { type: 'speed_round', range: [1, 20], description: 'Speed Round Challenge!', timed: true },
+                    20: { type: 'final_boss', range: [1, 50], description: 'Final Boss - Ultimate Challenge!', boss: true }
+                };
+            }
+
+            generateQuestion() {
+                const level = this.levelData[this.currentLevel];
+                const [min, max] = level.range;
+                
+                switch (level.type) {
+                    case 'addition':
+                        return this.generateAddition(min, max);
+                    case 'subtraction':
+                        return this.generateSubtraction(min, max);
+                    case 'mixed_basic':
+                        return Math.random() < 0.5 ? this.generateAddition(min, max) : this.generateSubtraction(min, max);
+                    case 'multiplication':
+                        return this.generateMultiplication(min, max);
+                    case 'division':
+                        return this.generateDivision(min, max);
+                    case 'mixed_operations':
+                        const ops = ['add', 'sub', 'mul', 'div'];
+                        const op = ops[Math.floor(Math.random() * ops.length)];
+                        switch (op) {
+                            case 'add': return this.generateAddition(min, max);
+                            case 'sub': return this.generateSubtraction(min, max);
+                            case 'mul': return this.generateMultiplication(min, max);
+                            case 'div': return this.generateDivision(min, max);
+                        }
+                        break;
+                    case 'advanced_mult_div':
+                        return Math.random() < 0.5 ? this.generateMultiplication(min, max) : this.generateDivision(min, max);
+                    case 'word_problems':
+                        return this.generateWordProblem(min, max, false);
+                    case 'word_problems_advanced':
+                        return this.generateWordProblem(min, max, true);
+                    case 'speed_round':
+                    case 'final_boss':
+                        const allOps = ['add', 'sub', 'mul', 'div'];
+                        const randomOp = allOps[Math.floor(Math.random() * allOps.length)];
+                        switch (randomOp) {
+                            case 'add': return this.generateAddition(min, max);
+                            case 'sub': return this.generateSubtraction(min, max);
+                            case 'mul': return this.generateMultiplication(Math.min(min, 10), Math.min(max, 10));
+                            case 'div': return this.generateDivision(Math.min(min, 10), Math.min(max, 10));
+                        }
+                        break;
+                }
+            }
+
+            generateAddition(min, max) {
+                const a = Math.floor(Math.random() * (max - min + 1)) + min;
+                const b = Math.floor(Math.random() * (max - min + 1)) + min;
+                return {
+                    question: `${a} + ${b} = ?`,
+                    answer: a + b
+                };
+            }
+
+            generateSubtraction(min, max) {
+                const a = Math.floor(Math.random() * (max - min + 1)) + min;
+                const b = Math.floor(Math.random() * a) + 1; // Ensure positive result
+                return {
+                    question: `${a} - ${b} = ?`,
+                    answer: a - b
+                };
+            }
+
+            generateMultiplication(min, max) {
+                const a = Math.floor(Math.random() * (max - min + 1)) + min;
+                const b = Math.floor(Math.random() * (max - min + 1)) + min;
+                return {
+                    question: `${a} × ${b} = ?`,
+                    answer: a * b
+                };
+            }
+
+            generateDivision(min, max) {
+                const b = Math.floor(Math.random() * (max - min + 1)) + min;
+                const answer = Math.floor(Math.random() * (max - min + 1)) + min;
+                const a = b * answer;
+                return {
+                    question: `${a} ÷ ${b} = ?`,
+                    answer: answer
+                };
+            }
+
+            generateWordProblem(min, max, advanced = false) {
+                const scenarios = [
+                    {
+                        setup: "Sarah has {a} apples. She gets {b} more apples from her friend.",
+                        question: "How many apples does she have now?",
+                        operation: 'add'
+                    },
+                    {
+                        setup: "Tom had {a} stickers. He gave away {b} stickers to his classmates.",
+                        question: "How many stickers does he have left?",
+                        operation: 'sub'
+                    },
+                    {
+                        setup: "There are {a} boxes with {b} toys in each box.",
+                        question: "How many toys are there in total?",
+                        operation: 'mul'
+                    },
+                    {
+                        setup: "Lisa has {a} candies to share equally among {b} friends.",
+                        question: "How many candies will each friend get?",
+                        operation: 'div'
+                    }
+                ];
+
+                const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+                let a, b, answer;
+
+                switch (scenario.operation) {
+                    case 'add':
+                        a = Math.floor(Math.random() * (max - min + 1)) + min;
+                        b = Math.floor(Math.random() * (max - min + 1)) + min;
+                        answer = a + b;
+                        break;
+                    case 'sub':
+                        a = Math.floor(Math.random() * (max - min + 1)) + min;
+                        b = Math.floor(Math.random() * a) + 1;
+                        answer = a - b;
+                        break;
+                    case 'mul':
+                        a = Math.floor(Math.random() * Math.min(max, 10)) + 1;
+                        b = Math.floor(Math.random() * Math.min(max, 10)) + 1;
+                        answer = a * b;
+                        break;
+                    case 'div':
+                        b = Math.floor(Math.random() * Math.min(max, 10)) + 1;
+                        answer = Math.floor(Math.random() * Math.min(max, 10)) + 1;
+                        a = b * answer;
+                        break;
+                }
+
+                const questionText = scenario.setup.replace('{a}', a).replace('{b}', b) + ' ' + scenario.question;
+
+                return {
+                    question: questionText,
+                    answer: answer
+                };
+            }
+
+            generateOptions(correctAnswer) {
+                const options = [correctAnswer];
+                
+                while (options.length < 4) {
+                    let wrongAnswer;
+                    if (correctAnswer <= 10) {
+                        wrongAnswer = Math.max(0, correctAnswer + Math.floor(Math.random() * 10) - 5);
+                    } else {
+                        wrongAnswer = Math.max(0, correctAnswer + Math.floor(Math.random() * 20) - 10);
+                    }
+                    
+                    if (!options.includes(wrongAnswer) && wrongAnswer >= 0) {
+                        options.push(wrongAnswer);
+                    }
+                }
+                
+                // Shuffle options
+                for (let i = options.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [options[i], options[j]] = [options[j], options[i]];
+                }
+                
+                return options;
+            }
+
+            startLevel() {
+                this.currentQuestion = 0;
+                this.lives = 3;
+                const levelInfo = this.levelData[this.currentLevel];
+                
+                if (levelInfo.timed) {
+                    this.isTimedLevel = true;
+                    this.timeLeft = 60; // 60 seconds for speed round
+                    this.startTimer();
+                }
+                
+                this.showLevelIntro();
+            }
+
+            showLevelIntro() {
+                const levelInfo = this.levelData[this.currentLevel];
+                const gameArea = document.getElementById('gameArea');
+                
+                gameArea.innerHTML = `
+                    <div class="level-info ${levelInfo.boss ? 'mini-boss' : ''}">
+                        <div class="level-title">
+                            ${levelInfo.boss ? '👹 MINI BOSS CHALLENGE! 👹' : '🎯'} Level ${this.currentLevel}
+                        </div>
+                        <div class="level-description">
+                            ${levelInfo.description}
+                            ${levelInfo.timed ? ' ⏰ TIMED CHALLENGE!' : ''}
+                        </div>
+                        ${this.renderHearts()}
+                    </div>
+                    <button class="btn" onclick="game.nextQuestion()">
+                        ${levelInfo.boss ? '⚔️ Face the Challenge!' : '▶️ Start Level'}
+                    </button>
+                `;
+            }
+
+            renderHearts() {
+                let heartsHtml = '<div class="hearts">';
+                for (let i = 0; i < 3; i++) {
+                    heartsHtml += `<span class="heart ${i >= this.lives ? 'empty' : ''}">❤️</span>`;
+                }
+                heartsHtml += '</div>';
+                return heartsHtml;
+            }
+
+            nextQuestion() {
+                if (this.currentQuestion >= this.questionsPerLevel) {
+                    this.completeLevel();
+                    return;
+                }
+
+                const questionData = this.generateQuestion();
+                this.currentAnswer = questionData.answer;
+                const options = this.generateOptions(questionData.answer);
+
+                const gameArea = document.getElementById('gameArea');
+                gameArea.innerHTML = `
+                    <div class="question-container">
+                        ${this.isTimedLevel ? `<div class="timer">⏰ Time: ${this.timeLeft}s</div>` : ''}
+                        ${this.renderHearts()}
+                        <div class="question">${questionData.question}</div>
+                        <div class="options">
+                            ${options.map(option => 
+                                `<div class="option" onclick="game.selectAnswer(${option})">${option}</div>`
+                            ).join('')}
+                        </div>
+                        <div style="margin-top: 20px; color: #666;">
+                            Question ${this.currentQuestion + 1} of ${this.questionsPerLevel}
+                        </div>
+                    </div>
+                `;
+
+                this.updateProgress();
+            }
+
+            selectAnswer(selectedAnswer) {
+                const options = document.querySelectorAll('.option');
+                options.forEach(option => {
+                    option.style.pointerEvents = 'none';
+                    if (parseInt(option.textContent) === this.currentAnswer) {
+                        option.classList.add('correct');
+                    } else if (parseInt(option.textContent) === selectedAnswer) {
+                        option.classList.add('incorrect');
+                    }
+                });
+
+                if (selectedAnswer === this.currentAnswer) {
+                    this.streak++;
+                    this.totalScore += 10 + (this.streak * 2); // Bonus for streak
+                    this.showFeedback('🎉 Correct! Great job!', 'correct');
+                } else {
+                    this.streak = 0;
+                    this.lives--;
+                    this.showFeedback(`❌ Oops! The answer was ${this.currentAnswer}`, 'incorrect');
+                    
+                    if (this.lives <= 0) {
+                        this.gameOver();
+                        return;
+                    }
+                }
+
+                this.currentQuestion++;
+                this.updateStats();
+
+                setTimeout(() => {
+                    this.nextQuestion();
+                }, 2000);
+            }
+
+            showFeedback(message, type) {
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.innerHTML = `
+                    <div style="margin-top: 20px; padding: 15px; border-radius: 10px; 
+                         background: ${type === 'correct' ? '#2ecc71' : '#e74c3c'}; 
+                         color: white; font-weight: bold; font-size: 1.2em;">
+                        ${message}
+                    </div>
+                `;
+                document.querySelector('.question-container').appendChild(feedbackDiv);
+            }
+
+            completeLevel() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+
+                const gameArea = document.getElementById('gameArea');
+                const isLastLevel = this.currentLevel === 20;
+                const levelInfo = this.levelData[this.currentLevel];
+                
+                let celebrationMessage = '';
+                let starsEarned = 3;
+                
+                if (this.lives === 3) {
+                    celebrationMessage = '🌟 PERFECT! All hearts intact! 🌟';
+                    starsEarned = 3;
+                } else if (this.lives === 2) {
+                    celebrationMessage = '⭐ Great job! Well done! ⭐';
+                    starsEarned = 2;
+                } else {
+                    celebrationMessage = '👍 Good effort! Keep practicing! 👍';
+                    starsEarned = 1;
+                }
+
+                const stars = '⭐'.repeat(starsEarned);
+
+                if (isLastLevel) {
+                    gameArea.innerHTML = `
+                        <div class="celebration">
+                            <h2>🎉 CONGRATULATIONS! 🎉</h2>
+                            <div class="stars">${stars}</div>
+                            <p>You've completed the Math Adventure Quest!</p>
+                            <p>You are now a <strong>Math Champion</strong>! 🏆</p>
+                            <p>Final Score: <strong>${this.totalScore}</strong></p>
+                            <button class="btn" onclick="game.restart()">🔄 Play Again</button>
+                        </div>
+                    `;
+                } else {
+                    gameArea.innerHTML = `
+                        <div class="celebration">
+                            <h2>${levelInfo.boss ? '👹 Boss Defeated! 👹' : '🎉 Level Complete! 🎉'}</h2>
+                            <div class="stars">${stars}</div>
+                            <p>${celebrationMessage}</p>
+                            <p>Score this level: <strong>+${this.questionsPerLevel * 10}</strong></p>
+                            <button class="btn" onclick="game.nextLevel()">➡️ Next Level</button>
+                        </div>
+                    `;
+                }
+            }
+
+            nextLevel() {
+                this.currentLevel++;
+                this.isTimedLevel = false;
+                this.startLevel();
+            }
+
+            gameOver() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+
+                const gameArea = document.getElementById('gameArea');
+                gameArea.innerHTML = `
+                    <div class="celebration">
+                        <h2>💔 Game Over 💔</h2>
+                        <p>Don't worry! Every mistake is a chance to learn!</p>
+                        <p>Your Score: <strong>${this.totalScore}</strong></p>
+                        <p>You reached Level <strong>${this.currentLevel}</strong></p>
+                        <button class="btn" onclick="game.restart()">🔄 Try Again</button>
+                        <button class="btn" onclick="game.restartLevel()">↩️ Retry Level</button>
+                    </div>
+                `;
+            }
+
+            startTimer() {
+                this.timerInterval = setInterval(() => {
+                    this.timeLeft--;
+                    const timerElement = document.querySelector('.timer');
+                    if (timerElement) {
+                        timerElement.textContent = `⏰ Time: ${this.timeLeft}s`;
+                        if (this.timeLeft <= 10) {
+                            timerElement.style.color = '#e74c3c';
+                            timerElement.style.animation = 'pulse 1s infinite';
+                        }
+                    }
+                    
+                    if (this.timeLeft <= 0) {
+                        this.gameOver();
+                    }
+                }, 1000);
+            }
+
+            updateStats() {
+                document.getElementById('currentLevel').textContent = this.currentLevel;
+                document.getElementById('totalScore').textContent = this.totalScore;
+                document.getElementById('streak').textContent = this.streak;
+            }
+
+            updateProgress() {
+                const progress = (this.currentQuestion / this.questionsPerLevel) * 100;
+                document.getElementById('levelProgress').style.width = progress + '%';
+            }
+
+            restart() {
+                this.currentLevel = 1;
+                this.currentQuestion = 0;
+                this.totalScore = 0;
+                this.streak = 0;
+                this.lives = 3;
+                this.isTimedLevel = false;
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+                this.updateStats();
+                this.startLevel();
+            }
+
+            restartLevel() {
+                this.currentQuestion = 0;
+                this.lives = 3;
+                this.isTimedLevel = this.levelData[this.currentLevel].timed || false;
+                if (this.isTimedLevel) {
+                    this.timeLeft = 60;
+                }
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+                this.startLevel();
+            }
+        }
+
+        const game = new MathGame();
+
+        function startGame() {
+            game.startLevel();
+        }
+
+        // Add some fun sound effects (if you want to enhance further)
+        function playSound(type) {
+            // This is where you could add Web Audio API sounds
+            // For now, we'll just use visual feedback
+        }
+    </script>
+</body>
+</html>

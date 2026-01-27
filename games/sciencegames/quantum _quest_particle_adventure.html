@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quantum Quest: Particle Adventure</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0c0c0c 0%,
+          #1a237e 50%,
+          #311b92 100%
+        );
+        min-height: 100vh;
+        padding: 20px;
+        color: white;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in;
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #00e5ff, #2979ff, #651fff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+      }
+
+      .header p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        color: #bb86fc;
+      }
+
+      .game-area {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 25px;
+        margin-bottom: 20px;
+      }
+
+      .lab-area {
+        background: rgba(13, 17, 23, 0.9);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 0 50px rgba(101, 31, 255, 0.3);
+        border: 2px solid #332940;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .info-panel {
+        background: rgba(13, 17, 23, 0.9);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 0 50px rgba(101, 31, 255, 0.3);
+        border: 2px solid #332940;
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 25px rgba(30, 58, 138, 0.4);
+        border: 1px solid #4f46e5;
+      }
+
+      .stat-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #00e5ff;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        color: #bb86fc;
+      }
+
+      .particle-chamber {
+        width: 100%;
+        height: 500px;
+        background: radial-gradient(circle at center, #1a1b4b 0%, #0c0c0c 70%);
+        border-radius: 15px;
+        position: relative;
+        border: 3px solid #4f46e5;
+        margin-bottom: 25px;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(1px);
+        transition: all 0.3s ease;
+      }
+
+      .particle.quark {
+        background: radial-gradient(circle, #ff4081, #f50057);
+      }
+      .particle.electron {
+        background: radial-gradient(circle, #18ffff, #00b8d4);
+      }
+      .particle.photon {
+        background: radial-gradient(circle, #ffff00, #ffd600);
+      }
+      .particle.neutrino {
+        background: radial-gradient(circle, #76ff03, #64dd17);
+      }
+      .particle.gluon {
+        background: radial-gradient(circle, #ff6d00, #dd2c00);
+      }
+
+      .particle-trail {
+        position: absolute;
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          currentColor,
+          transparent
+        );
+        opacity: 0.7;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .btn {
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #3730a3 0%, #1e3a8a 100%);
+        color: white;
+        border: 1px solid #4f46e5;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      }
+
+      .btn:active {
+        transform: translateY(-1px);
+      }
+
+      .btn-experiment {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        border-color: #ef4444;
+      }
+
+      .btn-experiment:hover {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+      }
+
+      .energy-level {
+        width: 100%;
+        height: 20px;
+        background: rgba(30, 58, 138, 0.3);
+        border-radius: 10px;
+        margin: 20px 0;
+        overflow: hidden;
+        border: 1px solid #4f46e5;
+      }
+
+      .energy-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00e5ff, #2979ff, #651fff);
+        transition: width 0.5s ease;
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+      }
+
+      .particle-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .particle-type {
+        background: rgba(30, 58, 138, 0.3);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid #4f46e5;
+      }
+
+      .particle-type:hover {
+        background: rgba(79, 70, 229, 0.2);
+        transform: scale(1.05);
+      }
+
+      .particle-type.selected {
+        border-color: #00e5ff;
+        background: rgba(0, 229, 255, 0.1);
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+      }
+
+      .particle-icon {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        filter: drop-shadow(0 0 10px currentColor);
+      }
+
+      .info-section {
+        background: rgba(30, 58, 138, 0.2);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #4f46e5;
+      }
+
+      .info-title {
+        color: #00e5ff;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      }
+
+      .info-content {
+        line-height: 1.7;
+        color: #e2e8f0;
+        font-size: 1rem;
+      }
+
+      .quantum-state {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .state-indicator {
+        background: rgba(30, 58, 138, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #4f46e5;
+      }
+
+      .state-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #00e5ff;
+        margin-bottom: 5px;
+      }
+
+      .state-label {
+        font-size: 0.9rem;
+        color: #bb86fc;
+      }
+
+      .experiment-log {
+        background: rgba(13, 17, 23, 0.8);
+        border-radius: 10px;
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #4f46e5;
+        margin-top: 20px;
+      }
+
+      .log-entry {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background: rgba(30, 58, 138, 0.2);
+        border-radius: 8px;
+        border-left: 3px solid #00e5ff;
+        font-size: 0.9rem;
+      }
+
+      .achievement {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(30, 58, 138, 0.2);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #4f46e5;
+      }
+
+      .achievement.locked {
+        opacity: 0.4;
+      }
+
+      .achievement-icon {
+        font-size: 1.8rem;
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+
+      .superposition {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(0, 229, 255, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(101, 31, 255, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 40%,
+            rgba(255, 64, 129, 0.05) 0%,
+            transparent 50%
+          );
+        animation: pulse 4s ease-in-out infinite;
+      }
+
+      .wave-function {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(transparent, rgba(0, 229, 255, 0.1));
+        mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path></svg>');
+        animation: wave 8s linear infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes wave {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50px);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(13, 17, 23, 0.95);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 30px rgba(0, 229, 255, 0.4);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        max-width: 350px;
+        border: 1px solid #00e5ff;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-color: #00e5ff;
+      }
+
+      .notification.warning {
+        border-color: #ff4081;
+      }
+
+      @media (max-width: 768px) {
+        .game-area {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>⚛️ Quantum Quest: Particle Adventure</h1>
+        <p>
+          Explore the mysterious world of quantum physics and subatomic
+          particles!
+        </p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-value" id="energy">100</div>
+          <div class="stat-label">⚡ Quantum Energy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="particlesDiscovered">0</div>
+          <div class="stat-label">🔬 Particles Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="experiments">0</div>
+          <div class="stat-label">🧪 Experiments Run</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="knowledge">0</div>
+          <div class="stat-label">📚 Knowledge Points</div>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="lab-area">
+          <div class="particle-chamber" id="particleChamber">
+            <div class="superposition"></div>
+            <div class="wave-function"></div>
+            <!-- Particles will be dynamically generated here -->
+          </div>
+
+          <div class="energy-level">
+            <div class="energy-fill" id="energyFill" style="width: 100%"></div>
+          </div>
+
+          <div class="controls">
+            <button class="btn" onclick="observeParticles()">
+              🔍 Observe Particles
+            </button>
+            <button class="btn" onclick="collideParticles()">
+              💥 Particle Collision
+            </button>
+            <button class="btn btn-experiment" onclick="runQuantumExperiment()">
+              ⚡ Quantum Experiment
+            </button>
+          </div>
+
+          <div class="particle-selector">
+            <div
+              class="particle-type selected"
+              onclick="selectParticleType('quark')"
+            >
+              <div class="particle-icon" style="color: #ff4081">⚛️</div>
+              <div>Quarks</div>
+            </div>
+            <div class="particle-type" onclick="selectParticleType('lepton')">
+              <div class="particle-icon" style="color: #18ffff">🌀</div>
+              <div>Leptons</div>
+            </div>
+            <div class="particle-type" onclick="selectParticleType('boson')">
+              <div class="particle-icon" style="color: #ffff00">✨</div>
+              <div>Bosons</div>
+            </div>
+          </div>
+
+          <div class="experiment-log" id="experimentLog">
+            <div class="log-entry">
+              🔬 Quantum Lab initialized. Ready for experiments!
+            </div>
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-section">
+            <div class="info-title">
+              <span id="selectedParticleIcon">⚛️</span>
+              <span id="selectedParticleName">Quantum Field</span>
+            </div>
+            <div class="info-content" id="particleInfo">
+              Welcome to the Quantum Lab! Select particle types, run
+              experiments, and discover the building blocks of the universe.
+              Observe quantum phenomena and unlock the secrets of particle
+              physics!
+            </div>
+            <div class="quantum-state">
+              <div class="state-indicator">
+                <div class="state-value" id="spinValue">½</div>
+                <div class="state-label">Spin</div>
+              </div>
+              <div class="state-indicator">
+                <div class="state-value" id="chargeValue">0</div>
+                <div class="state-label">Charge</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">📊 Discovery Progress</div>
+            <div id="discoveryProgress">
+              <div style="margin-bottom: 15px; color: #bb86fc">
+                No particles discovered yet
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🏆 Quantum Achievements</div>
+            <div id="achievementsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      <div id="notificationText"></div>
+    </div>
+
+    <script>
+      // Particle physics data
+      const particleTypes = {
+        quark: {
+          name: "Quarks",
+          icon: "⚛️",
+          color: "#ff4081",
+          particles: [
+            {
+              name: "Up Quark",
+              symbol: "u",
+              charge: "+⅔",
+              mass: "2.3 MeV/c²",
+              spin: "½",
+              discovered: false,
+              info: "The lightest quark. Found in protons and neutrons. Has fractional electric charge.",
+              fact: "Up quarks are stable and don't decay on their own!",
+            },
+            {
+              name: "Down Quark",
+              symbol: "d",
+              charge: "-⅓",
+              mass: "4.8 MeV/c²",
+              spin: "½",
+              discovered: false,
+              info: "Slightly heavier than up quark. Essential component of nuclear matter.",
+              fact: "Down quarks can decay into up quarks through weak interaction!",
+            },
+            {
+              name: "Charm Quark",
+              symbol: "c",
+              charge: "+⅔",
+              mass: "1.27 GeV/c²",
+              spin: "½",
+              discovered: false,
+              info: "Third-generation quark. Much heavier than up and down quarks.",
+              fact: "Discovered in 1974, confirming the existence of charm quantum number!",
+            },
+          ],
+        },
+        lepton: {
+          name: "Leptons",
+          icon: "🌀",
+          color: "#18ffff",
+          particles: [
+            {
+              name: "Electron",
+              symbol: "e⁻",
+              charge: "-1",
+              mass: "0.511 MeV/c²",
+              spin: "½",
+              discovered: false,
+              info: "Stable negatively charged lepton. Determines chemical properties of atoms.",
+              fact: "Electrons are fundamental particles - they can't be broken down further!",
+            },
+            {
+              name: "Muon",
+              symbol: "μ⁻",
+              charge: "-1",
+              mass: "105.7 MeV/c²",
+              spin: "½",
+              discovered: false,
+              info: "Heavier cousin of the electron. Unstable and decays quickly.",
+              fact: "Muons are created when cosmic rays hit Earth's atmosphere!",
+            },
+            {
+              name: "Tau",
+              symbol: "τ⁻",
+              charge: "-1",
+              mass: "1.777 GeV/c²",
+              spin: "½",
+              discovered: false,
+              info: "Heaviest lepton. Very short-lived and decays almost instantly.",
+              fact: "Tau particles are so heavy they can decay into hadrons!",
+            },
+            {
+              name: "Electron Neutrino",
+              symbol: "νₑ",
+              charge: "0",
+              mass: "< 0.1 eV/c²",
+              spin: "½",
+              discovered: false,
+              info: "Nearly massless neutral particle. Interacts only via weak force.",
+              fact: "Billions of neutrinos pass through your body every second!",
+            },
+          ],
+        },
+        boson: {
+          name: "Bosons",
+          icon: "✨",
+          color: "#ffff00",
+          particles: [
+            {
+              name: "Photon",
+              symbol: "γ",
+              charge: "0",
+              mass: "0",
+              spin: "1",
+              discovered: false,
+              info: "Quantum of electromagnetic radiation. Mediates electromagnetic force.",
+              fact: "Photons always travel at light speed in vacuum - 299,792,458 m/s!",
+            },
+            {
+              name: "Gluon",
+              symbol: "g",
+              charge: "0",
+              mass: "0",
+              spin: "1",
+              discovered: false,
+              info: "Mediates strong nuclear force. Binds quarks together in protons and neutrons.",
+              fact: "Gluons carry color charge and can interact with each other!",
+            },
+            {
+              name: "W Boson",
+              symbol: "W⁺",
+              charge: "+1",
+              mass: "80.4 GeV/c²",
+              spin: "1",
+              discovered: false,
+              info: "Mediates weak nuclear force. Responsible for radioactive beta decay.",
+              fact: "W bosons are so heavy they were hard to detect experimentally!",
+            },
+            {
+              name: "Z Boson",
+              symbol: "Z⁰",
+              charge: "0",
+              mass: "91.2 GeV/c²",
+              spin: "1",
+              discovered: false,
+              info: "Neutral weak force mediator. Discovered in 1983 at CERN.",
+              fact: "Z boson discovery confirmed electroweak unification theory!",
+            },
+            {
+              name: "Higgs Boson",
+              symbol: "H⁰",
+              charge: "0",
+              mass: "125 GeV/c²",
+              spin: "0",
+              discovered: false,
+              info: "Gives mass to other particles through Higgs mechanism.",
+              fact: "Discovered in 2012 at CERN - the last piece of Standard Model!",
+            },
+          ],
+        },
+      };
+
+      // Quantum experiments
+      const experiments = [
+        {
+          name: "Double Slit Experiment",
+          description: "Observe wave-particle duality in action",
+          energyCost: 20,
+          successRate: 0.7,
+        },
+        {
+          name: "Particle Collider",
+          description: "Smash particles together at high energies",
+          energyCost: 35,
+          successRate: 0.5,
+        },
+        {
+          name: "Quantum Entanglement",
+          description: "Create entangled particle pairs",
+          energyCost: 25,
+          successRate: 0.6,
+        },
+        {
+          name: "Vacuum Fluctuation",
+          description: "Observe virtual particles appearing from nothing",
+          energyCost: 15,
+          successRate: 0.8,
+        },
+      ];
+
+      // Achievements
+      const achievements = [
+        {
+          id: 1,
+          name: "Quantum Observer",
+          icon: "🔭",
+          description: "Observe your first particle",
+          earned: false,
+        },
+        {
+          id: 2,
+          name: "Particle Physicist",
+          icon: "👨‍🔬",
+          description: "Discover 5 different particles",
+          earned: false,
+        },
+        {
+          id: 3,
+          name: "Collider Master",
+          icon: "💥",
+          description: "Run 10 successful experiments",
+          earned: false,
+        },
+        {
+          id: 4,
+          name: "Standard Model Expert",
+          icon: "🏆",
+          description: "Discover all particle types",
+          earned: false,
+        },
+        {
+          id: 5,
+          name: "Quantum Pioneer",
+          icon: "⚡",
+          description: "Reach 1000 knowledge points",
+          earned: false,
+        },
+      ];
+
+      // Game state
+      let currentParticleType = "quark";
+      let quantumEnergy = 100;
+      let particlesDiscovered = 0;
+      let experimentsRun = 0;
+      let knowledgePoints = 0;
+      let totalParticlesDiscovered = 0;
+      let activeParticles = [];
+      let particleInterval;
+
+      function initGame() {
+        generateParticles();
+        updateStats();
+        updateAchievements();
+        updateDiscoveryProgress();
+        startParticleAnimation();
+      }
+
+      function generateParticles() {
+        const chamber = document.getElementById("particleChamber");
+        activeParticles = [];
+
+        // Create multiple particles
+        for (let i = 0; i < 8; i++) {
+          createParticle();
+        }
+      }
+
+      function createParticle() {
+        const chamber = document.getElementById("particleChamber");
+        const types = ["quark", "electron", "photon", "neutrino", "gluon"];
+        const type = types[Math.floor(Math.random() * types.length)];
+
+        const particle = document.createElement("div");
+        particle.className = `particle particle-${type}`;
+
+        const size = Math.random() * 15 + 8;
+        const x = Math.random() * (chamber.offsetWidth - size);
+        const y = Math.random() * (chamber.offsetHeight - size);
+
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+
+        // Add trail
+        const trail = document.createElement("div");
+        trail.className = "particle-trail";
+        trail.style.color = getParticleColor(type);
+        particle.appendChild(trail);
+
+        chamber.appendChild(particle);
+        activeParticles.push({
+          element: particle,
+          type,
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2,
+        });
+      }
+
+      function getParticleColor(type) {
+        const colors = {
+          quark: "#ff4081",
+          electron: "#18ffff",
+          photon: "#ffff00",
+          neutrino: "#76ff03",
+          gluon: "#ff6d00",
+        };
+        return colors[type] || "#ffffff";
+      }
+
+      function startParticleAnimation() {
+        particleInterval = setInterval(updateParticles, 50);
+      }
+
+      function updateParticles() {
+        const chamber = document.getElementById("particleChamber");
+
+        activeParticles.forEach((particle) => {
+          // Update position
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+
+          // Bounce off walls
+          if (
+            particle.x <= 0 ||
+            particle.x >=
+              chamber.offsetWidth - parseInt(particle.element.style.width)
+          ) {
+            particle.vx *= -1;
+          }
+          if (
+            particle.y <= 0 ||
+            particle.y >=
+              chamber.offsetHeight - parseInt(particle.element.style.height)
+          ) {
+            particle.vy *= -1;
+          }
+
+          // Apply random quantum fluctuations
+          if (Math.random() < 0.02) {
+            particle.vx += (Math.random() - 0.5) * 0.5;
+            particle.vy += (Math.random() - 0.5) * 0.5;
+          }
+
+          // Update element position
+          particle.element.style.left = `${particle.x}px`;
+          particle.element.style.top = `${particle.y}px`;
+
+          // Update trail
+          const trail = particle.element.querySelector(".particle-trail");
+          if (trail) {
+            const angle = Math.atan2(particle.vy, particle.vx);
+            trail.style.transform = `rotate(${angle}rad)`;
+          }
+        });
+      }
+
+      function selectParticleType(type) {
+        // Update UI
+        document
+          .querySelectorAll(".particle-type")
+          .forEach((el) => el.classList.remove("selected"));
+        event.target.closest(".particle-type").classList.add("selected");
+
+        currentParticleType = type;
+        const particleType = particleTypes[type];
+
+        document.getElementById("selectedParticleName").textContent =
+          particleType.name;
+        document.getElementById("selectedParticleIcon").textContent =
+          particleType.icon;
+        document.getElementById(
+          "particleInfo"
+        ).textContent = `Exploring ${particleType.name} - fundamental particles that make up matter and forces in the universe.`;
+
+        updateDiscoveryProgress();
+      }
+
+      function observeParticles() {
+        if (quantumEnergy < 10) {
+          showNotification(
+            "warning",
+            "⚠️ Not enough quantum energy! Run experiments to generate more."
+          );
+          return;
+        }
+
+        quantumEnergy -= 10;
+        const particleType = particleTypes[currentParticleType];
+        const undiscovered = particleType.particles.filter(
+          (p) => !p.discovered
+        );
+
+        if (undiscovered.length === 0) {
+          showNotification(
+            "warning",
+            `All ${particleType.name} have been discovered!`
+          );
+          updateStats();
+          return;
+        }
+
+        // Chance to discover new particle
+        if (Math.random() < 0.4) {
+          const particle =
+            undiscovered[Math.floor(Math.random() * undiscovered.length)];
+          particle.discovered = true;
+          particlesDiscovered++;
+          totalParticlesDiscovered++;
+          knowledgePoints += 50;
+
+          showNotification(
+            "success",
+            `🔭 Discovered ${particle.name} (${particle.symbol})! +50 knowledge`
+          );
+          addLogEntry(`🔭 Observed ${particle.name}: ${particle.fact}`);
+
+          // Update particle info
+          document.getElementById("selectedParticleName").textContent =
+            particle.name;
+          document.getElementById("selectedParticleIcon").textContent =
+            particleType.icon;
+          document.getElementById("particleInfo").textContent = particle.info;
+          document.getElementById("spinValue").textContent = particle.spin;
+          document.getElementById("chargeValue").textContent = particle.charge;
+        } else {
+          showNotification(
+            "error",
+            "🔭 Observation failed! Quantum uncertainty prevented clear measurement."
+          );
+          addLogEntry("🔭 Observation: Quantum fluctuations obscured results.");
+        }
+
+        updateStats();
+        updateDiscoveryProgress();
+        checkAchievements();
+      }
+
+      function collideParticles() {
+        if (quantumEnergy < 25) {
+          showNotification(
+            "warning",
+            "⚠️ Not enough energy for particle collision!"
+          );
+          return;
+        }
+
+        quantumEnergy -= 25;
+        experimentsRun++;
+
+        // Visual effect for collision
+        const chamber = document.getElementById("particleChamber");
+        chamber.style.boxShadow = "0 0 50px #ff4081";
+        setTimeout(() => {
+          chamber.style.boxShadow = "0 0 50px rgba(101, 31, 255, 0.3)";
+        }, 500);
+
+        if (Math.random() < 0.6) {
+          knowledgePoints += 75;
+          showNotification(
+            "success",
+            "💥 Successful collision! New particles created. +75 knowledge"
+          );
+          addLogEntry(
+            "💥 Particle collision: Generated exotic particle shower!"
+          );
+
+          // Create new particles
+          for (let i = 0; i < 3; i++) {
+            setTimeout(createParticle, i * 200);
+          }
+        } else {
+          showNotification(
+            "error",
+            "💥 Collision failed! Particles scattered without interesting results."
+          );
+          addLogEntry("💥 Collision: Minimal particle production observed.");
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function runQuantumExperiment() {
+        const experiment =
+          experiments[Math.floor(Math.random() * experiments.length)];
+
+        if (quantumEnergy < experiment.energyCost) {
+          showNotification(
+            "warning",
+            `⚠️ Need ${experiment.energyCost} energy for ${experiment.name}!`
+          );
+          return;
+        }
+
+        quantumEnergy -= experiment.energyCost;
+        experimentsRun++;
+        quantumEnergy += 15; // Energy from experiment
+
+        if (Math.random() < experiment.successRate) {
+          const points = 100 + Math.floor(Math.random() * 50);
+          knowledgePoints += points;
+
+          showNotification(
+            "success",
+            `⚡ ${experiment.name} successful! +${points} knowledge, +15 energy`
+          );
+          addLogEntry(
+            `⚡ ${experiment.name}: ${experiment.description} - Success!`
+          );
+        } else {
+          showNotification(
+            "error",
+            `⚡ ${experiment.name} failed! Quantum decoherence occurred.`
+          );
+          addLogEntry(
+            `⚡ ${experiment.name}: Measurement collapsed wave function prematurely.`
+          );
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function addLogEntry(message) {
+        const log = document.getElementById("experimentLog");
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.textContent = message;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function updateStats() {
+        document.getElementById("energy").textContent = quantumEnergy;
+        document.getElementById("particlesDiscovered").textContent =
+          particlesDiscovered;
+        document.getElementById("experiments").textContent = experimentsRun;
+        document.getElementById("knowledge").textContent = knowledgePoints;
+
+        // Update energy bar
+        const energyPercent = Math.min(100, (quantumEnergy / 100) * 100);
+        document.getElementById("energyFill").style.width = energyPercent + "%";
+      }
+
+      function updateDiscoveryProgress() {
+        const particleType = particleTypes[currentParticleType];
+        const progressContainer = document.getElementById("discoveryProgress");
+
+        let html = "";
+        particleType.particles.forEach((particle) => {
+          html += `
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <span style="font-size: 1.3rem; color: ${
+                          particleType.color
+                        };">${
+            particle.discovered ? particleType.icon : "❓"
+          }</span>
+                        <span style="flex: 1; color: ${
+                          particle.discovered ? "#e2e8f0" : "#64748b"
+                        }">
+                            ${
+                              particle.discovered
+                                ? `${particle.name} (${particle.symbol})`
+                                : "Undiscovered Particle"
+                            }
+                        </span>
+                        <span style="color: ${
+                          particle.discovered ? "#00e5ff" : "#475569"
+                        }">
+                            ${particle.discovered ? "✓" : "✗"}
+                        </span>
+                    </div>
+                `;
+        });
+
+        progressContainer.innerHTML = html;
+      }
+
+      function updateAchievements() {
+        const achievementsList = document.getElementById("achievementsList");
+        achievementsList.innerHTML = achievements
+          .map(
+            (achievement) => `
+                    <div class="achievement ${
+                      achievement.earned ? "" : "locked"
+                    }">
+                        <div class="achievement-icon" style="color: ${
+                          achievement.earned ? "#00e5ff" : "#475569"
+                        }">${achievement.icon}</div>
+                        <div>
+                            <div style="font-weight: bold; color: ${
+                              achievement.earned ? "#00e5ff" : "#94a3b8"
+                            }">${achievement.name}</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">${
+                              achievement.description
+                            }</div>
+                        </div>
+                    </div>
+                `
+          )
+          .join("");
+      }
+
+      function checkAchievements() {
+        // Quantum Observer
+        if (particlesDiscovered >= 1 && !achievements[0].earned) {
+          achievements[0].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Quantum Observer!"
+          );
+        }
+
+        // Particle Physicist
+        if (totalParticlesDiscovered >= 5 && !achievements[1].earned) {
+          achievements[1].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Particle Physicist!"
+          );
+        }
+
+        // Collider Master
+        if (experimentsRun >= 10 && !achievements[2].earned) {
+          achievements[2].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Collider Master!"
+          );
+        }
+
+        // Standard Model Expert
+        const allDiscovered = Object.values(particleTypes).every((type) =>
+          type.particles.every((p) => p.discovered)
+        );
+        if (allDiscovered && !achievements[3].earned) {
+          achievements[3].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Standard Model Expert!"
+          );
+        }
+
+        // Quantum Pioneer
+        if (knowledgePoints >= 1000 && !achievements[4].earned) {
+          achievements[4].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Quantum Pioneer!"
+          );
+        }
+
+        updateAchievements();
+      }
+
+      function showNotification(type, message) {
+        const notification = document.getElementById("notification");
+        notification.className = `notification ${type} show`;
+        document.getElementById("notificationText").textContent = message;
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 4000);
+      }
+
+      // Initialize the game
+      initGame();
+    </script>
+  </body>
+</html>

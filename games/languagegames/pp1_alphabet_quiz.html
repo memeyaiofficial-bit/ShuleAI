@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChezaAI Alphabet Quiz - PP1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(135deg, #FFB6C1 0%, #87CEEB 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #FF6B9D;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFB6C1, #87CEEB);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 24px;
+            color: #FF6B9D;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, #FFF5F7 0%, #E6F7FF 100%);
+            padding: 40px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .big-letter {
+            font-size: 120px;
+            font-weight: bold;
+            color: #FF6B9D;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 4px solid #87CEEB;
+            padding: 25px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .option-btn:hover {
+            background: #87CEEB;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+            animation: bounce 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #FF6B9D;
+            border-color: #FF6B9D;
+            color: white;
+            animation: shake 0.5s;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #FFB6C1, #87CEEB);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 25px auto 0;
+            transition: transform 0.2s;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .result-screen.active {
+            display: block;
+        }
+
+        .result-emoji {
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: bounce 1s infinite;
+        }
+
+        .result-title {
+            font-size: 42px;
+            color: #FF6B9D;
+            margin-bottom: 15px;
+        }
+
+        .result-score {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .result-message {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 35px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #FFB6C1, #87CEEB);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .quiz-screen {
+            display: block;
+        }
+
+        .quiz-screen.hidden {
+            display: none;
+        }
+
+        .stars {
+            font-size: 50px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎈 Learn the Alphabet!</h1>
+            <p>PP1 - Age 4-5 Years</p>
+        </div>
+
+        <div class="quiz-screen" id="quizScreen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="score-display" id="scoreDisplay">⭐ Score: 0/20</div>
+
+            <div class="question-card">
+                <div class="big-letter" id="bigLetter">A</div>
+                <div class="question-text" id="questionText">What letter is this?</div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" disabled>Next ➜</button>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji">🎉</div>
+            <div class="result-title" id="resultTitle">Amazing!</div>
+            <div class="stars" id="stars">⭐⭐⭐</div>
+            <div class="result-score" id="resultScore">You got 20 out of 20!</div>
+            <div class="result-message" id="resultMessage">You are a superstar!</div>
+            <button class="restart-btn" onclick="restartQuiz()">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {letter: "A", sound: "A (ay)", options: ["A", "B", "C", "D"], answer: 0},
+            {letter: "B", sound: "B (bee)", options: ["A", "B", "D", "P"], answer: 1},
+            {letter: "C", sound: "C (see)", options: ["C", "G", "O", "S"], answer: 0},
+            {letter: "D", sound: "D (dee)", options: ["B", "D", "P", "O"], answer: 1},
+            {letter: "E", sound: "E (ee)", options: ["F", "E", "C", "A"], answer: 1},
+            {letter: "F", sound: "F (eff)", options: ["F", "E", "T", "P"], answer: 0},
+            {letter: "G", sound: "G (jee)", options: ["C", "G", "J", "Q"], answer: 1},
+            {letter: "H", sound: "H (aych)", options: ["H", "N", "M", "K"], answer: 0},
+            {letter: "I", sound: "I (eye)", options: ["L", "I", "J", "T"], answer: 1},
+            {letter: "J", sound: "J (jay)", options: ["J", "I", "G", "L"], answer: 0},
+            {letter: "K", sound: "K (kay)", options: ["H", "K", "R", "X"], answer: 1},
+            {letter: "L", sound: "L (ell)", options: ["L", "I", "T", "J"], answer: 0},
+            {letter: "M", sound: "M (em)", options: ["N", "M", "W", "H"], answer: 1},
+            {letter: "N", sound: "N (en)", options: ["N", "M", "H", "Z"], answer: 0},
+            {letter: "O", sound: "O (oh)", options: ["Q", "O", "C", "D"], answer: 1},
+            {letter: "P", sound: "P (pee)", options: ["P", "B", "D", "R"], answer: 0},
+            {letter: "Q", sound: "Q (kyoo)", options: ["O", "Q", "G", "C"], answer: 1},
+            {letter: "R", sound: "R (ar)", options: ["R", "P", "K", "B"], answer: 0},
+            {letter: "S", sound: "S (ess)", options: ["Z", "S", "C", "G"], answer: 1},
+            {letter: "T", sound: "T (tee)", options: ["T", "I", "L", "F"], answer: 0}
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            
+            document.getElementById('bigLetter').textContent = q.letter;
+            document.getElementById('questionText').textContent = `What letter is this?`;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('nextBtn').disabled = true;
+            updateProgress();
+        }
+
+        function selectAnswer(selected) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.answer) {
+                    btn.classList.add('correct');
+                }
+                if (index === selected && selected !== q.answer) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selected === q.answer) {
+                score++;
+                document.getElementById('scoreDisplay').textContent = `⭐ Score: ${score}/20`;
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+
+            const percentage = (score / questions.length) * 100;
+            let emoji, title, stars, message;
+
+            if (percentage >= 90) {
+                emoji = '🏆';
+                title = 'Super Star!';
+                stars = '⭐⭐⭐⭐⭐';
+                message = 'You know all your letters!';
+            } else if (percentage >= 75) {
+                emoji = '🎉';
+                title = 'Amazing!';
+                stars = '⭐⭐⭐⭐';
+                message = 'Great job learning!';
+            } else if (percentage >= 60) {
+                emoji = '😊';
+                title = 'Good Work!';
+                stars = '⭐⭐⭐';
+                message = 'Keep practicing!';
+            } else if (percentage >= 40) {
+                emoji = '🌟';
+                title = 'Keep Trying!';
+                stars = '⭐⭐';
+                message = 'You are doing well!';
+            } else {
+                emoji = '🎈';
+                title = 'Great Try!';
+                stars = '⭐';
+                message = 'Let\'s learn together!';
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('resultScore').textContent = `You got ${score} out of 20!`;
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('scoreDisplay').textContent = '⭐ Score: 0/20';
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.remove('active');
+            loadQuestion();
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+        loadQuestion();
+    </script>
+</body>
+</html>

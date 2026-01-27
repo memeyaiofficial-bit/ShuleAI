@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChezaAI Reading Adventure - Standard 4</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Georgia", serif;
+        background: linear-gradient(
+          135deg,
+          #4a90e2 0%,
+          #7b68ee 50%,
+          #9370db 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 25px;
+        padding: 40px;
+        max-width: 900px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        border: 4px solid #4a90e2;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 25px;
+        background: linear-gradient(45deg, #4a90e2, #7b68ee);
+        border-radius: 20px;
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 36px;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 18px;
+        opacity: 0.9;
+      }
+
+      .progress-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f0f8ff;
+        border-radius: 15px;
+        border: 2px solid #4a90e2;
+      }
+
+      .score,
+      .story-progress {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .story-section {
+        margin-bottom: 30px;
+      }
+
+      .story-title {
+        font-size: 28px;
+        color: #4a90e2;
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      .story-text {
+        font-size: 18px;
+        line-height: 1.8;
+        color: #333;
+        background: #fffbf0;
+        padding: 30px;
+        border-radius: 15px;
+        border: 2px solid #4a90e2;
+        margin-bottom: 30px;
+        text-align: justify;
+      }
+
+      .question-section {
+        background: #f0f8ff;
+        padding: 25px;
+        border-radius: 15px;
+        border: 2px solid #7b68ee;
+        margin-bottom: 20px;
+      }
+
+      .question {
+        font-size: 20px;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .answers {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .answer-btn {
+        padding: 15px 25px;
+        font-size: 16px;
+        background: linear-gradient(45deg, #e6f3ff, #d1e8ff);
+        border: 2px solid #4a90e2;
+        border-radius: 10px;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: left;
+      }
+
+      .answer-btn:hover {
+        background: linear-gradient(45deg, #d1e8ff, #b8d4ff);
+        transform: translateX(10px);
+      }
+
+      .answer-btn.correct {
+        background: #90ee90;
+        border-color: #228b22;
+        animation: bounce 0.6s ease;
+      }
+
+      .answer-btn.wrong {
+        background: #ffb6c1;
+        border-color: #dc143c;
+        animation: shake 0.6s ease;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0) translateX(0);
+        }
+        50% {
+          transform: translateY(-10px) translateX(10px);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-10px);
+        }
+        75% {
+          transform: translateX(10px);
+        }
+      }
+
+      .feedback {
+        margin-top: 20px;
+        padding: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px;
+        text-align: center;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .feedback.correct {
+        background: #90ee90;
+        color: #006400;
+        border: 2px solid #228b22;
+      }
+
+      .feedback.wrong {
+        background: #ffb6c1;
+        color: #8b0000;
+        border: 2px solid #dc143c;
+      }
+
+      .next-btn {
+        display: none;
+        margin: 30px auto;
+        padding: 15px 40px;
+        font-size: 20px;
+        background: linear-gradient(45deg, #4a90e2, #7b68ee);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .next-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .completion-screen {
+        display: none;
+        text-align: center;
+        padding: 40px;
+      }
+
+      .completion-screen h2 {
+        color: #4a90e2;
+        font-size: 42px;
+        margin-bottom: 20px;
+      }
+
+      .final-score {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 30px;
+      }
+
+      .reading-level {
+        font-size: 24px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f0f8ff;
+        border-radius: 15px;
+        border: 2px solid #4a90e2;
+      }
+
+      .play-again-btn {
+        padding: 20px 40px;
+        font-size: 20px;
+        background: linear-gradient(45deg, #4a90e2, #7b68ee);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 20px;
+        }
+        .header h1 {
+          font-size: 28px;
+        }
+        .story-text {
+          font-size: 16px;
+          padding: 20px;
+        }
+        .question {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>📚 Reading Adventure Quest 📚</h1>
+        <p>Read carefully and answer the questions!</p>
+      </div>
+
+      <div class="progress-section">
+        <div class="score">Score: <span id="score">0</span></div>
+        <div class="story-progress">Story: <span id="current">1</span>/5</div>
+      </div>
+
+      <div id="gameArea">
+        <div class="story-section">
+          <h2 class="story-title" id="storyTitle"></h2>
+          <div class="story-text" id="storyText"></div>
+        </div>
+
+        <div class="question-section">
+          <div class="question" id="question"></div>
+          <div class="answers" id="answersContainer"></div>
+          <div class="feedback" id="feedback"></div>
+          <button class="next-btn" id="nextBtn" onclick="nextStory()">
+            Next Story →
+          </button>
+        </div>
+      </div>
+
+      <div class="completion-screen" id="completionScreen">
+        <h2>🎉 Reading Quest Complete! 🎉</h2>
+        <div class="final-score" id="finalScore"></div>
+        <div class="reading-level" id="readingLevel"></div>
+        <button class="play-again-btn" onclick="startGame()">Read Again</button>
+      </div>
+    </div>
+
+    <script>
+      let currentStory = 1;
+      let score = 0;
+      let answered = false;
+
+      const stories = [
+        {
+          title: "The Clever Rabbit",
+          text: "In the heart of Kenya's savannah, there lived a clever rabbit named Kipchoge. One hot day, all the animals gathered around the only water hole that hadn't dried up. The big elephant, Tembo, declared that only the strongest animals could drink first. The smaller animals like rabbits, squirrels, and birds had to wait. Kipchoge thought this was unfair. He came up with a brilliant plan. He told Tembo that he knew of a bigger, cleaner water hole just beyond the hill, but only brave animals could find it. Tembo, wanting to prove his bravery, followed Kipchoge. While Tembo searched for the imaginary water hole, all the small animals drank peacefully. When Tembo returned, Kipchoge explained that sharing water was more important than showing strength.",
+          question: "What was the main problem in the story?",
+          answers: [
+            "The rabbit was thirsty",
+            "Only strong animals could drink water first",
+            "The elephant was lost",
+            "There was no water left",
+          ],
+          correct: 1,
+        },
+        {
+          title: "Amina's Garden",
+          text: "Amina lived with her grandmother in a small village near Mount Kenya. Her grandmother grew the most beautiful vegetables in the village - tomatoes as red as rubies, cabbages as green as emeralds, and carrots as orange as the sunset. Every morning, Amina helped water the plants and remove weeds. One day, her grandmother fell ill and couldn't tend to the garden. Amina was worried the vegetables would die. She remembered everything her grandmother had taught her: water in the early morning, remove weeds carefully, and always talk sweetly to the plants. For two weeks, Amina cared for the garden alone. When her grandmother recovered, she was amazed to see the garden flourishing even better than before. 'Plants grow best when tended with love,' her grandmother smiled.",
+          question: "Why did Amina take care of the garden alone?",
+          answers: [
+            "She wanted to surprise her grandmother",
+            "Her grandmother went on a trip",
+            "Her grandmother fell ill",
+            "She wanted to learn gardening",
+          ],
+          correct: 2,
+        },
+        {
+          title: "The School Competition",
+          text: "Mwangi was excited about the inter-school mathematics competition. He had been practicing for months, solving difficult problems every day after school. His teacher, Mr. Kiprotich, believed he had a good chance of winning. On the day of the competition, Mwangi felt nervous when he saw students from other schools. Some looked very confident, and others carried thick mathematics books. When the competition began, Mwangi realized that many questions were similar to the ones he had practiced. He solved them carefully, checking each answer twice. However, there was one very difficult question that stumped everyone. Mwangi thought about it differently, using a method his grandfather had taught him for counting cattle. To everyone's surprise, he got it right! Mwangi won second place and felt proud of his hard work.",
+          question: "How did Mwangi solve the difficult question?",
+          answers: [
+            "He copied from another student",
+            "He used his teacher's method",
+            "He used his grandfather's counting method",
+            "He guessed the answer",
+          ],
+          correct: 2,
+        },
+        {
+          title: "The Lost Treasure",
+          text: "Kesi and her brother Maina were helping their uncle clean his old house in Lamu. In the dusty attic, they found an old wooden box carved with beautiful patterns. Inside was a yellowed piece of paper with strange symbols and drawings of palm trees, wells, and ancient buildings. 'This looks like a treasure map!' exclaimed Maina. Their uncle explained that their great-grandfather was a famous trader who traveled along the East African coast. The map showed locations where he had buried valuable items for safekeeping. The children studied the map carefully. They recognized the landmarks - the old fort, the baobab tree by the well, and the ancient mosque. Following the map, they discovered not gold or silver, but something more precious: old family photographs, letters, and traditional jewelry that told the story of their ancestors.",
+          question: "What treasure did the children actually find?",
+          answers: [
+            "Gold and silver coins",
+            "Family photographs and historical items",
+            "Precious stones and jewels",
+            "Ancient coins and pottery",
+          ],
+          correct: 1,
+        },
+        {
+          title: "The Rain Makers",
+          text: "In the dry season, the village of Makutano hadn't seen rain for three months. The maize crops were wilting, and the river had become just a trickle. The village elders decided to perform the traditional rain-making ceremony. They gathered the whole community - men, women, and children - in the sacred grove where their ancestors used to pray. The ceremony lasted three days. People sang traditional songs, danced ancient dances, and the elders offered prayers to their ancestors. Young Wanjiku participated with her family, learning the old ways for the first time. On the third night, dark clouds gathered in the sky. Lightning flashed, thunder roared, and finally, the rains came! The village celebrated as the life-giving water soaked the earth. Wanjiku understood that some traditions connect people to nature in mysterious ways.",
+          question: "How long did the rain-making ceremony last?",
+          answers: ["One day", "Two days", "Three days", "One week"],
+          correct: 2,
+        },
+      ];
+
+      const encouragements = [
+        "Excellent reading comprehension! 🌟",
+        "You understood the story perfectly! 📚",
+        "Great attention to detail! 👏",
+        "Outstanding work! 🎉",
+        "You're a reading star! ⭐",
+      ];
+
+      const corrections = [
+        "Read the story again carefully! 🤔",
+        "Look for clues in the text! 🔍",
+        "Don't worry, practice makes perfect! 💪",
+        "Try to focus on the key details! 📖",
+      ];
+
+      function loadStory() {
+        answered = false;
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+
+        const story = stories[currentStory - 1];
+
+        document.getElementById("storyTitle").textContent = story.title;
+        document.getElementById("storyText").textContent = story.text;
+        document.getElementById("question").textContent = story.question;
+
+        const answersContainer = document.getElementById("answersContainer");
+        answersContainer.innerHTML = "";
+
+        story.answers.forEach((answer, index) => {
+          const button = document.createElement("button");
+          button.className = "answer-btn";
+          button.textContent = `${String.fromCharCode(65 + index)}. ${answer}`;
+          button.onclick = () => checkAnswer(index, button);
+          answersContainer.appendChild(button);
+        });
+      }
+
+      function checkAnswer(selected, button) {
+        if (answered) return;
+        answered = true;
+
+        const story = stories[currentStory - 1];
+        const feedback = document.getElementById("feedback");
+        const allButtons = document.querySelectorAll(".answer-btn");
+
+        allButtons.forEach((btn) => (btn.style.pointerEvents = "none"));
+
+        if (selected === story.correct) {
+          score += 20;
+          button.classList.add("correct");
+          feedback.textContent =
+            encouragements[Math.floor(Math.random() * encouragements.length)];
+          feedback.className = "feedback correct";
+        } else {
+          button.classList.add("wrong");
+          feedback.textContent =
+            corrections[Math.floor(Math.random() * corrections.length)];
+          feedback.className = "feedback wrong";
+
+          allButtons.forEach((btn, index) => {
+            if (index === story.correct) {
+              btn.classList.add("correct");
+            }
+          });
+        }
+
+        document.getElementById("score").textContent = score;
+        document.getElementById("nextBtn").style.display = "block";
+      }
+
+      function nextStory() {
+        if (currentStory >= 5) {
+          showCompletion();
+        } else {
+          currentStory++;
+          document.getElementById("current").textContent = currentStory;
+
+          const allButtons = document.querySelectorAll(".answer-btn");
+          allButtons.forEach((btn) => {
+            btn.classList.remove("correct", "wrong");
+            btn.style.pointerEvents = "auto";
+          });
+
+          loadStory();
+        }
+      }
+
+      function showCompletion() {
+        document.getElementById("gameArea").style.display = "none";
+        document.getElementById("completionScreen").style.display = "block";
+
+        let message = "";
+        let level = "";
+
+        if (score >= 90) {
+          message = "Outstanding! You're an excellent reader! 🏆";
+          level = "Reading Level: Advanced - You understand stories deeply!";
+        } else if (score >= 70) {
+          message = "Excellent work! You have great reading skills! 🌟";
+          level =
+            "Reading Level: Proficient - You can understand most stories well!";
+        } else if (score >= 50) {
+          message = "Good job! Keep reading to improve! 👏";
+          level =
+            "Reading Level: Developing - You're getting better at reading comprehension!";
+        } else {
+          message = "Great effort! Reading more will help you improve! 💪";
+          level =
+            "Reading Level: Beginning - Keep practicing to become a better reader!";
+        }
+
+        document.getElementById("finalScore").innerHTML = `
+                <div style="margin-bottom: 20px;">${message}</div>
+                <div>Final Score: ${score}/100</div>
+            `;
+
+        document.getElementById("readingLevel").textContent = level;
+      }
+
+      function startGame() {
+        currentStory = 1;
+        score = 0;
+
+        document.getElementById("gameArea").style.display = "block";
+        document.getElementById("completionScreen").style.display = "none";
+        document.getElementById("score").textContent = "0";
+        document.getElementById("current").textContent = "1";
+
+        loadStory();
+      }
+
+      // Initialize game
+      startGame();
+    </script>
+  </body>
+</html>

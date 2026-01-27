@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChezaAI Creative Arts Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .level-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 5px;
+            color: white;
+        }
+
+        .level-1 { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); }
+        .level-2 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        .level-3 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .level-4 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .level-5 { background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%); }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 18px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #667eea;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .option-btn.wrong {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+            transition: transform 0.2s;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .result-screen.active {
+            display: block;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .level-completion {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .level-completion h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .level-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .level-item.completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .quiz-screen {
+            display: block;
+        }
+
+        .quiz-screen.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Creative Arts Quiz</h1>
+            <p>Grade 4-6 | CBC Curriculum</p>
+        </div>
+
+        <div class="quiz-screen" id="quizScreen">
+            <div class="level-display" id="levelDisplay">
+                <span class="level-badge level-1" id="levelBadge">🎵 Level 1: Music Basics</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="score-display" id="scoreDisplay">Score: 0/50</div>
+
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">Question 1 of 50</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" disabled>Next Question</button>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-score" id="resultScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            
+            <div class="level-completion">
+                <h3>Level Breakdown</h3>
+                <div class="level-item" id="level1Status">
+                    <span>🎵 Level 1: Music Basics (Q1-10)</span>
+                    <span id="level1Score">0/10</span>
+                </div>
+                <div class="level-item" id="level2Status">
+                    <span>🎭 Level 2: Drama & Theatre (Q11-20)</span>
+                    <span id="level2Score">0/10</span>
+                </div>
+                <div class="level-item" id="level3Status">
+                    <span>🎨 Level 3: Visual Arts (Q21-30)</span>
+                    <span id="level3Score">0/10</span>
+                </div>
+                <div class="level-item" id="level4Status">
+                    <span>💃 Level 4: Dance & Movement (Q31-40)</span>
+                    <span id="level4Score">0/10</span>
+                </div>
+                <div class="level-item" id="level5Status">
+                    <span>🇰🇪 Level 5: Kenyan Culture (Q41-50)</span>
+                    <span id="level5Score">0/10</span>
+                </div>
+            </div>
+
+            <button class="restart-btn" onclick="restartQuiz()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Level 1: Music Basics (Q1-10)
+            {q: "What are the seven musical notes?", options: ["Do, Re, Mi, Fa, So, La, Ti", "A, B, C, D, E, F, G", "1, 2, 3, 4, 5, 6, 7", "None"], answer: 0, level: 1},
+            {q: "What is rhythm in music?", options: ["Volume", "Pattern of beats", "Melody", "Silence"], answer: 1, level: 1},
+            {q: "Which is a traditional Kenyan instrument?", options: ["Piano", "Guitar", "Nyatiti", "Violin"], answer: 2, level: 1},
+            {q: "What does tempo mean?", options: ["Loudness", "Speed of music", "Color", "Instrument"], answer: 1, level: 1},
+            {q: "What is melody?", options: ["Rhythm pattern", "Sequence of musical notes", "Drumbeat", "Silence"], answer: 1, level: 1},
+            {q: "Which instrument has strings?", options: ["Drum", "Flute", "Guitar", "Trumpet"], answer: 2, level: 1},
+            {q: "What is a musical scale?", options: ["Instrument", "Series of notes in order", "Dance move", "Painting"], answer: 1, level: 1},
+            {q: "What does piano mean in music?", options: ["Fast", "Loud", "Soft", "Stop"], answer: 2, level: 1},
+            {q: "Which is a percussion instrument?", options: ["Flute", "Drum", "Violin", "Saxophone"], answer: 1, level: 1},
+            {q: "What is a chorus in a song?", options: ["Introduction", "Repeated main section", "Ending", "Instrument"], answer: 1, level: 1},
+
+            // Level 2: Drama & Theatre (Q11-20)
+            {q: "What is drama?", options: ["Dancing", "Acting out stories", "Singing", "Painting"], answer: 1, level: 2},
+            {q: "What is a stage?", options: ["Audience seating", "Performance area", "Exit door", "Ticket booth"], answer: 1, level: 2},
+            {q: "Who writes plays?", options: ["Actor", "Playwright", "Dancer", "Singer"], answer: 1, level: 2},
+            {q: "What is a script?", options: ["Dance steps", "Written text of a play", "Musical note", "Painting"], answer: 1, level: 2},
+            {q: "What does a director do?", options: ["Acts only", "Guides the production", "Sells tickets", "Cleans stage"], answer: 1, level: 2},
+            {q: "What are props in theatre?", options: ["Actors", "Objects used in performance", "Lights", "Seats"], answer: 1, level: 2},
+            {q: "What is mime?", options: ["Loud speaking", "Acting without words", "Singing", "Dancing"], answer: 1, level: 2},
+            {q: "What is a costume?", options: ["Stage", "Clothes worn by actor", "Script", "Light"], answer: 1, level: 2},
+            {q: "What is improvisation?", options: ["Reading script", "Acting without preparation", "Rehearsing", "Memorizing"], answer: 1, level: 2},
+            {q: "What is the audience?", options: ["Actors", "People watching performance", "Stage crew", "Props"], answer: 1, level: 2},
+
+            // Level 3: Visual Arts (Q21-30)
+            {q: "What are primary colors?", options: ["Red, Yellow, Blue", "Green, Orange, Purple", "Black, White, Gray", "Pink, Brown, Beige"], answer: 0, level: 3},
+            {q: "What is a portrait?", options: ["Landscape painting", "Picture of a person", "Abstract art", "Sculpture"], answer: 1, level: 3},
+            {q: "What is clay used for?", options: ["Painting", "Sculpting", "Music", "Dancing"], answer: 1, level: 3},
+            {q: "What are warm colors?", options: ["Blue, Green, Purple", "Red, Orange, Yellow", "Black, White, Gray", "Only red"], answer: 1, level: 3},
+            {q: "What is a sketch?", options: ["Final painting", "Quick drawing", "Sculpture", "Dance"], answer: 1, level: 3},
+            {q: "What is texture in art?", options: ["Color", "How surface feels or looks", "Size", "Shape"], answer: 1, level: 3},
+            {q: "What is a collage?", options: ["Painting only", "Art made from different materials", "Sculpture", "Music"], answer: 1, level: 3},
+            {q: "What does symmetry mean?", options: ["Unbalanced", "Balanced on both sides", "Colorful", "Large"], answer: 1, level: 3},
+            {q: "What is weaving?", options: ["Painting", "Interlacing threads", "Singing", "Acting"], answer: 1, level: 3},
+            {q: "What is shading in drawing?", options: ["Adding colors", "Creating light and dark areas", "Erasing", "Outlining"], answer: 1, level: 3},
+
+            // Level 4: Dance & Movement (Q31-40)
+            {q: "What is choreography?", options: ["Singing", "Creating dance moves", "Painting", "Acting"], answer: 1, level: 4},
+            {q: "What is posture in dance?", options: ["Music", "Body position", "Costume", "Stage"], answer: 1, level: 4},
+            {q: "What does graceful mean?", options: ["Clumsy", "Moving smoothly and elegantly", "Fast", "Loud"], answer: 1, level: 4},
+            {q: "What is balance in dance?", options: ["Falling", "Staying steady", "Running", "Jumping"], answer: 1, level: 4},
+            {q: "What are dance formations?", options: ["Costumes", "Patterns dancers make", "Music", "Props"], answer: 1, level: 4},
+            {q: "What is a pirouette?", options: ["Jump", "Spinning turn", "Slide", "Wave"], answer: 1, level: 4},
+            {q: "What is rhythm in dance?", options: ["Costume", "Timing of movements", "Color", "Height"], answer: 1, level: 4},
+            {q: "What is folk dance?", options: ["Modern dance", "Traditional cultural dance", "Ballet", "Hip hop"], answer: 1, level: 4},
+            {q: "What does synchronization mean?", options: ["Dancing alone", "Moving together at same time", "Standing still", "Random movement"], answer: 1, level: 4},
+            {q: "What is expression in dance?", options: ["Speed", "Showing emotion through movement", "Costume", "Stage"], answer: 1, level: 4},
+
+            // Level 5: Kenyan Culture (Q41-50)
+            {q: "What is the Nyatiti?", options: ["Drum", "Lyre instrument from Luo community", "Dance", "Painting"], answer: 1, level: 5},
+            {q: "Which community performs the Mugithi dance?", options: ["Luo", "Kikuyu", "Maasai", "Luhya"], answer: 1, level: 5},
+            {q: "What is beadwork commonly associated with?", options: ["Kikuyu", "Maasai culture", "Luo", "Kamba"], answer: 1, level: 5},
+            {q: "What is the Isukuti?", options: ["Song", "Traditional drum from Luhya", "Dance style", "Painting"], answer: 1, level: 5},
+            {q: "Which dance involves jumping high?", options: ["Mugithi", "Maasai Adumu", "Chakacha", "Ohangla"], answer: 1, level: 5},
+            {q: "What are gourds used for in Kenyan culture?", options: ["Only decoration", "Musical instruments and containers", "Dancing", "Writing"], answer: 1, level: 5},
+            {q: "What is Taarab music?", options: ["Rock music", "Coastal Swahili music", "Country music", "Jazz"], answer: 1, level: 5},
+            {q: "Which material is used in traditional Kenyan crafts?", options: ["Plastic only", "Sisal, wood, and clay", "Metal only", "Paper"], answer: 1, level: 5},
+            {q: "What is the significance of storytelling in Kenyan culture?", options: ["Entertainment only", "Passing knowledge and values", "Wasting time", "No significance"], answer: 1, level: 5},
+            {q: "What are traditional Kenyan dances used for?", options: ["No purpose", "Celebrations and ceremonies", "Exercise only", "Punishment"], answer: 1, level: 5}
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let levelScores = [0, 0, 0, 0, 0];
+        let answered = false;
+
+        function getCurrentLevel() {
+            if (currentQuestion < 10) return 1;
+            if (currentQuestion < 20) return 2;
+            if (currentQuestion < 30) return 3;
+            if (currentQuestion < 40) return 4;
+            return 5;
+        }
+
+        function updateLevelDisplay() {
+            const level = getCurrentLevel();
+            const badge = document.getElementById('levelBadge');
+            const labels = [
+                '🎵 Level 1: Music Basics',
+                '🎭 Level 2: Drama & Theatre',
+                '🎨 Level 3: Visual Arts',
+                '💃 Level 4: Dance & Movement',
+                '🇰🇪 Level 5: Kenyan Culture'
+            ];
+            
+            badge.textContent = labels[level - 1];
+            badge.className = `level-badge level-${level}`;
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            updateLevelDisplay();
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of 50`;
+            document.getElementById('questionText').textContent = q.q;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('nextBtn').disabled = true;
+            updateProgress();
+        }
+
+        function selectAnswer(selected) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.answer) {
+                    btn.classList.add('correct');
+                }
+                if (index === selected && selected !== q.answer) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selected === q.answer) {
+                score++;
+                levelScores[q.level - 1]++;
+                document.getElementById('scoreDisplay').textContent = `Score: ${score}/50`;
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+
+            const percentage = (score / questions.length) * 100;
+            let emoji, title, message;
+
+            if (percentage >= 90) {
+                emoji = '🏆';
+                title = 'Creative Genius!';
+                message = 'You are a true artist and cultural expert!';
+            } else if (percentage >= 75) {
+                emoji = '🎨';
+                title = 'Artistic Master!';
+                message = 'Excellent knowledge of creative arts!';
+            } else if (percentage >= 60) {
+                emoji = '⭐';
+                title = 'Creative Star!';
+                message = 'Great understanding of arts and culture!';
+            } else if (percentage >= 40) {
+                emoji = '💪';
+                title = 'Keep Creating!';
+                message = 'Practice your artistic skills more!';
+            } else {
+                emoji = '📚';
+                title = 'Keep Learning!';
+                message = 'Explore more about arts and culture!';
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultScore').textContent = `You scored ${score} out of 50`;
+            document.getElementById('resultMessage').textContent = message;
+
+            // Update level scores
+            for (let i = 0; i < 5; i++) {
+                document.getElementById(`level${i + 1}Score`).textContent = `${levelScores[i]}/10`;
+                if (levelScores[i] >= 7) {
+                    document.getElementById(`level${i + 1}Status`).classList.add('completed');
+                }
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            levelScores = [0, 0, 0, 0, 0];
+            document.getElementById('scoreDisplay').textContent = 'Score: 0/50';
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.remove('active');
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`level${i}Status`).classList.remove('completed');
+            }
+            loadQuestion();
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+        loadQuestion();
+    </script>
+</body>
+</html>

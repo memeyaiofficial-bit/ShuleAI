@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kenya History Quest - Discovery Adventure</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #8b4513 0%,
+          #d2691e 50%,
+          #cd853f 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 900px;
+        width: 100%;
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(90deg, #000000, #ff0000, #008000);
+      }
+
+      h1 {
+        color: #8b4513;
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #d2691e;
+        font-size: 1.2em;
+        margin-bottom: 30px;
+        font-weight: bold;
+      }
+
+      .game-area {
+        background: #fff8dc;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 3px solid #deb887;
+      }
+
+      .question-section {
+        background: #f5e6d3;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-left: 5px solid #8b4513;
+      }
+
+      .question-display {
+        font-size: 1.4em;
+        color: #8b4513;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        font-weight: bold;
+      }
+
+      .era-indicator {
+        text-align: center;
+        font-size: 1.1em;
+        color: #d2691e;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding: 10px;
+        background: #ffe4b5;
+        border-radius: 20px;
+      }
+
+      .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .option-btn {
+        padding: 20px;
+        font-size: 1.1em;
+        background: #ffe4b5;
+        border: 3px solid #deb887;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-weight: bold;
+        color: #8b4513;
+        text-align: left;
+      }
+
+      .option-btn:hover {
+        background: #ffd700;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .option-btn.correct {
+        background: #98fb98;
+        border-color: #32cd32;
+        animation: bounce 0.5s;
+      }
+
+      .option-btn.incorrect {
+        background: #ffa07a;
+        border-color: #ff6347;
+        animation: shake 0.5s;
+      }
+
+      .score-board {
+        display: flex;
+        justify-content: space-between;
+        background: #f0e68c;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-label {
+        font-size: 0.9em;
+        color: #8b4513;
+        margin-bottom: 5px;
+      }
+
+      .score-value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #d2691e;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #dcdcdc;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 30px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #8b4513, #d2691e);
+        width: 0%;
+        transition: width 0.5s ease;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .control-btn {
+        padding: 15px 30px;
+        font-size: 1.1em;
+        background: #8b4513;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-weight: bold;
+      }
+
+      .control-btn:hover {
+        background: #a0522d;
+        transform: translateY(-3px);
+      }
+
+      .feedback {
+        text-align: center;
+        font-size: 1.3em;
+        margin-top: 20px;
+        font-weight: bold;
+        min-height: 30px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .feedback.correct {
+        color: #32cd32;
+        background: #f0fff0;
+      }
+
+      .feedback.incorrect {
+        color: #ff6347;
+        background: #fff0f0;
+      }
+
+      .historical-fact {
+        background: #e6f3ff;
+        border-left: 4px solid #4169e1;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 5px;
+        font-style: italic;
+        color: #2f4f4f;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        80% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-10px);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(10px);
+        }
+      }
+
+      .kenya-flag {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #8b4513;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .back-btn:hover {
+        background: #a0522d;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .options {
+          grid-template-columns: 1fr;
+        }
+
+        .question-display {
+          font-size: 1.2em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="../games.html" class="back-btn">← Back to Games</a>
+
+      <h1>Kenya History Quest</h1>
+      <p class="subtitle">Discover the rich history and culture of Kenya!</p>
+
+      <div class="score-board">
+        <div class="score-item">
+          <div class="score-label">Score</div>
+          <div class="score-value" id="score">0</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Era</div>
+          <div class="score-value" id="era">1</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Streak</div>
+          <div class="score-value" id="streak">0</div>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+
+      <div class="game-area">
+        <div class="kenya-flag">🇰🇪</div>
+        <div class="era-indicator" id="eraIndicator">Pre-Colonial Era</div>
+
+        <div class="question-section">
+          <div class="question-display" id="questionDisplay">
+            Loading question...
+          </div>
+        </div>
+
+        <div class="options" id="options">
+          <button class="option-btn" onclick="selectAnswer(0)">Option A</button>
+          <button class="option-btn" onclick="selectAnswer(1)">Option B</button>
+          <button class="option-btn" onclick="selectAnswer(2)">Option C</button>
+          <button class="option-btn" onclick="selectAnswer(3)">Option D</button>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="control-btn" onclick="nextQuestion()">
+          Next Question
+        </button>
+        <button class="control-btn" onclick="resetGame()">New Game</button>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          era: "Pre-Colonial Era",
+          question:
+            "Which community is traditionally known as skilled pastoralists in northern Kenya?",
+          options: ["Maasai", "Kikuyu", "Luo", "Kamba"],
+          correct: 0,
+          fact: "The Maasai are renowned cattle herders who have traditionally lived in the Great Rift Valley region.",
+        },
+        {
+          era: "Pre-Colonial Era",
+          question:
+            "What was the main economic activity of the Kikuyu community?",
+          options: ["Fishing", "Agriculture", "Trading", "Hunting"],
+          correct: 1,
+          fact: "The Kikuyu were primarily agriculturalists who cultivated crops on the fertile slopes of Mount Kenya.",
+        },
+        {
+          era: "Pre-Colonial Era",
+          question:
+            "Which lake is considered the ancestral home of the Luo community?",
+          options: [
+            "Lake Turkana",
+            "Lake Nakuru",
+            "Lake Victoria",
+            "Lake Naivasha",
+          ],
+          correct: 2,
+          fact: "The Luo migrated to the shores of Lake Victoria and became skilled fishermen and farmers.",
+        },
+        {
+          era: "Colonial Era",
+          question: "In which year did Kenya become a British colony?",
+          options: ["1895", "1920", "1888", "1901"],
+          correct: 0,
+          fact: "The British East Africa Protectorate was established in 1895, later becoming Kenya Colony in 1920.",
+        },
+        {
+          era: "Colonial Era",
+          question: "Who was the first European to reach Mount Kenya?",
+          options: [
+            "David Livingstone",
+            "Ludwig Krapf",
+            "Joseph Thomson",
+            "Henry Morton Stanley",
+          ],
+          correct: 1,
+          fact: "Dr. Ludwig Krapf was the first European to see Mount Kenya in 1849 during his missionary work.",
+        },
+        {
+          era: "Colonial Era",
+          question:
+            "What was the name of the railway built from Mombasa to Lake Victoria?",
+          options: [
+            "Kenya Railway",
+            "East African Railway",
+            "Uganda Railway",
+            "Imperial Railway",
+          ],
+          correct: 2,
+          fact: "The Uganda Railway was built from 1896-1901 and was nicknamed the 'Lunatic Express'.",
+        },
+        {
+          era: "Independence Struggle",
+          question: "Who was Kenya's first President?",
+          options: [
+            "Tom Mboya",
+            "Jomo Kenyatta",
+            "Oginga Odinga",
+            "Daniel arap Moi",
+          ],
+          correct: 1,
+          fact: "Jomo Kenyatta led Kenya to independence and became the first President on December 12, 1963.",
+        },
+        {
+          era: "Independence Struggle",
+          question: "What does 'Harambee' mean?",
+          options: ["Freedom", "Unity", "Pull together", "Victory"],
+          correct: 2,
+          fact: "'Harambee' is a Kenyan tradition of community self-help events, meaning 'pull together' in Swahili.",
+        },
+        {
+          era: "Independence Struggle",
+          question: "In which year did Kenya gain independence?",
+          options: ["1961", "1963", "1964", "1962"],
+          correct: 1,
+          fact: "Kenya gained independence from Britain on December 12, 1963, after years of struggle.",
+        },
+        {
+          era: "Modern Kenya",
+          question: "Who was Kenya's second President?",
+          options: [
+            "Daniel arap Moi",
+            "Mwai Kibaki",
+            "Uhuru Kenyatta",
+            "William Ruto",
+          ],
+          correct: 0,
+          fact: "Daniel arap Moi served as Kenya's second President from 1978 to 2002.",
+        },
+        {
+          era: "Modern Kenya",
+          question: "What is Kenya's national motto?",
+          options: [
+            "Unity, Work, Progress",
+            "Harambee",
+            "Uhuru na Umoja",
+            "Justice, Unity, Progress",
+          ],
+          correct: 0,
+          fact: "Kenya's national motto is 'Harambee', which means 'Let us all pull together' in Swahili.",
+        },
+        {
+          era: "Modern Kenya",
+          question:
+            "Which Kenyan won the first Olympic gold medal for the country?",
+          options: [
+            "Kipchoge Keino",
+            "Wilson Kiprugut",
+            "Naftali Temu",
+            "Amos Biwott",
+          ],
+          correct: 0,
+          fact: "Kipchoge Keino won Kenya's first Olympic gold medal in the 1500m at the 1968 Mexico Olympics.",
+        },
+      ];
+
+      const eras = [
+        "Pre-Colonial Era",
+        "Colonial Era",
+        "Independence Struggle",
+        "Modern Kenya",
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let currentEra = 0;
+      let streak = 0;
+      let correctAnswer = 0;
+      let gameActive = true;
+
+      function displayQuestion() {
+        if (currentQuestionIndex >= questions.length) {
+          currentQuestionIndex = 0;
+          currentEra = (currentEra + 1) % eras.length;
+        }
+
+        const question = questions[currentQuestionIndex];
+        correctAnswer = question.correct;
+
+        document.getElementById("questionDisplay").textContent =
+          question.question;
+        document.getElementById("eraIndicator").textContent = question.era;
+
+        const optionButtons = document.querySelectorAll(".option-btn");
+        optionButtons.forEach((btn, index) => {
+          btn.textContent = question.options[index];
+          btn.className = "option-btn";
+          btn.disabled = false;
+        });
+
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+        gameActive = true;
+      }
+
+      function selectAnswer(selectedIndex) {
+        if (!gameActive) return;
+
+        const optionButtons = document.querySelectorAll(".option-btn");
+        const currentQuestion = questions[currentQuestionIndex];
+        gameActive = false;
+
+        if (selectedIndex === correctAnswer) {
+          optionButtons[selectedIndex].classList.add("correct");
+          document.getElementById(
+            "feedback"
+          ).innerHTML = `<div>Excellent! That's correct! 🎉</div>
+                     <div class="historical-fact">📚 Did you know: ${currentQuestion.fact}</div>`;
+          document.getElementById("feedback").className = "feedback correct";
+
+          score += 15 * (currentEra + 1);
+          streak++;
+
+          if (streak > 0 && streak % 5 === 0) {
+            score += 100; // Era mastery bonus
+          }
+        } else {
+          optionButtons[selectedIndex].classList.add("incorrect");
+          optionButtons[correctAnswer].classList.add("correct");
+          document.getElementById(
+            "feedback"
+          ).innerHTML = `<div>Not quite right. The correct answer is highlighted.</div>
+                     <div class="historical-fact">📚 Learn more: ${currentQuestion.fact}</div>`;
+          document.getElementById("feedback").className = "feedback incorrect";
+
+          streak = 0;
+        }
+
+        optionButtons.forEach((btn) => (btn.disabled = true));
+        updateDisplay();
+        setTimeout(() => nextQuestion(), 4000);
+      }
+
+      function nextQuestion() {
+        currentQuestionIndex++;
+        displayQuestion();
+      }
+
+      function updateDisplay() {
+        document.getElementById("score").textContent = score;
+        document.getElementById("era").textContent = currentEra + 1;
+        document.getElementById("streak").textContent = streak;
+
+        const progress = ((currentQuestionIndex % 3) / 3) * 100;
+        document.getElementById("progress").style.width = progress + "%";
+      }
+
+      function resetGame() {
+        score = 0;
+        currentEra = 0;
+        streak = 0;
+        currentQuestionIndex = 0;
+
+        // Shuffle questions
+        for (let i = questions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+
+        updateDisplay();
+        displayQuestion();
+      }
+
+      // Initialize game
+      resetGame();
+    </script>
+  </body>
+</html>

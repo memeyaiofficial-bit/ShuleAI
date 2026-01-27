@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChezaAI Social Studies Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #006600 25%, #FF0000 50%, #FFFFFF 75%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border: 4px solid #000000;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(to right, #000000, #006600, #FF0000, #FFFFFF);
+            border-radius: 15px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            color: white;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .level-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 5px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .level-1 { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
+        .level-2 { background: linear-gradient(135deg, #006600 0%, #009900 100%); }
+        .level-3 { background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%); }
+        .level-4 { background: linear-gradient(135deg, #FFFFFF 0%, #f0f0f0 100%); color: #000 !important; border: 2px solid #000; }
+        .level-5 { background: linear-gradient(135deg, #000000 0%, #006600 50%, #FF0000 100%); }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 2px solid #000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #000000, #006600, #FF0000);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 18px;
+            color: #006600;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 3px solid #006600;
+        }
+
+        .question-number {
+            color: #FF0000;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #000;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #006600;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: #006600;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .option-btn.wrong {
+            background: #FF0000;
+            border-color: #FF0000;
+            color: white;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #000000, #006600, #FF0000);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+            transition: transform 0.2s;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .result-screen.active {
+            display: block;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            color: #006600;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 24px;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .level-completion {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #000;
+        }
+
+        .level-completion h3 {
+            color: #006600;
+            margin-bottom: 10px;
+        }
+
+        .level-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .level-item.completed {
+            background: #006600;
+            color: white;
+            border-color: #006600;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #000000, #006600, #FF0000);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .quiz-screen {
+            display: block;
+        }
+
+        .quiz-screen.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇰🇪 Social Studies Quiz</h1>
+            <p>Grade 4-6 | CBC Curriculum</p>
+        </div>
+
+        <div class="quiz-screen" id="quizScreen">
+            <div class="level-display" id="levelDisplay">
+                <span class="level-badge level-1" id="levelBadge">📚 Level 1: Kenyan Geography</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="score-display" id="scoreDisplay">Score: 0/50</div>
+
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">Question 1 of 50</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" disabled>Next Question</button>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-score" id="resultScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            
+            <div class="level-completion">
+                <h3>Level Breakdown</h3>
+                <div class="level-item" id="level1Status">
+                    <span>📚 Level 1: Kenyan Geography (Q1-10)</span>
+                    <span id="level1Score">0/10</span>
+                </div>
+                <div class="level-item" id="level2Status">
+                    <span>🏛️ Level 2: Government & Citizenship (Q11-20)</span>
+                    <span id="level2Score">0/10</span>
+                </div>
+                <div class="level-item" id="level3Status">
+                    <span>📖 Level 3: Kenyan History (Q21-30)</span>
+                    <span id="level3Score">0/10</span>
+                </div>
+                <div class="level-item" id="level4Status">
+                    <span>👥 Level 4: Communities & Economy (Q31-40)</span>
+                    <span id="level4Score">0/10</span>
+                </div>
+                <div class="level-item" id="level5Status">
+                    <span>🇰🇪 Level 5: National Symbols & Values (Q41-50)</span>
+                    <span id="level5Score">0/10</span>
+                </div>
+            </div>
+
+            <button class="restart-btn" onclick="restartQuiz()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Level 1: Kenyan Geography (Q1-10)
+            {q: "What is the capital city of Kenya?", options: ["Mombasa", "Nairobi", "Kisumu", "Nakuru"], answer: 1, level: 1},
+            {q: "Which is the highest mountain in Kenya?", options: ["Mount Kilimanjaro", "Mount Kenya", "Mount Elgon", "Aberdare Ranges"], answer: 1, level: 1},
+            {q: "What is the largest lake in Kenya?", options: ["Lake Naivasha", "Lake Victoria", "Lake Turkana", "Lake Nakuru"], answer: 1, level: 1},
+            {q: "Which ocean borders Kenya to the east?", options: ["Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"], answer: 1, level: 1},
+            {q: "How many counties does Kenya have?", options: ["45", "46", "47", "48"], answer: 2, level: 1},
+            {q: "Which river is the longest in Kenya?", options: ["Tana River", "Athi River", "Mara River", "Nzoia River"], answer: 0, level: 1},
+            {q: "What is the Great Rift Valley?", options: ["A river", "A geological feature", "A mountain", "A city"], answer: 1, level: 1},
+            {q: "Which national park is famous for wildebeest migration?", options: ["Nairobi National Park", "Maasai Mara", "Tsavo", "Amboseli"], answer: 1, level: 1},
+            {q: "What is Kenya's main port city?", options: ["Nairobi", "Kisumu", "Mombasa", "Malindi"], answer: 2, level: 1},
+            {q: "Which line passes through Kenya?", options: ["Tropic of Cancer", "Equator", "Prime Meridian", "Arctic Circle"], answer: 1, level: 1},
+
+            // Level 2: Government & Citizenship (Q11-20)
+            {q: "Who is the head of state in Kenya?", options: ["Prime Minister", "President", "Governor", "Senator"], answer: 1, level: 2},
+            {q: "How many arms of government does Kenya have?", options: ["Two", "Three", "Four", "Five"], answer: 1, level: 2},
+            {q: "What is the national motto of Kenya?", options: ["Unity is Strength", "Harambee", "Freedom and Justice", "Peace and Love"], answer: 1, level: 2},
+            {q: "Where does the National Assembly meet?", options: ["State House", "Parliament Buildings", "City Hall", "Supreme Court"], answer: 1, level: 2},
+            {q: "What is the minimum voting age in Kenya?", options: ["16 years", "18 years", "21 years", "25 years"], answer: 1, level: 2},
+            {q: "Who makes laws in Kenya?", options: ["President only", "Parliament", "Judges", "Governors"], answer: 1, level: 2},
+            {q: "What is a right?", options: ["A duty", "Something you are entitled to", "A punishment", "A law"], answer: 1, level: 2},
+            {q: "What is a responsibility of citizens?", options: ["Ignoring laws", "Paying taxes", "Littering", "Breaking rules"], answer: 1, level: 2},
+            {q: "What does the Constitution do?", options: ["Nothing", "Sets rules for governance", "Creates problems", "Stops progress"], answer: 1, level: 2},
+            {q: "Who interprets laws in Kenya?", options: ["President", "Parliament", "Judiciary", "Police"], answer: 2, level: 2},
+
+            // Level 3: Kenyan History (Q21-30)
+            {q: "When did Kenya gain independence?", options: ["1960", "1963", "1964", "1970"], answer: 1, level: 3},
+            {q: "Who was Kenya's first President?", options: ["Daniel Moi", "Jomo Kenyatta", "Mwai Kibaki", "Uhuru Kenyatta"], answer: 1, level: 3},
+            {q: "What does Madaraka Day celebrate?", options: ["Independence", "Self-governance", "Heroes", "Constitution"], answer: 1, level: 3},
+            {q: "When is Jamhuri Day celebrated?", options: ["June 1", "October 20", "December 12", "August 15"], answer: 2, level: 3},
+            {q: "Who was Mekatilili wa Menza?", options: ["A teacher", "A freedom fighter", "A governor", "A doctor"], answer: 1, level: 3},
+            {q: "What was the Mau Mau movement?", options: ["A dance", "Freedom struggle", "A school", "A city"], answer: 1, level: 3},
+            {q: "Who was Dedan Kimathi?", options: ["A musician", "A freedom fighter", "A businessman", "A chef"], answer: 1, level: 3},
+            {q: "When did Kenya get its current Constitution?", options: ["1963", "2000", "2010", "2013"], answer: 2, level: 3},
+            {q: "What was colonialism?", options: ["Freedom", "Foreign control", "Trading", "Tourism"], answer: 1, level: 3},
+            {q: "Who was Wangari Maathai?", options: ["Singer", "Environmentalist and Nobel laureate", "Athlete", "Politician only"], answer: 1, level: 3},
+
+            // Level 4: Communities & Economy (Q31-40)
+            {q: "What is the main economic activity in rural Kenya?", options: ["Banking", "Agriculture", "Mining", "Tourism only"], answer: 1, level: 4},
+            {q: "What is a community?", options: ["One person", "Group of people living together", "A building", "A school"], answer: 1, level: 4},
+            {q: "What is Kenya's main cash crop?", options: ["Rice", "Tea and Coffee", "Wheat", "Maize"], answer: 1, level: 4},
+            {q: "What is interdependence?", options: ["Being alone", "People depending on each other", "Fighting", "Isolation"], answer: 1, level: 4},
+            {q: "What is trading?", options: ["Fighting", "Exchanging goods", "Sleeping", "Playing"], answer: 1, level: 4},
+            {q: "Which sector employs most Kenyans?", options: ["Technology", "Agriculture", "Banking", "Sports"], answer: 1, level: 4},
+            {q: "What is tourism?", options: ["Farming", "Travel for pleasure and culture", "Building", "Mining"], answer: 1, level: 4},
+            {q: "What is the Kenyan currency?", options: ["Dollar", "Shilling", "Pound", "Euro"], answer: 1, level: 4},
+            {q: "What is a market?", options: ["A school", "Place for buying and selling", "A hospital", "A church"], answer: 1, level: 4},
+            {q: "What does GDP stand for?", options: ["Government Daily Pay", "Gross Domestic Product", "Great Development Plan", "General Data Processing"], answer: 1, level: 4},
+
+            // Level 5: National Symbols & Values (Q41-50)
+            {q: "What are the colors of the Kenyan flag?", options: ["Red, Blue, Yellow", "Black, Red, Green, White", "Green, Yellow, Blue", "Red, White, Black"], answer: 1, level: 5},
+            {q: "What does the black color on the flag represent?", options: ["Sky", "The people of Kenya", "Forests", "Ocean"], answer: 1, level: 5},
+            {q: "What does green on the flag represent?", options: ["People", "Natural wealth and land", "Blood", "Peace"], answer: 1, level: 5},
+            {q: "What does red on the flag represent?", options: ["Flowers", "Blood shed for independence", "Love", "Anger"], answer: 1, level: 5},
+            {q: "What is in the center of the Kenyan flag?", options: ["Star", "Shield and spears", "Lion", "Eagle"], answer: 1, level: 5},
+            {q: "What is the national anthem called?", options: ["Jambo Kenya", "Ee Mungu Nguvu Yetu", "Kenya Yetu", "Harambee"], answer: 1, level: 5},
+            {q: "What is Kenya's national animal?", options: ["Elephant", "Lion", "Giraffe", "Rhino"], answer: 1, level: 5},
+            {q: "What do the two spears on the flag represent?", options: ["War", "Defense of freedom", "Hunting", "Fighting"], answer: 1, level: 5},
+            {q: "What is patriotism?", options: ["Hating your country", "Love for your country", "Leaving your country", "Ignoring your country"], answer: 1, level: 5},
+            {q: "What does white on the flag represent?", options: ["Snow", "Peace and unity", "Clouds", "Milk"], answer: 1, level: 5}
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let levelScores = [0, 0, 0, 0, 0];
+        let answered = false;
+
+        function getCurrentLevel() {
+            if (currentQuestion < 10) return 1;
+            if (currentQuestion < 20) return 2;
+            if (currentQuestion < 30) return 3;
+            if (currentQuestion < 40) return 4;
+            return 5;
+        }
+
+        function updateLevelDisplay() {
+            const level = getCurrentLevel();
+            const badge = document.getElementById('levelBadge');
+            const labels = [
+                '📚 Level 1: Kenyan Geography',
+                '🏛️ Level 2: Government & Citizenship',
+                '📖 Level 3: Kenyan History',
+                '👥 Level 4: Communities & Economy',
+                '🇰🇪 Level 5: National Symbols & Values'
+            ];
+            
+            badge.textContent = labels[level - 1];
+            badge.className = `level-badge level-${level}`;
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            updateLevelDisplay();
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of 50`;
+            document.getElementById('questionText').textContent = q.q;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('nextBtn').disabled = true;
+            updateProgress();
+        }
+
+        function selectAnswer(selected) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.answer) {
+                    btn.classList.add('correct');
+                }
+                if (index === selected && selected !== q.answer) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selected === q.answer) {
+                score++;
+                levelScores[q.level - 1]++;
+                document.getElementById('scoreDisplay').textContent = `Score: ${score}/50`;
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+
+            const percentage = (score / questions.length) * 100;
+            let emoji, title, message;
+
+            if (percentage >= 90) {
+                emoji = '🏆';
+                title = 'Patriotic Scholar!';
+                message = 'You are a true Kenyan history and civics expert!';
+            } else if (percentage >= 75) {
+                emoji = '🇰🇪';
+                title = 'Kenyan Champion!';
+                message = 'Excellent knowledge of Kenya!';
+            } else if (percentage >= 60) {
+                emoji = '⭐';
+                title = 'Good Citizen!';
+                message = 'Great understanding of Kenya!';
+            } else if (percentage >= 40) {
+                emoji = '💪';
+                title = 'Keep Learning!';
+                message = 'Study more about our great nation!';
+            } else {
+                emoji = '📚';
+                title = 'Future Patriot!';
+                message = 'Explore more about Kenya!';
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultScore').textContent = `You scored ${score} out of 50`;
+            document.getElementById('resultMessage').textContent = message;
+
+            // Update level scores
+            for (let i = 0; i < 5; i++) {
+                document.getElementById(`level${i + 1}Score`).textContent = `${levelScores[i]}/10`;
+                if (levelScores[i] >= 7) {
+                    document.getElementById(`level${i + 1}Status`).classList.add('completed');
+                }
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            levelScores = [0, 0, 0, 0, 0];
+            document.getElementById('scoreDisplay').textContent = 'Score: 0/50';
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.remove('active');
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`level${i}Status`).classList.remove('completed');
+            }
+            loadQuestion();
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+        loadQuestion();
+    </script>
+</body>
+</html>
