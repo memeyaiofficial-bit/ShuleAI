@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tutor Dashboard - ShuleAI Plus +</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      /* Dashboard Specific Styles */
+      .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: #f8f9fa;
+        min-height: 100vh;
+      }
+
+      .dashboard-header {
+        background: linear-gradient(135deg, #2e7d4a, #4caf50);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(46, 125, 74, 0.2);
+      }
+
+      .dashboard-welcome {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .welcome-info h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2.5rem;
+      }
+
+      .welcome-info p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .status-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      .status-badge.active {
+        background: #4caf50;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #fff;
+        color: #2e7d4a;
+      }
+
+      .btn-primary:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #2e7d4a;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: #666;
+        font-weight: 600;
+      }
+
+      .dashboard-content {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+      }
+
+      .main-content {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .profile-card,
+      .quick-actions {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .profile-card h3,
+      .quick-actions h3 {
+        margin: 0 0 1rem 0;
+        color: #2e7d4a;
+      }
+
+      .profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .profile-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .profile-item:last-child {
+        border-bottom: none;
+      }
+
+      .profile-item strong {
+        color: #333;
+      }
+
+      .profile-item span {
+        color: #666;
+      }
+
+      .tabs {
+        display: flex;
+        background: #f8f9fa;
+        border-radius: 0;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+      }
+
+      .tab:hover,
+      .tab.active {
+        color: #2e7d4a;
+        border-bottom-color: #2e7d4a;
+        background: white;
+      }
+
+      .tab-content {
+        padding: 2rem;
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .requests-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .request-card {
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .request-card:hover {
+        border-color: #4caf50;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.1);
+      }
+
+      .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .request-title {
+        margin: 0;
+        color: #2e7d4a;
+        font-size: 1.3rem;
+      }
+
+      .request-time {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .request-details {
+        margin: 1rem 0;
+      }
+
+      .request-details p {
+        margin-bottom: 0.5rem;
+        color: #666;
+      }
+
+      .request-details strong {
+        color: #333;
+      }
+
+      .subjects-tags,
+      .times-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+      }
+
+      .tag {
+        background: #e8f5e8;
+        color: #2e7d4a;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .request-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .btn-success {
+        background: #4caf50;
+        color: white;
+        flex: 1;
+      }
+
+      .btn-success:hover {
+        background: #45a049;
+      }
+
+      .btn-info {
+        background: #2196f3;
+        color: white;
+        flex: 1;
+      }
+
+      .btn-info:hover {
+        background: #1976d2;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+      }
+
+      .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+      }
+
+      .error {
+        background: #ffebee;
+        color: #c62828;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border: 1px solid #ffcdd2;
+      }
+
+      .success {
+        background: #e8f5e8;
+        color: #2e7d4a;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border: 1px solid #c8e6c9;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .dashboard-container {
+          padding: 1rem;
+        }
+
+        .dashboard-welcome {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .welcome-info h1 {
+          font-size: 2rem;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+        }
+
+        .dashboard-content {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .sidebar {
+          order: -1;
+        }
+
+        .request-header {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .request-actions {
+          flex-direction: column;
+        }
+
+        .tabs {
+          flex-wrap: wrap;
+        }
+
+        .tab {
+          min-width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <div class="dashboard-welcome">
+          <div class="welcome-info">
+            <h1 id="tutorName">Welcome back!</h1>
+            <p id="tutorEmail">Loading...</p>
+          </div>
+          <div class="header-actions">
+            <div class="status-badge active" id="statusBadge">✅ Active</div>
+            <button class="btn btn-primary" onclick="editProfile()">
+              📝 Edit Profile
+            </button>
+            <a href="index.html" class="btn btn-secondary">
+              🏠 Back to Platform
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-number" id="totalRequests">0</div>
+          <div class="stat-label">Total Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-number" id="pendingRequests">0</div>
+          <div class="stat-label">Pending Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-number" id="activeStudents">0</div>
+          <div class="stat-label">Active Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-number" id="averageRating">5.0</div>
+          <div class="stat-label">Average Rating</div>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Content -->
+      <div class="dashboard-content">
+        <div class="main-content">
+          <div class="tabs">
+            <button class="tab active" onclick="showTab('requests')">
+              Student Requests
+            </button>
+            <button class="tab" onclick="showTab('sessions')">
+              My Sessions
+            </button>
+            <button class="tab" onclick="showTab('reviews')">Reviews</button>
+          </div>
+
+          <!-- Requests Tab -->
+          <div id="requestsTab" class="tab-content active">
+            <div id="requestsContainer" class="loading">
+              Loading requests...
+            </div>
+          </div>
+
+          <!-- Sessions Tab -->
+          <div id="sessionsTab" class="tab-content">
+            <div class="empty-state">
+              <div class="empty-state-icon">📅</div>
+              <h3>Session Management</h3>
+              <p>Session scheduling and management features coming soon!</p>
+            </div>
+          </div>
+
+          <!-- Reviews Tab -->
+          <div id="reviewsTab" class="tab-content">
+            <div class="empty-state">
+              <div class="empty-state-icon">⭐</div>
+              <h3>Student Reviews</h3>
+              <p>Reviews and ratings from your students will appear here.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <div class="profile-card">
+            <h3>📋 Profile Summary</h3>
+            <div class="profile-info">
+              <div class="profile-item">
+                <strong>Location:</strong>
+                <span id="profileLocation">-</span>
+              </div>
+              <div class="profile-item">
+                <strong>Hourly Rate:</strong>
+                <span id="profileRate">-</span>
+              </div>
+              <div class="profile-item">
+                <strong>Subjects:</strong>
+                <span id="profileSubjects">-</span>
+              </div>
+              <div class="profile-item">
+                <strong>Grade Levels:</strong>
+                <span id="profileGrades">-</span>
+              </div>
+              <div class="profile-item">
+                <strong>Member Since:</strong>
+                <span id="profileJoined">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <h3>🚀 Quick Actions</h3>
+            <button
+              class="btn btn-primary"
+              style="width: 100%; margin-bottom: 0.5rem"
+              onclick="refreshData()"
+            >
+              🔄 Refresh Data
+            </button>
+            <button
+              class="btn btn-secondary"
+              style="width: 100%; margin-bottom: 0.5rem"
+              onclick="editProfile()"
+            >
+              ⚙️ Edit Profile
+            </button>
+            <button
+              class="btn btn-secondary"
+              style="width: 100%"
+              onclick="contactSupport()"
+            >
+              📞 Contact Support
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close" onclick="closeContactModal()">&times;</span>
+        <h2>Contact Student</h2>
+        <div id="contactInfo"></div>
+      </div>
+    </div>
+
+    <script>
+      // Global variables
+      let currentTutor = null;
+      let dashboardData = null;
+      const API_BASE = "http://localhost:5000/api"; // Update this to your backend URL
+
+      // Initialize dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        const tutorEmail = getTutorEmail();
+        if (!tutorEmail) {
+          alert("Please sign in as a tutor first");
+          window.location.href = "index.html";
+          return;
+        }
+        loadDashboard(tutorEmail);
+      });
+
+      // Get tutor email from URL params or localStorage
+      function getTutorEmail() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailFromUrl = urlParams.get("email");
+
+        if (emailFromUrl) {
+          localStorage.setItem("tutorEmail", emailFromUrl);
+          return emailFromUrl;
+        }
+
+        return localStorage.getItem("tutorEmail");
+      }
+
+      // Load dashboard data
+      async function loadDashboard(email) {
+        try {
+          showLoading();
+
+          const response = await fetch(
+            `${API_BASE}/tutors/dashboard/${encodeURIComponent(email)}`,
+          );
+          const result = await response.json();
+
+          if (result.success) {
+            dashboardData = result.data;
+            populateDashboard(dashboardData);
+          } else {
+            showError("Failed to load dashboard: " + result.message);
+          }
+        } catch (error) {
+          console.error("Dashboard load error:", error);
+          showError("Failed to load dashboard. Please check your connection.");
+        }
+      }
+
+      // Populate dashboard with data
+      function populateDashboard(data) {
+        const tutor = data.tutor;
+        currentTutor = tutor;
+
+        // Header
+        document.getElementById("tutorName").textContent =
+          `Welcome back, ${tutor.name}!`;
+        document.getElementById("tutorEmail").textContent = tutor.email;
+
+        // Stats
+        document.getElementById("totalRequests").textContent =
+          data.stats.totalRequests;
+        document.getElementById("pendingRequests").textContent =
+          data.stats.pendingRequests;
+        document.getElementById("activeStudents").textContent =
+          data.stats.activeStudents;
+        document.getElementById("averageRating").textContent =
+          data.stats.averageRating;
+
+        // Profile sidebar
+        document.getElementById("profileLocation").textContent = tutor.location;
+        document.getElementById("profileRate").textContent =
+          `KES ${tutor.hourlyRate}`;
+        document.getElementById("profileSubjects").textContent =
+          tutor.subjects.join(", ");
+        document.getElementById("profileGrades").textContent =
+          tutor.grades.join(", ");
+        document.getElementById("profileJoined").textContent = new Date(
+          tutor.joinedAt,
+        ).toLocaleDateString();
+
+        // Load requests
+        populateRequests(data.requests);
+      }
+
+      // Populate requests list
+      function populateRequests(requests) {
+        const container = document.getElementById("requestsContainer");
+
+        if (requests.length === 0) {
+          container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <h3>No Student Requests Yet</h3>
+                        <p>Your profile is live and students can find you. New requests will appear here!</p>
+                    </div>
+                `;
+          return;
+        }
+
+        container.innerHTML = `
+                <div class="requests-list">
+                    ${requests.map((request) => createRequestCard(request)).join("")}
+                </div>
+            `;
+      }
+
+      // Create request card HTML
+      function createRequestCard(request) {
+        const submittedDate = new Date(
+          request.submittedAt,
+        ).toLocaleDateString();
+        const subjects = request.subjects || [];
+        const times = request.preferredTimes || [];
+
+        return `
+                <div class="request-card" data-request-id="${request.$id}">
+                    <div class="request-header">
+                        <h3 class="request-title">${request.studentName} (${request.grade})</h3>
+                        <div class="request-time">${submittedDate}</div>
+                    </div>
+                    
+                    <div class="request-details">
+                        <p><strong>Parent/Guardian:</strong> ${request.parentName}</p>
+                        <p><strong>Contact:</strong> ${request.email} | ${request.phone}</p>
+                        
+                        <p><strong>Subjects Needed:</strong></p>
+                        <div class="subjects-tags">
+                            ${subjects.map((subject) => `<span class="tag">${subject}</span>`).join("")}
+                        </div>
+                        
+                        <p><strong>Learning Goals:</strong></p>
+                        <p style="background: #f9f9f9; padding: 1rem; border-radius: 8px; margin: 0.5rem 0;">
+                            "${request.goals}"
+                        </p>
+                        
+                        <p><strong>Preferred Times:</strong></p>
+                        <div class="times-tags">
+                            ${times.map((time) => `<span class="tag">${time}</span>`).join("")}
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                            <p><strong>Frequency:</strong> ${request.frequency}</p>
+                            <p><strong>Budget:</strong> KES ${request.budget}/hour</p>
+                        </div>
+                    </div>
+                    
+                    <div class="request-actions">
+                        <button class="btn btn-success" onclick="respondToRequest('${request.$id}')">
+                            ✅ Accept & Respond
+                        </button>
+                        <button class="btn btn-info" onclick="contactStudent('${request.$id}')">
+                            📞 Contact Info
+                        </button>
+                    </div>
+                </div>
+            `;
+      }
+
+      // Show loading state
+      function showLoading() {
+        document.getElementById("requestsContainer").innerHTML = `
+                <div class="loading">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                    Loading your dashboard...
+                </div>
+            `;
+      }
+
+      // Show error
+      function showError(message) {
+        document.getElementById("requestsContainer").innerHTML = `
+                <div class="error">
+                    <strong>Error:</strong> ${message}
+                    <button onclick="location.reload()" style="margin-left: 1rem;" class="btn btn-small">Retry</button>
+                </div>
+            `;
+      }
+
+      // Tab switching
+      function showTab(tabName) {
+        // Hide all tabs
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((tab) => tab.classList.remove("active"));
+        document
+          .querySelectorAll(".tab")
+          .forEach((tab) => tab.classList.remove("active"));
+
+        // Show selected tab
+        document.getElementById(tabName + "Tab").classList.add("active");
+        event.target.classList.add("active");
+      }
+
+      // Respond to request
+      function respondToRequest(requestId) {
+        const message = prompt("Enter your response message to the parent:");
+        if (message && message.trim()) {
+          sendResponse(requestId, message.trim());
+        }
+      }
+
+      // Send response to API
+      async function sendResponse(requestId, message) {
+        try {
+          const response = await fetch(
+            `${API_BASE}/tutors/respond/${requestId}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                tutorEmail: currentTutor.email,
+                response: message,
+                contactInfo: currentTutor.phone,
+              }),
+            },
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            alert(
+              "Response sent successfully! The parent will receive your message via email.",
+            );
+            refreshData();
+          } else {
+            alert("Failed to send response: " + result.message);
+          }
+        } catch (error) {
+          console.error("Send response error:", error);
+          alert("Failed to send response. Please try again.");
+        }
+      }
+
+      // Contact student (show contact info)
+      function contactStudent(requestId) {
+        const request = dashboardData.requests.find((r) => r.$id === requestId);
+        if (request) {
+          const contactInfo = `
+                    <h3>${request.studentName} - Contact Information</h3>
+                    <p><strong>Parent/Guardian:</strong> ${request.parentName}</p>
+                    <p><strong>Email:</strong> <a href="mailto:${request.email}">${request.email}</a></p>
+                    <p><strong>Phone:</strong> <a href="tel:${request.phone}">${request.phone}</a></p>
+                    <p><strong>Student:</strong> ${request.studentName} (${request.grade})</p>
+                    <p><strong>Subjects:</strong> ${request.subjects.join(", ")}</p>
+                    <p><strong>Budget:</strong> KES ${request.budget}/hour</p>
+                `;
+
+          document.getElementById("contactInfo").innerHTML = contactInfo;
+          document.getElementById("contactModal").style.display = "block";
+        }
+      }
+
+      // Close contact modal
+      function closeContactModal() {
+        document.getElementById("contactModal").style.display = "none";
+      }
+
+      // Refresh dashboard data
+      function refreshData() {
+        const email = getTutorEmail();
+        if (email) {
+          loadDashboard(email);
+        }
+      }
+
+      // Edit profile
+      function editProfile() {
+        alert(
+          "Profile editing feature coming soon! For now, please contact support to update your profile.",
+        );
+      }
+
+      // Contact support
+      function contactSupport() {
+        const supportInfo = `
+                ShuleAI Support:
+                
+                Email: support@shuleai.com
+                Phone: +254 700 000 000
+                
+                We're here to help with:
+                • Profile updates
+                • Technical issues
+                • Payment questions
+                • General inquiries
+            `;
+        alert(supportInfo);
+      }
+
+      // Close modal when clicking outside
+      window.addEventListener("click", function (event) {
+        const modal = document.getElementById("contactModal");
+        if (event.target === modal) {
+          closeContactModal();
+        }
+      });
+
+      // Add basic modal styles if not already in CSS
+      if (!document.querySelector("style[data-modal]")) {
+        const modalStyle = document.createElement("style");
+        modalStyle.setAttribute("data-modal", "true");
+        modalStyle.textContent = `
+                .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0,0,0,0.4);
+                }
+                .modal-content {
+                    background-color: white;
+                    margin: 15% auto;
+                    padding: 2rem;
+                    border-radius: 15px;
+                    width: 90%;
+                    max-width: 500px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                }
+                .close {
+                    color: #aaa;
+                    float: right;
+                    font-size: 28px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    line-height: 1;
+                }
+                .close:hover {
+                    color: #000;
+                }
+            `;
+        document.head.appendChild(modalStyle);
+      }
+    </script>
+  </body>
+</html>

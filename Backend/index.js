@@ -19,7 +19,7 @@ app.use(
       "https://shuleaibackend-0fcq.onrender.com",
     ],
     credentials: true,
-  })
+  }),
 );
 
 // Rate limiting
@@ -37,9 +37,11 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 const paymentRoutes = require("./routes/payments");
 const authRoutes = require("./routes/auth");
+const tutorRoutes = require("./routes/tutors");
 
 app.use("/api/payments", paymentRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/tutors", tutorRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -72,6 +74,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(
-    `📝 API Documentation available at http://localhost:${PORT}/api/docs`
+    `📝 API Documentation available at http://localhost:${PORT}/api/docs`,
   );
 });

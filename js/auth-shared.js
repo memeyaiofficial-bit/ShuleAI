@@ -1,4 +1,6 @@
 // Shared Authentication JavaScript for ShuleAI
+console.log('🚀 Starting to load auth-shared.js...');
+
 // API Configuration
 const AUTH_API_BASE_URL = "https://shuleaiv1.onrender.com/api";
 
@@ -1924,60 +1926,90 @@ function exploreSubject(subjectName) {
 }
 
 // Toggle Games Function - Show/Hide additional games
+console.log('📝 About to define toggleGames function...');
 function toggleGames(category) {
-  const hiddenGames = document.querySelectorAll(
-    `.hidden-games[data-category="${category}"]`,
-  );
-  const button = document.querySelector(
-    `button[onclick="toggleGames('${category}')"]`,
-  );
-  const arrow = button.querySelector(".see-all-arrow");
-  const text = button.querySelector(".see-all-text");
+  console.log("🎮 toggleGames called with category:", category);
 
-  let isExpanded = false;
+  try {
+    const hiddenGames = document.querySelectorAll(
+      `.hidden-games[data-category="${category}"]`,
+    );
+    const button = document.querySelector(
+      `button[onclick="toggleGames('${category}')"]`,
+    );
 
-  // Check if games are currently visible
-  if (hiddenGames.length > 0) {
-    const firstGame = hiddenGames[0];
-    isExpanded =
-      firstGame.style.display !== "none" &&
-      getComputedStyle(firstGame).display !== "none";
-  }
-
-  if (isExpanded) {
-    // Hide games
-    hiddenGames.forEach((game) => {
-      game.style.display = "none";
-    });
-    arrow.textContent = "▼";
-    button.classList.remove("expanded");
-
-    // Update button text based on category
-    if (category === "math") {
-      text.textContent = "See All Mathematics Games";
-    } else if (category === "english") {
-      text.textContent = "See All English Games";
-    } else if (category === "science") {
-      text.textContent = "See All Science Games";
+    if (!button) {
+      console.error("❌ Button not found for category:", category);
+      return;
     }
-  } else {
-    // Show games
-    hiddenGames.forEach((game) => {
-      game.style.display = "block";
-    });
-    arrow.textContent = "▲";
-    button.classList.add("expanded");
 
-    // Update button text based on category
-    if (category === "math") {
-      text.textContent = "Show Less Mathematics Games";
-    } else if (category === "english") {
-      text.textContent = "Show Less English Games";
-    } else if (category === "science") {
-      text.textContent = "Show Less Science Games";
+    const arrow = button.querySelector(".see-all-arrow");
+    const text = button.querySelector(".see-all-text");
+
+    if (!arrow || !text) {
+      console.error("❌ Arrow or text element not found in button");
+      return;
     }
+
+    let isExpanded = false;
+
+    // Check if games are currently visible
+    if (hiddenGames.length > 0) {
+      const firstGame = hiddenGames[0];
+      isExpanded =
+        firstGame.style.display !== "none" &&
+        getComputedStyle(firstGame).display !== "none";
+    }
+
+    if (isExpanded) {
+      // Hide games
+      hiddenGames.forEach((game) => {
+        game.style.display = "none";
+      });
+      arrow.textContent = "▼";
+      button.classList.remove("expanded");
+
+      // Update button text based on category
+      if (category === "math") {
+        text.textContent = "See All Mathematics Games";
+      } else if (category === "english") {
+        text.textContent = "See All English Games";
+      } else if (category === "science") {
+        text.textContent = "See All Science Games";
+      }
+    } else {
+      // Show games
+      hiddenGames.forEach((game) => {
+        game.style.display = "block";
+      });
+      arrow.textContent = "▲";
+      button.classList.add("expanded");
+
+      // Update button text based on category
+      if (category === "math") {
+        text.textContent = "Show Less Mathematics Games";
+      } else if (category === "english") {
+        text.textContent = "Show Less English Games";
+      } else if (category === "science") {
+        text.textContent = "Show Less Science Games";
+      }
+    }
+  } catch (error) {
+    console.error("❌ Error in toggleGames:", error);
+    alert("An error occurred. Please refresh the page and try again.");
   }
 }
+
+// Ensure function is available globally
+window.toggleGames = toggleGames;
+
+// Additional safety check
+document.addEventListener("DOMContentLoaded", function () {
+  console.log(
+    "✅ DOM loaded, toggleGames available:",
+    typeof window.toggleGames !== "undefined",
+  );
+});
 
 // Special Code Generator (for admin use)
 // To use in console: generateSpecialCode("Test Code for User")
@@ -2011,3 +2043,11 @@ To activate this code, add it to the validSpecialCodes object in handleSpecialCo
     expires: expiryDate,
   };
 }
+
+// End of file - confirm everything loaded
+console.log('✅ auth-shared.js loaded completely!');
+console.log('📋 Functions defined:', {
+  'toggleGames': typeof toggleGames !== 'undefined',
+  'showQuickNotification': typeof showQuickNotification !== 'undefined',
+  'openSignInModal': typeof openSignInModal !== 'undefined'
+});

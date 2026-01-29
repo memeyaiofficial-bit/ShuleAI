@@ -194,7 +194,7 @@ router.post("/verify-code", async (req, res) => {
       // Define valid special codes with creation dates
       const validSpecialCodes = {
         "SPECIAL-DEMO1": {
-          created: "2026-01-27",
+          created: "2026-01-29",
           description: "Demo Access Code 1",
         },
         "SPECIAL-DEMO2": {
@@ -202,11 +202,11 @@ router.post("/verify-code", async (req, res) => {
           description: "Demo Access Code 2",
         },
         "SPECIAL-TRIAL": {
-          created: "2026-01-27",
+          created: "2026-01-29",
           description: "Trial Access Code",
         },
         "SPECIAL-TEST1": {
-          created: "2026-01-27",
+          created: "2026-01-29",
           description: "Test Access Code 1",
         },
       };
