@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>EduPlay Kenya | Life Skills Education | CBC PP1 - Grade 9</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Segoe UI','Poppins',sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#f6fff8,#e8f5e9);
+      min-height:100vh;
+      color:#1b4332;
+    }
+
+    .app-container{
+      max-width:1400px;
+      margin:auto;
+      padding:1rem;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#2e7d32,#1b5e20);
+      color:white;
+      padding:2rem;
+      border-radius:2rem;
+      margin-bottom:2rem;
+      box-shadow:0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    .hero h1{
+      font-size:2rem;
+    }
+
+    .hero p{
+      margin-top:.5rem;
+      opacity:.9;
+    }
+
+    .grade-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.6rem;
+      margin-top:1.5rem;
+      justify-content:center;
+    }
+
+    .grade-btn{
+      border:none;
+      background:rgba(255,255,255,.15);
+      color:white;
+      padding:.6rem 1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+      transition:.2s;
+    }
+
+    .grade-btn.active{
+      background:#ffd54f;
+      color:#1b4332;
+    }
+
+    .grade-btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .lifeskills-hero{
+      background:linear-gradient(135deg,#dcedc8,#c8e6c9);
+      border-radius:2rem;
+      padding:2rem;
+      text-align:center;
+      margin-bottom:2rem;
+      box-shadow:0 10px 25px rgba(0,0,0,.1);
+    }
+
+    .lifeskills-hero h2{
+      color:#1b5e20;
+      font-size:2rem;
+    }
+
+    .subject-card{
+      background:white;
+      border-radius:2rem;
+      padding:1.5rem;
+      max-width:550px;
+      margin:auto;
+      box-shadow:0 10px 20px rgba(0,0,0,.08);
+    }
+
+    .subject-icon{
+      width:90px;
+      height:90px;
+      background:#dcedc8;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      border-radius:1.5rem;
+      font-size:3rem;
+      margin-bottom:1rem;
+    }
+
+    .subject-title{
+      font-size:2rem;
+      color:#2e7d32;
+      margin-bottom:.4rem;
+    }
+
+    .subject-stats{
+      color:#388e3c;
+      font-weight:600;
+      margin-bottom:1rem;
+    }
+
+    .resource-description{
+      line-height:1.7;
+      margin-bottom:1.5rem;
+    }
+
+    .button-group{
+      display:flex;
+      gap:1rem;
+      flex-wrap:wrap;
+    }
+
+    .subject-button{
+      flex:1;
+      border:none;
+      padding:.9rem 1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+      transition:.2s;
+      background:#edf7ed;
+      color:#1b5e20;
+    }
+
+    .subject-button.primary{
+      background:#ffd54f;
+      color:#1b4332;
+    }
+
+    .subject-button:hover{
+      background:#2e7d32;
+      color:white;
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      backdrop-filter:blur(6px);
+      justify-content:center;
+      align-items:center;
+      padding:1rem;
+      z-index:999;
+    }
+
+    .modal-card{
+      background:white;
+      width:100%;
+      max-width:850px;
+      border-radius:2rem;
+      padding:1.5rem;
+      max-height:90vh;
+      overflow-y:auto;
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:1rem;
+    }
+
+    .close-modal{
+      background:none;
+      border:none;
+      font-size:2rem;
+      cursor:pointer;
+    }
+
+    .level-badge{
+      background:#1b4332;
+      color:white;
+      padding:.4rem 1rem;
+      border-radius:2rem;
+      display:inline-block;
+      margin-bottom:1rem;
+    }
+
+    .question-text{
+      background:#f1f8e9;
+      padding:1.3rem;
+      border-radius:1.5rem;
+      font-size:1.4rem;
+      font-weight:bold;
+      margin:1rem 0;
+    }
+
+    .options-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1rem;
+      margin-top:1rem;
+    }
+
+    .option-btn{
+      border:2px solid #c5e1a5;
+      background:#fafafa;
+      padding:1rem;
+      border-radius:1rem;
+      cursor:pointer;
+      font-weight:600;
+      transition:.2s;
+    }
+
+    .option-btn:hover{
+      background:#2e7d32;
+      color:white;
+    }
+
+    .feedback{
+      margin-top:1rem;
+      font-weight:bold;
+      font-size:1.1rem;
+    }
+
+    .next-level-btn,
+    .restart-game{
+      border:none;
+      padding:.8rem 1.5rem;
+      border-radius:2rem;
+      margin-top:1rem;
+      font-weight:bold;
+      cursor:pointer;
+      background:#2e7d32;
+      color:white;
+    }
+
+    .worksheet-item{
+      background:#f8fff8;
+      border-left:5px solid #ffd54f;
+      padding:1rem;
+      border-radius:1rem;
+      margin-bottom:1rem;
+    }
+
+    .download-pdf{
+      margin-top:.7rem;
+      border:none;
+      padding:.6rem 1rem;
+      border-radius:2rem;
+      background:#d32f2f;
+      color:white;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    @media(max-width:640px){
+      .hero h1{
+        font-size:1.4rem;
+      }
+
+      .question-text{
+        font-size:1.1rem;
+      }
+
+      .lifeskills-hero h2{
+        font-size:1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <div class="hero">
+    <h1>🌱 EduPlay Kenya — Life Skills Education</h1>
+    <p>
+      CBC Life Skills Learning Platform for PP1 to Grade 9 with voice guidance,
+      interactive quizzes and downloadable PDF worksheets.
+    </p>
+
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <div class="lifeskills-hero">
+    <div style="font-size:4rem;">💚🧠</div>
+    <h2>Life Skills & Values Education</h2>
+    <p>
+      Learn decision making, communication, self-awareness,
+      responsibility, empathy, safety, hygiene and citizenship.
+    </p>
+  </div>
+
+  <div class="subject-card">
+    <div class="subject-icon">🌟</div>
+
+    <h3 class="subject-title">CBC Life Skills</h3>
+
+    <p class="subject-stats">
+      40+ Games • 200+ Worksheets • PP1 - Grade 9
+    </p>
+
+    <p class="resource-description">
+      Build confidence, communication, emotional intelligence,
+      leadership and responsible citizenship through fun CBC
+      activities. Includes 4 progressive levels with 30 questions each.
+      Voice output guides learners throughout the game.
+    </p>
+
+    <div class="button-group">
+      <button class="subject-button primary" id="playGameBtn">
+        🎮 Play Life Skills Game
+      </button>
+
+      <button class="subject-button" id="worksheetsBtn">
+        📄 Download Worksheets
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME MODAL -->
+<div id="gameModal" class="modal">
+  <div class="modal-card">
+
+    <div class="modal-header">
+      <h2 id="gameSubjectTitle"></h2>
+      <button class="close-modal" id="closeGameModal">&times;</button>
+    </div>
+
+    <div id="gameContent"></div>
+
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div id="worksheetModal" class="modal">
+  <div class="modal-card">
+
+    <div class="modal-header">
+      <h2 id="wsSubjectTitle"></h2>
+      <button class="close-modal" id="closeWsModal">&times;</button>
+    </div>
+
+    <div id="worksheetContent"></div>
+
+  </div>
+</div>
+
+<script>
+
+  // ---------------- VOICE OUTPUT ONLY ----------------
+
+  let speechUtterance = null;
+
+  function speakText(message){
+    if(!window.speechSynthesis) return;
+
+    if(speechUtterance){
+      window.speechSynthesis.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.lang = "en-US";
+
+    speechUtterance = utterance;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // ---------------- GRADE SELECTOR ----------------
+
+  let selectedGradeCode = 0;
+
+  function renderGradeSelector(){
+
+    const grades = [
+      "PP1","PP2","G1","G2","G3","G4",
+      "G5","G6","G7","G8","G9"
+    ];
+
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+
+    grades.forEach((grade,index)=>{
+
+      const btn = document.createElement("button");
+
+      btn.className = `grade-btn ${selectedGradeCode===index ? "active" : ""}`;
+      btn.textContent = grade;
+
+      btn.onclick = ()=>{
+        selectedGradeCode = index;
+        renderGradeSelector();
+      };
+
+      container.appendChild(btn);
+
+    });
+  }
+
+  // ---------------- LIFE SKILLS QUESTIONS ----------------
+
+  function generateLifeSkillsQuestions(){
+
+    const questions = [];
+
+    const sampleQuestions = [
+
+      {
+        text:"What should you say when someone helps you?",
+        correctAnswer:"thank you",
+        options:["thank you","go away","nothing","sorry"]
+      },
+
+      {
+        text:"Which action shows responsibility?",
+        correctAnswer:"doing homework",
+        options:["doing homework","fighting","shouting","littering"]
+      },
+
+      {
+        text:"What should you do before eating food?",
+        correctAnswer:"wash hands",
+        options:["wash hands","run outside","sleep","play football"]
+      },
+
+      {
+        text:"How can you solve disagreements peacefully?",
+        correctAnswer:"talk calmly",
+        options:["talk calmly","fight","shout","ignore everyone"]
+      },
+
+      {
+        text:"Which behavior shows honesty?",
+        correctAnswer:"telling the truth",
+        options:["telling the truth","stealing","lying","hiding mistakes"]
+      }
+
+    ];
+
+    for(let i=0;i<30;i++){
+
+      const q = sampleQuestions[i % sampleQuestions.length];
+
+      const shuffled = [...q.options].sort(()=>Math.random()-0.5);
+
+      questions.push({
+        text:q.text,
+        correctAnswer:q.correctAnswer,
+        options:shuffled
+      });
+
+    }
+
+    return questions;
+  }
+
+  // ---------------- GAME STATE ----------------
+
+  let currentGameState = {
+    level:1,
+    currentIndex:0,
+    score:0,
+    questions:[]
+  };
+
+  function getGradeDisplay(code){
+
+    const map = [
+      "PP1","PP2","Grade 1","Grade 2","Grade 3",
+      "Grade 4","Grade 5","Grade 6",
+      "Grade 7","Grade 8","Grade 9"
+    ];
+
+    return map[code];
+  }
+
+  // ---------------- START GAME ----------------
+
+  function launchGame(){
+
+    currentGameState = {
+      level:1,
+      currentIndex:0,
+      score:0,
+      questions:generateLifeSkillsQuestions()
+    };
+
+    document.getElementById("gameSubjectTitle").innerHTML =
+      `Life Skills | ${getGradeDisplay(selectedGradeCode)} | Level 1`;
+
+    renderGameModal();
+
+    document.getElementById("gameModal").style.display = "flex";
+
+    speakText("Welcome to Life Skills Education Game");
+  }
+
+  // ---------------- ANSWERS ----------------
+
+  function handleAnswer(selected,correct){
+
+    const feedback = document.getElementById("gameFeedback");
+
+    if(selected.toLowerCase() === correct.toLowerCase()){
+
+      currentGameState.score++;
+
+      feedback.innerHTML = "✅ Correct Answer!";
+      speakText("Correct answer");
+
+    }else{
+
+      feedback.innerHTML = `❌ Wrong. Correct answer is ${correct}`;
+      speakText(`Wrong answer. Correct answer is ${correct}`);
+
+    }
+
+    setTimeout(()=>{
+
+      currentGameState.currentIndex++;
+
+      renderGameModal();
+
+    },1000);
+  }
+
+  // ---------------- RENDER GAME ----------------
+
+  function renderGameModal(){
+
+    const gameDiv = document.getElementById("gameContent");
+
+    const state = currentGameState;
+
+    if(state.currentIndex >= 30){
+
+      const passed = state.score >= 20;
+
+      gameDiv.innerHTML = `
+        <div class="level-badge">
+          Level ${state.level} Complete
+        </div>
+
+        <h2>⭐ Score: ${state.score}/30</h2>
+
+        ${
+          passed
+          ?
+          `<p>🎉 Excellent! You passed this level.</p>`
+          :
+          `<p>📘 You need 20 marks to pass. Try again.</p>`
+        }
+
+        <button class="restart-game" onclick="restartGame()">
+          🔄 Restart
+        </button>
+      `;
+
+      speakText(`Game completed. Your score is ${state.score}`);
+
+      return;
+    }
+
+    const q = state.questions[state.currentIndex];
+
+    gameDiv.innerHTML = `
+      <div>
+        <span class="level-badge">
+          Level ${state.level} | Question ${state.currentIndex+1}/30
+        </span>
+
+        <span style="float:right;font-weight:bold;">
+          ⭐ ${state.score}
+        </span>
+      </div>
+
+      <div class="question-text">
+        ${q.text}
+      </div>
+
+      <div class="options-grid" id="optionsGrid"></div>
+
+      <div class="feedback" id="gameFeedback"></div>
+    `;
+
+    speakText(q.text);
+
+    const optionsGrid = document.getElementById("optionsGrid");
+
+    q.options.forEach(option=>{
+
+      const btn = document.createElement("button");
+
+      btn.className = "option-btn";
+      btn.textContent = option;
+
+      btn.onclick = ()=>{
+        handleAnswer(option,q.correctAnswer);
+      };
+
+      optionsGrid.appendChild(btn);
+
+    });
+  }
+
+  function restartGame(){
+    launchGame();
+  }
+
+  // ---------------- WORKSHEETS ----------------
+
+  function launchWorksheets(){
+
+    const grade = getGradeDisplay(selectedGradeCode);
+
+    document.getElementById("wsSubjectTitle").innerHTML =
+      `Life Skills Worksheets | ${grade}`;
+
+    let html = "";
+
+    for(let lvl=1; lvl<=4; lvl++){
+
+      html += `
+        <div class="worksheet-item">
+
+          <strong>
+            📘 Level ${lvl} Worksheet
+          </strong>
+
+          <p style="margin-top:6px;">
+            Topics include communication skills,
+            decision making, self-awareness,
+            leadership, hygiene, safety and values.
+          </p>
+
+          <button class="download-pdf" onclick="downloadPDF(${lvl})">
+            📥 Download PDF
+          </button>
+
+        </div>
+      `;
+    }
+
+    document.getElementById("worksheetContent").innerHTML = html;
+
+    document.getElementById("worksheetModal").style.display = "flex";
+  }
+
+  // ---------------- PDF ----------------
+
+  async function downloadPDF(level){
+
+    const pdfContent = document.createElement("div");
+
+    pdfContent.style.width = "800px";
+    pdfContent.style.padding = "40px";
+    pdfContent.style.background = "white";
+
+    pdfContent.innerHTML = `
+      <h1 style="color:#2e7d32;">
+        🌱 CBC Life Skills Worksheet
+      </h1>
+
+      <h2>
+        ${getGradeDisplay(selectedGradeCode)} - Level ${level}
+      </h2>
+
+      <hr/><br/>
+
+      <h3>Topics Covered:</h3>
+
+      <ul style="line-height:2;">
+        <li>Communication Skills</li>
+        <li>Self Awareness</li>
+        <li>Decision Making</li>
+        <li>Empathy and Respect</li>
+        <li>Personal Hygiene</li>
+        <li>Leadership and Citizenship</li>
+      </ul>
+
+      <br/>
+
+      <h3>Activities</h3>
+
+      <p>
+        1. Write five ways to show kindness.<br/><br/>
+        2. Explain how to solve conflicts peacefully.<br/><br/>
+        3. Draw a clean environment.<br/><br/>
+        4. List healthy habits learners should practice daily.
+      </p>
+    `;
+
+    document.body.appendChild(pdfContent);
+
+    const canvas = await html2canvas(pdfContent,{scale:2});
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF();
+
+    pdf.addImage(imgData,"PNG",0,0,210,290);
+
+    pdf.save(`LifeSkills_Level_${level}.pdf`);
+
+    document.body.removeChild(pdfContent);
+  }
+
+  // ---------------- CLOSE MODAL ----------------
+
+  function closeModal(id){
+    document.getElementById(id).style.display = "none";
+  }
+
+  // ---------------- EVENTS ----------------
+
+  document.getElementById("playGameBtn").onclick = launchGame;
+
+  document.getElementById("worksheetsBtn").onclick = launchWorksheets;
+
+  document.getElementById("closeGameModal").onclick = ()=>{
+    closeModal("gameModal");
+  };
+
+  document.getElementById("closeWsModal").onclick = ()=>{
+    closeModal("worksheetModal");
+  };
+
+  window.onclick = (e)=>{
+
+    if(e.target === document.getElementById("gameModal")){
+      closeModal("gameModal");
+    }
+
+    if(e.target === document.getElementById("worksheetModal")){
+      closeModal("worksheetModal");
+    }
+
+  };
+
+  window.onload = ()=>{
+    renderGradeSelector();
+  };
+
+</script>
+
+</body>
+</html>

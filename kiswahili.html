@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>EduPlay Kenya | Kiswahili - Sauti ya Kutoa + PDF Worksheets</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
+      min-height: 100vh;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1e4b6e, #0a2f44);
+      border-radius: 2rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+    }
+
+    .hero h1 { font-size: 2rem; letter-spacing: -0.5px; }
+    .hero p { opacity: 0.9; margin-top: 0.4rem; }
+
+    .grade-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+      justify-content: center;
+      max-height: 120px;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .grade-btn {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .grade-btn.active {
+      background: #ffb74d;
+      color: #1e2a3a;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+      transform: scale(1.05);
+    }
+
+    .grade-btn:hover:not(.active) { background: rgba(255,255,255,0.3); }
+
+    .swahili-hero {
+      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+      border-radius: 2rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .swahili-hero h2 {
+      font-size: 2.5rem;
+      color: #e65100;
+    }
+    .swahili-hero .icon {
+      font-size: 4rem;
+    }
+
+    .subject-card {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.05);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 25px 30px -12px rgba(0,0,0,0.2);
+    }
+
+    .subject-icon {
+      font-size: 3rem;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1.5rem;
+      margin-bottom: 1rem;
+      background: #fff3e0;
+    }
+
+    .subject-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #e65100;
+    }
+
+    .subject-stats {
+      color: #3a6b8c;
+      font-weight: 500;
+      margin: 0.3rem 0 0.7rem;
+      font-size: 1rem;
+    }
+
+    .resource-description {
+      color: #2c3e44;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .subject-button {
+      background: #f0f4f9;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      color: #1e4b6e;
+      cursor: pointer;
+      transition: 0.2s;
+      flex: 1;
+    }
+
+    .subject-button.primary {
+      background: #ffb74d;
+      color: #1e2a3a;
+    }
+
+    .subject-button:hover {
+      background: #1e4b6e;
+      color: white;
+    }
+    .subject-button.primary:hover {
+      background: #e65100;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: white;
+      max-width: 800px;
+      width: 100%;
+      border-radius: 2rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.8rem;
+      box-shadow: 0 25px 50px -12px black;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .close-modal {
+      font-size: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-weight: bold;
+    }
+
+    .question-text {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: #eef2ff;
+      padding: 1.2rem;
+      border-radius: 1.5rem;
+      margin: 1rem 0;
+      line-height: 1.5;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+
+    .option-btn {
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      padding: 0.8rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.1s;
+      font-size: 0.95rem;
+    }
+
+    .option-btn.correct {
+      background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+      border-color: #4caf50;
+      color: #1b5e20;
+      animation: pulseSuccess 0.5s ease;
+    }
+
+    .option-btn.incorrect {
+      background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+      border-color: #f44336;
+      color: #b71c1c;
+      animation: shakeError 0.5s ease;
+    }
+
+    @keyframes pulseSuccess {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .level-badge {
+      background: #0f2b3d;
+      color: white;
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+    }
+
+    .worksheet-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .worksheet-item {
+      background: #f8fafc;
+      border-radius: 1rem;
+      padding: 1rem;
+      border-left: 6px solid #ffb74d;
+      text-align: left;
+    }
+
+    .download-pdf {
+      background: #d32f2f;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2rem;
+      margin-top: 0.6rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .feedback {
+      font-weight: bold;
+      margin-top: 0.5rem;
+      padding: 1rem;
+      border-radius: 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback.correct {
+      background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+      color: #1b5e20;
+      border: 3px solid #4caf50;
+    }
+
+    .feedback.incorrect {
+      background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+      color: #b71c1c;
+      border: 3px solid #f44336;
+    }
+
+    .next-level-btn, .restart-game {
+      background: #2b7a4b;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .next-level-btn:hover, .restart-game:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .score-display {
+      background: #e3f2fd;
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      font-weight: bold;
+      color: #0d47a1;
+    }
+
+    .grade-info {
+      background: #fff3e0;
+      padding: 0.8rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      text-align: center;
+      font-weight: 600;
+      color: #e65100;
+    }
+
+    .instruction-text {
+      text-align: center;
+      margin: 1rem 0;
+      color: #666;
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.5rem; }
+      .question-text { font-size: 1.1rem; }
+      .swahili-hero h2 { font-size: 1.8rem; }
+      .grade-btn { font-size: 0.8rem; padding: 0.4rem 0.7rem; }
+      .option-btn { font-size: 0.9rem; padding: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="hero">
+    <h1>🗣️ EduPlay Kenya — Kiswahili (PP1 hadi Darasa 9)</h1>
+    <p>📘 Michezo ya Kiswahili yenye sauti ya kutoa maoni + PDF worksheets za mtaala wa CBC Kenya</p>
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <!-- Kiswahili Subject Card -->
+  <div class="swahili-hero">
+    <div class="icon">📚✨</div>
+    <h2>Kiswahili</h2>
+    <p>Jifunze kusoma, kuandika, sarufi, na ufahamu kupitia michezo na worksheets za mtaala</p>
+  </div>
+  <div class="subject-card">
+    <div class="subject-icon">📖</div>
+    <h3 class="subject-title">Lugha ya Kiswahili</h3>
+    <p class="subject-stats">Michezo 44+ • Worksheets 350+</p>
+    <p class="resource-description">
+      Jenga ujuzi wa kusoma, kuandika, msamiati, na ufahamu. 
+      Sauti inasifu majibu sahihi. Ngazi 4 za changamoto kwa kila darasa, kila moja na maswali 30.
+      Pata angalau 20/30 ili uendelee kwa ngazi inayofuata!
+    </p>
+    <div class="button-group">
+      <button class="subject-button primary" id="playGameBtn">🎮 Cheza Mchezo wa Kiswahili</button>
+      <button class="subject-button" id="worksheetsBtn">📄 PDF Worksheets za Mtaala</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME MODAL -->
+<div id="gameModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="gameSubjectTitle">Mchezo wa Kiswahili</h2>
+      <button class="close-modal" id="closeGameModal">&times;</button>
+    </div>
+    <div class="game-area" id="gameContent"></div>
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div id="worksheetModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="wsSubjectTitle">Kiswahili - Worksheets za Mtaala (PDF)</h2>
+      <button class="close-modal" id="closeWsModal">&times;</button>
+    </div>
+    <div class="worksheet-area" id="worksheetContent"></div>
+  </div>
+</div>
+
+<script>
+  // ========== VIAMBATA VYA SAUTI (Kutoa tu - NO INPUT) ==========
+  let speechUtterance = null;
+  
+  function speakText(message, lang = 'sw-KE') {
+    if (!window.speechSynthesis) return;
+    if (speechUtterance) window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
+    utterance.lang = lang;
+    utterance.onend = () => { speechUtterance = null; };
+    speechUtterance = utterance;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // ========== ORODHA YA NYUMBA ZA MASWALI (PP1 - Grade 9) ==========
+  const gradeLabels = {
+    'PP1': 'PP1', 'PP2': 'PP2', 'G1': 'Darasa 1', 'G2': 'Darasa 2', 'G3': 'Darasa 3',
+    'G4': 'Darasa 4', 'G5': 'Darasa 5', 'G6': 'Darasa 6', 'G7': 'Darasa 7',
+    'G8': 'Darasa 8', 'G9': 'Darasa 9'
+  };
+
+  const gradeLevels = ['PP1', 'PP2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9'];
+
+  const vocabWords = {
+    'PP1': ["mama", "baba", "mtoto", "nyumba", "mlango", "dirisha", "kiti", "meza"],
+    'PP2': ["shule", "walimu", "rafiki", "kitabu", "kalamu", "dafu", "mboga", "tunda"],
+    'G1': ["furaha", "huzuni", "kukimbia", "kuruka", "kucheza", "kusoma", "kuandika", "kusikiliza"],
+    'G2': ["mwalimu", "mgonjwa", "daktari", "polisi", "dereva", "mpishi", "mchongaji", "mshonaji"],
+    'G3': ["ujasiri", "uvumilivu", "upendo", "huruma", "uaminifu", "uwazi", "ustawi", "ushindi"],
+    'G4': ["mabadiliko", "maendeleo", "utamaduni", "mazingira", "uchumi", "siasa", "elimu", "afya"],
+    'G5': ["fasaha", "majaibu", "ushairi", "hadithi", "methali", "misemo", "tashbiha", "utani"],
+    'G6': ["uchambuzi", "ufafanuzi", "muhtasari", "hoja", "dhihaka", "kinaya", "mtiririko", "mfumo"],
+    'G7': ["sintaksia", "semantiki", "fonolojia", "morfolojia", "pragmatiki", "diskozi", "retoriki", "stilistiki"],
+    'G8': ["uchanganuzi", "utafsiri", "ubunifu", "utafiti", "uchunguzi", "uthibitisho", "uchambuzi", "utohozi"],
+    'G9': ["falsafa", "ideolojia", "mtazamo", "mtindo", "mwelekeo", "mchakato", "mwendelezo", "matarajio"]
+  };
+
+  const grammarTopics = {
+    'PP1': ["jina", "kitenzi", "sifa"],
+    'PP2': ["wakati wa sasa", "herufi kubwa", "nukta"],
+    'G1': ["viwakilishi", "vihusishi", "viunganishi"],
+    'G2': ["vielezi", "majina ya pamoja", "majina ya pekee"],
+    'G3': ["wakati wa nyuma", "wakati wa baadaye", "sentensi rahisi"],
+    'G4': ["kitenzi kimaarufu", "kitenzi kisimaarufu", "sentensi ngumu"],
+    'G5': ["hotuba ya moja kwa moja", "hotuba isiyo ya moja kwa moja", "sentensi za masharti"],
+    'G6': ["hali ya kutegemea", "muundo sambamba", "vifungu vya sentensi"],
+    'G7': ["sentensi changamano", "vifaa vya fasihi", "uchambuzi wa sintaksia"],
+    'G8': ["lugha ya kimetafora", "mtindo wa uandishi", "uchanganuzi wa maandishi"],
+    'G9': ["retoriki", "falsafa ya lugha", "uchambuzi wa kina wa fasihi"]
+  };
+
+  const comprehensionThemes = {
+    'PP1': "Mama alinunua matunda. Mama alinunua nini?",
+    'PP2': "Watoto wanaenda shule. Watoto wanaenda wapi?",
+    'G1': "Paka aliketi kwenye mkeka. Paka aliketi wapi?",
+    'G2': "Kenya ni nchi nzuri yenye wanyama wengi. Kenya iko wapi?",
+    'G3': "Alisoma kitabu cha kuvutia kuhusu historia ya Afrika. Alisoma kitabu gani?",
+    'G4': "Mwanariadha mwenye azimio alijifunza kila siku kushinda mbio. Kwa nini alijifunza kila siku?",
+    'G5': "Ingawa ilikuwa inanyesha mvua, watoto walicheza nje. Neno 'ingawa' linaashiria nini?",
+    'G6': "Ugunduzi wa kisayansi ulibadilisha nishati mbadala. Athari ilikuwa nini?",
+    'G7': "Kupitia hadithi yake yenye maumivu, mwandishi anafichua mgogoro wa jamii. Ni mbinu gani ya fasihi inayotumika?",
+    'G8': "Katika utafiti wake, mwanafunzi alitumia mbinu mbalimbali za kukusanya data. Ni mbinu gani zinazoweza kutumika?",
+    'G9': "Kupitia uchanganuzi wa kina wa maandishi, mwandishi anatoa mtazamo mpya kuhusu jamii. Ni mbinu gani za fasihi zinazotumika?"
+  };
+
+  const sentenceCompletion = {
+    'PP1': ["Yeye _____ nyumbani.", "Mama _____ chakula.", "Baba _____ kazi."],
+    'PP2': ["Watoto _____ shuleni.", "Mwalimu _____ darasani.", "Rafiki _____ kucheza."],
+    'G1': ["Ninakwenda _____ kila siku.", "Mama hununua _____ sokoni.", "Baba hufanya _____ ofisini."],
+    'G2': ["Siku ya leo ni _____ nzuri.", "Ninapenda kusoma _____ za Kiswahili.", "Mwalimu alitufundisha _____ ya sarufi."],
+    'G3': ["Ingawa ilikuwa _____, tulikwenda shuleni.", "Kwa sababu alikuwa _____, hakufika mapema.", "Ili apate alama nzuri, anapaswa _____ vizuri."],
+    'G4': ["Kwa kuwa alijifunza kwa bidii, _____ mtihani.", "Ingawa alikuwa na changamoto, _____ mafanikio.", "Ili kufikia malengo, anahitaji _____ na uvumilivu."],
+    'G5': ["Kama ungejifunza kwa bidii, _____ matokeo mazuri.", "Kwa kuwa alikuwa na ujasiri, _____ changamoto zote.", "Ingawa kulikuwa na vikwazo, _____ kuendelea."],
+    'G6': ["Kwa kuzingatia uchambuzi wa data, _____ hitimisho kwamba...", "Kwa kufuata mbinu sahihi za utafiti, _____ matokeo ya kuaminika.", "Kwa kuzingatia muktadha wa kihistoria, _____ maana ya matukio haya."],
+    'G7': ["Kupitia uchanganuzi wa sintaksia, _____ muundo wa sentensi hii ni...", "Kwa kuzingatia semantiki ya neno, _____ maana yake ni...", "Kwa kufuata kanuni za pragmatiki, _____ matumizi ya lugha haya ni..."],
+    'G8': ["Kwa kuzingatia mtindo wa uandishi, _____ mwandishi anatumia...", "Kwa kufanya uchambuzi wa kina, _____ maandishi yanaonyesha...", "Kwa kuzingatia muktadha wa kijamii, _____ maandishi yana athari..."],
+    'G9': ["Kupitia uchanganuzi wa falsafa ya lugha, _____ maana ya kina ya maandishi ni...", "Kwa kuzingatia mtazamo wa mwandishi, _____ lengo la maandishi ni...", "Kwa kufanya tathmini ya retoriki, _____ ufanisi wa maandishi ni..."]
+  };
+
+  // ========== KUZALISHA MASWALI YA KISWAHILI ==========
+  function generateKiswahiliQuestions(grade, level) {
+    const questions = [];
+    const gradeKey = grade;
+    
+    for (let i = 1; i <= 30; i++) {
+      let questionText = "";
+      let correct = "";
+      let options = [];
+      const qType = (i % 4);
+      
+      if (qType === 0) { // Msamiati
+        const wordList = vocabWords[gradeKey] || vocabWords['G1'];
+        const word = wordList[i % wordList.length];
+        questionText = `Maana ya neno "${word}" ni nini?`;
+        
+        if (['PP1', 'PP2'].includes(gradeKey)) {
+          correct = word === "mama" ? "mzazi wa kike" : word === "nyumba" ? "mahali pa kuishi" : "kitu";
+          options = [correct, "kinyume", "neno la tendo", "mahali"];
+        } else if (['G1', 'G2'].includes(gradeKey)) {
+          correct = word === "furaha" ? "hisia nzuri" : word === "kukimbia" ? "kutembea kwa kasi" : "kitu";
+          options = [correct, "huzuni", "neno la sifa", "mahali"];
+        } else if (['G3', 'G4'].includes(gradeKey)) {
+          correct = word === "ujasiri" ? "ubabe katika shida" : word === "mabadiliko" ? "kubadilika" : "sifa nzuri";
+          options = [correct, "udhaifu", "hasira", "mkanganyiko"];
+        } else {
+          correct = word === "fasaha" ? "kusema kwa ubora" : word === "uchambuzi" ? "kuchunguza kwa kina" : "ujuzi";
+          options = [correct, "udhaifu", "mkanganyiko", "usahaulifu"];
+        }
+      } 
+      else if (qType === 1) { // Sarufi
+        const topic = grammarTopics[gradeKey][i % grammarTopics[gradeKey].length];
+        
+        if (['PP1', 'PP2'].includes(gradeKey)) {
+          questionText = `Neno lipi ni ${topic} katika: "Mama alinunua matunda"?`;
+          if (topic === "jina") correct = "Mama";
+          else if (topic === "kitenzi") correct = "alinunua";
+          else correct = "matunda";
+          options = [correct, "alinunua", "matunda", "nyumbani"];
+        } else if (['G1', 'G2'].includes(gradeKey)) {
+          questionText = `Neno lipi ni ${topic} katika: "Kijana mwenye akili alikimbia haraka"?`;
+          if (topic === "jina") correct = "Kijana";
+          else if (topic === "kitenzi") correct = "alikimbia";
+          else if (topic === "sifa") correct = "mwenye akili";
+          else if (topic === "kielezi") correct = "haraka";
+          else correct = "Kijana";
+          options = [correct, "yule", "mwenye akili", "alikimbia"];
+        } else {
+          questionText = `Ni nini ${topic} katika Kiswahili?`;
+          correct = topic === "kitenzi kimaarufu" ? "kitenzi chenye kielezi cha kitenzi" : 
+                   topic === "sentensi ngumu" ? "sentensi yenye vifungu viwili au zaidi" :
+                   topic === "hotuba isiyo ya moja kwa moja" ? "kusema maneno ya mtu bila kunukuu moja kwa moja" :
+                   "kanuni ya sarufi";
+          options = [correct, "kinyume chake", "neno la sifa", "mahali"];
+        }
+      }
+      else if (qType === 2) { // Ufahamu
+        const story = comprehensionThemes[gradeKey];
+        questionText = `Soma: ${story.substring(0,90)}... Jibu: ${story.includes("?") ? story.split("?")[1]?.trim() || "Wazo kuu ni nini?" : "Unaweza kutoa hitimisho gani?"}`;
+        
+        if (['PP1', 'PP2'].includes(gradeKey)) correct = "matunda";
+        else if (['G1', 'G2'].includes(gradeKey)) correct = "mkeka";
+        else if (['G3', 'G4'].includes(gradeKey)) correct = "Afrika";
+        else if (['G5', 'G6'].includes(gradeKey)) correct = "kushinda mbio";
+        else correct = "kuchanganua maandishi";
+        options = [correct, "nyumba", "shule", "anga"];
+      }
+      else { // Kukamilisha sentensi
+        const sentences = sentenceCompletion[gradeKey];
+        const sentence = sentences[i % sentences.length];
+        questionText = `Chagua neno sahihi kukamilisha: ${sentence}`;
+        
+        if (['PP1', 'PP2'].includes(gradeKey)) {
+          correct = "yupo";
+          options = [correct, "kwenda", "kula", "kulala"];
+        } else if (['G1', 'G2'].includes(gradeKey)) {
+          correct = "shule";
+          options = [correct, "nyumbani", "sokoni", "ofisini"];
+        } else if (['G3', 'G4'].includes(gradeKey)) {
+          correct = "mvua";
+          options = [correct, "jua", "windi", "theji"];
+        } else if (['G5', 'G6'].includes(gradeKey)) {
+          correct = "ungepata";
+          options = [correct, "utapata", "unapata", "ulipata"];
+        } else {
+          correct = "tunaweza kufikia";
+          options = [correct, "hatutafikia", "tulifika", "tutafika"];
+        }
+      }
+      
+      if (!options.includes(correct)) options[0] = correct;
+      options = [...new Set(options)].slice(0,4);
+      while(options.length < 4) options.push(correct + "?");
+      options = options.sort(() => Math.random() - 0.5);
+      
+      questions.push({ text: questionText, correctAnswer: correct, options: options });
+    }
+    return questions;
+  }
+
+  // ========== MAUDHUI YA MTAAALA WA KISWAHILI (CBC Kenya) ==========
+  function getKiswahiliSyllabusContent(grade, levelNumber) {
+    const syllabusByGrade = {
+      'PP1': "• Kutambua sauti za herufi (fonetiki rahisi)\n• Kusoma maneno rahisi: mama, baba, nyumba\n• Kuandika herufi kubwa na ndogo\n• Kusikiliza na kuzungumza: mashairi rahisi, nyimbo\n• Msamiati wa msingi: familia, vitu vya nyumbani",
+      'PP2': "• Kuunda maneno rahisi kutoka sauti\n• Kusoma sentensi fupi: \"Mama alinunua matunda\"\n• Kuandika sentensi rahisi\n• Kusikiliza na kuelewa maagizo rahisi\n• Msamiati: shule, rafiki, vitu vya shule",
+      'G1': "• Kusoma kwa sauti na kuelewa maana\n• Kuandika sentensi zenye kiungo+kitenzi+kiunganishi\n• Sarufi: majina, vitenzi, sifa\n• Ufahamu wa kifungu kifupi (maneno 20-30)\n• Msamiati: hisia, vitendo, mahali",
+      'G2': "• Kusoma kwa kasi na ufahamu\n• Kuandika aya fupi zenye mawazo matatu\n• Sarufi: viwakilishi, vihusishi, viunganishi\n• Ufahamu: kujibu maswali rahisi\n• Msamiati: kazi, watu, mazingira",
+      'G3': "• Kusoma kwa kasi na kuchanganua maana\n• Kuandika hadithi fupi: mwanzo, kati, mwisho\n• Sarufi: nyakati (sasa, nyuma, baadaye)\n• Ufahamu: maswali ya kutoa hitimisho\n• Msamiati: sifa za kimaadili, methali rahisi",
+      'G4': "• Kusoma kwa kasi na kufupisha maudhui\n• Kuandika aya zenye sentensi ya mada na maelezo\n• Sarufi: kitenzi kimaarufu/kisimaarufu, sentensi ngumu\n• Ufahamu: kutambua wazo kuu na maelezo\n• Msamiati: mabadiliko, maendeleo, utamaduni",
+      'G5': "• Kusoma kwa kasi na kuchanganua mtindo\n• Kuandika insha fupi: hadithi, maelezo\n• Sarufi: hotuba ya moja kwa moja/isiyo ya moja kwa moja\n• Ufahamu: kutambua mtazamo wa mwandishi\n• Msamiati: fasihi simulizi, misemo, tashbiha",
+      'G6': "• Kusoma kwa kasi na kutoa muhtasari\n• Kuandika insha za ufafanuzi na hoja\n• Sarufi: sentensi changamano, vifungu, hali ya kutegemea\n• Ufahamu: kuchanganua hoja na ushahidi\n• Msamiati: vifaa vya fasihi, retoriki rahisi",
+      'G7': "• Kusoma kwa kasi na kuchanganua kina\n• Kuandika insha za uchanganuzi na tathmini\n• Sarufi: sintaksia, semantiki, pragmatiki\n• Ufahamu: kuchanganua mtindo na madhumuni\n• Msamiati: falsafa ya lugha, uchanganuzi wa maandishi",
+      'G8': "• Kusoma kwa kasi na kutoa tathmini ya kina\n• Kuandika utafiti mdogo na ripoti\n• Sarufi: mtindo wa uandishi, lugha ya kimetafora\n• Ufahamu: kuchanganua muktadha wa kijamii\n• Msamiati: ideolojia, mtazamo, uchanganuzi wa kina",
+      'G9': "• Kusoma kwa kasi na kufanya uchanganuzi wa falsafa\n• Kuandika kazi za ubunifu na utafiti\n• Sarufi: retoriki, semiotiki, uchanganuzi wa kina\n• Ufahamu: kutoa tathmini ya kina ya maandishi\n• Msamiati: falsafa, ideolojia, uchanganuzi wa kina wa fasihi"
+    };
+    
+    let syllabusText = syllabusByGrade[grade] || `• Ujuzi wa Kiswahili kwa ${gradeLabels[grade]}\n• Kusoma, kuandika, sarufi, na ufahamu`;
+    
+    const levelFocus = {
+      1: "\n\n📖 NGAZI 1: Msingi - kukumbuka na kuelewa kanuni za msingi.",
+      2: "\n\n📖 NGAZI 2: Kati - kutumia sarufi katika sentensi.",
+      3: "\n\n📖 NGAZI 3: Ya Juu - uchanganuzi na uandishi wa ubunifu.",
+      4: "\n\n📖 NGAZI 4: Ustadi - tathmini, muunganisho, na kazi za mradi."
+    };
+    return syllabusText + levelFocus[levelNumber];
+  }
+
+  // ========== KUTENGENEZA PDF (Kiswahili) ==========
+  async function downloadKiswahiliPDF(grade, level) {
+    const syllabusContent = getKiswahiliSyllabusContent(grade, level);
+    const levelNames = {1:"Msingi",2:"Kati",3:"Ya Juu",4:"Ustadi"};
+    const gradeName = gradeLabels[grade];
+    
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.width = '800px';
+    pdfContainer.style.backgroundColor = 'white';
+    pdfContainer.style.padding = '40px';
+    pdfContainer.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.top = '0';
+    
+    pdfContainer.innerHTML = `
+      <div style="margin-bottom: 30px; border-bottom: 3px solid #ffb74d; padding-bottom: 15px;">
+        <h1 style="color: #e65100; margin-bottom: 5px;">📘 Waraka wa Mazoezi ya Kiswahili</h1>
+        <h2 style="color: #0a2f44;">${gradeName} – Ngazi ya ${levelNames[level]} (${level}/4)</h2>
+        <p style="color: #2c3e44;"><strong>Mtaala wa CBC Kenya | Mtaala Unaolenga Ujuzi</strong></p>
+      </div>
+      <div style="background: #fff3e0; padding: 16px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="color: #e65100;">📖 Maudhui ya Mtaala (Kiswahili):</h3>
+        <pre style="white-space: pre-wrap; font-family: 'Segoe UI', Arial; font-size: 14px; line-height: 1.6;">${syllabusContent}</pre>
+      </div>
+      <div style="margin: 25px 0;">
+        <h3 style="border-left: 4px solid #ffb74d; padding-left: 12px;">📝 Shughuli za Kujifunza Kiswahili</h3>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Kazi 1 (Msamiati na Maana):</strong><br/>
+          • Orodhesha maneno 8 mapya kutoka kwenye mtaala na uandike maana yake.<br/>
+          • Tumia 3 kati yake katika sentensi za asili kuhusu Kenya.
+        </div>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Kazi 2 (Matumizi ya Sarufi):</strong><br/>
+          • ${level === 1 ? "Tambua majina na vitenzi katika sentensi 5." : 
+             level === 2 ? "Andika upya sentensi 3 kutoka wakati wa sasa hadi wa nyuma." :
+             level === 3 ? "Badilisha sentensi za kitenzi kimaarufu kuwa kisimaarufu." :
+             "Andika aya ukitumia sentensi za masharti na hali ya kutegemea."}
+        </div>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Kazi 3 (Uandishi wa Ubunifu):</strong><br/>
+          • Andika hadithi fupi (maneno 150-200) iliyotokana na utamaduni wa Kenya, ukitumia angalau sifa 5 na vielezi 3.
+        </div>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Kazi 4 (Ufahamu na Kutafakari):</strong><br/>
+          • Soma kifungu uchaguo na uandike muhtasari wa sentensi 5.<br/>
+          • Eleza ulichokipenda zaidi katika mtaala wa Kiswahili muhula huu.
+        </div>
+      </div>
+      <div style="margin-top: 35px; text-align: center; color: #6c757d; font-size: 12px;">
+        <p>📚 EduPlay Kenya — Jukwaa la Kujifunza Kiswahili lenye Sauti</p>
+        <p>Waraka uliotengenezwa ${new Date().toLocaleDateString('sw-KE')} | Kiswahili ${gradeName} | Ngazi ${level}</p>
+      </div>
+    `;
+    
+    document.body.appendChild(pdfContainer);
+    const btn = event?.target;
+    const originalText = btn?.innerText;
+    if(btn) btn.innerText = "⏳ Inatengeneza PDF...";
+    
+    try {
+      const canvas = await html2canvas(pdfContainer, { scale: 2, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`Kiswahili_${grade}_Ngazi${level}_Mtaala.pdf`);
+      if(btn) btn.innerText = originalText;
+    } catch(err) {
+      console.error(err);
+      alert("Uundaji wa PDF ulishindikana. Tafadhali jaribu tena.");
+      if(btn) btn.innerText = "📥 Pakua PDF ya Waraka";
+    } finally {
+      document.body.removeChild(pdfContainer);
+    }
+  }
+
+  // ========== HALI YA MUCHEZO NA LOGIC ==========
+  let currentGameState = { grade: 'PP1', level: 1, questions: [], currentIndex: 0, score: 0, answersGiven: 0 };
+  let selectedGrade = 'PP1';
+  
+  function renderGradeSelector() {
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+    gradeLevels.forEach(g => {
+      const btn = document.createElement("button");
+      btn.className = `grade-btn ${selectedGrade === g ? "active" : ""}`;
+      btn.textContent = gradeLabels[g];
+      btn.addEventListener("click", () => { 
+        selectedGrade = g; 
+        renderGradeSelector(); 
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function launchGame() {
+    const grade = selectedGrade;
+    const questions = generateKiswahiliQuestions(grade, 1);
+    currentGameState = {
+      grade: grade,
+      level: 1,
+      questions: questions,
+      currentIndex: 0,
+      score: 0,
+      answersGiven: 0,
+      gameActive: true
+    };
+    document.getElementById("gameSubjectTitle").innerHTML = `Kiswahili | ${gradeLabels[grade]} | Ngazi 1/4`;
+    renderGameModal();
+    document.getElementById("gameModal").style.display = "flex";
+  }
+
+  // ====== KUSHUGHULIKIA MAJIBU (NO VOICE INPUT) ======
+  function handleAnswer(selected, correct) {
+    // Exact match only - no voice input processing
+    const isCorrect = selected === correct;
+    const feedbackEl = document.getElementById("gameFeedback");
+    
+    if(isCorrect) {
+      currentGameState.score++;
+      
+      // Visual feedback on button
+      const clickedBtn = event?.target;
+      if(clickedBtn && clickedBtn.classList.contains('option-btn')) {
+        clickedBtn.classList.add('correct');
+      }
+      
+      // Display success message
+      feedbackEl.className = "feedback correct";
+      feedbackEl.innerHTML = `✅ <strong>Sahihi! Hongera sana!</strong><br><small>+1 alama 🎉</small>`;
+      
+      // Voice output for correct answer
+      const successMessages = [
+        "Sahihi! Hongera sana! Umefanya vizuri!",
+        "Hongera! Jibu lako ni sahihi kabisa!",
+        "Mashallah! Umepata alama! Endelea hivyo!",
+        "Sahihi! Ujuzi wako wa Kiswahili unakua!"
+      ];
+      const randomMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
+      speakText(randomMsg);
+      
+    } else {
+      // Visual feedback on buttons
+      const clickedBtn = event?.target;
+      if(clickedBtn && clickedBtn.classList.contains('option-btn')) {
+        clickedBtn.classList.add('incorrect');
+      }
+      // Highlight correct answer
+      const allBtns = document.querySelectorAll('.option-btn');
+      allBtns.forEach(btn => {
+        if(btn.textContent === correct) {
+          btn.classList.add('correct');
+        }
+      });
+      
+      // Display error message
+      feedbackEl.className = "feedback incorrect";
+      feedbackEl.innerHTML = `❌ <strong>Samahani, jibu si sahihi.</strong><br><small>Jibu sahihi: <strong>${correct}</strong></small>`;
+      
+      // Voice output for wrong answer
+      const errorMessages = [
+        "Samahani, jibu si sahihi. Jibu sahihi ni: " + correct,
+        "Hilo si jibu sahihi. Jaribu kukumbuka: " + correct,
+        "Si sahihi. Jibu ni: " + correct + ". Usikate tamaa!",
+        "Jibu halijafanikiwa. Jibu sahihi: " + correct + ". Endelea kujifunza!"
+      ];
+      const randomMsg = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+      speakText(randomMsg);
+    }
+    
+    // Disable all option buttons after answer
+    document.querySelectorAll('.option-btn').forEach(btn => {
+      btn.disabled = true;
+    });
+    
+    // Move to next question after delay
+    currentGameState.currentIndex++;
+    currentGameState.answersGiven++;
+    
+    setTimeout(() => {
+      renderGameModal();
+    }, 2500);
+  }
+
+  function renderGameModal() {
+    const gameDiv = document.getElementById("gameContent");
+    const state = currentGameState;
+    
+    // Level Complete Screen
+    if(state.currentIndex >= 30) {
+      const passed = state.score >= 20;
+      let nextHtml = `<div class="level-badge">Ngazi ${state.level} Imemalizika</div>
+                      <div class="score-display">📊 Alama: ${state.score}/30 (Hitaji 20 kuendelea)</div>`;
+                      
+      if(passed && state.level < 4) {
+        nextHtml += `<div style="background:#c8e6c9; padding:1rem; border-radius:1rem; margin:1rem 0; text-align:center;">
+                      ✅ <strong>Umepita ngazi!</strong> Unaweza kuendelea.</div>`;
+        nextHtml += `<button class="next-level-btn" id="nextLevelBtn">🚀 Ngazi Inayofuata ${state.level+1}</button>`;
+        speakText(`Hongera! Umepata alama ${state.score} kati ya 30. Umepita ngazi!`);
+      } else if(passed && state.level === 4) {
+        nextHtml += `<div style="background:#c8e6c9; padding:1rem; border-radius:1rem; margin:1rem 0; text-align:center;">
+                      🏆 <strong>USTADI!</strong> Umekamilisha ngazi zote za Kiswahili kwa ${gradeLabels[state.grade]}!</div>`;
+        speakText(`Hongera sana! Umekamilisha ngazi zote za Kiswahili! Umefikia ustadi!`);
+      } else if(!passed) {
+        nextHtml += `<div style="background:#ffcdd2; padding:1rem; border-radius:1rem; margin:1rem 0; text-align:center;">
+                      ⚠️ <strong>Hujapita.</strong> Alama ${state.score} chini ya 20. Jaribu tena!</div>`;
+        nextHtml += `<button class="restart-game" id="restartLevelBtn">🔄 Anza Ngazi Tena</button>`;
+        speakText(`Samahani, alama ${state.score} haitoshi kuendelea. Tafadhali jaribu ngazi hii tena.`);
+      }
+      nextHtml += `<button class="restart-game" id="closeGameOnly" style="background:#5a626e; margin-top:10px;">Funga</button>`;
+      gameDiv.innerHTML = nextHtml;
+      
+      document.getElementById("nextLevelBtn")?.addEventListener("click", () => {
+        if(state.level < 4) {
+          const newQuestions = generateKiswahiliQuestions(state.grade, state.level+1);
+          currentGameState = { ...state, level: state.level+1, questions: newQuestions, currentIndex: 0, score: 0, answersGiven: 0 };
+          renderGameModal();
+        }
+      });
+      document.getElementById("restartLevelBtn")?.addEventListener("click", () => {
+        const newQuestions = generateKiswahiliQuestions(state.grade, state.level);
+        currentGameState = { ...state, questions: newQuestions, currentIndex: 0, score: 0, answersGiven: 0 };
+        renderGameModal();
+      });
+      document.getElementById("closeGameOnly")?.addEventListener("click", () => closeModal("gameModal"));
+      return;
+    }
+    
+    const q = state.questions[state.currentIndex];
+    
+    gameDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <span class="level-badge">Ngazi ${state.level} | Swali ${state.currentIndex+1}/30</span> 
+        <span class="score-display">⭐ Alama: ${state.score}</span>
+      </div>
+      <div class="grade-info">${gradeLabels[state.grade]} - Kiswahili</div>
+      <div class="question-text">${q.text}</div>
+      <div class="instruction-text">📖 Soma swali na bonyeza jibu sahihi kwenye vitufe hapa chini</div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="feedback" id="gameFeedback"></div>
+    `;
+    
+    const optsDiv = document.getElementById("optionsGrid");
+    q.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(opt, q.correctAnswer);
+      optsDiv.appendChild(btn);
+    });
+  }
+
+  function launchWorksheets() {
+    const grade = selectedGrade;
+    document.getElementById("wsSubjectTitle").innerHTML = `Kiswahili | ${gradeLabels[grade]} | PDF Worksheets za Mtaala`;
+    const container = document.getElementById("worksheetContent");
+    let levelsHtml = `<div class="worksheet-list">`;
+    for(let lvl=1; lvl<=4; lvl++) {
+      const levelName = lvl===1?"Msingi":lvl===2?"Kati":lvl===3?"Ya Juu":"Ustadi";
+      levelsHtml += `
+        <div class="worksheet-item">
+          <strong>📘 Ngazi ${lvl} Worksheet — ${levelName}</strong>
+          <p style="font-size:0.9rem; margin-top:5px;">Inajumuisha: ${getKiswahiliSyllabusContent(grade, lvl).substring(0,100)}...</p>
+          <button class="download-pdf" data-level="${lvl}">📥 Pakua PDF (Mtaala wa Kiswahili)</button>
+        </div>
+      `;
+    }
+    levelsHtml += `</div>`;
+    container.innerHTML = levelsHtml;
+    document.querySelectorAll(".download-pdf").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const level = parseInt(btn.dataset.level);
+        await downloadKiswahiliPDF(grade, level);
+      });
+    });
+    document.getElementById("worksheetModal").style.display = "flex";
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+    if(speechUtterance) window.speechSynthesis?.cancel();
+  }
+
+  // Event binding
+  document.getElementById("playGameBtn").onclick = () => launchGame();
+  document.getElementById("worksheetsBtn").onclick = () => launchWorksheets();
+
+  window.onload = () => {
+    renderGradeSelector();
+    document.getElementById("closeGameModal").onclick = () => closeModal("gameModal");
+    document.getElementById("closeWsModal").onclick = () => closeModal("worksheetModal");
+    window.onclick = (e) => { 
+      if(e.target === document.getElementById("gameModal")) closeModal("gameModal"); 
+      if(e.target === document.getElementById("worksheetModal")) closeModal("worksheetModal"); 
+    };
+    
+    // Load voices for speech synthesis
+    if (window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        console.log("Speech voices loaded");
+      };
+      window.speechSynthesis.getVoices();
+    }
+  };
+  
+  // Handle page visibility to stop speech when tab is not active
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden && speechUtterance) {
+      window.speechSynthesis?.cancel();
+    }
+  });
+</script>
+</body>
+</html>

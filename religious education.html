@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>EduPlay Kenya | CBC Religious Education - PP1 to Grade 9 | Audio Feedback + PDF Worksheets</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #f3e8ff 0%, #e8d5f5 100%);
+      min-height: 100vh;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #5e2a8a, #3a1a5e);
+      border-radius: 2rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+    }
+
+    .hero h1 { font-size: 2rem; letter-spacing: -0.5px; }
+    .hero p { opacity: 0.9; margin-top: 0.4rem; }
+
+    .grade-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+      justify-content: center;
+    }
+
+    .grade-btn {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .grade-btn.active {
+      background: #b87cff;
+      color: #2c1a3a;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+      transform: scale(1.02);
+    }
+
+    .grade-btn:hover:not(.active) { background: rgba(255,255,255,0.3); }
+
+    .re-hero {
+      background: linear-gradient(135deg, #f3e8ff, #e8d5f5);
+      border-radius: 2rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .re-hero h2 {
+      font-size: 2.2rem;
+      color: #5e2a8a;
+    }
+    .re-hero .icon {
+      font-size: 3.5rem;
+    }
+
+    .subject-card {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.05);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 25px 30px -12px rgba(0,0,0,0.2);
+    }
+
+    .subject-icon {
+      font-size: 3rem;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1.5rem;
+      margin-bottom: 1rem;
+      background: #f3e8ff;
+    }
+
+    .subject-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #5e2a8a;
+    }
+
+    .subject-stats {
+      color: #7a4aa3;
+      font-weight: 500;
+      margin: 0.3rem 0 0.7rem;
+      font-size: 1rem;
+    }
+
+    .resource-description {
+      color: #3a2a4a;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .subject-button {
+      background: #f0f4f9;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      color: #5e2a8a;
+      cursor: pointer;
+      transition: 0.2s;
+      flex: 1;
+    }
+
+    .subject-button.primary {
+      background: #b87cff;
+      color: white;
+    }
+
+    .subject-button:hover {
+      background: #5e2a8a;
+      color: white;
+    }
+    .subject-button.primary:hover {
+      background: #3a1a5e;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: white;
+      max-width: 800px;
+      width: 100%;
+      border-radius: 2rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.8rem;
+      box-shadow: 0 25px 50px -12px black;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .close-modal {
+      font-size: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-weight: bold;
+    }
+
+    .question-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: #f3e8ff;
+      padding: 1.2rem;
+      border-radius: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+
+    .option-btn {
+      background: #faf5ff;
+      border: 2px solid #d4b8ff;
+      padding: 0.8rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .option-btn:hover {
+      background: #b87cff;
+      color: white;
+      transform: scale(1.02);
+    }
+
+    .audio-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .audio-btn {
+      background: linear-gradient(135deg, #b87cff, #5e2a8a);
+      border: none;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 3rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: 0.2s;
+    }
+
+    .audio-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .level-badge {
+      background: #5e2a8a;
+      color: white;
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+    }
+
+    .worksheet-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .worksheet-item {
+      background: #faf5ff;
+      border-radius: 1rem;
+      padding: 1rem;
+      border-left: 6px solid #b87cff;
+      text-align: left;
+    }
+
+    .download-pdf {
+      background: #7a4aa3;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2rem;
+      margin-top: 0.6rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .feedback {
+      font-weight: bold;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 1rem;
+      text-align: center;
+    }
+
+    .next-level-btn, .restart-game {
+      background: #2b7a4b;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.4rem; }
+      .question-text { font-size: 1.1rem; }
+      .re-hero h2 { font-size: 1.6rem; }
+      .grade-btn { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+      .audio-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="hero">
+    <h1>🕊️ EduPlay Kenya — CBC Religious Education (PP1 - Grade 9)</h1>
+    <p>📖 Audio-feedback Religious Education games + PDF worksheets aligned with Kenya CBC (Pre-Primary to Junior Secondary)</p>
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <!-- Religious Education Subject Card -->
+  <div class="re-hero">
+    <div class="icon">🕯️🙏✨</div>
+    <h2>Religious Education (CRE/IRE/HRE)</h2>
+    <p>Explore Faith, Values, Scriptures, Moral Teachings, and Spiritual Growth through interactive games with audio feedback</p>
+  </div>
+  <div class="subject-card">
+    <div class="subject-icon">⛪</div>
+    <h3 class="subject-title">CBC Religious Education</h3>
+    <p class="subject-stats">30+ games • 180+ worksheets • PP1 - Grade 9</p>
+    <p class="resource-description">
+      Complete Competency-Based Religious Education Curriculum: Christian Religious Education (CRE), Islamic Religious Education (IRE), 
+      and Hindu Religious Education (HRE) values, scriptures, moral teachings, and life skills. 
+      4 progressive levels per grade, each with 30 questions. 
+      <strong>🔊 Click the speaker button to hear questions read aloud!</strong> Score at least 20/30 to advance to next level.
+    </p>
+    <div class="button-group">
+      <button class="subject-button primary" id="playGameBtn">🎮 Play RE Game</button>
+      <button class="subject-button" id="worksheetsBtn">📄 PDF Worksheets (Syllabus)</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME MODAL -->
+<div id="gameModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="gameSubjectTitle">Religious Education Game</h2>
+      <button class="close-modal" id="closeGameModal">&times;</button>
+    </div>
+    <div class="game-area" id="gameContent"></div>
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div id="worksheetModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="wsSubjectTitle">Religious Education Syllabus Worksheets (PDF)</h2>
+      <button class="close-modal" id="closeWsModal">&times;</button>
+    </div>
+    <div class="worksheet-area" id="worksheetContent"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- AUDIO OUTPUT ONLY (Text-to-Speech - NO MIC INPUT) ----------
+  let speechUtterance = null;
+  
+  function speakText(message) {
+    if (!window.speechSynthesis) {
+      console.warn("Speech synthesis not supported");
+      return;
+    }
+    try {
+      if (speechUtterance) {
+        window.speechSynthesis.cancel();
+      }
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      utterance.lang = 'en-US';
+      utterance.volume = 1;
+      utterance.onerror = (e) => console.warn("Speech error:", e);
+      window.speechSynthesis.speak(utterance);
+      speechUtterance = utterance;
+    } catch (e) {
+      console.warn("Speech synthesis error:", e);
+    }
+  }
+
+  // Function to speak the current question
+  function speakQuestion(questionText) {
+    speakText(questionText);
+  }
+
+  // ---------- RELIGIOUS EDUCATION QUESTION BANK (PP1=0 to G9=10) ----------
+  function generateREQuestions(gradeCode, level) {
+    const questions = [];
+    const g = gradeCode;
+    const isPrePrimary = (g <= 1);
+    
+    for (let i = 1; i <= 30; i++) {
+      let questionText = "";
+      let correct = "";
+      let options = [];
+      const qType = i % 5;
+      
+      if (isPrePrimary || g <= 2) { // PP1, PP2, Grade 1-2: Basic RE
+        if (qType === 0) {
+          questionText = "Who created the world according to the Bible?";
+          correct = "God";
+          options = ["God", "Angels", "Humans", "Animals"];
+        } else if (qType === 1) {
+          questionText = "What is the holy book of Christians?";
+          correct = "Bible";
+          options = ["Bible", "Quran", "Torah", "Gita"];
+        } else if (qType === 2) {
+          questionText = "What should we do when someone is sad?";
+          correct = "comfort them";
+          options = ["comfort them", "ignore them", "laugh at them", "run away"];
+        } else if (qType === 3) {
+          questionText = "Where did Jesus live as a child?";
+          correct = "Nazareth";
+          options = ["Nazareth", "Jerusalem", "Bethlehem", "Capernaum"];
+        } else {
+          questionText = "What is the first day of the week for worship?";
+          correct = "Sunday";
+          options = ["Sunday", "Monday", "Friday", "Saturday"];
+        }
+      } 
+      else if (g <= 5) { // Grades 3-5: Intermediate RE
+        if (qType === 0) {
+          questionText = "Who led the Israelites out of Egypt?";
+          correct = "Moses";
+          options = ["Moses", "Abraham", "David", "Joshua"];
+        } else if (qType === 1) {
+          questionText = "What is the golden rule in Christianity?";
+          correct = "love your neighbor as yourself";
+          options = ["love your neighbor as yourself", "do not steal", "honor your parents", "keep the Sabbath"];
+        } else if (qType === 2) {
+          questionText = "How many commandments did God give to Moses?";
+          correct = "10";
+          options = ["10", "5", "12", "7"];
+        } else if (qType === 3) {
+          questionText = "What is the holy month of fasting for Muslims?";
+          correct = "Ramadan";
+          options = ["Ramadan", "Hajj", "Eid", "Muharram"];
+        } else {
+          questionText = "Who was the first man created according to the Bible?";
+          correct = "Adam";
+          options = ["Adam", "Eve", "Noah", "Abraham"];
+        }
+      } 
+      else { // Grades 6-9: Advanced RE
+        if (qType === 0) {
+          questionText = "What fruit did Adam and Eve eat that brought sin into the world?";
+          correct = "forbidden fruit";
+          options = ["forbidden fruit", "apple", "pomegranate", "grape"];
+        } else if (qType === 1) {
+          questionText = "Who was thrown into the lions' den because he prayed to God?";
+          correct = "Daniel";
+          options = ["Daniel", "David", "Joseph", "Jonah"];
+        } else if (qType === 2) {
+          questionText = "What is the central theme of Jesus' teachings?";
+          correct = "love and forgiveness";
+          options = ["love and forgiveness", "wealth and power", "war and conquest", "fame and glory"];
+        } else if (qType === 3) {
+          questionText = "Which prophet was swallowed by a big fish?";
+          correct = "Jonah";
+          options = ["Jonah", "Elijah", "Elisha", "Jeremiah"];
+        } else {
+          questionText = "What is the name of the holy book of Islam?";
+          correct = "Quran";
+          options = ["Quran", "Bible", "Torah", "Vedas"];
+        }
+      }
+      
+      if (!options.includes(correct)) options[0] = correct;
+      let uniqueOpts = [...new Set(options)];
+      while(uniqueOpts.length < 4) uniqueOpts.push(correct);
+      uniqueOpts = uniqueOpts.sort(() => Math.random() - 0.5);
+      questions.push({ text: questionText, correctAnswer: correct, options: uniqueOpts });
+    }
+    return questions;
+  }
+
+  // ----- RELIGIOUS EDUCATION SYLLABUS CONTENT (PP1 to Grade 9) -----
+  function getRESyllabusContent(gradeCode, levelNumber) {
+    const gradeNames = {
+      0: "PP1", 1: "PP2", 2: "Grade 1", 3: "Grade 2", 4: "Grade 3", 5: "Grade 4",
+      6: "Grade 5", 7: "Grade 6", 8: "Grade 7", 9: "Grade 8", 10: "Grade 9"
+    };
+    const displayGrade = gradeNames[gradeCode];
+    
+    const syllabusMap = {
+      0: "• God's creation: animals, plants, people\n• Simple prayers and thanksgiving\n• Bible stories: Noah's ark, Daniel and the lions\n• Respect for parents and teachers\n• Sharing and caring for others",
+      1: "• The birth of Jesus Christ\n• The Good Samaritan story\n• Learning to say sorry and forgive\n• Importance of church/mosque/temple\n• Celebrating religious festivals",
+      2: "• The Ten Commandments for children\n• Stories of Jesus healing the sick\n• Honesty and truthfulness\n• Respecting different religions\n• The Lord's Prayer",
+      3: "• The life of Moses (Exodus story)\n• The Beatitudes (Sermon on the Mount)\n• Fruits of the Holy Spirit\n• Christian values: kindness, patience, humility\n• The importance of family",
+      4: "• The parables of Jesus (Good Samaritan, Prodigal Son)\n• The early church and disciples\n• Faith and trust in God\n• Serving others in the community\n• Moral decision making",
+      5: "• The Passover and Exodus\n• King David and his leadership\n• Prophets in the Old Testament (Elijah, Isaiah)\n• Christian living in modern society\n• Peer pressure and temptation",
+      6: "• The miracles of Jesus\n• The Holy Trinity (Father, Son, Holy Spirit)\n• Life after death and resurrection hope\n• World religions: Islam, Hinduism, Traditional African Religion\n• Religious tolerance and harmony",
+      7: "• Paul's missionary journeys\n• The Epistles and their teachings\n• Christian ethics and social justice\n• Prayer and meditation practices\n• Leadership qualities from Biblical figures",
+      8: "• The book of Proverbs (wisdom literature)\n• The role of the church in Kenya\n• Contemporary moral issues (corruption, honesty)\n• Stewardship of the environment\n• Personal spiritual formation",
+      9: "• The book of Revelation (hope and future)\n• Apologetics: defending faith\n• Comparative religious studies\n• Ethics in business and career\n• Serving through community service projects"
+    };
+    
+    let syllabusText = syllabusMap[gradeCode] || `• Religious Education for ${displayGrade}\n• Moral and spiritual development\n• Biblical knowledge and application\n• Respect for religious diversity`;
+    
+    const levelFocus = {
+      1: "\n\n📘 LEVEL 1: Foundation - Recall basic Bible stories and values.",
+      2: "\n\n📘 LEVEL 2: Developing - Apply religious teachings to daily life.",
+      3: "\n\n📘 LEVEL 3: Proficient - Analyze moral dilemmas using faith principles.",
+      4: "\n\n📘 LEVEL 4: Advanced - Evaluate ethical issues and lead religious activities."
+    };
+    return syllabusText + levelFocus[levelNumber];
+  }
+
+  // ----- PDF GENERATION (Religious Education) -----
+  async function downloadREPDF(gradeCode, level) {
+    const syllabusContent = getRESyllabusContent(gradeCode, level);
+    const gradeNames = {0:"PP1",1:"PP2",2:"Grade1",3:"Grade2",4:"Grade3",5:"Grade4",6:"Grade5",7:"Grade6",8:"Grade7",9:"Grade8",10:"Grade9"};
+    const displayGrade = gradeNames[gradeCode];
+    const levelNames = {1:"Foundation",2:"Developing",3:"Proficient",4:"Advanced"};
+    
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.width = '800px';
+    pdfContainer.style.backgroundColor = 'white';
+    pdfContainer.style.padding = '40px';
+    pdfContainer.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.top = '0';
+    
+    pdfContainer.innerHTML = `
+      <div style="margin-bottom: 30px; border-bottom: 3px solid #b87cff; padding-bottom: 15px;">
+        <h1 style="color: #5e2a8a; margin-bottom: 5px;">🕊️ Religious Education Worksheet (CBC)</h1>
+        <h2 style="color: #3a1a5e;">${displayGrade} – ${levelNames[level]} Level</h2>
+        <p style="color: #7a4aa3;"><strong>Kenya Competency-Based Curriculum | PP1 - Grade 9 RE</strong></p>
+      </div>
+      <div style="background: #f3e8ff; padding: 16px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="color: #5e2a8a;">📖 Syllabus Coverage (Religious Education):</h3>
+        <pre style="white-space: pre-wrap; font-family: 'Segoe UI', Arial; font-size: 14px; line-height: 1.6;">${syllabusContent}</pre>
+      </div>
+      <div style="margin: 25px 0;">
+        <h3 style="border-left: 4px solid #b87cff; padding-left: 12px;">🕯️ RE Learning Activities</h3>
+        <div style="background: #faf5ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 1 (Scripture Knowledge):</strong><br/>
+          • Identify and write down 5 Bible verses that teach about love or kindness.<br/>
+          • Summarize one parable of Jesus and explain its moral lesson.
+        </div>
+        <div style="background: #faf5ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 2 (Values & Character):</strong><br/>
+          • ${level === 1 ? "List 5 ways you can show respect to your parents." : 
+             level === 2 ? "Write a short story about someone showing forgiveness." :
+             level === 3 ? "Describe a situation where you had to choose between right and wrong. What did you do?" :
+             "Analyze a current moral issue in Kenya and suggest solutions based on religious teachings."}
+        </div>
+        <div style="background: #faf5ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 3 (Worship & Prayer):</strong><br/>
+          • Write a personal prayer thanking God for three things in your life.<br/>
+          • Explain why worship is important in your religion.
+        </div>
+        <div style="background: #faf5ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 4 (Religious Diversity):</strong><br/>
+          • Research one religious festival from Christianity, Islam, or Hinduism.<br/>
+          • Explain how different religions can live together peacefully in Kenya.
+        </div>
+        <div style="background: #faf5ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 5 (Community Service):</strong><br/>
+          • Plan a simple community service activity (e.g., visiting the elderly, cleaning the environment).<br/>
+          • Write a reflection on how helping others shows love for God.
+        </div>
+      </div>
+      <div style="margin-top: 35px; text-align: center; color: #6c757d; font-size: 12px;">
+        <p>🕊️ EduPlay Kenya — Audio-Feedback Religious Education Learning Platform (CBC Aligned)</p>
+        <p>Generated on ${new Date().toLocaleDateString()} | ${displayGrade} Religious Education | Level ${level}</p>
+      </div>
+    `;
+    
+    document.body.appendChild(pdfContainer);
+    const btn = event?.target;
+    const originalText = btn?.innerText;
+    if(btn) btn.innerText = "⏳ Generating PDF...";
+    
+    try {
+      const canvas = await html2canvas(pdfContainer, { scale: 2, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`RE_${displayGrade}_Level${level}.pdf`);
+      if(btn) btn.innerText = originalText;
+    } catch(err) {
+      alert("PDF generation failed");
+      if(btn) btn.innerText = "📥 Download PDF";
+    } finally {
+      document.body.removeChild(pdfContainer);
+    }
+  }
+
+  // ---------- GAME STATE ----------
+  let currentGameState = { gradeCode: 0, level: 1, questions: [], currentIndex: 0, score: 0 };
+  let selectedGradeCode = 0; // 0=PP1 ... 10=G9
+  
+  function renderGradeSelector() {
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+    const levels = ["PP1", "PP2", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"];
+    for(let idx=0; idx<levels.length; idx++) {
+      const btn = document.createElement("button");
+      btn.className = `grade-btn ${selectedGradeCode === idx ? "active" : ""}`;
+      btn.textContent = levels[idx];
+      btn.addEventListener("click", () => { selectedGradeCode = idx; renderGradeSelector(); });
+      container.appendChild(btn);
+    }
+  }
+
+  function getGradeDisplay(code) {
+    const map = ["PP1", "PP2", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9"];
+    return map[code];
+  }
+
+  function launchGame() {
+    const questions = generateREQuestions(selectedGradeCode, 1);
+    currentGameState = {
+      gradeCode: selectedGradeCode,
+      level: 1,
+      questions: questions,
+      currentIndex: 0,
+      score: 0
+    };
+    document.getElementById("gameSubjectTitle").innerHTML = `Religious Education | ${getGradeDisplay(selectedGradeCode)} | Level 1/4 🔊`;
+    renderGameModal();
+    document.getElementById("gameModal").style.display = "flex";
+  }
+
+  function handleAnswer(selected, correct) {
+    const isCorrect = (selected === correct);
+    if(isCorrect) { 
+      speakText("Correct!"); 
+      currentGameState.score++; 
+      document.getElementById("gameFeedback").innerHTML = "✅ Correct! +1 point 🎉";
+      document.getElementById("gameFeedback").style.background = "#c8e6c9";
+    } else { 
+      speakText("Wrong answer"); 
+      document.getElementById("gameFeedback").innerHTML = `❌ Wrong! Correct answer: ${correct}`;
+      document.getElementById("gameFeedback").style.background = "#ffcdd2";
+    }
+    currentGameState.currentIndex++;
+    if(currentGameState.currentIndex >= 30) renderGameModal();
+    else renderGameModal();
+  }
+
+  function renderGameModal() {
+    const gameDiv = document.getElementById("gameContent");
+    const state = currentGameState;
+    if(state.currentIndex >= 30) {
+      const passed = state.score >= 20;
+      let nextHtml = `<div class="level-badge">Level ${state.level} Finished</div>
+                      <div style="font-size:1.5rem; margin:1rem;">📊 Score: ${state.score}/30 ${passed ? "✅ Passed!" : "❌ Need 20 to pass"}</div>`;
+      if(passed && state.level < 4) {
+        nextHtml += `<button class="next-level-btn" id="nextLevelBtn">🚀 Next Level ${state.level+1}</button>`;
+      } else if(passed && state.level === 4) {
+        nextHtml += `<div style="background:#c8e6c9; padding:1rem; border-radius:1rem;">🏆 MASTERY! You completed all levels for ${getGradeDisplay(state.gradeCode)}! 🏆</div>`;
+      } else if(!passed) {
+        nextHtml += `<button class="restart-game" id="restartLevelBtn">🔄 Restart Level</button>`;
+      }
+      nextHtml += `<button class="restart-game" id="closeGameOnly" style="background:#5a626e;">Close</button>`;
+      gameDiv.innerHTML = nextHtml;
+      document.getElementById("nextLevelBtn")?.addEventListener("click", () => {
+        const newQuestions = generateREQuestions(state.gradeCode, state.level+1);
+        currentGameState = { ...state, level: state.level+1, questions: newQuestions, currentIndex: 0, score: 0 };
+        renderGameModal();
+      });
+      document.getElementById("restartLevelBtn")?.addEventListener("click", () => {
+        const newQuestions = generateREQuestions(state.gradeCode, state.level);
+        currentGameState = { ...state, questions: newQuestions, currentIndex: 0, score: 0 };
+        renderGameModal();
+      });
+      document.getElementById("closeGameOnly")?.addEventListener("click", () => closeModal("gameModal"));
+      return;
+    }
+    const q = state.questions[state.currentIndex];
+    gameDiv.innerHTML = `
+      <div><span class="level-badge">Level ${state.level} | Q${state.currentIndex+1}/30</span> <span style="float:right">⭐ Score: ${state.score}</span></div>
+      <div class="question-text">${q.text}</div>
+      <div class="audio-controls">
+        <button id="speakerBtn" class="audio-btn">🔊 Read Question Aloud</button>
+      </div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="feedback" id="gameFeedback"></div>
+    `;
+    const optsDiv = document.getElementById("optionsGrid");
+    q.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(opt, q.correctAnswer);
+      optsDiv.appendChild(btn);
+    });
+    const speakerBtn = document.getElementById("speakerBtn");
+    speakerBtn.onclick = () => {
+      speakQuestion(q.text);
+    };
+  }
+
+  function launchWorksheets() {
+    const gradeCode = selectedGradeCode;
+    const gradeDisplay = getGradeDisplay(gradeCode);
+    document.getElementById("wsSubjectTitle").innerHTML = `Religious Education Worksheets | ${gradeDisplay} | Syllabus PDFs`;
+    const container = document.getElementById("worksheetContent");
+    let levelsHtml = `<div class="worksheet-list">`;
+    for(let lvl=1; lvl<=4; lvl++) {
+      const levelName = lvl===1?"Foundation":lvl===2?"Developing":lvl===3?"Proficient":"Advanced";
+      levelsHtml += `
+        <div class="worksheet-item">
+          <strong>🕊️ Level ${lvl} Worksheet — ${levelName} (${gradeDisplay})</strong>
+          <p style="font-size:0.9rem; margin-top:5px;">Covers: ${getRESyllabusContent(gradeCode, lvl).substring(0,100)}...</p>
+          <button class="download-pdf" data-level="${lvl}">📥 Download PDF (RE Syllabus)</button>
+        </div>
+      `;
+    }
+    levelsHtml += `</div>`;
+    container.innerHTML = levelsHtml;
+    document.querySelectorAll(".download-pdf").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const level = parseInt(btn.dataset.level);
+        await downloadREPDF(selectedGradeCode, level);
+      });
+    });
+    document.getElementById("worksheetModal").style.display = "flex";
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+  }
+
+  // Event binding
+  document.getElementById("playGameBtn").onclick = () => launchGame();
+  document.getElementById("worksheetsBtn").onclick = () => launchWorksheets();
+
+  window.onload = () => {
+    renderGradeSelector();
+    document.getElementById("closeGameModal").onclick = () => closeModal("gameModal");
+    document.getElementById("closeWsModal").onclick = () => closeModal("worksheetModal");
+    window.onclick = (e) => { 
+      if(e.target === document.getElementById("gameModal")) closeModal("gameModal"); 
+      if(e.target === document.getElementById("worksheetModal")) closeModal("worksheetModal"); 
+    };
+  };
+</script>
+</body>
+</html>
