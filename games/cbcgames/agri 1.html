@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+  <title>EduPlay Kenya | Agriculture | CBC PP1 - Grade 9</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Segoe UI','Poppins',sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+      min-height:100vh;
+      color:#1b5e20;
+    }
+
+    .container{
+      max-width:1400px;
+      margin:auto;
+      padding:1rem;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#2e7d32,#1b5e20);
+      color:white;
+      padding:2rem;
+      border-radius:2rem;
+      margin-bottom:2rem;
+      box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .hero h1{
+      font-size:2rem;
+      margin-bottom:0.5rem;
+    }
+
+    .hero p{
+      opacity:0.9;
+    }
+
+    .grade-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.5rem;
+      margin-top:1.2rem;
+      justify-content:center;
+    }
+
+    .grade-btn{
+      border:none;
+      background:rgba(255,255,255,0.15);
+      color:white;
+      padding:0.5rem 0.9rem;
+      border-radius:2rem;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+      font-size:0.8rem;
+    }
+
+    .grade-btn.active{
+      background:#fdd835;
+      color:#1b5e20;
+      transform:scale(1.05);
+    }
+
+    .grade-btn:hover{
+      background:rgba(255,255,255,0.3);
+    }
+
+    .main-card{
+      background:white;
+      border-radius:2rem;
+      padding:2rem;
+      box-shadow:0 15px 35px rgba(0,0,0,0.08);
+      max-width:700px;
+      margin:auto;
+    }
+
+    .icon{
+      font-size:4rem;
+      margin-bottom:1rem;
+    }
+
+    .main-card h2{
+      color:#2e7d32;
+      font-size:2rem;
+      margin-bottom:0.7rem;
+    }
+
+    .description{
+      line-height:1.7;
+      margin:1rem 0;
+      color:#2e5c2e;
+    }
+
+    .stats{
+      color:#2e7d32;
+      font-weight:bold;
+      margin-bottom:1rem;
+    }
+
+    .button-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .btn{
+      flex:1;
+      border:none;
+      padding:1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:1rem;
+      transition:0.2s;
+    }
+
+    .btn.primary{
+      background:#f9a825;
+      color:#1b1b1b;
+    }
+
+    .btn.secondary{
+      background:#e8f5e9;
+      color:#2e7d32;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px);
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.75);
+      z-index:1000;
+      justify-content:center;
+      align-items:center;
+      padding:1rem;
+    }
+
+    .modal-card{
+      background:white;
+      width:100%;
+      max-width:850px;
+      max-height:90vh;
+      overflow-y:auto;
+      border-radius:2rem;
+      padding:2rem;
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:1rem;
+    }
+
+    .close{
+      border:none;
+      background:none;
+      font-size:2rem;
+      cursor:pointer;
+    }
+
+    .question{
+      background:#e8f5e9;
+      padding:1.5rem;
+      border-radius:1.5rem;
+      font-size:1.3rem;
+      font-weight:bold;
+      margin:1rem 0;
+      color:#1b5e20;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .option-btn{
+      padding:1rem;
+      border-radius:1rem;
+      border:2px solid #a5d6a7;
+      background:#f1f8e9;
+      cursor:pointer;
+      font-weight:bold;
+      transition:0.2s;
+    }
+
+    .option-btn:hover{
+      background:#2e7d32;
+      color:white;
+    }
+
+    .badge{
+      display:inline-block;
+      background:#2e7d32;
+      color:white;
+      padding:0.4rem 1rem;
+      border-radius:2rem;
+      margin-bottom:1rem;
+      font-size:0.9rem;
+    }
+
+    .feedback{
+      margin-top:1rem;
+      font-weight:bold;
+      font-size:1rem;
+    }
+
+    .worksheet-item{
+      background:#f1f8e9;
+      padding:1rem;
+      border-left:6px solid #2e7d32;
+      border-radius:1rem;
+      margin-bottom:1rem;
+    }
+
+    .download-btn{
+      margin-top:0.7rem;
+      background:#c62828;
+      color:white;
+      border:none;
+      padding:0.7rem 1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .next-btn{
+      background:#2e7d32;
+      color:white;
+      border:none;
+      padding:0.9rem 1.4rem;
+      border-radius:2rem;
+      margin-top:1rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    @media(max-width:640px){
+      .hero h1{
+        font-size:1.3rem;
+      }
+      .grade-btn{
+        font-size:0.7rem;
+        padding:0.4rem 0.7rem;
+      }
+      .question{
+        font-size:1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>🌱 EduPlay Kenya — Agriculture 🚜</h1>
+    <p>Crops, Livestock, Farming Methods, Soil, and Food Production | CBC PP1 - Grade 9</p>
+
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <div class="main-card">
+    <div class="icon">🌾</div>
+
+    <h2>Agriculture Interactive Learning</h2>
+
+    <div class="stats">
+      50+ Agriculture Games • 250+ Worksheets • PP1 - Grade 9
+    </div>
+
+    <p class="description">
+      Learn Agriculture from the basics! Young learners explore where food comes from, farm animals, and crops.
+      Older learners dive into crop production, livestock keeping, soil conservation, farming methods, and Kenya's agricultural economy.
+      Interactive CBC-aligned quizzes and downloadable PDF worksheets.
+      Voice support reads questions aloud. Age-appropriate for early years to junior secondary!
+    </p>
+
+    <div class="button-group">
+      <button class="btn primary" id="playBtn">
+        🎮 Play Agriculture Challenge (50 Questions)
+      </button>
+
+      <button class="btn secondary" id="worksheetBtn">
+        📄 Download Worksheets
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- GAME MODAL -->
+<div class="modal" id="gameModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="gameTitle">🌿 Agriculture Challenge</h2>
+      <button class="close" id="closeGame">&times;</button>
+    </div>
+    <div id="gameContent"></div>
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div class="modal" id="worksheetModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>📋 Agriculture Worksheets</h2>
+      <button class="close" id="closeWorksheet">&times;</button>
+    </div>
+    <div id="worksheetContent"></div>
+  </div>
+</div>
+
+<script>
+
+  // =====================
+  // VOICE OUTPUT
+  // =====================
+
+  function speakText(text){
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.95;
+    utterance.pitch = 1.05;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // =====================
+  // GRADES PP1 - GRADE 9 (11 levels)
+  // =====================
+
+  const grades = [
+    "PP1", "PP2",
+    "Grade 1", "Grade 2", "Grade 3",
+    "Grade 4", "Grade 5", "Grade 6",
+    "Grade 7", "Grade 8", "Grade 9"
+  ];
+
+  let selectedGrade = 0;
+
+  function renderGrades(){
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+    grades.forEach((grade,index)=>{
+      const btn = document.createElement("button");
+      btn.className = `grade-btn ${selectedGrade===index ? "active":""}`;
+      btn.innerText = grade;
+      btn.onclick = ()=>{
+        selectedGrade = index;
+        renderGrades();
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  // =====================
+  // AGRICULTURE QUESTION BANK - 50 UNIQUE QUESTIONS (Age-appropriate)
+  // Early years: farm animals, crops, where food comes from
+  // Middle: growing plants, soil, water, simple farming
+  // Upper: crop production, livestock, soil conservation, agricultural economics
+  // =====================
+
+  function generateAgricultureQuestions() {
+    const bank = [
+      // PP1 - Grade 3 (Very Basic Agriculture)
+      { text: "What do farmers grow that we eat?", answer: "Crops", options: ["Cars", "Crops", "Toys", "Clothes"] },
+      { text: "Which animal gives us milk?", answer: "Cow", options: ["Cow", "Chicken", "Sheep", "Goat"] },
+      { text: "What do chickens give us to eat?", answer: "Eggs", options: ["Milk", "Eggs", "Wool", "Meat"] },
+      { text: "What is the process of growing crops called?", answer: "Farming", options: ["Cooking", "Farming", "Building", "Sewing"] },
+      { text: "Which of these is a vegetable?", answer: "Carrot", options: ["Apple", "Carrot", "Mango", "Orange"] },
+      { text: "What do plants need to grow?", answer: "Water, soil, sunlight", options: ["Milk and bread", "Water, soil, sunlight", "Toys and games", "Books and pens"] },
+      { text: "Which animal gives us wool?", answer: "Sheep", options: ["Cow", "Sheep", "Pig", "Horse"] },
+      { text: "What is the home of a bee called?", answer: "Hive", options: ["Nest", "Hive", "Stable", "Kennel"] },
+      
+      // Grade 1-3 Basic Farming
+      { text: "What do we call the top layer of earth where plants grow?", answer: "Soil", options: ["Rock", "Soil", "Sand", "Water"] },
+      { text: "Which fruit is yellow and has a curved shape?", answer: "Banana", options: ["Apple", "Banana", "Orange", "Mango"] },
+      { text: "What tool do farmers use to dig the soil?", answer: "Hoe", options: ["Pencil", "Hoe", "Book", "Ball"] },
+      { text: "Which of these is a grain crop grown in Kenya?", answer: "Maize", options: ["Rice", "Maize", "Wheat", "All of the above"] },
+      
+      // Grade 3-5 (Simple Crop & Animal Science)
+      { text: "What is the young plant that comes out of a seed called?", answer: "Seedling", options: ["Tree", "Seedling", "Flower", "Leaf"] },
+      { text: "Which of these is a dairy product?", answer: "Cheese", options: ["Bread", "Cheese", "Rice", "Beans"] },
+      { text: "What do bees produce that we eat?", answer: "Honey", options: ["Wax", "Honey", "Pollen", "Water"] },
+      { text: "What is the main crop used to make ugali in Kenya?", answer: "Maize", options: ["Wheat", "Maize", "Rice", "Sorghum"] },
+      { text: "Which part of the plant is under the ground?", answer: "Root", options: ["Leaf", "Root", "Stem", "Flower"] },
+      { text: "What do farmers put in soil to help plants grow better?", answer: "Fertilizer", options: ["Water only", "Fertilizer", "Sand", "Rocks"] },
+      
+      // Grade 4-6 (Crop Production & Livestock)
+      { text: "What is the process of watering crops artificially called?", answer: "Irrigation", options: ["Rainfall", "Irrigation", "Flooding", "Drought"] },
+      { text: "Which of these is a cash crop (grown to sell) in Kenya?", answer: "Tea", options: ["Maize", "Tea", "Beans", "Kale"] },
+      { text: "What is a young cow called?", answer: "Calf", options: ["Lamb", "Calf", "Kid", "Foal"] },
+      { text: "What is the place where poultry (chickens) are kept called?", answer: "Poultry house", options: ["Stable", "Poultry house", "Barn", "Shed"] },
+      { text: "Which part of the plant makes food using sunlight?", answer: "Leaf", options: ["Root", "Stem", "Leaf", "Flower"] },
+      { text: "What is organic farming?", answer: "Farming without chemicals", options: ["Farming with chemicals", "Farming without chemicals", "Factory farming", "Urban farming"] },
+      { text: "Which of these is a root vegetable?", answer: "Potato", options: ["Spinach", "Potato", "Cabbage", "Kale"] },
+      
+      // Grade 5-7 (Soil Science & Conservation)
+      { text: "What is soil erosion?", answer: "Removal of topsoil by wind/water", options: ["Adding soil", "Removal of topsoil by wind/water", "Planting trees", "Watering plants"] },
+      { text: "Which farming method helps prevent soil erosion?", answer: "Terracing", options: ["Burning", "Terracing", "Overgrazing", "Deforestation"] },
+      { text: "What is compost?", answer: "Decayed organic matter used as fertilizer", options: ["Chemical fertilizer", "Decayed organic matter", "Pesticide", "Herbicide"] },
+      { text: "Which of these is a type of soil?", answer: "Loam", options: ["Plastic", "Loam", "Metal", "Glass"] },
+      { text: "What is mulching?", answer: "Covering soil with organic material", options: ["Removing plants", "Covering soil with organic material", "Adding chemicals", "Burning waste"] },
+      
+      // Grade 6-8 (Kenyan Agriculture & Economics)
+      { text: "Which region in Kenya is known for growing tea?", answer: "Kericho", options: ["Mombasa", "Kericho", "Kisumu", "Garissa"] },
+      { text: "What is coffee processing after harvesting?", answer: "Pulping and drying", options: ["Grinding only", "Pulping and drying", "Roasting only", "Boiling"] },
+      { text: "What is zero grazing?", answer: "Keeping animals in confined areas", options: ["Free range", "Keeping animals in confined areas", "Nomadic herding", "Wild grazing"] },
+      { text: "Which of these is a major challenge facing Kenyan farmers?", answer: "Pests and diseases", options: ["Too much rain", "Pests and diseases", "High prices of produce", "Too many workers"] },
+      { text: "What is the main staple food crop in Kenya?", answer: "Maize", options: ["Rice", "Maize", "Wheat", "Millet"] },
+      
+      // Grade 7-9 (Advanced Agriculture & Technology)
+      { text: "What is apiculture?", answer: "Bee keeping", options: ["Fish farming", "Bee keeping", "Poultry keeping", "Goat keeping"] },
+      { text: "What is aquaculture?", answer: "Fish farming", options: ["Crop farming", "Fish farming", "Tree farming", "Animal farming"] },
+      { text: "What is a pesticide used for?", answer: "Killing pests", options: ["Killing weeds", "Killing pests", "Fertilizing soil", "Watering crops"] },
+      { text: "What does 'GMO' stand for in agriculture?", answer: "Genetically Modified Organism", options: ["General Market Order", "Genetically Modified Organism", "Green Maize Organization", "Growing More Output"] },
+      { text: "What is value addition in agriculture?", answer: "Processing raw farm products", options: ["Selling raw products", "Processing raw farm products", "Planting more crops", "Watering plants"] },
+      { text: "Which of these is a method of crop propagation?", answer: "Grafting", options: ["Digging", "Grafting", "Burning", "Flooding"] },
+      { text: "What is a greenhouse used for?", answer: "Growing crops in controlled environment", options: ["Storing tools", "Growing crops in controlled environment", "Keeping animals", "Parking tractors"] },
+      
+      // Pests, Diseases & Control
+      { text: "Which pest attacks maize in the field?", answer: "Fall armyworm", options: ["Aphids", "Fall armyworm", "Locusts", "Birds"] },
+      { text: "What is a weed?", answer: "Unwanted plant growing with crops", options: ["Desired plant", "Unwanted plant growing with crops", "Fertilizer", "Pesticide"] },
+      { text: "How can farmers control weeds?", answer: "Uprooting or herbicides", options: ["Watering more", "Uprooting or herbicides", "Planting more seeds", "Adding fertilizer"] },
+      
+      // Agricultural Tools & Equipment
+      { text: "What tool is used to cut grass or harvest crops?", answer: "Sickle", options: ["Hoe", "Sickle", "Panga", "Rake"] },
+      { text: "What is a tractor used for?", answer: "Plowing and farm work", options: ["Carrying water", "Plowing and farm work", "Milking cows", "Harvesting only"] },
+      { text: "What is a sprinkler used for in farming?", answer: "Watering crops", options: ["Harvesting", "Watering crops", "Planting seeds", "Applying fertilizer"] },
+      
+      // Food Preservation & Storage
+      { text: "Why do farmers preserve food?", answer: "To prevent spoilage", options: ["To sell quickly", "To prevent spoilage", "To waste food", "To cook immediately"] },
+      { text: "Which method is used to preserve maize?", answer: "Drying", options: ["Freezing", "Drying", "Boiling", "Frying"] },
+      { text: "What is silage?", answer: "Fermented animal feed", options: ["Dry grass", "Fermented animal feed", "Fresh hay", "Grain storage"] }
+    ];
+    
+    // Get exactly 50 unique questions
+    const shuffled = [...bank];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    let selected = shuffled.slice(0, 50);
+    while(selected.length < 50) {
+      selected.push({ ...bank[selected.length % bank.length] });
+    }
+    return selected.map(q => ({ ...q }));
+  }
+
+  // =====================
+  // GAME STATE (50 questions)
+  // =====================
+
+  let gameState = {
+    level: 1,
+    score: 0,
+    current: 0,
+    questions: []
+  };
+
+  function launchGame() {
+    gameState = {
+      level: 1,
+      score: 0,
+      current: 0,
+      questions: generateAgricultureQuestions()
+    };
+    document.getElementById("gameModal").style.display = "flex";
+    renderGame();
+  }
+
+  function renderGame() {
+    const container = document.getElementById("gameContent");
+    const total = gameState.questions.length;
+    if (gameState.current >= total) {
+      const passed = gameState.score >= 35;
+      container.innerHTML = `
+        <div class="badge">🎉 Agriculture Challenge Complete!</div>
+        <h2>🌱 Final Score: ${gameState.score}/${total}</h2>
+        <p style="margin-top:1rem; font-size:1.1rem;">
+          ${passed ? "🌟 Excellent! You're an Agriculture Champion! Keep learning about farming and food production!" : "📚 Good effort! Aim for 35+ next time. Agriculture feeds our nation!"}
+        </p>
+        <button class="next-btn" onclick="restartGame()">
+          🔄 Play Again (New 50 Questions)
+        </button>
+      `;
+      speakText(`Agriculture game finished. Your score is ${gameState.score} out of ${total}. ${passed ? "Congratulations agriculture champion!" : "Keep studying agriculture concepts!"}`);
+      return;
+    }
+
+    const q = gameState.questions[gameState.current];
+    speakText(q.text);
+
+    container.innerHTML = `
+      <div class="badge">Question ${gameState.current+1}/${total}</div>
+      <div style="float:right; font-weight:bold; background:#f9a82530; padding:5px 12px; border-radius:20px;">⭐ ${gameState.score}</div>
+      <div class="question">🌾 ${q.text}</div>
+      <button class="btn secondary" onclick="speakText('${q.text.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">
+        🔊 Read Question
+      </button>
+      <div class="options" id="agriOptions"></div>
+      <div class="feedback" id="agriFeedback"></div>
+    `;
+
+    const optContainer = document.getElementById("agriOptions");
+    optContainer.innerHTML = "";
+    const shuffledOptions = [...q.options];
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+    }
+    shuffledOptions.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(opt, q.answer);
+      optContainer.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, correct) {
+    const feedbackDiv = document.getElementById("agriFeedback");
+    if (selected === correct) {
+      gameState.score++;
+      feedbackDiv.innerHTML = "✅ Correct! Excellent agricultural knowledge! +1 point";
+      feedbackDiv.style.color = "#2e7d32";
+      speakText("Correct answer! Well done!");
+    } else {
+      feedbackDiv.innerHTML = `❌ The correct answer is: ${correct}. Keep learning about agriculture!`;
+      feedbackDiv.style.color = "#c62828";
+      speakText(`Wrong answer. The correct answer is ${correct}. Keep studying agriculture!`);
+    }
+    setTimeout(() => {
+      gameState.current++;
+      renderGame();
+    }, 1300);
+  }
+
+  function restartGame() {
+    launchGame();
+  }
+
+  // =====================
+  // AGRICULTURE WORKSHEETS (Age-appropriate for all levels)
+  // =====================
+
+  function launchWorksheets() {
+    const container = document.getElementById("worksheetContent");
+    let html = "";
+    for(let i=1;i<=6;i++){
+      const levelName = i === 1 ? "Early Years (PP1 - Grade 2): Farm Animals & Crops" : 
+                        i === 2 ? "Lower Primary (Grade 3-4): Growing Plants & Soil" :
+                        i === 3 ? "Upper Primary (Grade 5-6): Crop & Livestock Production" :
+                        i === 4 ? "Junior Secondary (Grade 7-8): Soil Conservation & Farming Methods" :
+                        i === 5 ? "Grade 9: Agricultural Economics & Technology" : "All Levels: Fun Agriculture Activities";
+      
+      html += `
+        <div class="worksheet-item">
+          <h3>🌾 ${levelName} Worksheet</h3>
+          <p>
+            Age-appropriate agriculture topics: Farm animals, crops, soil, planting,
+            livestock keeping, farming methods, soil conservation, and Kenya's agricultural systems.
+            Tailored for <strong>${grades[selectedGrade]}</strong> level. CBC-aligned.
+          </p>
+          <button class="download-btn" onclick="downloadAgriculturePDF(${i})">
+            📥 Download PDF Worksheet
+          </button>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+    document.getElementById("worksheetModal").style.display = "flex";
+  }
+
+  // =====================
+  // PDF GENERATION (Age-appropriate Agriculture)
+  // =====================
+
+  async function downloadAgriculturePDF(level) {
+    const pdfContent = document.createElement("div");
+    pdfContent.style.width = "800px";
+    pdfContent.style.padding = "40px";
+    pdfContent.style.background = "white";
+    pdfContent.style.fontFamily = "sans-serif";
+
+    const gradeLevel = grades[selectedGrade];
+    const isEarlyYears = selectedGrade <= 2;
+    const isLowerPrimary = selectedGrade >= 2 && selectedGrade <= 4;
+    const isUpperPrimary = selectedGrade >= 5 && selectedGrade <= 7;
+    const isJuniorSec = selectedGrade >= 8;
+
+    let activities = "";
+    
+    if (level === 1 || isEarlyYears) {
+      activities = `
+        <p>1. Draw and color your favorite farm animal. Write its name and what it gives us.</p>
+        <p>2. Match the crop to its image: maize, beans, carrots, bananas.</p>
+        <p>3. Circle the foods that come from plants. Cross out foods from animals.</p>
+        <p>4. Plant a bean seed in a cup. Draw what you see after one week.</p>
+        <p>5. What do plants need to grow? Draw the sun, water, and soil around a plant.</p>
+      `;
+    } else if (level === 2 || isLowerPrimary) {
+      activities = `
+        <p>1. Draw the life cycle of a bean plant (seed → seedling → adult plant → flowers → pods).</p>
+        <p>2. Name three farm animals and list one product we get from each.</p>
+        <p>3. What is soil? Draw a picture showing different layers of soil.</p>
+        <p>4. Why do farmers need to water their crops? Write two reasons.</p>
+        <p>5. List three vegetables and three fruits grown in Kenya.</p>
+      `;
+    } else if (level === 3 || isUpperPrimary) {
+      activities = `
+        <p>1. Explain the difference between subsistence and commercial farming.</p>
+        <p>2. What are cash crops? Name three cash crops grown in Kenya.</p>
+        <p>3. Describe the life cycle of a chicken (egg → chick → adult).</p>
+        <p>4. What is irrigation? Draw two methods of irrigation used by farmers.</p>
+        <p>5. Identify and name three common pests that attack maize and how to control them.</p>
+        <p>6. Why is crop rotation important? Write a simple crop rotation plan.</p>
+      `;
+    } else if (level === 4 || isJuniorSec) {
+      activities = `
+        <p>1. What is soil erosion? List three causes and three methods of controlling soil erosion.</p>
+        <p>2. Compare and contrast organic farming vs chemical farming. Advantages and disadvantages.</p>
+        <p>3. Research and write about zero grazing. How does it benefit the farmer and the environment?</p>
+        <p>4. What are the main dairy cattle breeds in Kenya? Name three and their characteristics.</p>
+        <p>5. Explain the importance of mulching. How does it help conserve soil moisture?</p>
+        <p>6. Create a seasonal calendar for planting maize in your local area.</p>
+      `;
+    } else {
+      activities = `
+        <p>1. What is value addition? Give three examples of value-added agricultural products in Kenya.</p>
+        <p>2. Research the history of tea or coffee farming in Kenya. Write a short report.</p>
+        <p>3. What are the main challenges facing Kenyan farmers today? Suggest solutions.</p>
+        <p>4. Explain the concept of agricultural extension services. Why are they important?</p>
+        <p>5. What is aquaculture? Describe how a fish pond is constructed and maintained.</p>
+        <p>6. Write an essay on the importance of agriculture to Kenya's economy.</p>
+        <p>7. Design a poster promoting climate-smart agriculture practices.</p>
+      `;
+    }
+
+    pdfContent.innerHTML = `
+      <h1 style="color:#2e7d32; border-left: 6px solid #f9a825; padding-left: 15px;">
+        🌱 EduPlay Kenya: Agriculture Worksheet
+      </h1>
+      <h2>📖 ${gradeLevel} — Agriculture Level ${level}</h2>
+      <hr/><br/>
+      <h3>📌 Key Agricultural Topics</h3>
+      <ul style="line-height:1.8;">
+        <li>Farm Animals and Their Products</li>
+        <li>Crop Production (Food Crops & Cash Crops)</li>
+        <li>Soil Types, Formation, and Conservation</li>
+        <li>Livestock Keeping (Dairy, Poultry, Sheep, Goats)</li>
+        <li>Farming Methods (Irrigation, Terracing, Crop Rotation)</li>
+        <li>Pests, Diseases, and Weed Control</li>
+        <li>Agricultural Economics and Food Preservation</li>
+      </ul>
+      <br/>
+      <h3>✍️ Activities & Exercises (Age-Appropriate)</h3>
+      ${activities}
+      <br/>
+      <h3>🌿 Agriculture Challenge</h3>
+      <p>Imagine you have a small piece of land. Plan a kitchen garden to grow vegetables for your family. List what you will plant, how you will prepare the soil, and how you will care for your crops.</p>
+      <br/><br/>
+      <p>📚 EduPlay Kenya — CBC Agriculture Learning Platform</p>
+      <p>🌾 Farming is our future! Grow, nurture, and harvest!</p>
+      <p>🎯 ${gradeLevel} - Kenyan Competency Based Curriculum Aligned</p>
+      <p>🌟 Be a smart farmer and feed the nation!</p>
+    `;
+
+    document.body.appendChild(pdfContent);
+    const canvas = await html2canvas(pdfContent, { scale: 2, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const width = pdf.internal.pageSize.getWidth();
+    const height = (canvas.height * width) / canvas.width;
+    pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    pdf.save(`Agriculture_Worksheet_Level_${level}_${gradeLevel.replace(/ /g, "_")}.pdf`);
+    document.body.removeChild(pdfContent);
+  }
+
+  // =====================
+  // CLOSE MODALS
+  // =====================
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+    window.speechSynthesis.cancel();
+  }
+
+  document.getElementById("playBtn").onclick = launchGame;
+  document.getElementById("worksheetBtn").onclick = launchWorksheets;
+  document.getElementById("closeGame").onclick = () => closeModal("gameModal");
+  document.getElementById("closeWorksheet").onclick = () => closeModal("worksheetModal");
+
+  window.onclick = (e) => {
+    if (e.target === document.getElementById("gameModal")) closeModal("gameModal");
+    if (e.target === document.getElementById("worksheetModal")) closeModal("worksheetModal");
+  };
+
+  renderGrades();
+
+</script>
+
+</body>
+</html>
