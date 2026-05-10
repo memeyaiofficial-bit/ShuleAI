@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Shule AI Plus+ | Quantifiers at Work Safari | CBC English PP1 - Grade 9</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e6f0ff 0%, #b8d4ff 100%);
+            font-family: 'Nunito', 'Poppins', 'Comic Neue', 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 20, 70, 0.4);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+
+        .game-header {
+            background: #0f3b6f;
+            background-image: radial-gradient(circle at 20% 30%, #1e5a9e 5%, #062b4f 90%);
+            padding: 1rem 1.2rem;
+            color: white;
+            text-align: center;
+            border-bottom: 4px solid #ffcd3c;
+        }
+
+        .game-header h1 {
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #FFF, #ffe6a3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .game-header p {
+            font-size: clamp(0.65rem, 3vw, 0.75rem);
+            opacity: 0.9;
+        }
+
+        .score-board {
+            background: #ffcd3c;
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: clamp(1rem, 4vw, 1.3rem);
+            color: #0a2f5a;
+            margin-top: 0.5rem;
+        }
+
+        .grade-selector-area {
+            background: #f0f7fe;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #cbdff2;
+        }
+
+        .grade-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .grade-btn {
+            background: white;
+            border: none;
+            font-weight: bold;
+            padding: 0.5rem 0.8rem;
+            border-radius: 40px;
+            font-size: clamp(0.7rem, 3vw, 0.85rem);
+            cursor: pointer;
+            transition: 0.2s;
+            color: #06558a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border: 1px solid #ffcd3c;
+            flex: 0 0 auto;
+        }
+
+        .grade-btn.active {
+            background: #ffcd3c;
+            color: #0a2f5a;
+            transform: scale(1.02);
+        }
+
+        .grade-btn:hover {
+            background: #ffe6a3;
+        }
+
+        .grade-info {
+            background: #fff3cf;
+            padding: 0.4rem 0.8rem;
+            border-radius: 60px;
+            font-size: clamp(0.7rem, 3vw, 0.8rem);
+            font-weight: 600;
+            color: #035c8f;
+            display: inline-block;
+            margin-top: 0.3rem;
+        }
+
+        .quiz-main {
+            padding: 1.2rem;
+        }
+
+        .progress-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .q-counter {
+            background: #eef3fc;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #115e8c;
+            font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+        }
+
+        .hint-box {
+            background: #fef6df;
+            border-left: 6px solid #ffcd3c;
+            padding: 0.5rem 0.8rem;
+            border-radius: 28px;
+            font-size: clamp(0.75rem, 3vw, 0.85rem);
+            font-weight: 600;
+            color: #4a2f00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .question-text {
+            font-size: clamp(1rem, 4.5vw, 1.5rem);
+            font-weight: 700;
+            color: #0a2f44;
+            margin: 0.8rem 0 1.2rem 0;
+            line-height: 1.3;
+            background: #fafdff;
+            padding: 0.7rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #d4e6ff;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+            margin: 1.5rem 0 1.5rem;
+        }
+
+        .answer-card {
+            background: #f9fbfe;
+            border: 2px solid #cde0ff;
+            border-radius: 60px;
+            padding: 0.8rem 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 700;
+            text-align: center;
+            color: #1a4972;
+            font-size: clamp(0.8rem, 3.5vw, 0.95rem);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .answer-card:hover:not(.disabled-answer) {
+            background: #ffebbb;
+            border-color: #ffcd3c;
+            transform: scale(0.98);
+        }
+
+        .correct-feedback {
+            background: #c8f0d1;
+            border-color: #15803d;
+            color: #14532d;
+        }
+
+        .wrong-feedback {
+            background: #ffe0db;
+            border-color: #dc2626;
+            color: #991b1b;
+            text-decoration: line-through;
+        }
+
+        .disabled-answer {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .feedback-message {
+            text-align: center;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            font-size: clamp(0.85rem, 3.5vw, 1rem);
+            padding: 0.5rem;
+            border-radius: 40px;
+        }
+
+        .next-btn {
+            background: #ffcd3c;
+            border: none;
+            font-weight: bold;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            padding: 0.7rem 1.5rem;
+            border-radius: 80px;
+            color: #02457a;
+            cursor: pointer;
+            margin-top: 0.8rem;
+            width: 100%;
+            max-width: 240px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 0 #b27f1a;
+            transform: translateY(-2px);
+            transition: 0.1s;
+        }
+
+        .next-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b27f1a;
+        }
+
+        .next-btn:disabled {
+            background: #bcbcbc;
+            transform: none;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .quiz-complete {
+            text-align: center;
+            background: #eef2ff;
+            padding: 1.2rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            color: #156f9c;
+            border: 2px solid #ffcd3c;
+        }
+
+        .quiz-complete h2 {
+            font-size: clamp(1.1rem, 5vw, 1.5rem);
+        }
+
+        .quiz-complete p {
+            font-size: clamp(0.9rem, 4vw, 1.1rem);
+        }
+
+        footer {
+            background: #eef3fc;
+            padding: 0.8rem 1rem;
+            font-size: clamp(0.6rem, 2.5vw, 0.7rem);
+            text-align: center;
+            color: #3282a7;
+            border-top: 1px dotted #ffcd3c;
+        }
+
+        @media (max-width: 550px) {
+            body { padding: 0.75rem; }
+            .quiz-main { padding: 1rem; }
+            .answers-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+            .grade-buttons { max-height: 120px; overflow-y: auto; justify-content: flex-start; padding-bottom: 0.3rem; }
+            .game-header { padding: 0.8rem 1rem; }
+        }
+
+        @media (max-width: 380px) {
+            .grade-btn { padding: 0.4rem 0.6rem; font-size: 0.7rem; }
+            .question-text { padding: 0.5rem 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <h1>📊 QUANTIFIERS AT WORK SAFARI 📊</h1>
+        <p>Phrasal Quantifiers: How Many? How Much? • CBC English PP1 - Grade 9</p>
+        <div class="score-board">🏆 SCORE: <span id="totalScoreDisplay">0</span> pts</div>
+    </div>
+    <div class="grade-selector-area">
+        <div class="grade-buttons" id="gradeButtonsContainer"></div>
+        <div class="grade-info" id="gradeInfoArea">🇰🇪 Select your grade to begin learning quantifiers!</div>
+    </div>
+    <div class="quiz-main" id="quizMain"></div>
+    <footer>
+        📖 Quantifiers tell us "how many" or "how much" — a few, many, a lot of, a little, etc. Learn to use them correctly!
+    </footer>
+</div>
+
+<script>
+    // ==============================================================
+    // FULLY RESPONSIVE GRADE-BASED QUANTIFIERS GAME: PP1 to Grade 9
+    // Topics: basic quantifiers (many/much/some/any), phrasal quantifiers
+    // Each grade has age-appropriate questions about amounts and quantities
+    // ==============================================================
+
+    function shuffleAnswers(questionObj) {
+        const optionsWithMeta = questionObj.options.map((optText, idx) => ({
+            text: optText,
+            isCorrect: (idx === questionObj.correct)
+        }));
+        for (let i = optionsWithMeta.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [optionsWithMeta[i], optionsWithMeta[j]] = [optionsWithMeta[j], optionsWithMeta[i]];
+        }
+        const shuffledOptions = [];
+        let newCorrectIndex = -1;
+        optionsWithMeta.forEach((item, newIdx) => {
+            shuffledOptions.push(item.text);
+            if (item.isCorrect) newCorrectIndex = newIdx;
+        });
+        return {
+            text: questionObj.text,
+            hint: questionObj.hint,
+            options: shuffledOptions,
+            correct: newCorrectIndex
+        };
+    }
+
+    // Grade-specific quantifier questions
+    const gradeQuestions = {
+        "PP1": {
+            name: "PP1",
+            description: "Basic amounts: many, a lot, one, two, three",
+            questions: [
+                { text: "Which word means 'a large number'? 🐱🐱🐱", hint: "Many cats", options: ["many", "one", "little", "none"], correct: 0 },
+                { text: "If you have one apple, you have ___ apple.", hint: "Only one", options: ["one", "many", "a lot of", "several"], correct: 0 },
+                { text: "Which word means 'not a lot' for things you can count?", hint: "A few", options: ["a few", "many", "a lot", "all"], correct: 0 },
+                { text: "I have ___ ball. (just one)", hint: "One", options: ["one", "two", "many", "some"], correct: 0 },
+                { text: "There are ___ fingers on one hand.", hint: "Five", options: ["five", "two", "three", "ten"], correct: 0 },
+                { text: "She has ___ dolls. (three of them)", hint: "Three", options: ["three", "one", "two", "many"], correct: 0 },
+                { text: "Which word means 'more than one'?", hint: "Several", options: ["several", "one", "only", "single"], correct: 0 },
+                { text: "We have ___ crayons in the box. (a lot!)", hint: "Many", options: ["many", "one", "little", "none"], correct: 0 },
+                { text: "How many eyes do you have? Say the number.", hint: "Two", options: ["two", "one", "three", "four"], correct: 0 },
+                { text: "There is ___ pencil on the desk. (only one)", hint: "One", options: ["one", "many", "a lot of", "several"], correct: 0 },
+                { text: "How many wheels on a car?", hint: "Four", options: ["four", "two", "three", "six"], correct: 0 },
+                { text: "Which word means 'not many'? 🔴🔴", hint: "Only two", options: ["a few", "a lot", "many", "all"], correct: 0 }
+            ]
+        },
+        "PP2": {
+            name: "PP2",
+            description: "Some, any, a lot, many, a few",
+            questions: [
+                { text: "Complete: 'I have ___ apples.' (some apples)", hint: "Some", options: ["some", "any", "many", "a lot of"], correct: 0 },
+                { text: "Complete: 'Do you have ___ questions?'", hint: "Any", options: ["any", "some", "many", "a lot"], correct: 0 },
+                { text: "Complete: 'She doesn't have ___ friends.'", hint: "Any", options: ["any", "some", "many", "a few"], correct: 0 },
+                { text: "Complete: 'There are ___ birds in the tree.' (many)", hint: "Many", options: ["many", "some", "any", "a little"], correct: 0 },
+                { text: "Complete: 'I need ___ help.' (some help)", hint: "some", options: ["some", "any", "many", "a few"], correct: 0 },
+                { text: "Complete: 'Would you like ___ juice?'", hint: "Some", options: ["some", "any", "many", "a lot"], correct: 0 },
+                { text: "Complete: 'We have ___ toys to play with.' (a lot)", hint: "a lot of", options: ["a lot of", "some", "any", "a little"], correct: 0 },
+                { text: "Complete: 'There are only ___ cookies left.' (a few)", hint: "a few", options: ["a few", "many", "a lot", "any"], correct: 0 },
+                { text: "Complete: 'I don't have ___ money.'", hint: "any", options: ["any", "some", "many", "a lot"], correct: 0 },
+                { text: "Complete: 'Can I have ___ water please?'", hint: "some", options: ["some", "any", "many", "a few"], correct: 0 },
+                { text: "Complete: 'There is ___ milk in the fridge.'", hint: "some", options: ["some", "any", "many", "a few"], correct: 0 },
+                { text: "Complete: 'How ___ apples do you want?' (asking about number)", hint: "many", options: ["many", "much", "some", "any"], correct: 0 }
+            ]
+        },
+        "Grade 1": {
+            name: "Grade 1",
+            description: "Many vs Much - Countable vs Uncountable",
+            questions: [
+                { text: "Which word is used with countable nouns (things you can count)?", hint: "Apples, chairs, books", options: ["many", "much", "a little", "a bit of"], correct: 0 },
+                { text: "Which word is used with uncountable nouns (things you can't count)?", hint: "Water, sugar, time", options: ["much", "many", "a few", "several"], correct: 0 },
+                { text: "Complete: 'How ___ students are in your class?'", hint: "Countable", options: ["many", "much", "some", "any"], correct: 0 },
+                { text: "Complete: 'How ___ water do you drink?'", hint: "Uncountable", options: ["much", "many", "some", "a few"], correct: 0 },
+                { text: "Complete: 'I have ___ books.' (a lot)", hint: "many", options: ["many", "much", "a little", "a bit"], correct: 0 },
+                { text: "Complete: 'I don't have ___ time.'", hint: "much", options: ["much", "many", "some", "a few"], correct: 0 },
+                { text: "Complete: 'There are ___ people at the party.' (a lot)", hint: "many", options: ["many", "much", "a little", "a bit of"], correct: 0 },
+                { text: "Complete: 'Is there ___ sugar in the jar?'", hint: "much", options: ["much", "many", "some", "a few"], correct: 0 },
+                { text: "Which is correct: '___ cows are in the field'?", hint: "Countable", options: ["many", "much", "a little", "a bit"], correct: 0 },
+                { text: "Which is correct: '___ rain fell yesterday'?", hint: "Uncountable", options: ["much", "many", "a few", "several"], correct: 0 },
+                { text: "Complete: 'She has ___ friends.' (a lot)", hint: "many", options: ["many", "much", "a little", "a bit"], correct: 0 },
+                { text: "Complete: 'We need ___ more time.' (a small amount)", hint: "a little", options: ["a little", "a few", "many", "several"], correct: 0 }
+            ]
+        },
+        "Grade 2": {
+            name: "Grade 2",
+            description: "A few vs A little - Small amounts",
+            questions: [
+                { text: "Which is used with countable nouns for a small number?", hint: "A few books", options: ["a few", "a little", "much", "many"], correct: 0 },
+                { text: "Which is used with uncountable nouns for a small amount?", hint: "A little water", options: ["a little", "a few", "many", "several"], correct: 0 },
+                { text: "Complete: 'I have ___ apples.' (a small number)", hint: "a few", options: ["a few", "a little", "much", "many"], correct: 0 },
+                { text: "Complete: 'I need ___ help with my homework.' (some help)", hint: "a little", options: ["a little", "a few", "many", "several"], correct: 0 },
+                { text: "Complete: 'There are only ___ cookies left.' (a small number)", hint: "a few", options: ["a few", "a little", "much", "many"], correct: 0 },
+                { text: "Complete: 'Add ___ salt to the soup.' (a small amount)", hint: "a little", options: ["a little", "a few", "many", "several"], correct: 0 },
+                { text: "Complete: 'She has ___ days before the test.' (a few)", hint: "a few", options: ["a few", "a little", "much", "many"], correct: 0 },
+                { text: "Complete: 'I speak ___ French.' (a small amount)", hint: "a little", options: ["a little", "a few", "many", "several"], correct: 0 },
+                { text: "Which means 'a small number'? 🍎🍎", hint: "Two apples", options: ["a few", "a little", "many", "a lot"], correct: 0 },
+                { text: "Which means 'a small amount'? 💧", hint: "A drop", options: ["a little", "a few", "many", "several"], correct: 0 },
+                { text: "Complete: 'He has ___ friends in the city.' (a small number)", hint: "a few", options: ["a few", "a little", "much", "many"], correct: 0 },
+                { text: "Complete: 'We have ___ time before the movie.' (some time)", hint: "a little", options: ["a little", "a few", "many", "several"], correct: 0 }
+            ]
+        },
+        "Grade 3": {
+            name: "Grade 3",
+            description: "Some, Any, No - Positive, Negative, Questions",
+            questions: [
+                { text: "We use 'some' in ____ sentences.", hint: "Positive", options: ["positive", "negative", "questions", "all"], correct: 0 },
+                { text: "We use 'any' in ____ sentences and ____.", hint: "Negative and questions", options: ["negative and questions", "positive only", "questions only", "negative only"], correct: 0 },
+                { text: "Complete: 'I have ___ money.' (positive)", hint: "some", options: ["some", "any", "no", "many"], correct: 0 },
+                { text: "Complete: 'I don't have ___ money.' (negative)", hint: "any", options: ["any", "some", "no", "many"], correct: 0 },
+                { text: "Complete: 'Do you have ___ questions?'", hint: "any", options: ["any", "some", "no", "many"], correct: 0 },
+                { text: "Complete: 'There is ___ milk left.' (positive)", hint: "some", options: ["some", "any", "no", "many"], correct: 0 },
+                { text: "Complete: 'There isn't ___ bread in the kitchen.'", hint: "any", options: ["any", "some", "no", "many"], correct: 0 },
+                { text: "Complete: 'Would you like ___ tea?' (offer)", hint: "some", options: ["some", "any", "no", "many"], correct: 0 },
+                { text: "Complete: 'She has ___ friends in the new city.' (zero)", hint: "no", options: ["no", "some", "any", "many"], correct: 0 },
+                { text: "Complete: 'There are ___ apples left.' (zero)", hint: "no", options: ["no", "some", "any", "many"], correct: 0 },
+                { text: "Complete: 'Can I have ___ water please?' (request)", hint: "some", options: ["some", "any", "no", "many"], correct: 0 },
+                { text: "Complete: 'We didn't see ___ animals at the zoo.'", hint: "any", options: ["any", "some", "no", "many"], correct: 0 }
+            ]
+        },
+        "Grade 4": {
+            name: "Grade 4",
+            description: "A lot of, Lots of, Plenty of - Large amounts",
+            questions: [
+                { text: "Which quantifier means 'a large amount' for both countable and uncountable?", hint: "a lot of", options: ["a lot of", "a few", "a little", "much"], correct: 0 },
+                { text: "Complete: 'She has ___ friends at school.' (many)", hint: "a lot of", options: ["a lot of", "a little", "a few", "much"], correct: 0 },
+                { text: "Complete: 'There is ___ time to finish the test.' (plenty)", hint: "plenty of", options: ["plenty of", "a few", "a little", "many"], correct: 0 },
+                { text: "Complete: 'We have ___ work to do today.' (a lot)", hint: "lots of", options: ["lots of", "a little", "a few", "much"], correct: 0 },
+                { text: "Which means 'more than enough'?", hint: "plenty of", options: ["plenty of", "a few", "a little", "much"], correct: 0 },
+                { text: "Complete: 'There are ___ cars on the road today.' (many)", hint: "a lot of", options: ["a lot of", "a little", "a few", "little"], correct: 0 },
+                { text: "Complete: 'She earned ___ money from her job.' (a large amount)", hint: "a lot of", options: ["a lot of", "a few", "many", "several"], correct: 0 },
+                { text: "Complete: 'We have ___ food for everyone.' (enough and more)", hint: "plenty of", options: ["plenty of", "a few", "a little", "much"], correct: 0 },
+                { text: "Complete: 'He has ___ experience in teaching.' (a lot)", hint: "a great deal of", options: ["a great deal of", "a few", "many", "several"], correct: 0 },
+                { text: "Which quantifier is informal but means 'a large amount'?", hint: "lots of", options: ["lots of", "a few", "a little", "much"], correct: 0 },
+                { text: "Complete: 'There are ___ opportunities for young people.' (many)", hint: "plenty of", options: ["plenty of", "a little", "a few", "much"], correct: 0 },
+                { text: "Complete: 'I have ___ homework to do tonight.' (a lot)", hint: "a lot of", options: ["a lot of", "a little", "a few", "much"], correct: 0 }
+            ]
+        },
+        "Grade 5": {
+            name: "Grade 5",
+            description: "A great deal of, A large number of, A large amount of",
+            questions: [
+                { text: "Which quantifier is formal and used with uncountable nouns?", hint: "a great deal of", options: ["a great deal of", "a large number of", "a few", "many"], correct: 0 },
+                { text: "Which quantifier is used with countable nouns for a large number?", hint: "a large number of", options: ["a large number of", "a great deal of", "a little", "a bit of"], correct: 0 },
+                { text: "Complete: 'The project required ___ research.' (formal, uncountable)", hint: "a great deal of", options: ["a great deal of", "a large number of", "a few", "many"], correct: 0 },
+                { text: "Complete: '___ people attended the conference.' (many, formal)", hint: "A large number of", options: ["A large number of", "A great deal of", "A little", "A bit of"], correct: 0 },
+                { text: "Complete: 'She has ___ patience with her students.' (a lot)", hint: "a great deal of", options: ["a great deal of", "a large number of", "a few", "many"], correct: 0 },
+                { text: "Complete: '___ applications were received for the job.' (a lot)", hint: "A large number of", options: ["A large number of", "A great deal of", "A little", "A bit of"], correct: 0 },
+                { text: "Complete: 'The report contains ___ useful information.'", hint: "a great deal of", options: ["a great deal of", "a large number of", "a few", "many"], correct: 0 },
+                { text: "Complete: 'There are ___ books in the library.' (formal)", hint: "a large number of", options: ["a large number of", "a great deal of", "a little", "a bit of"], correct: 0 },
+                { text: "Which is correct for time (uncountable)?", hint: "a great deal of time", options: ["a great deal of", "a large number of", "many", "several"], correct: 0 },
+                { text: "Which is correct for people (countable)?", hint: "a large number of people", options: ["a large number of", "a great deal of", "much", "a little"], correct: 0 },
+                { text: "Complete: 'He put ___ effort into the project.'", hint: "a great deal of", options: ["a great deal of", "a large number of", "a few", "many"], correct: 0 },
+                { text: "Complete: '___ tourists visit Kenya each year.'", hint: "A large number of", options: ["A large number of", "A great deal of", "A little", "A bit of"], correct: 0 }
+            ]
+        },
+        "Grade 6": {
+            name: "Grade 6",
+            description: "Few vs A few, Little vs A little - Emphasis matters!",
+            questions: [
+                { text: "What does 'few' (without 'a') mean?", hint: "Almost none", options: ["almost none", "some", "many", "a lot"], correct: 0 },
+                { text: "What does 'a few' mean?", hint: "Some but not many", options: ["some but not many", "none", "many", "a lot"], correct: 0 },
+                { text: "What does 'little' (without 'a') mean?", hint: "Almost no", options: ["almost none", "some", "a lot", "much"], correct: 0 },
+                { text: "What does 'a little' mean?", hint: "Some but not much", options: ["some but not much", "none", "a lot", "much"], correct: 0 },
+                { text: "Complete: '___ students passed the exam.' (almost none)", hint: "Few", options: ["Few", "A few", "Little", "A little"], correct: 0 },
+                { text: "Complete: 'I have ___ friends who can help me.' (some)", hint: "a few", options: ["a few", "few", "a little", "little"], correct: 0 },
+                { text: "Complete: 'There is ___ hope of finding survivors.' (almost none)", hint: "little", options: ["little", "a little", "few", "a few"], correct: 0 },
+                { text: "Complete: 'I speak ___ French; I can order food.' (some)", hint: "a little", options: ["a little", "little", "few", "a few"], correct: 0 },
+                { text: "Complete: 'She has ___ patience; she gets angry easily.' (almost no)", hint: "little", options: ["little", "a little", "few", "a few"], correct: 0 },
+                { text: "Complete: 'We have ___ eggs; enough to bake a cake.' (some)", hint: "a few", options: ["a few", "few", "a little", "little"], correct: 0 },
+                { text: "Complete: 'There are ___ people I trust completely.' (very few)", hint: "few", options: ["few", "a few", "little", "a little"], correct: 0 },
+                { text: "Complete: 'He has ___ knowledge of the subject.' (very little)", hint: "little", options: ["little", "a little", "few", "a few"], correct: 0 }
+            ]
+        },
+        "Grade 7": {
+            name: "Grade 7",
+            description: "Each, Every, Either, Neither, Both, All",
+            questions: [
+                { text: "Which quantifier means 'every single one individually'?", hint: "Each", options: ["Each", "Every", "All", "Both"], correct: 0 },
+                { text: "Which quantifier refers to 'every one of a group' (more general)?", hint: "Every", options: ["Every", "Each", "All", "Both"], correct: 0 },
+                { text: "Which quantifier refers to 'one or the other of two'?", hint: "Either", options: ["Either", "Neither", "Both", "All"], correct: 0 },
+                { text: "Which quantifier means 'not one nor the other of two'?", hint: "Neither", options: ["Neither", "Either", "Both", "All"], correct: 0 },
+                { text: "Complete: '___ student must bring a pencil.' (universal)", hint: "Every", options: ["Every", "Each", "All", "Both"], correct: 0 },
+                { text: "Complete: '___ of the two answers is correct.' (one or the other)", hint: "Either", options: ["Either", "Neither", "Both", "All"], correct: 0 },
+                { text: "Complete: '___ of them was late.' (not one)", hint: "Neither", options: ["Neither", "Either", "Both", "All"], correct: 0 },
+                { text: "Complete: '___ my parents are teachers.' (two)", hint: "Both", options: ["Both", "All", "Each", "Every"], correct: 0 },
+                { text: "Complete: '___ children in the school attended the assembly.' (more than two)", hint: "All", options: ["All", "Both", "Each", "Every"], correct: 0 },
+                { text: "Complete: '___ day, she practices the piano.'", hint: "Every", options: ["Every", "Each", "All", "Both"], correct: 0 },
+                { text: "Complete: 'You can take ___ road; they both lead home.'", hint: "either", options: ["either", "neither", "both", "all"], correct: 0 },
+                { text: "Complete: '___ of the answers was wrong.'", hint: "Neither", options: ["Neither", "Either", "Both", "All"], correct: 0 }
+            ]
+        },
+        "Grade 8": {
+            name: "Grade 8",
+            description: "Enough, Too much, Too many, Sufficient",
+            questions: [
+                { text: "What does 'enough' mean?", hint: "As much as needed", options: ["as much as needed", "too little", "too much", "none"], correct: 0 },
+                { text: "What does 'too much' mean with uncountable nouns?", hint: "More than needed", options: ["more than needed", "less than needed", "exactly enough", "none"], correct: 0 },
+                { text: "What does 'too many' mean with countable nouns?", hint: "More than needed", options: ["more than needed", "less than needed", "exactly enough", "none"], correct: 0 },
+                { text: "Complete: 'Do we have ___ chairs for everyone?'", hint: "Enough", options: ["enough", "too many", "too much", "little"], correct: 0 },
+                { text: "Complete: 'There are ___ people in the room; it's crowded.'", hint: "too many", options: ["too many", "too much", "enough", "a few"], correct: 0 },
+                { text: "Complete: 'There is ___ salt in the soup; it's very salty.'", hint: "too much", options: ["too much", "too many", "enough", "a little"], correct: 0 },
+                { text: "Complete: 'She doesn't have ___ experience for the job.'", hint: "enough", options: ["enough", "too much", "too many", "plenty"], correct: 0 },
+                { text: "Complete: 'I ate ___ cake; now I feel sick.'", hint: "too much", options: ["too much", "too many", "enough", "a little"], correct: 0 },
+                { text: "Complete: 'He asked ___ questions; it was annoying.'", hint: "too many", options: ["too many", "too much", "enough", "some"], correct: 0 },
+                { text: "What does 'sufficient' mean?", hint: "Enough", options: ["enough", "too much", "too little", "none"], correct: 0 },
+                { text: "Complete: 'We have ___ evidence to prove the case.'", hint: "sufficient", options: ["sufficient", "too much", "too many", "little"], correct: 0 },
+                { text: "Complete: 'There is ___ noise in the library.' (excessive)", hint: "too much", options: ["too much", "too many", "enough", "some"], correct: 0 }
+            ]
+        },
+        "Grade 9": {
+            name: "Grade 9",
+            description: "Advanced phrasal quantifiers: the majority of, a minority of, a plethora of",
+            questions: [
+                { text: "What does 'the majority of' mean?", hint: "More than half", options: ["more than half", "less than half", "all", "none"], correct: 0 },
+                { text: "What does 'a minority of' mean?", hint: "Less than half", options: ["less than half", "more than half", "all", "none"], correct: 0 },
+                { text: "What does 'a plethora of' mean?", hint: "An excessive amount", options: ["an excessive amount", "a small amount", "none", "half"], correct: 0 },
+                { text: "Complete: '___ the students passed the exam.' (more than half)", hint: "The majority of", options: ["The majority of", "A minority of", "A plethora of", "A few"], correct: 0 },
+                { text: "Complete: 'Only ___ the voters supported the new policy.' (less than half)", hint: "a minority of", options: ["a minority of", "the majority of", "a plethora of", "all of"], correct: 0 },
+                { text: "Complete: 'We have ___ options to choose from.' (many)", hint: "a plethora of", options: ["a plethora of", "a minority of", "a little", "a few"], correct: 0 },
+                { text: "What does 'a multitude of' mean?", hint: "A very large number", options: ["a very large number", "a small number", "none", "a few"], correct: 0 },
+                { text: "What does 'a fraction of' mean?", hint: "A small part", options: ["a small part", "a large part", "all", "none"], correct: 0 },
+                { text: "Complete: '___ the workforce is employed in agriculture.'", hint: "A large proportion of", options: ["A large proportion of", "A minority of", "A few", "Little"], correct: 0 },
+                { text: "Complete: 'The project required ___ resources.' (a very large amount)", hint: "a plethora of", options: ["a plethora of", "a minority of", "a few", "little"], correct: 0 },
+                { text: "Complete: 'Only ___ the budget was spent on marketing.' (a small part)", hint: "a fraction of", options: ["a fraction of", "the majority of", "a plethora of", "all of"], correct: 0 },
+                { text: "Complete: 'The company hired ___ new employees.' (many)", hint: "a multitude of", options: ["a multitude of", "a minority of", "a little", "few"], correct: 0 }
+            ]
+        }
+    };
+
+    // Ensure each grade has enough questions
+    const gradeList = ["PP1", "PP2", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9"];
+    
+    for (let grade of gradeList) {
+        if (gradeQuestions[grade] && gradeQuestions[grade].questions.length < 12) {
+            const originalQs = [...gradeQuestions[grade].questions];
+            while (gradeQuestions[grade].questions.length < 12) {
+                gradeQuestions[grade].questions.push({ ...originalQs[gradeQuestions[grade].questions.length % originalQs.length] });
+            }
+        }
+    }
+
+    let currentGrade = "Grade 4";
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let currentScore = 0;
+    let answerLocked = false;
+    let selectedAnswerIndex = null;
+    let questionResult = null;
+    let currentShuffledQuestion = null;
+    let totalQuestionsForGrade = 0;
+
+    const quizMain = document.getElementById('quizMain');
+    const gradeButtonsContainer = document.getElementById('gradeButtonsContainer');
+    const totalScoreSpan = document.getElementById('totalScoreDisplay');
+    const gradeInfoArea = document.getElementById('gradeInfoArea');
+
+    function updateTotalScoreUI() {
+        totalScoreSpan.innerText = currentScore;
+    }
+
+    function renderGradeButtons() {
+        gradeButtonsContainer.innerHTML = '';
+        gradeList.forEach(grade => {
+            const btn = document.createElement('button');
+            btn.className = `grade-btn ${currentGrade === grade ? 'active' : ''}`;
+            btn.innerText = grade;
+            btn.onclick = () => {
+                if (!answerLocked || confirm("Changing grade will reset your progress. Continue?")) {
+                    selectGrade(grade);
+                }
+            };
+            gradeButtonsContainer.appendChild(btn);
+        });
+    }
+
+    function selectGrade(grade) {
+        currentGrade = grade;
+        const gradeData = gradeQuestions[grade];
+        if (gradeData) {
+            currentQuestions = [...gradeData.questions];
+            totalQuestionsForGrade = currentQuestions.length;
+            gradeInfoArea.innerHTML = `📊 ${gradeData.name}: Quantifiers | ${totalQuestionsForGrade} questions`;
+        } else {
+            currentQuestions = [];
+            totalQuestionsForGrade = 0;
+            gradeInfoArea.innerHTML = `📊 ${grade}: Ready to learn quantifiers!`;
+        }
+        
+        currentIndex = 0;
+        currentScore = 0;
+        answerLocked = false;
+        selectedAnswerIndex = null;
+        questionResult = null;
+        currentShuffledQuestion = null;
+        updateTotalScoreUI();
+        renderGradeButtons();
+        renderCurrentQuestion();
+    }
+
+    function getShuffledCurrentQuestion() {
+        if (!currentQuestions.length) return null;
+        const originalQ = currentQuestions[currentIndex];
+        if (!originalQ) return null;
+        if (!currentShuffledQuestion) {
+            currentShuffledQuestion = shuffleAnswers(originalQ);
+        }
+        return currentShuffledQuestion;
+    }
+
+    function handleAnswer(selectedIdx, correctIdx) {
+        if (answerLocked) return;
+        answerLocked = true;
+        const isCorrect = (selectedIdx === correctIdx);
+        if (isCorrect) {
+            currentScore = Math.min(currentScore + 1, currentQuestions.length);
+            updateTotalScoreUI();
+            questionResult = 'correct';
+        } else {
+            questionResult = 'wrong';
+        }
+        selectedAnswerIndex = selectedIdx;
+        renderCurrentQuestion();
+    }
+
+    function nextQuestion() {
+        if (!answerLocked) return;
+        if (currentIndex + 1 < currentQuestions.length) {
+            currentIndex++;
+            answerLocked = false;
+            selectedAnswerIndex = null;
+            questionResult = null;
+            currentShuffledQuestion = null;
+            renderCurrentQuestion();
+        } else {
+            renderCompletionScreen();
+        }
+    }
+
+    function resetLevel() {
+        currentIndex = 0;
+        currentScore = 0;
+        answerLocked = false;
+        selectedAnswerIndex = null;
+        questionResult = null;
+        currentShuffledQuestion = null;
+        updateTotalScoreUI();
+        renderCurrentQuestion();
+    }
+
+    function renderCompletionScreen() {
+        const totalQ = currentQuestions.length;
+        const percentage = Math.round((currentScore / totalQ) * 100);
+        let message = "";
+        if (percentage >= 80) message = "🌟 Excellent! You're a Quantifier Champion! 🌟";
+        else if (percentage >= 60) message = "👍 Good job! Keep practicing your quantifiers!";
+        else message = "📘 Keep learning! Try again to master quantifiers!";
+        
+        quizMain.innerHTML = `
+            <div class="quiz-complete">
+                <h2>🎉 ${currentGrade} Quantifiers Complete! 🎉</h2>
+                <p style="margin: 1rem 0;"><strong>Your Score: ${currentScore} / ${totalQ}</strong></p>
+                <p>${percentage}% - ${message}</p>
+                <button id="resetGradeBtn" class="next-btn" style="background:#ffcd3c; margin-top:1rem;">🔄 Play Again</button>
+                <button id="changeGradeBtn" class="next-btn" style="background:#e0e0e0; box-shadow:0 5px 0 #aaa; margin-top:0.5rem;">📚 Change Grade</button>
+            </div>
+        `;
+        document.getElementById('resetGradeBtn')?.addEventListener('click', () => resetLevel());
+        document.getElementById('changeGradeBtn')?.addEventListener('click', () => {
+            document.querySelector('.grade-selector-area').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentIndex >= currentQuestions.length) {
+            if (currentQuestions.length > 0 && currentIndex >= currentQuestions.length) {
+                renderCompletionScreen();
+            } else {
+                quizMain.innerHTML = `<div class="quiz-complete"><h2>📊 Select a grade to begin!</h2><p>Choose your grade from the buttons above.</p></div>`;
+            }
+            return;
+        }
+        
+        const shuffledQ = getShuffledCurrentQuestion();
+        if (!shuffledQ) return;
+        const hintText = shuffledQ.hint || "Quantifiers tell us 'how many' or 'how much'.";
+        const isAnswered = answerLocked;
+        const correctIdx = shuffledQ.correct;
+
+        let answersHtml = '';
+        shuffledQ.options.forEach((opt, idx) => {
+            let additionalClass = '';
+            let disabledAttr = isAnswered ? 'disabled-answer' : '';
+            if (isAnswered && idx === correctIdx) additionalClass = 'correct-feedback';
+            else if (isAnswered && idx === selectedAnswerIndex && idx !== correctIdx) additionalClass = 'wrong-feedback';
+            answersHtml += `<div class="answer-card ${additionalClass} ${disabledAttr}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+        });
+        
+        const feedbackMsg = (questionResult === 'correct') ? '✅ Correct! +1 point ✅' : (questionResult === 'wrong' ? `❌ Oops! Correct answer: ${shuffledQ.options[correctIdx]} ❌` : '');
+        
+        quizMain.innerHTML = `
+            <div class="progress-area">
+                <div class="q-counter">📊 Question ${currentIndex+1} / ${currentQuestions.length}  |  ${currentGrade} Level</div>
+                <div class="hint-box">💡 Hint: ${hintText}</div>
+            </div>
+            <div class="question-text">❓ ${shuffledQ.text}</div>
+            <div class="answers-grid" id="answersGrid">
+                ${answersHtml}
+            </div>
+            ${feedbackMsg ? `<div class="feedback-message" style="background:${questionResult === 'correct' ? '#c8f0d1' : '#ffe0db'}; color:${questionResult === 'correct' ? '#14532d' : '#991b1b'};">${feedbackMsg}</div>` : ''}
+            ${isAnswered ? `<button id="nextBtnAction" class="next-btn">➡ Next Question ⬅</button>` : ''}
+        `;
+        
+        if (!isAnswered) {
+            document.querySelectorAll('.answer-card').forEach(div => {
+                div.addEventListener('click', () => {
+                    if (answerLocked) return;
+                    const idx = parseInt(div.getAttribute('data-opt-index'));
+                    handleAnswer(idx, correctIdx);
+                });
+            });
+        } else {
+            const nextBtnDom = document.getElementById('nextBtnAction');
+            if (nextBtnDom) nextBtnDom.addEventListener('click', nextQuestion);
+        }
+    }
+
+    function initGame() {
+        renderGradeButtons();
+        selectGrade("Grade 4");
+    }
+
+    initGame();
+</script>
+</body>
+</html>
