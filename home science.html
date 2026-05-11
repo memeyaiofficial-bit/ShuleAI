@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>EduPlay Kenya | Home Science Complete - PP1 to Grade 9 | Voice + Worksheets</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #fef9e6 0%, #f0f4e8 100%);
+      min-height: 100vh;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #8e44ad, #6c3483);
+      border-radius: 2rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+    }
+
+    .hero h1 { font-size: 2rem; letter-spacing: -0.5px; }
+    .hero p { opacity: 0.9; margin-top: 0.4rem; }
+
+    .grade-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+      justify-content: center;
+    }
+
+    .grade-btn {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .grade-btn.active {
+      background: #ffb74d;
+      color: #1e2a3a;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+      transform: scale(1.02);
+    }
+
+    .grade-btn:hover:not(.active) { background: rgba(255,255,255,0.3); }
+
+    .cbc-hero {
+      background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+      border-radius: 2rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .cbc-hero h2 {
+      font-size: 2.2rem;
+      color: #6c3483;
+    }
+    .cbc-hero .icon {
+      font-size: 3.5rem;
+    }
+
+    .subject-card {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.05);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 25px 30px -12px rgba(0,0,0,0.2);
+    }
+
+    .subject-icon {
+      font-size: 3rem;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1.5rem;
+      margin-bottom: 1rem;
+      background: #f3e5f5;
+    }
+
+    .subject-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #6c3483;
+    }
+
+    .subject-stats {
+      color: #7b4a9e;
+      font-weight: 500;
+      margin: 0.3rem 0 0.7rem;
+      font-size: 1rem;
+    }
+
+    .resource-description {
+      color: #4a235a;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .subject-button {
+      background: #f0f4f9;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      color: #6c3483;
+      cursor: pointer;
+      transition: 0.2s;
+      flex: 1;
+    }
+
+    .subject-button.primary {
+      background: #ffb74d;
+      color: #1e2a3a;
+    }
+
+    .subject-button:hover {
+      background: #6c3483;
+      color: white;
+    }
+    .subject-button.primary:hover {
+      background: #e65100;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: white;
+      max-width: 800px;
+      width: 100%;
+      border-radius: 2rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.8rem;
+      box-shadow: 0 25px 50px -12px black;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .close-modal {
+      font-size: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-weight: bold;
+    }
+
+    .question-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: #f3e5f5;
+      padding: 1.2rem;
+      border-radius: 1.5rem;
+      margin: 1rem 0;
+      color: #4a235a;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+
+    .option-btn {
+      background: #f1f5f9;
+      border: 2px solid #d2b4de;
+      padding: 0.8rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.1s;
+      color: #4a235a;
+    }
+
+    .option-btn:hover {
+      background: #6c3483;
+      color: white;
+      border-color: #6c3483;
+    }
+
+    .voice-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .voice-btn {
+      background: linear-gradient(135deg, #9b59b6, #6c3483);
+      border: none;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 3rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: 0.2s;
+    }
+
+    .voice-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 12px rgba(108, 52, 131, 0.3);
+    }
+
+    .level-badge {
+      background: #4a235a;
+      color: white;
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+    }
+
+    .worksheet-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .worksheet-item {
+      background: #f8fafc;
+      border-radius: 1rem;
+      padding: 1rem;
+      border-left: 6px solid #ffb74d;
+      text-align: left;
+    }
+
+    .download-pdf {
+      background: #d32f2f;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2rem;
+      margin-top: 0.6rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .download-pdf:hover {
+      background: #b71c1c;
+    }
+
+    .feedback {
+      font-weight: bold;
+      margin-top: 0.5rem;
+      min-height: 1.5rem;
+    }
+
+    .next-level-btn, .restart-game {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .next-level-btn:hover, .restart-game:hover {
+      background: #1e8449;
+      transform: translateY(-2px);
+    }
+
+    .score-progress {
+      background: #f3e5f5;
+      padding: 0.8rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      font-weight: 600;
+      color: #4a235a;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.4rem; }
+      .question-text { font-size: 1.1rem; }
+      .cbc-hero h2 { font-size: 1.6rem; }
+      .grade-btn { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+      .options-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="hero">
+    <h1>🏠 EduPlay Kenya — Home Science Complete (PP1 - Grade 9)</h1>
+    <p>🍽️ Voice-powered Home Science Learning + PDF Worksheets aligned with Kenya CBC (Pre-Primary to Junior Secondary)</p>
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <!-- Home Science Hero Card -->
+  <div class="cbc-hero">
+    <div class="icon">👩‍🍳✨</div>
+    <h2>Complete Home Science Curriculum</h2>
+    <p>Nutrition, Food Preparation, Clothing, Home Management, Health & Hygiene — Voice-read questions & syllabus worksheets for all levels</p>
+  </div>
+  
+  <div class="subject-card">
+    <div class="subject-icon">🥗</div>
+    <h3 class="subject-title">Home Science Learning</h3>
+    <p class="subject-stats">30+ games • 180+ worksheets • PP1 - Grade 9</p>
+    <p class="resource-description">
+      Complete Competency-Based Curriculum coverage: Nutrition & Food Science, Clothing & Textiles, 
+      Home Management, Consumer Education, and Family Health. 4 progressive levels per grade, 
+      each with 30 questions. Voice reads questions aloud for accessibility! Score at least 20/30 to advance.
+    </p>
+    <div class="button-group">
+      <button class="subject-button primary" id="playGameBtn">🎮 Play Home Science Game (Voice Read)</button>
+      <button class="subject-button" id="worksheetsBtn">📄 PDF Worksheets (Syllabus)</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME MODAL -->
+<div id="gameModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="gameSubjectTitle">Home Science Learning Game</h2>
+      <button class="close-modal" id="closeGameModal">&times;</button>
+    </div>
+    <div class="game-area" id="gameContent"></div>
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div id="worksheetModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="wsSubjectTitle">Home Science Syllabus Worksheets (PDF)</h2>
+      <button class="close-modal" id="closeWsModal">&times;</button>
+    </div>
+    <div class="worksheet-area" id="worksheetContent"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- VOICE OUTPUT UTILITIES (INPUT REMOVED) ----------
+  let speechUtterance = null;
+  
+  function speakText(message) {
+    if (!window.speechSynthesis) return;
+    if (speechUtterance) window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+    speechUtterance = utterance;
+  }
+
+  // ---------- HOME SCIENCE QUESTION BANK (PP1=0, Grade1=1 ... Grade9=9) ----------
+  function generateHomeScienceQuestions(gradeCode, level) {
+    const questions = [];
+    const g = gradeCode;
+    const isPrePrimary = (g <= 1); // PP1, PP2
+    
+    for (let i = 1; i <= 30; i++) {
+      let questionText = "";
+      let correct = "";
+      let options = [];
+      const topicType = i % 6; // 0:nutrition,1:hygiene,2:clothing,3:home safety,4:food prep,5:family health
+      
+      if (isPrePrimary || g <= 2) {
+        // PP1, PP2, Grade 1-2: Basic home science concepts
+        if (topicType === 0) {
+          questionText = "Which food helps us grow strong bones?";
+          correct = "Milk";
+          options = ["Milk", "Candy", "Soda", "Chips"];
+        } else if (topicType === 1) {
+          questionText = "When should we wash our hands?";
+          correct = "Before eating";
+          options = ["Before eating", "After sleeping", "While playing", "When watching TV"];
+        } else if (topicType === 2) {
+          questionText = "What do we wear to protect our feet?";
+          correct = "Shoes";
+          options = ["Shoes", "Hat", "Gloves", "Scarf"];
+        } else if (topicType === 3) {
+          questionText = "What should you NOT touch in the kitchen?";
+          correct = "Hot stove";
+          options = ["Hot stove", "Spoon", "Plate", "Napkin"];
+        } else if (topicType === 4) {
+          questionText = "Which tool do we use to cut fruits?";
+          correct = "Knife";
+          options = ["Knife", "Spoon", "Fork", "Cup"];
+        } else {
+          questionText = "Who takes care of us when we are sick at home?";
+          correct = "Parents";
+          options = ["Parents", "Friends", "Teachers", "Neighbors"];
+        }
+      } 
+      else if (g <= 5) { // Grades 3-5
+        if (topicType === 0) {
+          questionText = "Which nutrient gives us energy?";
+          correct = "Carbohydrates";
+          options = ["Carbohydrates", "Vitamins", "Minerals", "Water"];
+        } else if (topicType === 1) {
+          questionText = "How often should we brush our teeth?";
+          correct = "Twice a day";
+          options = ["Twice a day", "Once a week", "Once a month", "Only when they hurt"];
+        } else if (topicType === 2) {
+          questionText = "Which fabric is best for hot weather?";
+          correct = "Cotton";
+          options = ["Cotton", "Wool", "Leather", "Polyester"];
+        } else if (topicType === 3) {
+          questionText = "What should you do if there's a fire at home?";
+          correct = "Call for help and exit safely";
+          options = ["Call for help and exit safely", "Hide under the bed", "Try to put it out alone", "Ignore it"];
+        } else if (topicType === 4) {
+          questionText = "What is the first step in preparing ugali?";
+          correct = "Boil water";
+          options = ["Boil water", "Add flour", "Stir immediately", "Let it cool"];
+        } else {
+          questionText = "Why is sleep important for children?";
+          correct = "For growth and rest";
+          options = ["For growth and rest", "To watch more TV", "To eat more food", "To play longer"];
+        }
+      } 
+      else { // Grades 6-9: Upper Primary & Junior Secondary
+        if (topicType === 0) {
+          questionText = "Which vitamin is produced when skin is exposed to sunlight?";
+          correct = "Vitamin D";
+          options = ["Vitamin D", "Vitamin C", "Vitamin A", "Vitamin B12"];
+        } else if (topicType === 1) {
+          questionText = "What is the best way to prevent the spread of germs?";
+          correct = "Regular handwashing with soap";
+          options = ["Regular handwashing with soap", "Using perfume", "Wearing masks always", "Avoiding all people"];
+        } else if (topicType === 2) {
+          questionText = "What does 'care labeling' on clothing indicate?";
+          correct = "How to wash and maintain the garment";
+          options = ["How to wash and maintain the garment", "The price of the item", "The designer's name", "Where it was made"];
+        } else if (topicType === 3) {
+          questionText = "What is the first aid for a minor burn?";
+          correct = "Run cool water over the burn";
+          options = ["Run cool water over the burn", "Apply butter or oil", "Pop any blisters", "Wrap tightly with cloth"];
+        } else if (topicType === 4) {
+          questionText = "What is the purpose of blanching vegetables?";
+          correct = "To preserve color and nutrients";
+          options = ["To preserve color and nutrients", "To make them sweeter", "To reduce cooking time only", "To add flavor"];
+        } else {
+          questionText = "What is a balanced diet?";
+          correct = "A diet with all food groups in right proportions";
+          options = ["A diet with all food groups in right proportions", "Only eating fruits", "Eating only what you like", "Skipping meals"];
+        }
+      }
+      
+      // Ensure correct answer is in options and shuffle
+      if (!options.includes(correct)) options[0] = correct;
+      let uniqueOpts = [...new Set(options)];
+      while(uniqueOpts.length < 4) uniqueOpts.push(correct);
+      uniqueOpts = uniqueOpts.sort(() => Math.random() - 0.5);
+      questions.push({ text: questionText, correctAnswer: correct, options: uniqueOpts });
+    }
+    return questions;
+  }
+
+  // ----- HOME SCIENCE SYLLABUS CONTENT (PP1 to Grade 9) -----
+  function getHomeScienceSyllabusContent(gradeCode, levelNumber) {
+    const gradeNames = {
+      0: "Pre-Primary 1 (PP1)", 1: "Pre-Primary 2 (PP2)", 2: "Grade 1", 3: "Grade 2",
+      4: "Grade 3", 5: "Grade 4", 6: "Grade 5", 7: "Grade 6", 8: "Grade 7", 9: "Grade 8", 10: "Grade 9"
+    };
+    const displayGrade = gradeNames[gradeCode] || `Grade ${gradeCode-1}`;
+    
+    const syllabusMap = {
+      0: "• Nutrition: Healthy foods, food groups introduction\n• Hygiene: Handwashing, dental care basics\n• Clothing: Identifying clothing items, dressing skills\n• Home Safety: Recognizing hazards, basic precautions\n• Family: Roles in the family, helping at home",
+      1: "• Nutrition: Balanced meals, importance of water\n• Hygiene: Personal cleanliness, bathing routines\n• Clothing: Caring for clothes, simple mending\n• Home Management: Keeping rooms tidy, basic chores\n• Health: Rest, sleep, and exercise importance",
+      2: "• Nutrition: Food preparation basics, kitchen tools\n• Hygiene: Food safety, preventing illness\n• Clothing: Fabric types, laundry basics\n• Home Safety: Fire safety, first aid introduction\n• Consumer Education: Making simple choices, saving money",
+      3: "• Nutrition: Meal planning, cooking methods\n• Hygiene: Disease prevention, sanitation\n• Clothing: Textile fibers, garment care labels\n• Home Management: Budgeting basics, time management\n• Family Health: Caring for sick family members",
+      4: "• Nutrition: Nutrients and their functions, special diets\n• Hygiene: Community health, waste disposal\n• Clothing: Clothing selection, fashion basics\n• Home Management: Resource management, home economics\n• Consumer Rights: Smart shopping, avoiding fraud",
+      5: "• Nutrition: Food preservation, food-borne illnesses\n• Hygiene: Adolescent health, reproductive health intro\n• Clothing: Clothing construction basics, entrepreneurship\n• Home Management: Family budgeting, interior decoration\n• Life Skills: Decision making, peer pressure resistance",
+      6: "• Nutrition: Diet-related diseases, therapeutic diets\n• Hygiene: Public health, environmental sanitation\n• Clothing: Textile science, fashion industry\n• Home Management: Family resource management, entrepreneurship\n• Consumer Education: Consumer laws, product evaluation",
+      7: "• Nutrition: Advanced food science, catering basics\n• Hygiene: Health promotion, disease control\n• Clothing: Fashion design principles, business skills\n• Home Management: Sustainable living, family counseling basics\n• Research: Conducting home science projects"
+    };
+    
+    let syllabusText = syllabusMap[gradeCode] || `• Home Science Curriculum for ${displayGrade}\n• Competency-based learning strands\n• Practical life skills and healthy living focus`;
+    
+    const levelFocus = {
+      1: "\n\n📘 LEVEL 1: Foundation - Recall basic facts and concepts.",
+      2: "\n\n📘 LEVEL 2: Developing - Apply knowledge to simple situations.",
+      3: "\n\n📘 LEVEL 3: Proficient - Analyze and solve problems.",
+      4: "\n\n📘 LEVEL 4: Advanced - Evaluate and create original work."
+    };
+    return syllabusText + levelFocus[levelNumber];
+  }
+
+  // ----- PDF GENERATION (HOME SCIENCE)-----
+  async function downloadHomeSciencePDF(gradeCode, level) {
+    const syllabusContent = getHomeScienceSyllabusContent(gradeCode, level);
+    const gradeNames = {
+      0: "PP1", 1: "PP2", 2: "Grade 1", 3: "Grade 2", 4: "Grade 3", 5: "Grade 4", 
+      6: "Grade 5", 7: "Grade 6", 8: "Grade 7", 9: "Grade 8", 10: "Grade 9"
+    };
+    const displayGrade = gradeNames[gradeCode];
+    const levelNames = {1:"Foundation",2:"Developing",3:"Proficient",4:"Advanced"};
+    
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.width = '800px';
+    pdfContainer.style.backgroundColor = 'white';
+    pdfContainer.style.padding = '40px';
+    pdfContainer.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.top = '0';
+    
+    pdfContainer.innerHTML = `
+      <div style="margin-bottom: 30px; border-bottom: 3px solid #ffb74d; padding-bottom: 15px;">
+        <h1 style="color: #6c3483; margin-bottom: 5px;">🏠 Home Science Worksheet</h1>
+        <h2 style="color: #4a235a;">${displayGrade} – ${levelNames[level]} Level (${level}/4)</h2>
+        <p style="color: #7b4a9e;"><strong>Kenya Competency-Based Curriculum | PP1 - Grade 9</strong></p>
+      </div>
+      <div style="background: #f3e5f5; padding: 16px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="color: #6c3483;">📖 Syllabus Coverage (Home Science):</h3>
+        <pre style="white-space: pre-wrap; font-family: 'Segoe UI', Arial; font-size: 14px; line-height: 1.6; color: #4a235a;">${syllabusContent}</pre>
+      </div>
+      <div style="margin: 25px 0;">
+        <h3 style="border-left: 4px solid #ffb74d; padding-left: 12px; color: #4a235a;">📝 Home Science Learning Activities</h3>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 1 (Nutrition & Food Science):</strong><br/>
+          • ${level === 1 ? "Draw and label 5 healthy foods from each food group." : 
+             level === 2 ? "Plan a balanced breakfast menu for your family using local foods." :
+             level === 3 ? "Explain how to prepare a nutritious meal using affordable ingredients." :
+             "Design a one-week meal plan for a person with a specific dietary need (e.g., diabetes)."}
+        </div>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 2 (Hygiene & Health):</strong><br/>
+          • ${level === 1 ? "Create a poster showing steps for proper handwashing." : 
+             level === 2 ? "List 5 ways to keep your home clean and prevent diseases." :
+             level === 3 ? "Explain how to care for a family member with a common illness at home." :
+             "Develop a health education campaign for your school on preventing a specific disease."}
+        </div>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 3 (Clothing & Textiles):</strong><br/>
+          • ${level === 1 ? "Match clothing items to the weather/occasion they are worn." : 
+             level === 2 ? "Demonstrate proper folding and storage of different clothing types." :
+             level === 3 ? "Explain how to read care labels and properly launder different fabrics." :
+             "Design a simple clothing item and explain your choice of fabric and style."}
+        </div>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 4 (Home Management & Safety):</strong><br/>
+          • ${level === 1 ? "Draw a simple map of your home and mark safety hazards." : 
+             level === 2 ? "Create a weekly chore chart for your family with time allocations." :
+             level === 3 ? "Develop a home emergency plan including contacts and procedures." :
+             "Prepare a budget for a family event, including cost-saving strategies."}
+        </div>
+        <div style="background: #f9f9ff; padding: 12px; margin: 12px 0; border-radius: 8px;">
+          <strong>Task 5 (Consumer Education & Life Skills):</strong><br/>
+          • ${level === 1 ? "Identify needs vs. wants using pictures of common items." : 
+             level === 2 ? "Compare prices of similar items from different shops (real or imaginary)." :
+             level === 3 ? "Explain consumer rights and how to make informed purchasing decisions." :
+             "Create a guide for young consumers on avoiding scams and making smart purchases."}
+        </div>
+      </div>
+      <div style="margin-top: 35px; text-align: center; color: #6c757d; font-size: 12px;">
+        <p>🎓 EduPlay Kenya — Home Science Learning Platform (PP1 - Grade 9)</p>
+        <p>Worksheet generated on ${new Date().toLocaleDateString()} | ${displayGrade} | Level ${level}</p>
+      </div>
+    `;
+    
+    document.body.appendChild(pdfContainer);
+    const btn = event?.target;
+    const originalText = btn?.innerText;
+    if(btn) btn.innerText = "⏳ Generating PDF...";
+    
+    try {
+      const canvas = await html2canvas(pdfContainer, { scale: 2, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`HomeScience_${displayGrade.replace(" ","_")}_Level${level}_Worksheet.pdf`);
+      if(btn) btn.innerText = originalText;
+    } catch(err) {
+      console.error(err);
+      alert("PDF generation failed. Please try again.");
+      if(btn) btn.innerText = "📥 Download PDF Worksheet";
+    } finally {
+      document.body.removeChild(pdfContainer);
+    }
+  }
+
+  // ---------- GAME STATE & LOGIC (HOME SCIENCE) ----------
+  let currentGameState = { gradeCode: 0, level: 1, questions: [], currentIndex: 0, score: 0, answersGiven: 0 };
+  let selectedGradeCode = 0; // 0=PP1, 1=PP2, 2=G1 ... 10=G9
+  
+  function renderGradeSelector() {
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+    const levels = [
+      "PP1", "PP2", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"
+    ];
+    for(let idx=0; idx<levels.length; idx++) {
+      const btn = document.createElement("button");
+      btn.className = `grade-btn ${selectedGradeCode === idx ? "active" : ""}`;
+      btn.textContent = levels[idx];
+      btn.addEventListener("click", () => { selectedGradeCode = idx; renderGradeSelector(); });
+      container.appendChild(btn);
+    }
+  }
+
+  function launchGame() {
+    const questions = generateHomeScienceQuestions(selectedGradeCode, 1);
+    currentGameState = {
+      gradeCode: selectedGradeCode,
+      level: 1,
+      questions: questions,
+      currentIndex: 0,
+      score: 0,
+      answersGiven: 0,
+      gameActive: true
+    };
+    const gradeDisplay = getGradeDisplay(selectedGradeCode);
+    document.getElementById("gameSubjectTitle").innerHTML = `Home Science | ${gradeDisplay} | Level 1/4 🔊 Voice Read`;
+    renderGameModal();
+    document.getElementById("gameModal").style.display = "flex";
+    
+    // Read first question aloud when game starts
+    setTimeout(() => {
+      if(currentGameState.questions[0]) {
+        speakText(currentGameState.questions[0].text);
+      }
+    }, 500);
+  }
+
+  function getGradeDisplay(code) {
+    const map = ["PP1", "PP2", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9"];
+    return map[code] || "Home Science Level";
+  }
+
+  function handleAnswer(selected, correct) {
+    const isCorrect = (selected === correct);
+    if(isCorrect) { 
+      speakText("Correct! Well done!"); 
+      currentGameState.score++; 
+      document.getElementById("gameFeedback").innerHTML = "✅ Correct! +1 point 🎉";
+      document.getElementById("gameFeedback").style.color = "#27ae60";
+    } else { 
+      speakText(`Wrong answer. The correct answer is ${correct}`); 
+      document.getElementById("gameFeedback").innerHTML = `❌ Wrong! Correct answer: ${correct}`;
+      document.getElementById("gameFeedback").style.color = "#c0392b";
+    }
+    currentGameState.currentIndex++;
+    currentGameState.answersGiven++;
+    
+    // Read next question if available
+    if(currentGameState.currentIndex < 30) {
+      setTimeout(() => {
+        if(currentGameState.questions[currentGameState.currentIndex]) {
+          speakText(currentGameState.questions[currentGameState.currentIndex].text);
+        }
+      }, 1500);
+    }
+    
+    if(currentGameState.currentIndex >= 30) renderGameModal();
+    else renderGameModal();
+  }
+
+  function renderGameModal() {
+    const gameDiv = document.getElementById("gameContent");
+    const state = currentGameState;
+    
+    // End of level
+    if(state.currentIndex >= 30) {
+      const passed = state.score >= 20;
+      let nextHtml = `<div class="level-badge">Level ${state.level} Finished</div>
+                      <div class="score-progress">📊 Score: ${state.score}/30 (Need 20 to advance)</div>`;
+      if(passed && state.level < 4) {
+        nextHtml += `<button class="next-level-btn" id="nextLevelBtn">🚀 Next Level ${state.level+1}</button>`;
+      } else if(passed && state.level === 4) {
+        nextHtml += `<div style="background:#d5f5e3; padding:1rem; border-radius:1rem; margin:1rem 0; color: #27ae60;">🏆 MASTERY! You completed all levels for ${getGradeDisplay(state.gradeCode)}! 🏆</div>`;
+      } else if(!passed) {
+        nextHtml += `<button class="restart-game" id="restartLevelBtn">🔄 Restart Level (Try Again)</button>`;
+      }
+      nextHtml += `<button class="restart-game" id="closeGameOnly" style="background:#7f8c8d; margin-top:10px;">Close</button>`;
+      gameDiv.innerHTML = nextHtml;
+      
+      // Read result aloud
+      if(passed) {
+        speakText(`Congratulations! You scored ${state.score} out of 30 and passed Level ${state.level}!`);
+      } else {
+        speakText(`You scored ${state.score} out of 30. You need 20 to pass. Try again!`);
+      }
+      
+      document.getElementById("nextLevelBtn")?.addEventListener("click", () => {
+        if(state.level < 4) {
+          const newQuestions = generateHomeScienceQuestions(state.gradeCode, state.level+1);
+          currentGameState = { ...state, level: state.level+1, questions: newQuestions, currentIndex: 0, score: 0, answersGiven: 0 };
+          renderGameModal();
+          setTimeout(() => {
+            if(currentGameState.questions[0]) speakText(currentGameState.questions[0].text);
+          }, 500);
+        }
+      });
+      document.getElementById("restartLevelBtn")?.addEventListener("click", () => {
+        const newQuestions = generateHomeScienceQuestions(state.gradeCode, state.level);
+        currentGameState = { ...state, questions: newQuestions, currentIndex: 0, score: 0, answersGiven: 0 };
+        renderGameModal();
+        setTimeout(() => {
+          if(currentGameState.questions[0]) speakText(currentGameState.questions[0].text);
+        }, 500);
+      });
+      document.getElementById("closeGameOnly")?.addEventListener("click", () => closeModal("gameModal"));
+      return;
+    }
+    
+    const q = state.questions[state.currentIndex];
+    gameDiv.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <span class="level-badge">Level ${state.level} | Q${state.currentIndex+1}/30</span> 
+        <span style="font-weight:600;color:#6c3483">⭐ Score: ${state.score}</span>
+      </div>
+      <div class="question-text" id="questionText">${q.text}</div>
+      <div class="voice-controls">
+        <button id="repeatBtn" class="voice-btn">🔁 Repeat Question</button>
+      </div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="feedback" id="gameFeedback"></div>
+    `;
+    
+    const optsDiv = document.getElementById("optionsGrid");
+    q.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(opt, q.correctAnswer);
+      optsDiv.appendChild(btn);
+    });
+    
+    // Repeat question button
+    document.getElementById("repeatBtn").onclick = () => {
+      speakText(q.text);
+    };
+  }
+
+  function launchWorksheets() {
+    const gradeCode = selectedGradeCode;
+    const gradeDisplay = getGradeDisplay(gradeCode);
+    document.getElementById("wsSubjectTitle").innerHTML = `Home Science Worksheets | ${gradeDisplay} | Syllabus PDFs`;
+    const container = document.getElementById("worksheetContent");
+    let levelsHtml = `<div class="worksheet-list">`;
+    for(let lvl=1; lvl<=4; lvl++) {
+      const levelName = lvl===1?"Foundation":lvl===2?"Developing":lvl===3?"Proficient":"Advanced";
+      levelsHtml += `
+        <div class="worksheet-item">
+          <strong>📘 Level ${lvl} Worksheet — ${levelName} (${gradeDisplay})</strong>
+          <p style="font-size:0.9rem; margin-top:5px; color: #4a235a;">Covers: ${getHomeScienceSyllabusContent(gradeCode, lvl).substring(0,100)}...</p>
+          <button class="download-pdf" data-level="${lvl}">📥 Download PDF (Home Science Syllabus)</button>
+        </div>
+      `;
+    }
+    levelsHtml += `</div>`;
+    container.innerHTML = levelsHtml;
+    document.querySelectorAll(".download-pdf").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const level = parseInt(btn.dataset.level);
+        await downloadHomeSciencePDF(selectedGradeCode, level);
+      });
+    });
+    document.getElementById("worksheetModal").style.display = "flex";
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+  }
+
+  // Event binding
+  document.getElementById("playGameBtn").onclick = () => launchGame();
+  document.getElementById("worksheetsBtn").onclick = () => launchWorksheets();
+
+  window.onload = () => {
+    renderGradeSelector();
+    document.getElementById("closeGameModal").onclick = () => closeModal("gameModal");
+    document.getElementById("closeWsModal").onclick = () => closeModal("worksheetModal");
+    window.onclick = (e) => { 
+      if(e.target === document.getElementById("gameModal")) closeModal("gameModal"); 
+      if(e.target === document.getElementById("worksheetModal")) closeModal("worksheetModal"); 
+    };
+    
+    // Check for speech synthesis support
+    if (!window.speechSynthesis) {
+      console.log("Text-to-speech not supported in this browser");
+    }
+  };
+</script>
+</body>
+</html>

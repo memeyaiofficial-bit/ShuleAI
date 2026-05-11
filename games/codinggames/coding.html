@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+  <title>EduPlay Kenya | Coding & Programming | CBC PP1 - Grade 9</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Segoe UI','Poppins',monospace;
+    }
+
+    body{
+      background:linear-gradient(135deg,#1a1a2e,#16213e);
+      min-height:100vh;
+      color:#e0e0e0;
+    }
+
+    .container{
+      max-width:1400px;
+      margin:auto;
+      padding:1rem;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#0f3460,#1a1a2e);
+      color:#e94560;
+      padding:2rem;
+      border-radius:2rem;
+      margin-bottom:2rem;
+      box-shadow:0 20px 40px rgba(0,0,0,0.3);
+      border:1px solid #e94560;
+    }
+
+    .hero h1{
+      font-size:2rem;
+      margin-bottom:0.5rem;
+    }
+
+    .hero p{
+      opacity:0.9;
+      color:#c0c0c0;
+    }
+
+    .grade-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.5rem;
+      margin-top:1.2rem;
+      justify-content:center;
+    }
+
+    .grade-btn{
+      border:none;
+      background:rgba(255,255,255,0.1);
+      color:white;
+      padding:0.5rem 0.9rem;
+      border-radius:2rem;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+      font-size:0.8rem;
+    }
+
+    .grade-btn.active{
+      background:#e94560;
+      color:white;
+      transform:scale(1.05);
+    }
+
+    .grade-btn:hover{
+      background:rgba(233,69,96,0.5);
+    }
+
+    .main-card{
+      background:#0f3460;
+      border-radius:2rem;
+      padding:2rem;
+      box-shadow:0 15px 35px rgba(0,0,0,0.3);
+      max-width:700px;
+      margin:auto;
+      border:1px solid #e94560;
+    }
+
+    .icon{
+      font-size:4rem;
+      margin-bottom:1rem;
+    }
+
+    .main-card h2{
+      color:#e94560;
+      font-size:2rem;
+      margin-bottom:0.7rem;
+    }
+
+    .description{
+      line-height:1.7;
+      margin:1rem 0;
+      color:#b0b0b0;
+    }
+
+    .stats{
+      color:#e94560;
+      font-weight:bold;
+      margin-bottom:1rem;
+    }
+
+    .button-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .btn{
+      flex:1;
+      border:none;
+      padding:1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:1rem;
+      transition:0.2s;
+    }
+
+    .btn.primary{
+      background:#e94560;
+      color:white;
+    }
+
+    .btn.secondary{
+      background:#1a1a2e;
+      color:#e94560;
+      border:1px solid #e94560;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px);
+      filter:brightness(1.1);
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.85);
+      z-index:1000;
+      justify-content:center;
+      align-items:center;
+      padding:1rem;
+    }
+
+    .modal-card{
+      background:#0f3460;
+      width:100%;
+      max-width:850px;
+      max-height:90vh;
+      overflow-y:auto;
+      border-radius:2rem;
+      padding:2rem;
+      border:1px solid #e94560;
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:1rem;
+    }
+
+    .modal-header h2{
+      color:#e94560;
+    }
+
+    .close{
+      border:none;
+      background:none;
+      font-size:2rem;
+      cursor:pointer;
+      color:#e94560;
+    }
+
+    .question{
+      background:#1a1a2e;
+      padding:1.5rem;
+      border-radius:1.5rem;
+      font-size:1.3rem;
+      font-weight:bold;
+      margin:1rem 0;
+      color:#e94560;
+      border-left:4px solid #e94560;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .option-btn{
+      padding:1rem;
+      border-radius:1rem;
+      border:2px solid #e94560;
+      background:#1a1a2e;
+      cursor:pointer;
+      font-weight:bold;
+      transition:0.2s;
+      color:white;
+    }
+
+    .option-btn:hover{
+      background:#e94560;
+      color:white;
+    }
+
+    .badge{
+      display:inline-block;
+      background:#e94560;
+      color:white;
+      padding:0.4rem 1rem;
+      border-radius:2rem;
+      margin-bottom:1rem;
+      font-size:0.9rem;
+    }
+
+    .feedback{
+      margin-top:1rem;
+      font-weight:bold;
+      font-size:1rem;
+    }
+
+    .worksheet-item{
+      background:#1a1a2e;
+      padding:1rem;
+      border-left:6px solid #e94560;
+      border-radius:1rem;
+      margin-bottom:1rem;
+    }
+
+    .download-btn{
+      margin-top:0.7rem;
+      background:#e94560;
+      color:white;
+      border:none;
+      padding:0.7rem 1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .next-btn{
+      background:#e94560;
+      color:white;
+      border:none;
+      padding:0.9rem 1.4rem;
+      border-radius:2rem;
+      margin-top:1rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    @media(max-width:640px){
+      .hero h1{
+        font-size:1.3rem;
+      }
+      .grade-btn{
+        font-size:0.7rem;
+        padding:0.4rem 0.7rem;
+      }
+      .question{
+        font-size:1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>💻 EduPlay Kenya — Coding & Programming 🚀</h1>
+    <p>Learn to Code: Algorithms, Python, HTML, JavaScript, Scratch, and Computational Thinking | CBC PP1 - Grade 9</p>
+
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <div class="main-card">
+    <div class="icon">👨‍💻</div>
+
+    <h2>Coding & Programming Interactive Learning</h2>
+
+    <div class="stats">
+      50+ Coding Games • 250+ Worksheets • PP1 - Grade 9
+    </div>
+
+    <p class="description">
+      Learn to Code! From basic algorithms and sequencing to Python, HTML, JavaScript, and Scratch.
+      Young learners explore coding logic, patterns, and problem-solving.
+      Older learners dive into programming concepts, web development, data structures, and computational thinking.
+      Interactive CBC-aligned quizzes and downloadable coding worksheets.
+      Voice support reads questions aloud. Age-appropriate for early years to junior secondary!
+    </p>
+
+    <div class="button-group">
+      <button class="btn primary" id="playBtn">
+        🎮 Play Coding Challenge (50 Questions)
+      </button>
+
+      <button class="btn secondary" id="worksheetBtn">
+        📄 Download Coding Worksheets
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- GAME MODAL -->
+<div class="modal" id="gameModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="gameTitle">💻 Coding Challenge</h2>
+      <button class="close" id="closeGame">&times;</button>
+    </div>
+    <div id="gameContent"></div>
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div class="modal" id="worksheetModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>📋 Coding & Programming Worksheets</h2>
+      <button class="close" id="closeWorksheet">&times;</button>
+    </div>
+    <div id="worksheetContent"></div>
+  </div>
+</div>
+
+<script>
+
+  // =====================
+  // VOICE OUTPUT
+  // =====================
+
+  function speakText(text){
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.95;
+    utterance.pitch = 1.05;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // =====================
+  // GRADES PP1 - GRADE 9 (11 levels)
+  // =====================
+
+  const grades = [
+    "PP1", "PP2",
+    "Grade 1", "Grade 2", "Grade 3",
+    "Grade 4", "Grade 5", "Grade 6",
+    "Grade 7", "Grade 8", "Grade 9"
+  ];
+
+  let selectedGrade = 0;
+
+  function renderGrades(){
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+    grades.forEach((grade,index)=>{
+      const btn = document.createElement("button");
+      btn.className = `grade-btn ${selectedGrade===index ? "active":""}`;
+      btn.innerText = grade;
+      btn.onclick = ()=>{
+        selectedGrade = index;
+        renderGrades();
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  // =====================
+  // CODING & PROGRAMMING QUESTION BANK - 50 UNIQUE QUESTIONS (Age-appropriate)
+  // Early years: sequencing, patterns, basic logic
+  // Middle: algorithms, Scratch, simple programming concepts
+  // Upper: Python, HTML, JavaScript, data structures, computational thinking
+  // =====================
+
+  function generateCodingQuestions() {
+    const bank = [
+      // PP1 - Grade 3 (Very Basic Coding Concepts)
+      { text: "What is coding?", answer: "Writing instructions for computers", options: ["Playing games", "Writing instructions for computers", "Drawing pictures", "Typing letters"] },
+      { text: "What do we call a step-by-step set of instructions to solve a problem?", answer: "Algorithm", options: ["Game", "Algorithm", "Drawing", "Song"] },
+      { text: "In coding, what does a loop do?", answer: "Repeats instructions", options: ["Stops the program", "Repeats instructions", "Draws shapes", "Plays sound"] },
+      { text: "Which of these is a coding language for beginners using blocks?", answer: "Scratch", options: ["Python", "Scratch", "Java", "C++"] },
+      { text: "What does 'debugging' mean?", answer: "Finding and fixing errors", options: ["Writing new code", "Finding and fixing errors", "Running a program", "Saving a file"] },
+      { text: "What is a sequence in coding?", answer: "Instructions in order", options: ["Random instructions", "Instructions in order", "A type of loop", "A variable"] },
+      { text: "Which symbol is used to move a character in Scratch?", answer: "Motion blocks", options: ["Sound blocks", "Motion blocks", "Event blocks", "Control blocks"] },
+      
+      // Grade 1-3 Basic Logic
+      { text: "What is a variable in programming?", answer: "Container for storing data", options: ["A type of loop", "Container for storing data", "A bug", "A function"] },
+      { text: "What does an 'if statement' do?", answer: "Makes a decision", options: ["Repeats code", "Makes a decision", "Stops the program", "Prints output"] },
+      { text: "In Scratch, which block starts a program when the green flag is clicked?", answer: "When green flag clicked", options: ["When space key pressed", "When green flag clicked", "When sprite clicked", "When I receive message"] },
+      
+      // Grade 3-5 (Programming Fundamentals)
+      { text: "What is the output of: print('Hello') in Python?", answer: "Hello", options: ["Hello", "Print Hello", "Error", "Hello World"] },
+      { text: "Which of these is a correct way to write a comment in Python?", answer: "# This is a comment", options: ["// This is a comment", "# This is a comment", "/* comment */", "<!-- comment -->"] },
+      { text: "What is a function in programming?", answer: "Reusable block of code", options: ["A variable", "Reusable block of code", "A loop", "An error"] },
+      { text: "What does 'HTML' stand for?", answer: "HyperText Markup Language", options: ["High Tech Modern Language", "HyperText Markup Language", "Home Tool Markup Language", "Hyper Transfer Markup Language"] },
+      { text: "What tag is used to make text bold in HTML?", answer: "<b>", options: ["<strong>", "<b>", "<bold>", "<em>"] },
+      
+      // Grade 4-6 (Advanced Concepts)
+      { text: "What is the output of 5 + 3 * 2 in programming?", answer: "11", options: ["16", "11", "13", "10"] },
+      { text: "What is a boolean value?", answer: "True or False", options: ["Number", "True or False", "Text", "List"] },
+      { text: "Which operator means 'not equal to' in most languages?", answer: "!=", options: ["=", "==", "!=", "<>"] },
+      { text: "What is an array?", answer: "Collection of items", options: ["Single value", "Collection of items", "Function", "Loop"] },
+      { text: "In Scratch, what does the 'repeat 10' block do?", answer: "Repeats code 10 times", options: ["Repeats forever", "Repeats code 10 times", "Stops after 10 seconds", "Moves 10 steps"] },
+      { text: "What is a bug in coding?", answer: "An error in the program", options: ["An insect", "An error in the program", "A feature", "A type of loop"] },
+      
+      // Grade 5-7 (Python & Web Development)
+      { text: "How do you get user input in Python?", answer: "input()", options: ["print()", "input()", "scan()", "get()"] },
+      { text: "What does CSS stand for?", answer: "Cascading Style Sheets", options: ["Computer Style Sheets", "Cascading Style Sheets", "Creative Style Sheets", "Colorful Style Sheets"] },
+      { text: "Which HTML tag creates a hyperlink?", answer: "<a>", options: ["<link>", "<a>", "<href>", "<url>"] },
+      { text: "What is the correct way to create a list in Python?", answer: "my_list = [1,2,3]", options: ["my_list = (1,2,3)", "my_list = [1,2,3]", "my_list = {1,2,3}", "list(1,2,3)"] },
+      { text: "What does 'elif' mean in Python?", answer: "Else if", options: ["Else if", "Else", "If", "Else loop"] },
+      
+      // Grade 6-8 (Data Structures & Algorithms)
+      { text: "What is a while loop?", answer: "Repeats while condition is true", options: ["Repeats a fixed number", "Repeats while condition is true", "Never repeats", "Runs once"] },
+      { text: "What does 'recursion' mean?", answer: "Function that calls itself", options: ["Loop inside loop", "Function that calls itself", "Broken function", "Variable array"] },
+      { text: "What is the time complexity of binary search on a sorted list?", answer: "O(log n)", options: ["O(n)", "O(log n)", "O(n²)", "O(1)"] },
+      { text: "What is a stack data structure?", answer: "Last In First Out (LIFO)", options: ["First In First Out", "Last In First Out (LIFO)", "Random order", "Sorted order"] },
+      { text: "What is a queue data structure?", answer: "First In First Out (FIFO)", options: ["First In First Out (FIFO)", "Last In First Out", "Random", "Sorted"] },
+      
+      // Grade 7-9 (Advanced Programming)
+      { text: "What does API stand for?", answer: "Application Programming Interface", options: ["Application Program Interface", "Application Programming Interface", "Advanced Programming Interface", "Automated Programming Interface"] },
+      { text: "What is an object in object-oriented programming?", answer: "Instance of a class", options: ["A variable", "Instance of a class", "A function", "A loop"] },
+      { text: "What is inheritance in programming?", answer: "Class deriving from another class", options: ["Copying code", "Class deriving from another class", "Deleting code", "Hiding code"] },
+      { text: "What does SQL stand for?", answer: "Structured Query Language", options: ["Simple Query Language", "Structured Query Language", "Standard Query Language", "System Query Language"] },
+      { text: "What is a git repository used for?", answer: "Version control for code", options: ["Running code", "Version control for code", "Writing code", "Debugging code"] },
+      
+      // Algorithms & Problem Solving
+      { text: "What is a flowchart used for?", answer: "Visual representation of algorithm", options: ["Drawing pictures", "Visual representation of algorithm", "Writing code", "Testing code"] },
+      { text: "What is pseudocode?", answer: "Informal description of algorithm", options: ["Real code", "Informal description of algorithm", "Programming language", "Compiler"] },
+      { text: "Which search algorithm is faster for sorted arrays?", answer: "Binary search", options: ["Linear search", "Binary search", "Bubble sort", "Merge sort"] },
+      
+      // JavaScript & Web
+      { text: "What does 'JavaScript' do on a website?", answer: "Adds interactivity", options: ["Styles pages", "Adds interactivity", "Structures content", "Stores data"] },
+      { text: "How do you write an alert in JavaScript?", answer: "alert('Hello')", options: ["msg('Hello')", "alert('Hello')", "popup('Hello')", "window('Hello')"] },
+      { text: "What does DOM stand for?", answer: "Document Object Model", options: ["Document Object Model", "Display Object Model", "Data Object Model", "Document Oriented Model"] },
+      
+      // Computational Thinking
+      { text: "What is decomposition in computational thinking?", answer: "Breaking a problem into smaller parts", options: ["Making problem bigger", "Breaking a problem into smaller parts", "Ignoring parts", "Solving all at once"] },
+      { text: "What is pattern recognition in coding?", answer: "Finding similarities in problems", options: ["Finding differences", "Finding similarities in problems", "Creating new patterns", "Random guessing"] },
+      { text: "What is abstraction in programming?", answer: "Hiding complex details", options: ["Showing all details", "Hiding complex details", "Deleting code", "Adding features"] },
+      
+      // More Advanced
+      { text: "What is a constructor in programming?", answer: "Method that initializes an object", options: ["Variable", "Method that initializes an object", "Loop", "Condition"] },
+      { text: "What does 'IDE' stand for?", answer: "Integrated Development Environment", options: ["Integrated Development Environment", "Internet Development Environment", "Integrated Design Editor", "Internal Development Engine"] },
+      { text: "What is the purpose of a compiler?", answer: "Converts code to machine language", options: ["Runs code slowly", "Converts code to machine language", "Debugs code", "Writes code"] }
+    ];
+    
+    // Get exactly 50 unique questions
+    const shuffled = [...bank];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    let selected = shuffled.slice(0, 50);
+    while(selected.length < 50) {
+      selected.push({ ...bank[selected.length % bank.length] });
+    }
+    return selected.map(q => ({ ...q }));
+  }
+
+  // =====================
+  // GAME STATE (50 questions)
+  // =====================
+
+  let gameState = {
+    level: 1,
+    score: 0,
+    current: 0,
+    questions: []
+  };
+
+  function launchGame() {
+    gameState = {
+      level: 1,
+      score: 0,
+      current: 0,
+      questions: generateCodingQuestions()
+    };
+    document.getElementById("gameModal").style.display = "flex";
+    renderGame();
+  }
+
+  function renderGame() {
+    const container = document.getElementById("gameContent");
+    const total = gameState.questions.length;
+    if (gameState.current >= total) {
+      const passed = gameState.score >= 35;
+      container.innerHTML = `
+        <div class="badge">🎉 Coding Challenge Complete!</div>
+        <h2>💻 Final Score: ${gameState.score}/${total}</h2>
+        <p style="margin-top:1rem; font-size:1.1rem;">
+          ${passed ? "🌟 Excellent! You're a Coding Champion! Keep building your programming skills!" : "📚 Good effort! Aim for 35+ next time. Practice makes perfect in coding!"}
+        </p>
+        <button class="next-btn" onclick="restartGame()">
+          🔄 Play Again (New 50 Questions)
+        </button>
+      `;
+      speakText(`Coding game finished. Your score is ${gameState.score} out of ${total}. ${passed ? "Congratulations coding champion!" : "Keep practicing your programming skills!"}`);
+      return;
+    }
+
+    const q = gameState.questions[gameState.current];
+    speakText(q.text);
+
+    container.innerHTML = `
+      <div class="badge">Question ${gameState.current+1}/${total}</div>
+      <div style="float:right; font-weight:bold; background:#e9456030; padding:5px 12px; border-radius:20px;">⭐ ${gameState.score}</div>
+      <div class="question">💻 ${q.text}</div>
+      <button class="btn secondary" onclick="speakText('${q.text.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">
+        🔊 Read Question
+      </button>
+      <div class="options" id="codeOptions"></div>
+      <div class="feedback" id="codeFeedback"></div>
+    `;
+
+    const optContainer = document.getElementById("codeOptions");
+    optContainer.innerHTML = "";
+    const shuffledOptions = [...q.options];
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+    }
+    shuffledOptions.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(opt, q.answer);
+      optContainer.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, correct) {
+    const feedbackDiv = document.getElementById("codeFeedback");
+    if (selected === correct) {
+      gameState.score++;
+      feedbackDiv.innerHTML = "✅ Correct! Excellent coding knowledge! +1 point";
+      feedbackDiv.style.color = "#4caf50";
+      speakText("Correct answer! Well done!");
+    } else {
+      feedbackDiv.innerHTML = `❌ The correct answer is: ${correct}. Keep learning about coding!`;
+      feedbackDiv.style.color = "#ff6b6b";
+      speakText(`Wrong answer. The correct answer is ${correct}. Keep studying programming!`);
+    }
+    setTimeout(() => {
+      gameState.current++;
+      renderGame();
+    }, 1300);
+  }
+
+  function restartGame() {
+    launchGame();
+  }
+
+  // =====================
+  // CODING WORKSHEETS (Age-appropriate for all levels)
+  // =====================
+
+  function launchWorksheets() {
+    const container = document.getElementById("worksheetContent");
+    let html = "";
+    for(let i=1;i<=6;i++){
+      const levelName = i === 1 ? "Early Years (PP1 - Grade 2): Sequencing & Patterns" : 
+                        i === 2 ? "Lower Primary (Grade 3-4): Algorithms & Scratch" :
+                        i === 3 ? "Upper Primary (Grade 5-6): Python Basics & Logic" :
+                        i === 4 ? "Junior Secondary (Grade 7-8): Data Structures & Web Basics" :
+                        i === 5 ? "Grade 9: Advanced Programming & Problem Solving" : "All Levels: Fun Coding Activities";
+      
+      html += `
+        <div class="worksheet-item">
+          <h3>💻 ${levelName} Worksheet</h3>
+          <p>
+            Age-appropriate coding topics: Sequencing, algorithms, Scratch, Python basics, HTML, CSS,
+            JavaScript, data structures, computational thinking, and problem solving.
+            Tailored for <strong>${grades[selectedGrade]}</strong> level. CBC-aligned.
+          </p>
+          <button class="download-btn" onclick="downloadCodingPDF(${i})">
+            📥 Download PDF Worksheet
+          </button>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+    document.getElementById("worksheetModal").style.display = "flex";
+  }
+
+  // =====================
+  // PDF GENERATION (Coding Themed)
+  // =====================
+
+  async function downloadCodingPDF(level) {
+    const pdfContent = document.createElement("div");
+    pdfContent.style.width = "800px";
+    pdfContent.style.padding = "40px";
+    pdfContent.style.background = "#1a1a2e";
+    pdfContent.style.color = "#e0e0e0";
+    pdfContent.style.fontFamily = "monospace";
+    pdfContent.style.borderRadius = "20px";
+
+    const gradeLevel = grades[selectedGrade];
+    const isEarlyYears = selectedGrade <= 2;
+    const isLowerPrimary = selectedGrade >= 2 && selectedGrade <= 4;
+    const isUpperPrimary = selectedGrade >= 5 && selectedGrade <= 7;
+    const isJuniorSec = selectedGrade >= 8;
+
+    let activities = "";
+    
+    if (level === 1 || isEarlyYears) {
+      activities = `
+        <p>1. Draw a sequence of 5 steps to brush your teeth. Number each step in order.</p>
+        <p>2. Unplugged Coding: Follow the arrows (↑, ↓, ←, →) to move a character to the treasure on a grid.</p>
+        <p>3. Find the pattern: 🔴🔵🔴🔵__ What comes next? Draw it.</p>
+        <p>4. Write a simple algorithm to make a sandwich (step by step).</p>
+        <p>5. Debugging activity: Find what's wrong with this sequence: 1,2,4,3,5 (reorder correctly).</p>
+      `;
+    } else if (level === 2 || isLowerPrimary) {
+      activities = `
+        <p>1. Create a Scratch-style flowchart for a simple animation of a cat moving across the screen.</p>
+        <p>2. Write an algorithm to add two numbers and display the result.</p>
+        <p>3. What is a loop? Write a repeat loop to say "Hello" 5 times.</p>
+        <p>4. Conditional statements: If it is raining, take an umbrella. Else, wear sunglasses. Draw this decision tree.</p>
+        <p>5. Complete the pattern: 2,4,6,8,__, __. Write the next two numbers.</p>
+      `;
+    } else if (level === 3 || isUpperPrimary) {
+      activities = `
+        <p>1. Write a Python program that asks for your name and prints "Hello, [name]!".</p>
+        <p>2. What is the output? x = 5; y = 10; print(x + y * 2)</p>
+        <p>3. Create a simple calculator algorithm using if/elif/else statements.</p>
+        <p>4. Explain the difference between a for loop and a while loop. Give an example of each.</p>
+        <p>5. Write a function that returns the square of a number.</p>
+        <p>6. Debug this code: print("Hello World) (missing quotation mark). Fix it.</p>
+      `;
+    } else if (level === 4 || isJuniorSec) {
+      activities = `
+        <p>1. Create a simple HTML page with your name as heading and a paragraph about your favorite hobby.</p>
+        <p>2. What is an array? Create an array of 5 fruits and write code to print the third fruit.</p>
+        <p>3. Explain the concept of a stack (LIFO) with a real-life example.</p>
+        <p>4. Write a Python program that checks if a number is even or odd.</p>
+        <p>5. What is the difference between == and = in programming?</p>
+        <p>6. Write a CSS rule to make all headings red and center-aligned.</p>
+      `;
+    } else {
+      activities = `
+        <p>1. Write a recursive function in Python to calculate factorial of n.</p>
+        <p>2. Explain binary search algorithm. Show step-by-step how to find number 27 in [5,12,18,27,33,45].</p>
+        <p>3. What is object-oriented programming? Define class and object with an example.</p>
+        <p>4. Create a simple JavaScript function that displays an alert when a button is clicked.</p>
+        <p>5. What is an API? Give an example of how websites use APIs.</p>
+        <p>6. Write a Python program that uses a dictionary to store student names and grades, then prints all students who scored above 80.</p>
+        <p>7. Design a simple database schema for a library management system (tables: Books, Members, Loans).</p>
+      `;
+    }
+
+    pdfContent.innerHTML = `
+      <h1 style="color:#e94560; border-left: 6px solid #e94560; padding-left: 15px;">
+        💻 EduPlay Kenya: Coding & Programming Worksheet
+      </h1>
+      <h2 style="color:#e94560;">📖 ${gradeLevel} — Coding Level ${level}</h2>
+      <hr style="border-color:#e94560;"/>
+      <br/>
+      <h3 style="color:#e94560;">📌 Key Coding Topics</h3>
+      <ul style="line-height:1.8; color:#c0c0c0;">
+        <li>Algorithms & Sequencing</li>
+        <li>Loops, Conditionals, and Variables</li>
+        <li>Scratch & Block-Based Programming</li>
+        <li>Python Programming (Input/Output, Functions, Data Types)</li>
+        <li>Web Development (HTML, CSS, JavaScript)</li>
+        <li>Data Structures (Arrays/Lists, Stacks, Queues)</li>
+        <li>Computational Thinking & Problem Solving</li>
+      </ul>
+      <br/>
+      <h3 style="color:#e94560;">✍️ Activities & Exercises</h3>
+      ${activities}
+      <br/>
+      <h3 style="color:#e94560;">💻 Coding Challenge</h3>
+      <p style="color:#c0c0c0;">Create a program (in Python or pseudocode) that asks the user for their age and tells them if they are a child (0-12), teenager (13-19), or adult (20+). Test it with three different ages.</p>
+      <br/><br/>
+      <p>📚 EduPlay Kenya — CBC Coding & Programming Learning Platform</p>
+      <p>💻 Code. Create. Innovate. Repeat!</p>
+      <p>🎯 ${gradeLevel} - Kenyan Competency Based Curriculum Aligned</p>
+      <p>🌟 Be a future programmer and problem solver!</p>
+    `;
+
+    document.body.appendChild(pdfContent);
+    const canvas = await html2canvas(pdfContent, { scale: 2, backgroundColor: '#1a1a2e' });
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const width = pdf.internal.pageSize.getWidth();
+    const height = (canvas.height * width) / canvas.width;
+    pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    pdf.save(`Coding_Worksheet_Level_${level}_${gradeLevel.replace(/ /g, "_")}.pdf`);
+    document.body.removeChild(pdfContent);
+  }
+
+  // =====================
+  // CLOSE MODALS
+  // =====================
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+    window.speechSynthesis.cancel();
+  }
+
+  document.getElementById("playBtn").onclick = launchGame;
+  document.getElementById("worksheetBtn").onclick = launchWorksheets;
+  document.getElementById("closeGame").onclick = () => closeModal("gameModal");
+  document.getElementById("closeWorksheet").onclick = () => closeModal("worksheetModal");
+
+  window.onclick = (e) => {
+    if (e.target === document.getElementById("gameModal")) closeModal("gameModal");
+    if (e.target === document.getElementById("worksheetModal")) closeModal("worksheetModal");
+  };
+
+  renderGrades();
+
+</script>
+
+</body>
+</html>

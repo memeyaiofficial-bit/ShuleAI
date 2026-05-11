@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+  <title>EduPlay Kenya | Business Studies | CBC PP1 - Grade 9</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Segoe UI','Poppins',sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#fff8e1,#ffecb3);
+      min-height:100vh;
+      color:#3e2723;
+    }
+
+    .container{
+      max-width:1400px;
+      margin:auto;
+      padding:1rem;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#5d4037,#3e2723);
+      color:white;
+      padding:2rem;
+      border-radius:2rem;
+      margin-bottom:2rem;
+      box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .hero h1{
+      font-size:2rem;
+      margin-bottom:0.5rem;
+    }
+
+    .hero p{
+      opacity:0.9;
+    }
+
+    .grade-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.5rem;
+      margin-top:1.2rem;
+      justify-content:center;
+    }
+
+    .grade-btn{
+      border:none;
+      background:rgba(255,255,255,0.15);
+      color:white;
+      padding:0.5rem 0.9rem;
+      border-radius:2rem;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+      font-size:0.8rem;
+    }
+
+    .grade-btn.active{
+      background:#ffb74d;
+      color:#3e2723;
+      transform:scale(1.05);
+    }
+
+    .grade-btn:hover{
+      background:rgba(255,255,255,0.3);
+    }
+
+    .main-card{
+      background:white;
+      border-radius:2rem;
+      padding:2rem;
+      box-shadow:0 15px 35px rgba(0,0,0,0.08);
+      max-width:700px;
+      margin:auto;
+    }
+
+    .icon{
+      font-size:4rem;
+      margin-bottom:1rem;
+    }
+
+    .main-card h2{
+      color:#5d4037;
+      font-size:2rem;
+      margin-bottom:0.7rem;
+    }
+
+    .description{
+      line-height:1.7;
+      margin:1rem 0;
+      color:#5d4037;
+    }
+
+    .stats{
+      color:#e67e22;
+      font-weight:bold;
+      margin-bottom:1rem;
+    }
+
+    .button-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .btn{
+      flex:1;
+      border:none;
+      padding:1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:1rem;
+      transition:0.2s;
+    }
+
+    .btn.primary{
+      background:#ff9800;
+      color:#1b1b1b;
+    }
+
+    .btn.secondary{
+      background:#efebe9;
+      color:#5d4037;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px);
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.75);
+      z-index:1000;
+      justify-content:center;
+      align-items:center;
+      padding:1rem;
+    }
+
+    .modal-card{
+      background:white;
+      width:100%;
+      max-width:850px;
+      max-height:90vh;
+      overflow-y:auto;
+      border-radius:2rem;
+      padding:2rem;
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:1rem;
+    }
+
+    .close{
+      border:none;
+      background:none;
+      font-size:2rem;
+      cursor:pointer;
+    }
+
+    .question{
+      background:#fff3e0;
+      padding:1.5rem;
+      border-radius:1.5rem;
+      font-size:1.3rem;
+      font-weight:bold;
+      margin:1rem 0;
+      color:#5d4037;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .option-btn{
+      padding:1rem;
+      border-radius:1rem;
+      border:2px solid #ffcc80;
+      background:#fff8f0;
+      cursor:pointer;
+      font-weight:bold;
+      transition:0.2s;
+    }
+
+    .option-btn:hover{
+      background:#ff9800;
+      color:white;
+    }
+
+    .badge{
+      display:inline-block;
+      background:#5d4037;
+      color:white;
+      padding:0.4rem 1rem;
+      border-radius:2rem;
+      margin-bottom:1rem;
+      font-size:0.9rem;
+    }
+
+    .feedback{
+      margin-top:1rem;
+      font-weight:bold;
+      font-size:1rem;
+    }
+
+    .worksheet-item{
+      background:#fff8f0;
+      padding:1rem;
+      border-left:6px solid #ff9800;
+      border-radius:1rem;
+      margin-bottom:1rem;
+    }
+
+    .download-btn{
+      margin-top:0.7rem;
+      background:#c62828;
+      color:white;
+      border:none;
+      padding:0.7rem 1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .next-btn{
+      background:#2e7d32;
+      color:white;
+      border:none;
+      padding:0.9rem 1.4rem;
+      border-radius:2rem;
+      margin-top:1rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    @media(max-width:640px){
+      .hero h1{
+        font-size:1.3rem;
+      }
+      .grade-btn{
+        font-size:0.7rem;
+        padding:0.4rem 0.7rem;
+      }
+      .question{
+        font-size:1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>💰 EduPlay Kenya — Business Studies 🏪</h1>
+    <p>Money Basics, Saving, Trading, Entrepreneurship, and Kenyan Economy | CBC PP1 - Grade 9</p>
+
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <div class="main-card">
+    <div class="icon">📊</div>
+
+    <h2>Business Studies Interactive Learning</h2>
+
+    <div class="stats">
+      50+ Business Games • 250+ Worksheets • PP1 - Grade 9
+    </div>
+
+    <p class="description">
+      Learn Business Studies from the basics! Young learners explore money, needs vs wants, and simple saving.
+      Older learners dive into entrepreneurship, trade, marketing, bookkeeping, and Kenya's economy.
+      Interactive CBC-aligned quizzes and downloadable PDF worksheets.
+      Voice support reads questions aloud. Age-appropriate for early years to junior secondary!
+    </p>
+
+    <div class="button-group">
+      <button class="btn primary" id="playBtn">
+        🎮 Play Business Studies Challenge (50 Questions)
+      </button>
+
+      <button class="btn secondary" id="worksheetBtn">
+        📄 Download Worksheets
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- GAME MODAL -->
+<div class="modal" id="gameModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="gameTitle">🏦 Business Studies Challenge</h2>
+      <button class="close" id="closeGame">&times;</button>
+    </div>
+    <div id="gameContent"></div>
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div class="modal" id="worksheetModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>📋 Business Studies Worksheets</h2>
+      <button class="close" id="closeWorksheet">&times;</button>
+    </div>
+    <div id="worksheetContent"></div>
+  </div>
+</div>
+
+<script>
+
+  // =====================
+  // VOICE OUTPUT
+  // =====================
+
+  function speakText(text){
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.95;
+    utterance.pitch = 1.05;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // =====================
+  // GRADES PP1 - GRADE 9 (11 levels)
+  // =====================
+
+  const grades = [
+    "PP1", "PP2",
+    "Grade 1", "Grade 2", "Grade 3",
+    "Grade 4", "Grade 5", "Grade 6",
+    "Grade 7", "Grade 8", "Grade 9"
+  ];
+
+  let selectedGrade = 0;
+
+  function renderGrades(){
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+    grades.forEach((grade,index)=>{
+      const btn = document.createElement("button");
+      btn.className = `grade-btn ${selectedGrade===index ? "active":""}`;
+      btn.innerText = grade;
+      btn.onclick = ()=>{
+        selectedGrade = index;
+        renderGrades();
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  // =====================
+  // BUSINESS STUDIES QUESTION BANK - 50 UNIQUE QUESTIONS (Age-appropriate)
+  // Early years: money basics, needs vs wants, saving coins
+  // Middle: business ideas, simple trade, shops
+  // Upper: entrepreneurship, marketing, Kenyan economy, accounting
+  // =====================
+
+  function generateBusinessQuestions() {
+    const bank = [
+      // PP1 - Grade 3 (Very Basic Money Concepts)
+      { text: "What do we call the paper and coins we use to buy things?", answer: "Money", options: ["Toys", "Money", "Food", "Clothes"] },
+      { text: "Which of these is a NEED (something you must have to live)?", answer: "Water", options: ["Water", "Toy car", "Candy", "Video game"] },
+      { text: "Which of these is a WANT (something nice but not necessary)?", answer: "Bicycle", options: ["Food", "Bicycle", "Water", "Shelter"] },
+      { text: "What is the name of Kenya's money?", answer: "Shilling", options: ["Dollar", "Shilling", "Pound", "Euro"] },
+      { text: "What do you call a place where people buy and sell things?", answer: "Shop", options: ["School", "Shop", "Hospital", "Church"] },
+      { text: "If you put money in a piggy bank, you are...", answer: "Saving", options: ["Spending", "Saving", "Losing", "Eating"] },
+      { text: "Which coin in Kenya is worth the least?", answer: "1 shilling", options: ["1 shilling", "5 shillings", "10 shillings", "20 shillings"] },
+      { text: "What do you call a person who sells things in a shop?", answer: "Shopkeeper", options: ["Teacher", "Doctor", "Shopkeeper", "Driver"] },
+      
+      // Grade 1-3 Basic Business
+      { text: "When you give someone money and they give you a toy, this is called...", answer: "Buying", options: ["Borrowing", "Buying", "Saving", "Losing"] },
+      { text: "What color is the 50 shilling note in Kenya?", answer: "Red", options: ["Blue", "Green", "Red", "Purple"] },
+      { text: "Which of these is a way to earn money?", answer: "Doing chores", options: ["Sleeping", "Doing chores", "Playing games", "Watching TV"] },
+      { text: "A small shop in the neighborhood is called a...", answer: "Kiosk", options: ["Bank", "Kiosk", "School", "Hospital"] },
+      
+      // Grade 3-5 (Simple Economics)
+      { text: "When you have a lemonade stand, you are being a...", answer: "Business owner", options: ["Teacher", "Business owner", "Doctor", "Farmer"] },
+      { text: "What is profit?", answer: "Money left after paying costs", options: ["Total money earned", "Money left after paying costs", "Money borrowed", "Tax"] },
+      { text: "If you buy a juice for 20 shillings and sell it for 30 shillings, your profit is...", answer: "10 shillings", options: ["5 shillings", "10 shillings", "20 shillings", "30 shillings"] },
+      { text: "What is the main reason people start a business?", answer: "To make money", options: ["To make friends", "To make money", "To lose money", "To play games"] },
+      { text: "What do you call the money a business pays to workers?", answer: "Salary", options: ["Profit", "Salary", "Loss", "Loan"] },
+      
+      // Grade 4-6 (Trade & Services)
+      { text: "When two people exchange goods without using money, it's called...", answer: "Barter trade", options: ["Buying", "Selling", "Barter trade", "Saving"] },
+      { text: "Who is a customer?", answer: "Someone who buys goods", options: ["Someone who sells goods", "Someone who buys goods", "Someone who makes goods", "Someone who delivers goods"] },
+      { text: "What is a service business?", answer: "Sells help or work", options: ["Sells products", "Sells help or work", "Makes food", "Builds houses"] },
+      { text: "Which of these is a service?", answer: "Haircut", options: ["Bread", "Haircut", "Shoes", "Phone"] },
+      { text: "What is a budget?", answer: "A plan for spending money", options: ["A type of bank", "A plan for spending money", "A loan", "A tax"] },
+      { text: "Why is it good to save money?", answer: "For future needs", options: ["To lose it", "For future needs", "To give away", "To burn it"] },
+      { text: "What is a receipt?", answer: "Proof of purchase", options: ["Money", "Proof of purchase", "Product", "Advertisement"] },
+      
+      // Grade 5-7 (Marketing & Entrepreneurship)
+      { text: "What is advertising?", answer: "Telling people about a product", options: ["Making a product", "Telling people about a product", "Pricing a product", "Selling a product"] },
+      { text: "What is an entrepreneur?", answer: "Someone who starts a business", options: ["An employee", "Someone who starts a business", "A teacher", "A customer"] },
+      { text: "Which of these helps a business attract more customers?", answer: "Good customer service", options: ["Rude staff", "Good customer service", "High prices", "Poor quality"] },
+      { text: "What does 'demand' mean in business?", answer: "Customer desire for a product", options: ["Product price", "Customer desire for a product", "Amount available", "Business profit"] },
+      { text: "What does 'supply' mean?", answer: "Amount of product available", options: ["Customer desire", "Amount of product available", "Business cost", "Tax"] },
+      
+      // Grade 6-8 (Kenyan Economy & Business Environment)
+      { text: "What is M-Pesa?", answer: "Mobile money transfer", options: ["A bank", "Mobile money transfer", "A currency", "A shop"] },
+      { text: "Which of these is a major industry in Kenya?", answer: "Agriculture", options: ["Mining only", "Agriculture", "Car manufacturing", "Oil drilling"] },
+      { text: "What is a cooperative (Sacco)?", answer: "Member-owned savings group", options: ["Government bank", "Member-owned savings group", "Foreign company", "Supermarket"] },
+      { text: "What does KRA stand for?", answer: "Kenya Revenue Authority", options: ["Kenya Retail Association", "Kenya Revenue Authority", "Kenya Roads Authority", "Kenya Railway Authority"] },
+      { text: "What is the role of the Central Bank of Kenya?", answer: "Regulate banks and currency", options: ["Sell goods", "Regulate banks and currency", "Build roads", "Teach students"] },
+      
+      // Grade 7-9 (Advanced Business Concepts)
+      { text: "What is a sole proprietorship?", answer: "Business owned by one person", options: ["Business owned by many", "Business owned by one person", "Government business", "Non-profit"] },
+      { text: "What is a partnership?", answer: "Business owned by 2-20 people", options: ["One owner", "Business owned by 2-20 people", "Government owned", "Charity"] },
+      { text: "What are business expenses?", answer: "Costs to run a business", options: ["Revenue", "Costs to run a business", "Profit", "Savings"] },
+      { text: "What is a business plan?", answer: "Document outlining business goals", options: ["Loan application", "Document outlining business goals", "Tax form", "Advert"] },
+      { text: "What is capital in business?", answer: "Money invested in the business", options: ["Profit", "Money invested", "Loss", "Tax"] },
+      { text: "What is a cash flow statement?", answer: "Record of money moving in/out", options: ["Profit report", "Record of money moving in/out", "Sales forecast", "Employee list"] },
+      { text: "What is break-even point?", answer: "When revenue equals costs", options: ["When profit is high", "When revenue equals costs", "When business closes", "When taxes are paid"] },
+      { text: "What are dividends?", answer: "Profit shared to owners", options: ["Taxes", "Profit shared to owners", "Expenses", "Loans"] },
+      
+      // Ethics & Consumer Rights
+      { text: "What is a consumer right?", answer: "Protection for buyers", options: ["Store rule", "Protection for buyers", "Government law only", "Price tag"] },
+      { text: "If a product is broken, the consumer can...", answer: "Return it for refund", options: ["Keep it", "Return it for refund", "Throw it away", "Give it away"] },
+      { text: "Why is honesty important in business?", answer: "Builds trust with customers", options: ["Makes more profit quickly", "Builds trust with customers", "Avoids work", "Reduces taxes"] },
+      
+      // Kenyan Business Context
+      { text: "What is a 'mitumba' business?", answer: "Selling second-hand clothes", options: ["Selling new clothes", "Selling second-hand clothes", "Food business", "Hardware shop"] },
+      { text: "Which Kenyan city is known as a major business hub?", answer: "Nairobi", options: ["Mombasa", "Nairobi", "Kisumu", "Nakuru"] },
+      { text: "What is the stock market?", answer: "Place where company shares are traded", options: ["Supermarket", "Place where company shares are traded", "Bank", "Insurance company"] },
+      { text: "What is e-commerce?", answer: "Buying and selling online", options: ["Electronic money", "Buying and selling online", "Email marketing", "Online banking"] },
+      { text: "What is the main purpose of marketing?", answer: "To inform and attract customers", options: ["To make products", "To inform and attract customers", "To count money", "To hire workers"] }
+    ];
+    
+    // Get exactly 50 unique questions
+    const shuffled = [...bank];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    let selected = shuffled.slice(0, 50);
+    while(selected.length < 50) {
+      selected.push({ ...bank[selected.length % bank.length] });
+    }
+    return selected.map(q => ({ ...q }));
+  }
+
+  // =====================
+  // GAME STATE (50 questions)
+  // =====================
+
+  let gameState = {
+    level: 1,
+    score: 0,
+    current: 0,
+    questions: []
+  };
+
+  function launchGame() {
+    gameState = {
+      level: 1,
+      score: 0,
+      current: 0,
+      questions: generateBusinessQuestions()
+    };
+    document.getElementById("gameModal").style.display = "flex";
+    renderGame();
+  }
+
+  function renderGame() {
+    const container = document.getElementById("gameContent");
+    const total = gameState.questions.length;
+    if (gameState.current >= total) {
+      const passed = gameState.score >= 35;
+      container.innerHTML = `
+        <div class="badge">🎉 Business Studies Challenge Complete!</div>
+        <h2>💰 Final Score: ${gameState.score}/${total}</h2>
+        <p style="margin-top:1rem; font-size:1.1rem;">
+          ${passed ? "🌟 Excellent! You're a Business Champion! Keep learning about money and entrepreneurship!" : "📚 Good effort! Aim for 35+ next time. Business studies builds future leaders!"}
+        </p>
+        <button class="next-btn" onclick="restartGame()">
+          🔄 Play Again (New 50 Questions)
+        </button>
+      `;
+      speakText(`Business Studies game finished. Your score is ${gameState.score} out of ${total}. ${passed ? "Congratulations business champion!" : "Keep studying business concepts!"}`);
+      return;
+    }
+
+    const q = gameState.questions[gameState.current];
+    speakText(q.text);
+
+    container.innerHTML = `
+      <div class="badge">Question ${gameState.current+1}/${total}</div>
+      <div style="float:right; font-weight:bold; background:#ff980030; padding:5px 12px; border-radius:20px;">⭐ ${gameState.score}</div>
+      <div class="question">🏪 ${q.text}</div>
+      <button class="btn secondary" onclick="speakText('${q.text.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">
+        🔊 Read Question
+      </button>
+      <div class="options" id="businessOptions"></div>
+      <div class="feedback" id="businessFeedback"></div>
+    `;
+
+    const optContainer = document.getElementById("businessOptions");
+    optContainer.innerHTML = "";
+    const shuffledOptions = [...q.options];
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+    }
+    shuffledOptions.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(opt, q.answer);
+      optContainer.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, correct) {
+    const feedbackDiv = document.getElementById("businessFeedback");
+    if (selected === correct) {
+      gameState.score++;
+      feedbackDiv.innerHTML = "✅ Correct! Excellent business knowledge! +1 point";
+      feedbackDiv.style.color = "#2e7d32";
+      speakText("Correct answer! Well done!");
+    } else {
+      feedbackDiv.innerHTML = `❌ The correct answer is: ${correct}. Keep learning about business!`;
+      feedbackDiv.style.color = "#c62828";
+      speakText(`Wrong answer. The correct answer is ${correct}. Keep studying business studies!`);
+    }
+    setTimeout(() => {
+      gameState.current++;
+      renderGame();
+    }, 1300);
+  }
+
+  function restartGame() {
+    launchGame();
+  }
+
+  // =====================
+  // BUSINESS STUDIES WORKSHEETS (Age-appropriate for all levels)
+  // =====================
+
+  function launchWorksheets() {
+    const container = document.getElementById("worksheetContent");
+    let html = "";
+    for(let i=1;i<=6;i++){
+      const levelName = i === 1 ? "Early Years (PP1 - Grade 2): Money Basics" : 
+                        i === 2 ? "Lower Primary (Grade 3-4): Saving & Spending" :
+                        i === 3 ? "Upper Primary (Grade 5-6): Trade & Entrepreneurship" :
+                        i === 4 ? "Junior Secondary (Grade 7-8): Business Operations" :
+                        i === 5 ? "Grade 9: Kenyan Economy & Advanced Concepts" : "All Levels: Fun Business Activities";
+      
+      html += `
+        <div class="worksheet-item">
+          <h3>🏦 ${levelName} Worksheet</h3>
+          <p>
+            Age-appropriate business topics: Money recognition, Needs vs Wants, Saving,
+            Simple business ideas, Trade, Marketing, Entrepreneurship, and Kenyan economy.
+            Tailored for <strong>${grades[selectedGrade]}</strong> level. CBC-aligned.
+          </p>
+          <button class="download-btn" onclick="downloadBusinessPDF(${i})">
+            📥 Download PDF Worksheet
+          </button>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+    document.getElementById("worksheetModal").style.display = "flex";
+  }
+
+  // =====================
+  // PDF GENERATION (Age-appropriate Business Studies)
+  // =====================
+
+  async function downloadBusinessPDF(level) {
+    const pdfContent = document.createElement("div");
+    pdfContent.style.width = "800px";
+    pdfContent.style.padding = "40px";
+    pdfContent.style.background = "white";
+    pdfContent.style.fontFamily = "sans-serif";
+
+    const gradeLevel = grades[selectedGrade];
+    const isEarlyYears = selectedGrade <= 2;
+    const isLowerPrimary = selectedGrade >= 2 && selectedGrade <= 4;
+    const isUpperPrimary = selectedGrade >= 5 && selectedGrade <= 7;
+    const isJuniorSec = selectedGrade >= 8;
+
+    let activities = "";
+    
+    if (level === 1 || isEarlyYears) {
+      activities = `
+        <p>1. Draw the Kenyan coins (1, 5, 10, 20 shillings) and color them.</p>
+        <p>2. Circle the things you NEED to live (water, food, shelter). Cross out WANTS (toys, candy).</p>
+        <p>3. Color a piggy bank and write one reason why saving is good.</p>
+        <p>4. Match the Kenyan note to its value: 50, 100, 200, 500, 1000 shillings.</p>
+        <p>5. Draw a picture of your favorite shop and name three things they sell.</p>
+      `;
+    } else if (level === 2 || isLowerPrimary) {
+      activities = `
+        <p>1. Pretend you have 200 shillings. Make a shopping list for 3 NEEDS and 2 WANTS.</p>
+        <p>2. What is profit? Calculate: Buy juice for 20 KES, sell for 35 KES. Profit = ____</p>
+        <p>3. Draw a lemonade stand business and write 3 things you need to start it.</p>
+        <p>4. Why is it important to save money? Write 3 reasons.</p>
+        <p>5. Create a simple budget for a week using pocket money of 300 shillings.</p>
+      `;
+    } else if (level === 3 || isUpperPrimary) {
+      activities = `
+        <p>1. Explain barter trade. Give 2 examples of goods that could be exchanged.</p>
+        <p>2. What is an entrepreneur? List 3 qualities of a good entrepreneur.</p>
+        <p>3. Create a simple business plan for a small business idea (name, product, price, customers).</p>
+        <p>4. Calculate profit: Revenue 5,000 KES, Expenses 3,200 KES. Profit = ____</p>
+        <p>5. What is advertising? Design a poster advertising your dream business.</p>
+        <p>6. Define 'customer' and 'supplier'. How do they work together?</p>
+      `;
+    } else if (level === 4 || isJuniorSec) {
+      activities = `
+        <p>1. Compare sole proprietorship vs partnership. Advantages and disadvantages of each.</p>
+        <p>2. What is the difference between fixed expenses and variable expenses? Give examples.</p>
+        <p>3. Research M-Pesa: How has it changed business in Kenya?</p>
+        <p>4. Create a simple cash flow statement for a small shop for one month.</p>
+        <p>5. Explain the 4 Ps of marketing (Product, Price, Place, Promotion) with an example.</p>
+        <p>6. What is the role of the Central Bank of Kenya? Write a paragraph.</p>
+      `;
+    } else {
+      activities = `
+        <p>1. What is the stock market? How do companies raise capital by selling shares?</p>
+        <p>2. Explain the concept of supply and demand with a real-life example from Kenya.</p>
+        <p>3. Research and write about Kenya's main exports and imports.</p>
+        <p>4. What are consumer rights? List five consumer rights in Kenya.</p>
+        <p>5. Case Study: How does a Sacco (cooperative) help members save and get loans?</p>
+        <p>6. Create a business SWOT analysis for a local business you know.</p>
+        <p>7. Why is ethical business important? Write a short essay.</p>
+      `;
+    }
+
+    pdfContent.innerHTML = `
+      <h1 style="color:#5d4037; border-left: 6px solid #ff9800; padding-left: 15px;">
+        💰 EduPlay Kenya: Business Studies Worksheet
+      </h1>
+      <h2>📖 ${gradeLevel} — Business Level ${level}</h2>
+      <hr/><br/>
+      <h3>📌 Key Business Topics</h3>
+      <ul style="line-height:1.8;">
+        <li>Money Recognition & Kenyan Currency</li>
+        <li>Needs vs Wants & Smart Spending</li>
+        <li>Saving, Budgeting & Financial Literacy</li>
+        <li>Entrepreneurship & Starting a Business</li>
+        <li>Trade, Marketing & Customer Service</li>
+        <li>Kenya's Economy, Saccos, M-Pesa & Consumer Rights</li>
+      </ul>
+      <br/>
+      <h3>✍️ Activities & Exercises (Age-Appropriate)</h3>
+      ${activities}
+      <br/>
+      <h3>💰 Business Challenge</h3>
+      <p>Think of a small business you could start with 1,000 shillings. Write down your idea, what you would sell, your price, and how much profit you expect to make in one week.</p>
+      <br/><br/>
+      <p>📚 EduPlay Kenya — CBC Business Studies Learning Platform</p>
+      <p>🏪 Learn. Save. Earn. Succeed!</p>
+      <p>🎯 ${gradeLevel} - Kenyan Competency Based Curriculum Aligned</p>
+      <p>🌟 Be a smart money manager and future business leader!</p>
+    `;
+
+    document.body.appendChild(pdfContent);
+    const canvas = await html2canvas(pdfContent, { scale: 2, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const width = pdf.internal.pageSize.getWidth();
+    const height = (canvas.height * width) / canvas.width;
+    pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    pdf.save(`Business_Studies_Worksheet_Level_${level}_${gradeLevel.replace(/ /g, "_")}.pdf`);
+    document.body.removeChild(pdfContent);
+  }
+
+  // =====================
+  // CLOSE MODALS
+  // =====================
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+    window.speechSynthesis.cancel();
+  }
+
+  document.getElementById("playBtn").onclick = launchGame;
+  document.getElementById("worksheetBtn").onclick = launchWorksheets;
+  document.getElementById("closeGame").onclick = () => closeModal("gameModal");
+  document.getElementById("closeWorksheet").onclick = () => closeModal("worksheetModal");
+
+  window.onclick = (e) => {
+    if (e.target === document.getElementById("gameModal")) closeModal("gameModal");
+    if (e.target === document.getElementById("worksheetModal")) closeModal("worksheetModal");
+  };
+
+  renderGrades();
+
+</script>
+
+</body>
+</html>

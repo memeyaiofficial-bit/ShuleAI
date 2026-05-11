@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+  <title>EduPlay Kenya | Physical Education & Sports | CBC PP1 - Grade 9</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Segoe UI','Poppins',sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#eef7ff,#dff3ff);
+      min-height:100vh;
+      color:#1b2b40;
+    }
+
+    .container{
+      max-width:1400px;
+      margin:auto;
+      padding:1rem;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#0b4f8a,#031f3d);
+      color:white;
+      padding:2rem;
+      border-radius:2rem;
+      margin-bottom:2rem;
+      box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .hero h1{
+      font-size:2rem;
+      margin-bottom:0.5rem;
+    }
+
+    .hero p{
+      opacity:0.9;
+    }
+
+    .grade-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.5rem;
+      margin-top:1.2rem;
+      justify-content:center;
+    }
+
+    .grade-btn{
+      border:none;
+      background:rgba(255,255,255,0.15);
+      color:white;
+      padding:0.5rem 0.9rem;
+      border-radius:2rem;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+      font-size:0.8rem;
+    }
+
+    .grade-btn.active{
+      background:#ffd54f;
+      color:#222;
+      transform:scale(1.05);
+    }
+
+    .grade-btn:hover{
+      background:rgba(255,255,255,0.3);
+    }
+
+    .main-card{
+      background:white;
+      border-radius:2rem;
+      padding:2rem;
+      box-shadow:0 15px 35px rgba(0,0,0,0.08);
+      max-width:700px;
+      margin:auto;
+    }
+
+    .icon{
+      font-size:4rem;
+      margin-bottom:1rem;
+    }
+
+    .main-card h2{
+      color:#0b4f8a;
+      font-size:2rem;
+      margin-bottom:0.7rem;
+    }
+
+    .description{
+      line-height:1.7;
+      margin:1rem 0;
+      color:#3b4c5c;
+    }
+
+    .stats{
+      color:#1565c0;
+      font-weight:bold;
+      margin-bottom:1rem;
+    }
+
+    .button-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .btn{
+      flex:1;
+      border:none;
+      padding:1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:1rem;
+      transition:0.2s;
+    }
+
+    .btn.primary{
+      background:#ffb300;
+      color:#1b1b1b;
+    }
+
+    .btn.secondary{
+      background:#e3f2fd;
+      color:#0b4f8a;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px);
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.75);
+      z-index:1000;
+      justify-content:center;
+      align-items:center;
+      padding:1rem;
+    }
+
+    .modal-card{
+      background:white;
+      width:100%;
+      max-width:850px;
+      max-height:90vh;
+      overflow-y:auto;
+      border-radius:2rem;
+      padding:2rem;
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:1rem;
+    }
+
+    .close{
+      border:none;
+      background:none;
+      font-size:2rem;
+      cursor:pointer;
+    }
+
+    .question{
+      background:#eef5ff;
+      padding:1.5rem;
+      border-radius:1.5rem;
+      font-size:1.3rem;
+      font-weight:bold;
+      margin:1rem 0;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1rem;
+      margin-top:1.5rem;
+    }
+
+    .option-btn{
+      padding:1rem;
+      border-radius:1rem;
+      border:2px solid #bbdefb;
+      background:#f7fbff;
+      cursor:pointer;
+      font-weight:bold;
+      transition:0.2s;
+    }
+
+    .option-btn:hover{
+      background:#1565c0;
+      color:white;
+    }
+
+    .badge{
+      display:inline-block;
+      background:#0b4f8a;
+      color:white;
+      padding:0.4rem 1rem;
+      border-radius:2rem;
+      margin-bottom:1rem;
+      font-size:0.9rem;
+    }
+
+    .feedback{
+      margin-top:1rem;
+      font-weight:bold;
+      font-size:1rem;
+    }
+
+    .worksheet-item{
+      background:#f8fbff;
+      padding:1rem;
+      border-left:6px solid #1565c0;
+      border-radius:1rem;
+      margin-bottom:1rem;
+    }
+
+    .download-btn{
+      margin-top:0.7rem;
+      background:#d32f2f;
+      color:white;
+      border:none;
+      padding:0.7rem 1rem;
+      border-radius:2rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .next-btn{
+      background:#2e7d32;
+      color:white;
+      border:none;
+      padding:0.9rem 1.4rem;
+      border-radius:2rem;
+      margin-top:1rem;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    @media(max-width:640px){
+      .hero h1{
+        font-size:1.3rem;
+      }
+      .grade-btn{
+        font-size:0.7rem;
+        padding:0.4rem 0.7rem;
+      }
+      .question{
+        font-size:1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>🏃‍♂️ EduPlay Kenya — Physical Education & Sports 🏀</h1>
+    <p>Fitness, Sports, Health, and Active Living for CBC Kenyan Learners | PP1 - Grade 9</p>
+
+    <div class="grade-bar" id="gradeSelector"></div>
+  </div>
+
+  <div class="main-card">
+    <div class="icon">⚽</div>
+
+    <h2>Physical Education Interactive Learning</h2>
+
+    <div class="stats">
+      50+ PE Games • 250+ Worksheets • PP1 - Grade 9
+    </div>
+
+    <p class="description">
+      Learn Physical Education, Sports, Fitness, Health, Nutrition, First Aid,
+      Rules of Games, Traditional Kenyan Sports, and Healthy Lifestyles through
+      interactive CBC-aligned games and downloadable PDF worksheets.
+      Includes voice output support for reading questions aloud.
+      Age-appropriate content for early years to junior secondary.
+    </p>
+
+    <div class="button-group">
+      <button class="btn primary" id="playBtn">
+        🎮 Play PE & Sports Game
+      </button>
+
+      <button class="btn secondary" id="worksheetBtn">
+        📄 Download Worksheets
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- GAME MODAL -->
+<div class="modal" id="gameModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="gameTitle">PE & Sports Challenge</h2>
+      <button class="close" id="closeGame">&times;</button>
+    </div>
+    <div id="gameContent"></div>
+  </div>
+</div>
+
+<!-- WORKSHEET MODAL -->
+<div class="modal" id="worksheetModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Physical Education Worksheets</h2>
+      <button class="close" id="closeWorksheet">&times;</button>
+    </div>
+    <div id="worksheetContent"></div>
+  </div>
+</div>
+
+<script>
+
+  // =====================
+  // VOICE OUTPUT ONLY (Text-to-Speech)
+  // =====================
+
+  function speakText(text){
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // =====================
+  // GRADES PP1 - GRADE 9 (11 levels)
+  // =====================
+
+  const grades = [
+    "PP1", "PP2",
+    "Grade 1", "Grade 2", "Grade 3",
+    "Grade 4", "Grade 5", "Grade 6",
+    "Grade 7", "Grade 8", "Grade 9"
+  ];
+
+  let selectedGrade = 0;
+
+  function renderGrades(){
+    const container = document.getElementById("gradeSelector");
+    container.innerHTML = "";
+    grades.forEach((grade,index)=>{
+      const btn = document.createElement("button");
+      btn.className = `grade-btn ${selectedGrade===index ? "active":""}`;
+      btn.innerText = grade;
+      btn.onclick = ()=>{
+        selectedGrade = index;
+        renderGrades();
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  // =====================
+  // PHYSICAL EDUCATION QUESTION BANK (Age-appropriate, 30 questions)
+  // =====================
+
+  function generateQuestions(){
+
+    const questions = [
+      // Basic/Early Years questions (PP1-Grade 3 friendly)
+      { text: "What do we use to run fast?", answer: "Legs", options: ["Arms", "Legs", "Head", "Hands"] },
+      { text: "Which ball is used to play soccer?", answer: "Round ball", options: ["Round ball", "Oval ball", "Small ball", "Big ball"] },
+      { text: "What do you wear on your feet for running?", answer: "Shoes", options: ["Hat", "Shoes", "Gloves", "Shirt"] },
+      { text: "Which of these is a healthy drink?", answer: "Water", options: ["Soda", "Water", "Juice with sugar", "Energy drink"] },
+      { text: "How many players are on a basketball team on court?", answer: "5", options: ["5", "6", "7", "11"] },
+      { text: "What is the national sport of Kenya?", answer: "Rugby", options: ["Football", "Rugby", "Athletics", "Cricket"] },
+      { text: "Who is famous Kenyan marathon runner?", answer: "Eliud Kipchoge", options: ["David Rudisha", "Eliud Kipchoge", "Kipchoge Keino", "Paul Tergat"] },
+      { text: "What does 'RICE' mean for injuries?", answer: "Rest Ice Compression Elevation", options: ["Rest Ice Cold Energy", "Rest Ice Compression Elevation", "Run Ice Care Exercise", "Race Injury Care"] },
+      { text: "How many minutes is a soccer match?", answer: "90", options: ["60", "80", "90", "100"] },
+      { text: "Which of these is a warm-up exercise?", answer: "Jogging", options: ["Sprinting", "Jogging", "Weight lifting", "Sitting"] },
+      { text: "What is the main muscle used in push-ups?", answer: "Chest", options: ["Arms", "Legs", "Chest", "Back"] },
+      { text: "Which of these is a traditional Kenyan game?", answer: "Bao", options: ["Chess", "Bao", "Checkers", "Monopoly"] },
+      { text: "What should you do after exercising?", answer: "Cool down", options: ["Stop suddenly", "Cool down", "Eat immediately", "Sleep"] },
+      { text: "Which of these is a fruit for healthy energy?", answer: "Banana", options: ["Candy", "Banana", "Chips", "Soda"] },
+      { text: "How many gold medals did Kenya win at Tokyo 2020?", answer: "4", options: ["3", "4", "5", "6"] },
+      { text: "What is the color of a basketball?", answer: "Orange", options: ["Brown", "Orange", "Black", "White"] },
+      { text: "Which sport uses a racket?", answer: "Tennis", options: ["Football", "Tennis", "Basketball", "Swimming"] },
+      { text: "What do we call a person who swims?", answer: "Swimmer", options: ["Runner", "Swimmer", "Jumper", "Thrower"] },
+      { text: "Which of these is a body part used for kicking?", answer: "Foot", options: ["Hand", "Foot", "Head", "Elbow"] },
+      { text: "What does 'FIFA' stand for?", answer: "Football Association", options: ["Football International", "FIFA Football", "Football Association", "World Football"] },
+      { text: "How many points is a try worth in rugby?", answer: "5", options: ["3", "4", "5", "6"] },
+      { text: "Which of these is a type of swimming stroke?", answer: "Freestyle", options: ["Running", "Freestyle", "Jumping", "Walking"] },
+      { text: "What is the best thing to do before running?", answer: "Stretch", options: ["Eat", "Stretch", "Sleep", "Drink soda"] },
+      { text: "Which of these is NOT a sport?", answer: "Sleeping", options: ["Running", "Sleeping", "Swimming", "Jumping"] },
+      { text: "What do you call a person who plays football?", answer: "Footballer", options: ["Runner", "Footballer", "Jumper", "Thrower"] },
+      { text: "Which Kenyan athlete holds the 800m world record?", answer: "David Rudisha", options: ["Eliud Kipchoge", "David Rudisha", "Kipchoge Keino", "Faith Kipyegon"] },
+      { text: "What is the distance of a marathon?", answer: "42 km", options: ["21 km", "42 km", "10 km", "5 km"] },
+      { text: "Which of these is a healthy breakfast?", answer: "Porridge", options: ["Candy", "Porridge", "Chips", "Soda"] },
+      { text: "What should you wear on your head in the sun?", answer: "Hat", options: ["Gloves", "Hat", "Shoes", "Jacket"] },
+      { text: "What is the main purpose of physical education?", answer: "Stay healthy", options: ["Win medals", "Stay healthy", "Get tired", "Play only"] }
+    ];
+
+    let generated = [];
+    for(let i=0;i<30;i++){
+      const q = questions[Math.floor(Math.random()*questions.length)];
+      generated.push({ ...q });
+    }
+    return generated;
+  }
+
+  // =====================
+  // GAME STATE
+  // =====================
+
+  let gameState = {
+    level:1,
+    score:0,
+    current:0,
+    questions:[]
+  };
+
+  function launchGame(){
+    gameState = {
+      level:1,
+      score:0,
+      current:0,
+      questions:generateQuestions()
+    };
+    document.getElementById("gameModal").style.display="flex";
+    renderGame();
+  }
+
+  function renderGame(){
+    const container = document.getElementById("gameContent");
+    if(gameState.current >= 30){
+      const passed = gameState.score >= 20;
+      container.innerHTML = `
+        <div class="badge">Level ${gameState.level} Complete 🎉</div>
+        <h2>🏆 Final Score: ${gameState.score}/30</h2>
+        <p style="margin-top:1rem;">
+          ${passed ? "✅ You passed! You are a PE Champion!" : "❌ You need 20 points to pass. Try again!"}
+        </p>
+        <button class="next-btn" onclick="restartGame()">
+          🔄 Play Again
+        </button>
+      `;
+      speakText(`Game finished. Your score is ${gameState.score} out of 30`);
+      return;
+    }
+
+    const q = gameState.questions[gameState.current];
+    speakText(q.text);
+
+    container.innerHTML = `
+      <div class="badge">Question ${gameState.current+1}/30</div>
+      <div style="float:right;font-weight:bold;">⭐ ${gameState.score}</div>
+      <div class="question">🏅 ${q.text}</div>
+      <button class="btn secondary" onclick="speakText('${q.text.replace(/'/g, "\\'")}')">
+        🔊 Read Question
+      </button>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+    `;
+
+    const optionContainer = document.getElementById("options");
+    q.options.forEach(option=>{
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = option;
+      btn.onclick = ()=>checkAnswer(option,q.answer);
+      optionContainer.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected,correct){
+    const feedback = document.getElementById("feedback");
+    if(selected === correct){
+      gameState.score++;
+      feedback.innerHTML = "✅ Correct! Great job! +1 point";
+      speakText("Correct answer! Great job!");
+    } else {
+      feedback.innerHTML = `❌ Wrong! Correct answer is: ${correct}`;
+      speakText(`Wrong answer. The correct answer is ${correct}`);
+    }
+    setTimeout(()=>{
+      gameState.current++;
+      renderGame();
+    },1200);
+  }
+
+  function restartGame(){
+    launchGame();
+  }
+
+  // =====================
+  // WORKSHEETS (Physical Education - Age appropriate for all levels)
+  // =====================
+
+  function launchWorksheets(){
+    const container = document.getElementById("worksheetContent");
+    let html = "";
+    for(let i=1;i<=5;i++){
+      const levelName = i === 1 ? "Early Years (PP1 - Grade 3)" : 
+                        i === 2 ? "Upper Primary (Grade 4-6)" :
+                        i === 3 ? "Junior Secondary (Grade 7-9)" :
+                        i === 4 ? "Sports & Games Focus" : "Health & Fitness Challenge";
+      html += `
+        <div class="worksheet-item">
+          <h3>🏋️ ${levelName} Worksheet</h3>
+          <p>
+            Topics: Basic Movements, Sports Rules, Kenyan Traditional Games,
+            Nutrition, First Aid, Fitness Components, and Healthy Active Living.
+            Tailored for ${grades[selectedGrade]} level.
+          </p>
+          <button class="download-btn" onclick="downloadPDF(${i})">
+            📥 Download PDF
+          </button>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+    document.getElementById("worksheetModal").style.display="flex";
+  }
+
+  // =====================
+  // PDF GENERATION (Physical Education Themed - Age appropriate)
+  // =====================
+
+  async function downloadPDF(level){
+    const pdfContent = document.createElement("div");
+    pdfContent.style.width="800px";
+    pdfContent.style.padding="40px";
+    pdfContent.style.background="white";
+
+    const gradeLevel = grades[selectedGrade];
+    const isEarlyYears = selectedGrade <= 2; // PP1, PP2, Grade 1-3
+    const isUpperPrimary = selectedGrade >= 3 && selectedGrade <= 6; // Grade 4-6
+    const isJuniorSec = selectedGrade >= 7; // Grade 7-9
+
+    let activities = "";
+    if(isEarlyYears){
+      activities = `
+        <p>1. Draw a picture of your favorite sport.</p>
+        <p>2. Color the picture of a person running.</p>
+        <p>3. Circle the healthy foods (fruits and vegetables).</p>
+        <p>4. Name three body parts used for playing.</p>
+        <p>5. Practice hopping on one foot for 10 seconds.</p>
+      `;
+    } else if(isUpperPrimary){
+      activities = `
+        <p>1. Draw and label the field/court for your favorite sport.</p>
+        <p>2. Explain the rules of a traditional Kenyan game (e.g., Bao).</p>
+        <p>3. Create a weekly fitness plan for a Grade ${gradeLevel.split(" ")[1]} student.</p>
+        <p>4. List 5 healthy snacks for an athlete.</p>
+        <p>5. Describe the steps to treat a sprained ankle using RICE method.</p>
+      `;
+    } else {
+      activities = `
+        <p>1. Design a training program for a 5km run.</p>
+        <p>2. Research and write about one Kenyan athlete's success story.</p>
+        <p>3. Create a diet plan for a week for an active teenager.</p>
+        <p>4. Explain the importance of mental health in sports.</p>
+        <p>5. Analyze the tactics of a famous football match.</p>
+        <p>6. Write about career opportunities in physical education and sports.</p>
+      `;
+    }
+
+    pdfContent.innerHTML = `
+      <h1 style="color:#0b4f8a;">
+        🏃‍♂️ Physical Education & Sports Worksheet
+      </h1>
+      <h2>${gradeLevel} — Level ${level}</h2>
+      <hr/><br/>
+      <h3>📌 Topics Covered</h3>
+      <ul style="line-height:1.8;">
+        <li>Fundamental Movement Skills</li>
+        <li>Sports Rules (Football, Basketball, Rugby, Athletics)</li>
+        <li>Kenyan Traditional Games (Bao, Wrestling, Kamba Rope)</li>
+        <li>Components of Fitness (Strength, Endurance, Flexibility)</li>
+        <li>Nutrition for Athletes</li>
+        <li>Injury Prevention & First Aid (RICE)</li>
+        <li>Healthy Lifestyle & Mental Well-being</li>
+      </ul>
+      <br/>
+      <h3>✍️ Activities</h3>
+      ${activities}
+      <br/><br/>
+      <p>📚 EduPlay Kenya — CBC Physical Education Learning Platform</p>
+      <p>💪 Active body, sharp mind!</p>
+      <p>🎯 ${gradeLevel} - Kenyan Curriculum Aligned</p>
+    `;
+
+    document.body.appendChild(pdfContent);
+    const canvas = await html2canvas(pdfContent,{scale:2});
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    const width = 210;
+    const height = canvas.height * width / canvas.width;
+    pdf.addImage(imgData,"PNG",0,0,width,height);
+    pdf.save(`Physical_Education_Level_${level}_${gradeLevel.replace(/ /g,"_")}.pdf`);
+    document.body.removeChild(pdfContent);
+  }
+
+  // =====================
+  // CLOSE MODALS
+  // =====================
+
+  function closeModal(id){
+    document.getElementById(id).style.display="none";
+  }
+
+  document.getElementById("playBtn").onclick = launchGame;
+  document.getElementById("worksheetBtn").onclick = launchWorksheets;
+  document.getElementById("closeGame").onclick = ()=>closeModal("gameModal");
+  document.getElementById("closeWorksheet").onclick = ()=>closeModal("worksheetModal");
+
+  window.onclick = (e)=>{
+    if(e.target===document.getElementById("gameModal")){
+      closeModal("gameModal");
+    }
+    if(e.target===document.getElementById("worksheetModal")){
+      closeModal("worksheetModal");
+    }
+  };
+
+  renderGrades();
+
+</script>
+
+</body>
+</html>

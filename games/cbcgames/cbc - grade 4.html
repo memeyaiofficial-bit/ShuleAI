@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎮 CBC Grade 4 Quiz Champion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root {
+    --primary: #6C5CE7;
+    --secondary: #00CEC9;
+    --accent: #FD79A8;
+    --success: #00B894;
+    --danger: #E17055;
+    --warning: #FDCB6E;
+    --dark: #2D3436;
+    --light: #DFE6E9;
+    --bg-gradient: linear-gradient(135deg, #0F0C29, #302B63, #24243E);
+    --card-bg: rgba(255,255,255,0.08);
+    --card-border: rgba(255,255,255,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family:'Nunito',sans-serif;
+    background: var(--bg-gradient);
+    min-height:100vh;
+    color:#fff;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ===== PARTICLES ===== */
+  #particles {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .particle {
+    position:absolute; border-radius:50%;
+    animation: floatUp linear infinite;
+    opacity:0.3;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity:0.3; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity:0; }
+  }
+
+  /* ===== MAIN CONTAINER ===== */
+  .container {
+    position:relative; z-index:1;
+    max-width:900px; margin:0 auto;
+    padding:20px; min-height:100vh;
+  }
+
+  /* ===== HEADER ===== */
+  .game-header {
+    text-align:center; padding:20px 0;
+    animation: slideDown 0.8s ease;
+  }
+  @keyframes slideDown {
+    from { transform:translateY(-50px); opacity:0; }
+    to { transform:translateY(0); opacity:1; }
+  }
+  .game-header h1 {
+    font-family:'Fredoka One',cursive;
+    font-size:clamp(1.8rem,5vw,3rem);
+    background: linear-gradient(45deg, #FDCB6E, #E17055, #FD79A8, #6C5CE7, #00CEC9);
+    background-size:300% 300%;
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+    animation: gradientShift 3s ease infinite;
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(108,92,231,0.3));
+  }
+  @keyframes gradientShift {
+    0%,100% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+  }
+  .game-header p {
+    font-size:clamp(0.9rem,2.5vw,1.1rem);
+    opacity:0.7; margin-top:5px;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display:none; animation: fadeIn 0.5s ease; }
+  .screen.active { display:block; }
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  /* ===== TOPIC SELECTION ===== */
+  .topics-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap:20px; margin-top:20px;
+  }
+  .topic-card {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius:20px; padding:30px 20px;
+    text-align:center; cursor:pointer;
+    transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+    position:relative; overflow:hidden;
+    backdrop-filter:blur(10px);
+  }
+  .topic-card::before {
+    content:''; position:absolute; top:0; left:-100%;
+    width:100%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+  }
+  .topic-card:hover::before { left:100%; }
+  .topic-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--secondary);
+    box-shadow: 0 20px 40px rgba(0,206,201,0.2);
+  }
+  .topic-card:active { transform: scale(0.97); }
+  .topic-icon { font-size:3.5rem; margin-bottom:10px; display:block; }
+  .topic-card h3 {
+    font-family:'Fredoka One',cursive;
+    font-size:1.3rem; margin-bottom:8px;
+  }
+  .topic-card p { font-size:0.85rem; opacity:0.6; }
+  .topic-badge {
+    position:absolute; top:10px; right:10px;
+    background: var(--warning); color:#333;
+    font-size:0.7rem; font-weight:800;
+    padding:3px 10px; border-radius:20px;
+  }
+  .topic-card.math { border-color:rgba(108,92,231,0.3); }
+  .topic-card.math:hover { border-color:#6C5CE7; box-shadow:0 20px 40px rgba(108,92,231,0.2); }
+  .topic-card.english { border-color:rgba(0,206,201,0.3); }
+  .topic-card.english:hover { border-color:#00CEC9; box-shadow:0 20px 40px rgba(0,206,201,0.2); }
+  .topic-card.science { border-color:rgba(0,184,148,0.3); }
+  .topic-card.science:hover { border-color:#00B894; box-shadow:0 20px 40px rgba(0,184,148,0.2); }
+  .topic-card.social { border-color:rgba(225,112,85,0.3); }
+  .topic-card.social:hover { border-color:#E17055; box-shadow:0 20px 40px rgba(225,112,85,0.2); }
+  .topic-card.kiswahili { border-color:rgba(253,121,168,0.3); }
+  .topic-card.kiswahili:hover { border-color:#FD79A8; box-shadow:0 20px 40px rgba(253,121,168,0.2); }
+
+  /* ===== DIFFICULTY SELECT ===== */
+  .difficulty-section {
+    text-align:center; margin-top:30px;
+    padding:25px; background:var(--card-bg);
+    border-radius:20px; border:1px solid var(--card-border);
+    backdrop-filter:blur(10px);
+  }
+  .difficulty-section h3 {
+    font-family:'Fredoka One',cursive;
+    margin-bottom:15px; font-size:1.2rem;
+  }
+  .diff-buttons {
+    display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+  }
+  .diff-btn {
+    padding:12px 28px; border:2px solid var(--card-border);
+    background:transparent; color:#fff; border-radius:50px;
+    font-family:'Nunito',sans-serif; font-weight:700;
+    font-size:0.95rem; cursor:pointer; transition:all 0.3s;
+  }
+  .diff-btn:hover { transform:scale(1.05); }
+  .diff-btn.easy { border-color:#00B894; color:#00B894; }
+  .diff-btn.easy:hover { background:#00B894; color:#fff; }
+  .diff-btn.medium { border-color:#FDCB6E; color:#FDCB6E; }
+  .diff-btn.medium:hover { background:#FDCB6E; color:#333; }
+  .diff-btn.hard { border-color:#E17055; color:#E17055; }
+  .diff-btn.hard:hover { background:#E17055; color:#fff; }
+  .diff-btn.selected { color:#fff !important; transform:scale(1.1); }
+  .diff-btn.easy.selected { background:#00B894; }
+  .diff-btn.medium.selected { background:#FDCB6E; color:#333; }
+  .diff-btn.hard.selected { background:#E17055; }
+
+  .start-btn {
+    margin-top:20px; padding:15px 50px;
+    background: linear-gradient(135deg, #6C5CE7, #a855f7);
+    color:#fff; border:none; border-radius:50px;
+    font-family:'Fredoka One',cursive; font-size:1.2rem;
+    cursor:pointer; transition:all 0.3s;
+    box-shadow: 0 10px 30px rgba(108,92,231,0.4);
+    position:relative; overflow:hidden;
+  }
+  .start-btn::after {
+    content:''; position:absolute; top:-50%; left:-50%;
+    width:200%; height:200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 60%);
+    opacity:0; transition:opacity 0.3s;
+  }
+  .start-btn:hover::after { opacity:1; }
+  .start-btn:hover { transform:translateY(-3px); box-shadow:0 15px 40px rgba(108,92,231,0.5); }
+  .start-btn:active { transform:scale(0.95); }
+  .start-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  /* ===== GAME SCREEN ===== */
+  .game-top-bar {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:15px 20px; background:var(--card-bg);
+    border-radius:15px; margin-bottom:15px;
+    border:1px solid var(--card-border);
+    backdrop-filter:blur(10px);
+    flex-wrap:wrap; gap:10px;
+  }
+  .stat {
+    text-align:center; flex:1; min-width:70px;
+  }
+  .stat-value {
+    font-family:'Fredoka One',cursive;
+    font-size:1.4rem;
+  }
+  .stat-label { font-size:0.7rem; opacity:0.6; text-transform:uppercase; letter-spacing:1px; }
+  .stat.score .stat-value { color:var(--warning); }
+  .stat.timer .stat-value { color:var(--danger); }
+  .stat.streak .stat-value { color:var(--secondary); }
+  .stat.question .stat-value { color:var(--accent); }
+
+  /* Progress bar */
+  .progress-container {
+    background: rgba(255,255,255,0.1);
+    border-radius:50px; height:10px;
+    margin-bottom:20px; overflow:hidden;
+    border:1px solid var(--card-border);
+  }
+  .progress-bar {
+    height:100%; border-radius:50px;
+    background: linear-gradient(90deg, #6C5CE7, #00CEC9, #00B894);
+    background-size:200% 100%;
+    animation: progressGlow 2s ease infinite;
+    transition: width 0.5s ease;
+  }
+  @keyframes progressGlow {
+    0%,100% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius:25px; padding:30px 25px;
+    backdrop-filter:blur(10px);
+    margin-bottom:20px;
+    animation: questionSlide 0.5s ease;
+  }
+  @keyframes questionSlide {
+    from { transform:translateX(50px); opacity:0; }
+    to { transform:translateX(0); opacity:1; }
+  }
+  .question-number {
+    display:inline-block;
+    background: linear-gradient(135deg, #6C5CE7, #a855f7);
+    padding:5px 15px; border-radius:20px;
+    font-size:0.8rem; font-weight:700;
+    margin-bottom:15px;
+  }
+  .question-text {
+    font-size:clamp(1rem,3vw,1.3rem);
+    font-weight:700; line-height:1.6;
+    margin-bottom:20px;
+  }
+  .question-hint {
+    font-size:0.85rem; opacity:0.5;
+    font-style:italic; margin-bottom:15px;
+  }
+
+  /* Options */
+  .options-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  @media(max-width:500px) {
+    .options-grid { grid-template-columns:1fr; }
+  }
+  .option-btn {
+    padding:15px 20px;
+    background: rgba(255,255,255,0.05);
+    border:2px solid var(--card-border);
+    border-radius:15px; color:#fff;
+    font-family:'Nunito',sans-serif;
+    font-size:clamp(0.9rem,2.5vw,1.05rem);
+    font-weight:600; cursor:pointer;
+    transition: all 0.3s;
+    text-align:left;
+    position:relative; overflow:hidden;
+  }
+  .option-btn::before {
+    content: attr(data-letter);
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:28px; border-radius:50%;
+    background: rgba(255,255,255,0.1);
+    margin-right:10px; font-size:0.8rem;
+    font-weight:800; flex-shrink:0;
+  }
+  .option-btn:hover:not(.disabled) {
+    border-color: var(--secondary);
+    background: rgba(0,206,201,0.1);
+    transform: translateX(5px);
+  }
+  .option-btn:active:not(.disabled) { transform:scale(0.97); }
+  .option-btn.correct {
+    border-color: var(--success) !important;
+    background: rgba(0,184,148,0.2) !important;
+    animation: correctPulse 0.5s ease;
+  }
+  @keyframes correctPulse {
+    0% { transform:scale(1); }
+    50% { transform:scale(1.03); }
+    100% { transform:scale(1); }
+  }
+  .option-btn.wrong {
+    border-color: var(--danger) !important;
+    background: rgba(225,112,85,0.2) !important;
+    animation: wrongShake 0.5s ease;
+  }
+  @keyframes wrongShake {
+    0%,100% { transform:translateX(0); }
+    20% { transform:translateX(-10px); }
+    40% { transform:translateX(10px); }
+    60% { transform:translateX(-10px); }
+    80% { transform:translateX(10px); }
+  }
+  .option-btn.disabled { cursor:not-allowed; opacity:0.6; }
+  .option-btn.show-correct {
+    border-color: var(--success) !important;
+    background: rgba(0,184,148,0.15) !important;
+  }
+
+  /* Feedback */
+  .feedback {
+    text-align:center; padding:15px;
+    border-radius:15px; margin-top:15px;
+    font-weight:700; font-size:1rem;
+    animation: fadeIn 0.3s ease;
+    display:none;
+  }
+  .feedback.show { display:block; }
+  .feedback.correct { background:rgba(0,184,148,0.2); color:#00B894; }
+  .feedback.wrong { background:rgba(225,112,85,0.2); color:#E17055; }
+
+  .next-btn {
+    display:none; margin:20px auto 0;
+    padding:12px 40px;
+    background: linear-gradient(135deg, #00CEC9, #00B894);
+    color:#fff; border:none; border-radius:50px;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem; cursor:pointer;
+    transition:all 0.3s;
+    box-shadow: 0 5px 20px rgba(0,206,201,0.3);
+  }
+  .next-btn.show { display:block; }
+  .next-btn:hover { transform:translateY(-2px); }
+
+  /* ===== POWER-UPS ===== */
+  .powerups {
+    display:flex; gap:10px; justify-content:center;
+    margin-top:15px; flex-wrap:wrap;
+  }
+  .powerup-btn {
+    padding:8px 16px; border-radius:50px;
+    border:2px solid var(--card-border);
+    background:var(--card-bg); color:#fff;
+    font-family:'Nunito',sans-serif;
+    font-weight:700; font-size:0.8rem;
+    cursor:pointer; transition:all 0.3s;
+    display:flex; align-items:center; gap:5px;
+  }
+  .powerup-btn:hover { transform:scale(1.05); }
+  .powerup-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+  .powerup-btn .count {
+    background:var(--warning); color:#333;
+    border-radius:50%; width:20px; height:20px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.7rem;
+  }
+
+  /* ===== RESULTS SCREEN ===== */
+  .results-card {
+    background: var(--card-bg);
+    border:2px solid var(--card-border);
+    border-radius:30px; padding:40px 30px;
+    text-align:center; backdrop-filter:blur(10px);
+    max-width:600px; margin:0 auto;
+  }
+  .result-emoji { font-size:5rem; margin-bottom:10px; animation: bounce 1s ease infinite; }
+  @keyframes bounce {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-20px); }
+  }
+  .results-card h2 {
+    font-family:'Fredoka One',cursive;
+    font-size:clamp(1.5rem,4vw,2rem);
+    margin-bottom:5px;
+  }
+  .results-card .subtitle { opacity:0.6; margin-bottom:20px; }
+  .result-stats {
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
+    gap:15px; margin:25px 0;
+  }
+  .result-stat {
+    background:rgba(255,255,255,0.05);
+    border-radius:15px; padding:20px 10px;
+    border:1px solid var(--card-border);
+  }
+  .result-stat .value {
+    font-family:'Fredoka One',cursive;
+    font-size:1.8rem;
+  }
+  .result-stat .label {
+    font-size:0.75rem; opacity:0.6;
+    text-transform:uppercase; letter-spacing:1px;
+  }
+  .stars { font-size:2.5rem; margin:15px 0; }
+  .stars .star { color:rgba(255,255,255,0.2); transition:all 0.3s; }
+  .stars .star.earned { color:#FDCB6E; animation: starPop 0.5s ease; }
+  @keyframes starPop {
+    0% { transform:scale(0); }
+    50% { transform:scale(1.3); }
+    100% { transform:scale(1); }
+  }
+
+  .results-buttons {
+    display:flex; gap:12px; justify-content:center;
+    flex-wrap:wrap; margin-top:20px;
+  }
+  .result-btn {
+    padding:12px 30px; border-radius:50px;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem; cursor:pointer;
+    transition:all 0.3s; border:none; color:#fff;
+  }
+  .result-btn.primary {
+    background: linear-gradient(135deg, #6C5CE7, #a855f7);
+    box-shadow: 0 5px 20px rgba(108,92,231,0.3);
+  }
+  .result-btn.secondary {
+    background: var(--card-bg);
+    border:2px solid var(--card-border);
+  }
+  .result-btn:hover { transform:translateY(-3px); }
+
+  /* ===== REVIEW SECTION ===== */
+  .review-section {
+    margin-top:25px; text-align:left;
+  }
+  .review-toggle {
+    padding:10px 25px; background:rgba(255,255,255,0.05);
+    border:2px solid var(--card-border); border-radius:50px;
+    color:#fff; font-family:'Nunito',sans-serif;
+    font-weight:700; cursor:pointer; transition:all 0.3s;
+    width:100%;
+  }
+  .review-toggle:hover { border-color:var(--secondary); }
+  .review-list {
+    margin-top:15px; display:none;
+  }
+  .review-list.show { display:block; }
+  .review-item {
+    background:rgba(255,255,255,0.03);
+    border-radius:12px; padding:15px;
+    margin-bottom:10px; border-left:4px solid;
+  }
+  .review-item.correct-review { border-left-color: var(--success); }
+  .review-item.wrong-review { border-left-color: var(--danger); }
+  .review-item .q { font-weight:700; margin-bottom:5px; font-size:0.95rem; }
+  .review-item .a { font-size:0.85rem; opacity:0.7; }
+  .review-item .a span { font-weight:700; }
+  .review-item .a .correct-ans { color:var(--success); }
+  .review-item .a .your-ans { color:var(--danger); }
+
+  /* ===== CONFETTI ===== */
+  #confetti-container {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:999; overflow:hidden;
+  }
+  .confetti-piece {
+    position:absolute; width:10px; height:10px;
+    top:-10px; animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity:1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity:0; }
+  }
+
+  /* ===== COMBO POPUP ===== */
+  .combo-popup {
+    position:fixed; top:50%; left:50%;
+    transform:translate(-50%,-50%) scale(0);
+    font-family:'Fredoka One',cursive;
+    font-size:clamp(2rem,6vw,3.5rem);
+    pointer-events:none; z-index:100;
+    animation: comboPop 1s ease forwards;
+  }
+  @keyframes comboPop {
+    0% { transform:translate(-50%,-50%) scale(0); opacity:0; }
+    30% { transform:translate(-50%,-50%) scale(1.2); opacity:1; }
+    60% { transform:translate(-50%,-50%) scale(1); opacity:1; }
+    100% { transform:translate(-50%,-50%) scale(1.5); opacity:0; }
+  }
+
+  /* ===== XP BAR ===== */
+  .xp-section {
+    margin-top:15px; text-align:center;
+  }
+  .xp-label {
+    font-size:0.8rem; opacity:0.6; margin-bottom:5px;
+  }
+  .xp-bar-container {
+    background:rgba(255,255,255,0.1);
+    border-radius:50px; height:14px;
+    overflow:hidden; position:relative;
+    border:1px solid var(--card-border);
+  }
+  .xp-bar {
+    height:100%; border-radius:50px;
+    background: linear-gradient(90deg, #FDCB6E, #E17055);
+    transition: width 1s ease;
+    position:relative;
+  }
+  .xp-bar::after {
+    content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: xpShine 2s ease infinite;
+  }
+  @keyframes xpShine {
+    0% { transform:translateX(-100%); }
+    100% { transform:translateX(100%); }
+  }
+  .xp-text {
+    font-size:0.75rem; font-weight:700;
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .level-badge {
+    display:inline-block; background:linear-gradient(135deg,#FDCB6E,#E17055);
+    color:#333; font-family:'Fredoka One',cursive;
+    padding:3px 12px; border-radius:20px;
+    font-size:0.8rem; margin-top:8px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:600px) {
+    .container { padding:10px; }
+    .question-card { padding:20px 15px; border-radius:20px; }
+    .game-top-bar { padding:10px 15px; gap:5px; }
+    .stat-value { font-size:1.1rem; }
+    .stat-label { font-size:0.6rem; }
+    .topics-grid { gap:12px; }
+    .topic-card { padding:20px 15px; }
+    .topic-icon { font-size:2.5rem; }
+    .results-card { padding:25px 15px; }
+    .result-stats { grid-template-columns:1fr 1fr; gap:10px; }
+    .option-btn { padding:12px 15px; }
+  }
+  @media(max-width:350px) {
+    .result-stats { grid-template-columns:1fr; }
+  }
+
+  /* ===== LOADING ===== */
+  .loading-screen {
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    min-height:100vh; text-align:center;
+  }
+  .loader {
+    width:60px; height:60px;
+    border:4px solid rgba(255,255,255,0.1);
+    border-top-color: var(--secondary);
+    border-radius:50%;
+    animation: spin 1s linear infinite;
+    margin-bottom:20px;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ===== TOOLTIP ===== */
+  .tooltip {
+    position:absolute; background:#333; color:#fff;
+    padding:8px 12px; border-radius:8px;
+    font-size:0.75rem; white-space:nowrap;
+    pointer-events:none; opacity:0;
+    transition:opacity 0.3s;
+    bottom:100%; left:50%; transform:translateX(-50%);
+    margin-bottom:5px;
+  }
+  .tooltip::after {
+    content:''; position:absolute; top:100%; left:50%;
+    transform:translateX(-50%); border:5px solid transparent;
+    border-top-color:#333;
+  }
+
+  /* ===== ACHIEVEMENT POPUP ===== */
+  .achievement-popup {
+    position:fixed; top:20px; right:20px;
+    background: linear-gradient(135deg, #FDCB6E, #E17055);
+    color:#333; padding:15px 20px;
+    border-radius:15px; z-index:200;
+    font-weight:700; font-size:0.9rem;
+    animation: achievementSlide 3s ease forwards;
+    box-shadow: 0 10px 30px rgba(253,203,110,0.3);
+    display:flex; align-items:center; gap:10px;
+  }
+  @keyframes achievementSlide {
+    0% { transform:translateX(120%); opacity:0; }
+    15% { transform:translateX(0); opacity:1; }
+    85% { transform:translateX(0); opacity:1; }
+    100% { transform:translateX(120%); opacity:0; }
+  }
+
+  /* ===== BACK BUTTON ===== */
+  .back-btn {
+    background: none; border: 2px solid var(--card-border);
+    color: #fff; padding: 8px 18px; border-radius: 50px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    cursor: pointer; transition: all 0.3s; font-size: 0.85rem;
+    margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ===== SOUND TOGGLE ===== */
+  .sound-toggle {
+    position: fixed; top: 15px; right: 15px; z-index: 50;
+    background: var(--card-bg); border: 2px solid var(--card-border);
+    color: #fff; width: 45px; height: 45px; border-radius: 50%;
+    font-size: 1.2rem; cursor: pointer; transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .sound-toggle:hover { border-color: var(--secondary); transform: scale(1.1); }
+
+  /* ===== DARK MODE TOGGLE ===== */
+  .theme-info {
+    text-align: center; margin-top: 20px;
+    padding: 15px; opacity: 0.5; font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="soundToggle" title="Toggle Sound">🔊</button>
+
+<!-- Particles Background -->
+<div id="particles"></div>
+
+<!-- Confetti Container -->
+<div id="confetti-container"></div>
+
+<div class="container">
+  <!-- Header -->
+  <div class="game-header">
+    <h1>🎓 CBC Quiz Champion</h1>
+    <p>Grade 4 • Kenya Competency-Based Curriculum</p>
+  </div>
+
+  <!-- XP Section -->
+  <div class="xp-section" id="xpSection">
+    <div class="xp-label">🏆 Total XP</div>
+    <div class="xp-bar-container">
+      <div class="xp-bar" id="xpBar" style="width:0%">
+        <span class="xp-text" id="xpText">0 / 500 XP</span>
+      </div>
+    </div>
+    <div class="level-badge" id="levelBadge">⭐ Level 1 - Newbie</div>
+  </div>
+
+  <!-- ===== SCREEN 1: TOPIC SELECTION ===== -->
+  <div class="screen active" id="topicScreen">
+    <div class="topics-grid">
+      <div class="topic-card math" onclick="selectTopic('math')">
+        <span class="topic-icon">🔢</span>
+        <h3>Mathematics</h3>
+        <p>Numbers, Operations & Problem Solving</p>
+        <span class="topic-badge">30 Qs</span>
+      </div>
+      <div class="topic-card english" onclick="selectTopic('english')">
+        <span class="topic-icon">📖</span>
+        <h3>English</h3>
+        <p>Grammar, Vocabulary & Comprehension</p>
+        <span class="topic-badge">30 Qs</span>
+      </div>
+      <div class="topic-card science" onclick="selectTopic('science')">
+        <span class="topic-icon">🔬</span>
+        <h3>Science & Technology</h3>
+        <p>Living Things, Energy & Environment</p>
+        <span class="topic-badge">30 Qs</span>
+      </div>
+      <div class="topic-card social" onclick="selectTopic('social')">
+        <span class="topic-icon">🌍</span>
+        <h3>Social Studies</h3>
+        <p>History, Geography & Citizenship</p>
+        <span class="topic-badge">30 Qs</span>
+      </div>
+      <div class="topic-card kiswahili" onclick="selectTopic('kiswahili')">
+        <span class="topic-icon">🗣️</span>
+        <h3>Kiswahili</h3>
+        <p>Sarufi, Msamiati na Ufahamu</p>
+        <span class="topic-badge">30 Qs</span>
+      </div>
+    </div>
+
+    <div class="difficulty-section" id="diffSection" style="display:none">
+      <h3>⚡ Choose Difficulty</h3>
+      <div class="diff-buttons">
+        <button class="diff-btn easy" onclick="selectDifficulty('easy')">😊 Easy</button>
+        <button class="diff-btn medium selected" onclick="selectDifficulty('medium')">🤔 Medium</button>
+        <button class="diff-btn hard" onclick="selectDifficulty('hard')">🔥 Hard</button>
+      </div>
+      <button class="start-btn" id="startBtn" onclick="startGame()">🚀 Start Quiz!</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 2: GAME ===== -->
+  <div class="screen" id="gameScreen">
+    <button class="back-btn" onclick="confirmQuit()">← Quit</button>
+    <div class="game-top-bar">
+      <div class="stat score">
+        <div class="stat-value" id="scoreDisplay">0</div>
+        <div class="stat-label">Score</div>
+      </div>
+      <div class="stat timer">
+        <div class="stat-value" id="timerDisplay">30</div>
+        <div class="stat-label">Timer</div>
+      </div>
+      <div class="stat streak">
+        <div class="stat-value" id="streakDisplay">🔥0</div>
+        <div class="stat-label">Streak</div>
+      </div>
+      <div class="stat question">
+        <div class="stat-value" id="questionNum">1/30</div>
+        <div class="stat-label">Question</div>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <span class="question-number" id="qNumber">Question 1</span>
+      <div class="question-text" id="qText"></div>
+      <div class="question-hint" id="qHint"></div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="powerups" id="powerups">
+      <button class="powerup-btn" id="fiftyBtn" onclick="useFiftyFifty()">
+        50:50 <span class="count" id="fiftyCount">2</span>
+      </button>
+      <button class="powerup-btn" id="skipBtn" onclick="useSkip()">
+        ⏭ Skip <span class="count" id="skipCount">1</span>
+      </button>
+      <button class="powerup-btn" id="timeBtn" onclick="useExtraTime()">
+        ⏰ +10s <span class="count" id="timeCount">2</span>
+      </button>
+    </div>
+
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+  </div>
+
+  <!-- ===== SCREEN 3: RESULTS ===== -->
+  <div class="screen" id="resultScreen">
+    <div class="results-card">
+      <div class="result-emoji" id="resultEmoji">🏆</div>
+      <h2 id="resultTitle">Quiz Complete!</h2>
+      <p class="subtitle" id="resultSubtitle">Great effort, champion!</p>
+
+      <div class="stars" id="starsContainer"></div>
+
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="value" id="finalScore">0</div>
+          <div class="label">Score</div>
+        </div>
+        <div class="result-stat">
+          <div class="value" id="finalCorrect">0</div>
+          <div class="label">Correct</div>
+        </div>
+        <div class="result-stat">
+          <div class="value" id="finalWrong">0</div>
+          <div class="label">Wrong</div>
+        </div>
+        <div class="result-stat">
+          <div class="value" id="finalAccuracy">0%</div>
+          <div class="label">Accuracy</div>
+        </div>
+        <div class="result-stat">
+          <div class="value" id="finalStreak">0</div>
+          <div class="label">Best Streak</div>
+        </div>
+        <div class="result-stat">
+          <div class="value" id="finalXP">0</div>
+          <div class="label">XP Earned</div>
+        </div>
+      </div>
+
+      <div class="results-buttons">
+        <button class="result-btn primary" onclick="restartGame()">🔄 Play Again</button>
+        <button class="result-btn secondary" onclick="goHome()">🏠 Home</button>
+      </div>
+
+      <div class="review-section">
+        <button class="review-toggle" onclick="toggleReview()">📋 Review Answers</button>
+        <div class="review-list" id="reviewList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== AUDIO SYSTEM =====
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+let soundEnabled = true;
+
+function initAudio() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+}
+
+function playSound(type) {
+  if (!soundEnabled) return;
+  initAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  switch(type) {
+    case 'correct':
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.4);
+      break;
+    case 'wrong':
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.3);
+      break;
+    case 'click':
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.1);
+      break;
+    case 'combo':
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.5);
+      break;
+    case 'complete':
+      osc.type = 'sine';
+      const notes = [523, 587, 659, 698, 784, 880, 988, 1047];
+      notes.forEach((note, i) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.type = 'sine';
+        o.frequency.setValueAtTime(note, audioCtx.currentTime + i * 0.12);
+        g.gain.setValueAtTime(0.1, audioCtx.currentTime + i * 0.12);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.3);
+        o.start(audioCtx.currentTime + i * 0.12);
+        o.stop(audioCtx.currentTime + i * 0.12 + 0.3);
+      });
+      return;
+  }
+}
+
+document.getElementById('soundToggle').addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+});
+
+// ===== PARTICLES =====
+function createParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#6C5CE7','#00CEC9','#FD79A8','#FDCB6E','#00B894','#E17055'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 8 + 3;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    container.appendChild(p);
+  }
+}
+createParticles();
+
+// ===== CONFETTI =====
+function launchConfetti() {
+  const container = document.getElementById('confetti-container');
+  container.innerHTML = '';
+  const colors = ['#6C5CE7','#00CEC9','#FD79A8','#FDCB6E','#00B894','#E17055','#FF6B6B','#48DBFB'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.width = (Math.random() * 10 + 5) + 'px';
+    piece.style.height = (Math.random() * 10 + 5) + 'px';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    piece.style.animationDelay = (Math.random() * 1.5) + 's';
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.innerHTML = '', 5000);
+}
+
+// ===== COMBO POPUP =====
+function showCombo(text, color) {
+  const popup = document.createElement('div');
+  popup.className = 'combo-popup';
+  popup.textContent = text;
+  popup.style.color = color;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1000);
+}
+
+// ===== ACHIEVEMENT =====
+function showAchievement(text) {
+  const popup = document.createElement('div');
+  popup.className = 'achievement-popup';
+  popup.textContent = '🏅 ' + text;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 3500);
+}
+
+// ===== QUESTIONS DATABASE =====
+const questionsDB = {
+  math: [
+    {q:"What is 3,456 + 2,789?", options:["6,245","6,145","5,245","6,345"], answer:0, hint:"Add ones, then tens, then hundreds..."},
+    {q:"Calculate: 8,000 - 3,456", options:["4,544","4,644","5,544","4,444"], answer:0, hint:"Borrow from the thousands place."},
+    {q:"What is 47 × 6?", options:["282","272","292","262"], answer:0, hint:"Multiply 40×6 and 7×6, then add."},
+    {q:"Divide 864 by 4.", options:["216","226","116","316"], answer:0, hint:"Divide each digit starting from hundreds."},
+    {q:"What is the place value of 7 in 57,321?", options:["Thousands","Ten Thousands","Hundreds","Ten Thousands"], answer:3, hint:"Count from the right: ones, tens, hundreds, thousands, ten thousands."},
+    {q:"Round 4,567 to the nearest hundred.", options:["4,500","4,600","4,570","5,000"], answer:1, hint:"Look at the tens digit."},
+    {q:"What fraction is equivalent to 2/4?", options:["1/2","1/4","2/3","3/4"], answer:0, hint:"Divide both numerator and denominator by 2."},
+    {q:"What is 3/5 + 1/5?", options:["4/5","4/10","2/5","3/5"], answer:0, hint:"When denominators are the same, add the numerators."},
+    {q:"A rectangle has length 12cm and width 5cm. What is its area?", options:["60 cm²","34 cm²","17 cm²","72 cm²"], answer:0, hint:"Area = length × width"},
+    {q:"What is the perimeter of a square with side 9cm?", options:["36 cm","81 cm","18 cm","45 cm"], answer:0, hint:"Perimeter = 4 × side"},
+    {q:"What time is 45 minutes after 2:30?", options:["3:15","3:05","3:25","3:45"], answer:0, hint:"Add 30 min first, then 15 min."},
+    {q:"Convert 3km 250m to metres.", options:["3,250 m","3,025 m","32,500 m","325 m"], answer:0, hint:"1 km = 1,000 m"},
+    {q:"Which number is divisible by 3?", options:["126","125","124","122"], answer:0, hint:"Sum of digits should be divisible by 3."},
+    {q:"What is the LCM of 4 and 6?", options:["12","24","6","18"], answer:0, hint:"List multiples of each number."},
+    {q:"What is the GCD of 12 and 18?", options:["6","3","12","9"], answer:0, hint:"Find the largest number that divides both."},
+    {q:"If a book costs Sh. 250, how much do 4 books cost?", options:["Sh. 1,000","Sh. 800","Sh. 900","Sh. 1,200"], answer:0, hint:"Multiply the cost by 4."},
+    {q:"What is 25% of 200?", options:["50","25","75","100"], answer:0, hint:"25% = 1/4. Divide by 4."},
+    {q:"Arrange in ascending order: 456, 465, 456, 465", options:["456, 456, 465, 465","465, 465, 456, 456","456, 465, 456, 465","465, 456, 465, 456"], answer:0, hint:"Smallest to largest."},
+    {q:"What is the next number in the pattern: 2, 6, 18, 54, ___?", options:["162","108","72","148"], answer:0, hint:"Each number is multiplied by 3."},
+    {q:"A triangle has angles 60°, 60°, and ___?", options:["60°","90°","45°","120°"], answer:0, hint:"Sum of angles in a triangle = 180°"},
+    {q:"What is 0.75 as a fraction?", options:["3/4","7/5","75/10","1/4"], answer:0, hint:"75/100 simplified."},
+    {q:"How many minutes are in 2.5 hours?", options:["150","120","130","140"], answer:0, hint:"Multiply hours by 60."},
+    {q:"What is 15² (15 squared)?", options:["225","150","30","250"], answer:0, hint:"15 × 15"},
+    {q:"If 5 pencils cost Sh. 75, what is the cost of 1 pencil?", options:["Sh. 15","Sh. 20","Sh. 10","Sh. 25"], answer:0, hint:"Divide total cost by 5."},
+    {q:"What is the mode of: 3, 5, 5, 7, 5, 9, 3?", options:["5","3","7","9"], answer:0, hint:"The mode is the most frequently occurring number."},
+    {q:"What is 7 × 8 + 3 × 4?", options:["68","84","56","60"], answer:0, hint:"Use BODMAS - multiply first, then add."},
+    {q:"A farmer harvested 360 kg of maize. He sold 2/3 of it. How much did he sell?", options:["240 kg","180 kg","120 kg","300 kg"], answer:0, hint:"Calculate 2/3 of 360."},
+    {q:"What is the difference between the largest and smallest 4-digit numbers using digits 1, 5, 8, 9?", options:["8712","9876","9999","1000"], answer:0, hint:"Largest = 9851, Smallest = 1589"},
+    {q:"If today is Monday, what day will it be in 15 days?", options:["Tuesday","Monday","Wednesday","Thursday"], answer:0, hint:"15 ÷ 7 = 2 remainder 1. Count 1 day from Monday."},
+    {q:"A bottle holds 750ml of water. How many bottles are needed for 6 litres?", options:["8","6","10","12"], answer:0, hint:"6 litres = 6,000ml. Divide by 750."}
+  ],
+
+  english: [
+    {q:"Choose the correct sentence:", options:["She don't like apples.","She doesn't like apples.","She not like apples.","She isn't like apples."], answer:1, hint:"Use 'doesn't' with he/she/it."},
+    {q:"What is the plural of 'child'?", options:["Childs","Childes","Children","Childrens"], answer:2, hint:"This is an irregular plural."},
+    {q:"Which word is an adjective?", options:["Run","Beautiful","Quickly","Under"], answer:1, hint:"Adjectives describe nouns."},
+    {q:"Choose the correct past tense: 'Yesterday, I ___ to school.'", options:["go","goed","went","gone"], answer:2, hint:"'Go' is an irregular verb."},
+    {q:"What is a synonym for 'happy'?", options:["Sad","Joyful","Angry","Tired"], answer:1, hint:"A synonym means the same thing."},
+    {q:"Which is a compound word?", options:["Running","Sunflower","Beautiful","Quickly"], answer:1, hint:"Two words joined together."},
+    {q:"Identify the noun: 'The cat sat on the mat.'", options:["sat","on","cat","the"], answer:2, hint:"A noun is a person, place, or thing."},
+    {q:"Choose the correct article: '___ elephant is big.'", options:["A","An","The","No article"], answer:1, hint:"Use 'An' before vowel sounds."},
+    {q:"What type of sentence is: 'Close the door!'?", options:["Statement","Question","Command","Exclamation"], answer:2, hint:"It tells someone to do something."},
+    {q:"Which word rhymes with 'rain'?", options:["Run","Pain","Ring","Rope"], answer:1, hint:"Same ending sound."},
+    {q:"What is the opposite of 'ancient'?", options:["Old","Modern","Classic","Historic"], answer:1, hint:"Opposite means the reverse meaning."},
+    {q:"Choose the correct spelling:", options:["Beautifull","Beautiful","Beutiful","Buatiful"], answer:1, hint:"Remember: 'beau' + 'ti' + 'ful'"},
+    {q:"'She sings ___.' Which adverb fits?", options:["beautiful","beautifully","beauty","beautify"], answer:1, hint:"Adverbs modify verbs and often end in -ly."},
+    {q:"What is the past tense of 'buy'?", options:["Buyed","Buys","Bought","Brought"], answer:2, hint:"Irregular verb - not 'buyed'."},
+    {q:"Which word is a pronoun?", options:["Dog","Run","She","Big"], answer:2, hint:"Pronouns replace nouns."},
+    {q:"'The sun is shining.' What tense is this?", options:["Past","Present","Future","Past Perfect"], answer:1, hint:"It's happening now."},
+    {q:"Choose the correct word: 'I have ___ finished my homework.'", options:["yet","already","still","since"], answer:1, hint:"Used to show completion."},
+    {q:"What is a collective noun for 'birds'?", options:["Herd","Flock","Pack","School"], answer:1, hint:"Birds fly together in a group."},
+    {q:"Which sentence uses a comma correctly?", options:["I like cats, and dogs.","I like, cats and dogs.","I like cats and, dogs.","I, like cats and dogs."], answer:0, hint:"Comma before 'and' joins two clauses."},
+    {q:"What does 'enormous' mean?", options:["Tiny","Very large","Medium","Small"], answer:1, hint:"Think of elephants."},
+    {q:"'He runs ___ than his brother.' Fill in:", options:["fast","faster","fastest","more fast"], answer:1, hint:"Comparing two people."},
+    {q:"Which is NOT a conjunction?", options:["And","But","Because","Quick"], answer:3, hint:"Conjunctions join words or sentences."},
+    {q:"What is the prefix in 'unhappy'?", options:["un","happy","py","happ"], answer:0, hint:"Added at the beginning of a word."},
+    {q:"Choose the correct form: 'Neither the boys nor the girl ___ here.'", options:["is","are","am","were"], answer:0, hint:"The verb agrees with the nearest subject."},
+    {q:"What figure of speech: 'The wind whispered through the trees'?", options:["Simile","Metaphor","Personification","Alliteration"], answer:2, hint:"Giving human qualities to non-living things."},
+    {q:"'She is as brave as a lion.' This is a:", options:["Metaphor","Simile","Personification","Hyperbole"], answer:1, hint:"Uses 'as...as' for comparison."},
+    {q:"What is the suffix in 'happiness'?", options:["happi","ness","hap","happy"], answer:1, hint:"Added at the end of a word."},
+    {q:"Which sentence is in future tense?", options:["I eat lunch.","I ate lunch.","I will eat lunch.","I am eating lunch."], answer:2, hint:"Uses 'will' for future."},
+    {q:"What is an antonym for 'generous'?", options:["Kind","Selfish","Friendly","Helpful"], answer:1, hint:"Opposite meaning."},
+    {q:"Choose the correctly punctuated sentence:", options:["whats your name","Whats your name?","What's your name?","What your name?"], answer:2, hint:"Use apostrophe and question mark."}
+  ],
+
+  science: [
+    {q:"Which gas do plants absorb from the air?", options:["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"], answer:1, hint:"Plants need it for photosynthesis."},
+    {q:"What is the basic unit of life?", options:["Atom","Cell","Molecule","Tissue"], answer:1, hint:"The smallest living unit."},
+    {q:"Which planet is closest to the Sun?", options:["Venus","Mercury","Earth","Mars"], answer:1, hint:"Named after a Roman messenger god."},
+    {q:"What force pulls objects towards Earth?", options:["Magnetism","Friction","Gravity","Tension"], answer:2, hint:"It's why things fall down."},
+    {q:"Which part of the plant absorbs water from soil?", options:["Leaves","Stem","Roots","Flowers"], answer:2, hint:"Found underground."},
+    {q:"Water changes to ice at what temperature?", options:["100°C","0°C","50°C","-10°C"], answer:1, hint:"Freezing point of water."},
+    {q:"Which animal is a mammal?", options:["Frog","Snake","Whale","Lizard"], answer:2, hint:"Mammals feed their young with milk."},
+    {q:"What is the process by which plants make food?", options:["Respiration","Photosynthesis","Digestion","Fermentation"], answer:1, hint:"Needs sunlight, water, and CO₂."},
+    {q:"Which is a renewable source of energy?", options:["Coal","Petroleum","Solar","Natural gas"], answer:2, hint:"Comes from the sun."},
+    {q:"How many bones are in the adult human body?", options:["106","206","306","156"], answer:1, hint:"More than 200 but less than 210."},
+    {q:"Which organ pumps blood in the body?", options:["Brain","Lungs","Heart","Liver"], answer:2, hint:"It beats about 100,000 times a day."},
+    {q:"What is the largest organ in the human body?", options:["Liver","Heart","Skin","Lungs"], answer:2, hint:"It covers the outside of your body."},
+    {q:"Which state of matter has no definite shape or volume?", options:["Solid","Liquid","Gas","Plasma"], answer:2, hint:"It fills any container."},
+    {q:"What type of energy does the sun give us?", options:["Sound","Light and heat","Electrical","Chemical"], answer:1, hint:"You can feel it and see it."},
+    {q:"Which of these is NOT a sense organ?", options:["Eye","Ear","Heart","Nose"], answer:2, hint:"Senses help us perceive the world."},
+    {q:"What do we call animals that eat only plants?", options:["Carnivores","Herbivores","Omnivores","Scavengers"], answer:1, hint:"'Herb' means plant."},
+    {q:"Which vitamin helps heal wounds?", options:["Vitamin A","Vitamin B","Vitamin C","Vitamin D"], answer:2, hint:"Found in oranges and lemons."},
+    {q:"The process of water turning into vapor is called:", options:["Condensation","Evaporation","Precipitation","Filtration"], answer:1, hint:"Happens when water is heated."},
+    {q:"Which soil type holds the most water?", options:["Sandy","Loam","Clay","Silt"], answer:2, hint:"Has very small particles."},
+    {q:"What is the function of red blood cells?", options:["Fight disease","Carry oxygen","Clot blood","Digest food"], answer:1, hint:"They contain haemoglobin."},
+    {q:"Which gas is most abundant in the atmosphere?", options:["Oxygen","Carbon dioxide","Nitrogen","Helium"], answer:2, hint:"Makes up about 78% of air."},
+    {q:"What causes day and night?", options:["Moon's orbit","Earth's rotation","Sun's rotation","Earth's revolution"], answer:1, hint:"Earth spins on its axis."},
+    {q:"Which is a simple machine?", options:["Computer","Lever","Car","Phone"], answer:1, hint:"Helps reduce effort needed."},
+    {q:"What type of energy is stored in food?", options:["Light","Sound","Chemical","Kinetic"], answer:2, hint:"Released during digestion."},
+    {q:"Which animal is an amphibian?", options:["Crocodile","Frog","Turtle","Snake"], answer:1, hint:"Lives both in water and on land."},
+    {q:"What is the pH of pure water?", options:["5","7","9","14"], answer:1, hint:"It is neutral."},
+    {q:"Which part of a flower produces pollen?", options:["Stigma","Anther","Petal","Ovary"], answer:1, hint:"Found on the stamen."},
+    {q:"What is a mixture of sand and water called?", options:["Solution","Suspension","Compound","Element"], answer:1, hint:"Sand doesn't dissolve in water."},
+    {q:"Which layer of the atmosphere do we live in?", options:["Stratosphere","Troposphere","Mesosphere","Thermosphere"], answer:1, hint:"Closest to Earth's surface."},
+    {q:"What is the speed of light approximately?", options:["300 km/s","300,000 km/s","30,000 km/s","3,000 km/s"], answer:1, hint:"It's extremely fast."}
+  ],
+
+  social: [
+    {q:"What is the capital city of Kenya?", options:["Mombasa","Kisumu","Nairobi","Nakuru"], answer:2, hint:"It's the largest city in Kenya."},
+    {q:"How many counties does Kenya have?", options:["42","47","50","40"], answer:1, hint:"Created under the 2010 constitution."},
+    {q:"Which river is the longest in Africa?", options:["Congo","Zambezi","Nile","Niger"], answer:2, hint:"It flows through Egypt."},
+    {q:"What are the colors of the Kenyan flag?", options:["Green, white, red","Black, red, green, white","Blue, yellow, green","Red, yellow, blue"], answer:1, hint:"Remember the shield in the center."},
+    {q:"Who was the first President of Kenya?", options:["Daniel arap Moi","Jomo Kenyatta","Uhuru Kenyatta","Raila Odinga"], answer:1, hint:"He led Kenya to independence."},
+    {q:"Which continent is Kenya in?", options:["Asia","Europe","Africa","South America"], answer:2, hint:"Second largest continent in the world."},
+    {q:"What is the national language of Kenya?", options:["English","Kiswahili","Luo","Kikuyu"], answer:1, hint:"Also spoken in Tanzania."},
+    {q:"Mount Kenya is the ___ highest mountain in Africa.", options:["first","second","third","fourth"], answer:1, hint:"Kilimanjaro is the highest."},
+    {q:"Which ocean borders Kenya's coast?", options:["Atlantic","Pacific","Indian","Arctic"], answer:2, hint:"The warmest ocean."},
+    {q:"What is the currency of Kenya?", options:["Shilling","Dollar","Pound","Rupee"], answer:0, hint:"KES - Kenyan Shilling."},
+    {q:"Which Kenyan park is famous for elephants?", options:["Hell's Gate","Tsavo","Aberdare","Nairobi NP"], answer:1, hint:"It's the largest national park in Kenya."},
+    {q:"What does the black color in Kenya's flag represent?", options:["Blood","The people","Peace","Land"], answer:1, hint:"Represents the Kenyan people."},
+    {q:"Lake Victoria is shared by how many countries?", options:["2","3","4","5"], answer:1, hint:"Kenya, Uganda, and Tanzania."},
+    {q:"When did Kenya gain independence?", options:["1960","1963","1970","1952"], answer:1, hint:"December 12th, 1963."},
+    {q:"Which is the largest county in Kenya by area?", options:["Nairobi","Turkana","Marsabit","Wajir"], answer:1, hint:"Located in the Rift Valley region."},
+    {q:"What is the main source of the River Nile?", options:["Lake Turkana","Lake Victoria","Lake Tanganyika","Lake Albert"], answer:1, hint:"Located in East Africa."},
+    {q:"Which tribe is the largest in Kenya?", options:["Luo","Kikuyu","Kalenjin","Luhya"], answer:3, hint:"Found mainly in Western Kenya."},
+    {q:"What is Kenya's national animal?", options:["Elephant","Lion","Rhino","Leopard"], answer:1, hint:"Known as the king of the jungle."},
+    {q:"The Great Rift Valley runs through which part of Kenya?", options:["North","South","Central/West","East"], answer:2, hint:"A geological feature splitting Africa."},
+    {q:"Which country borders Kenya to the north?", options:["Tanzania","Uganda","Ethiopia","Somalia"], answer:2, hint:"Also borders South Sudan."},
+    {q:"What is the main economic activity in Kenya?", options:["Mining","Agriculture","Tourism","Fishing"], answer:1, hint:"Tea and coffee are major exports."},
+    {q:"Jamhuri Day is celebrated on:", options:["June 1st","October 20th","December 12th","August 1st"], answer:2, hint:"Republic Day - independence from Britain."},
+    {q:"Which of these is a Kenyan cash crop?", options:["Maize","Wheat","Tea","Rice"], answer:2, hint:"Grown mainly in highland areas."},
+    {q:"What is the largest lake entirely within Kenya?", options:["Lake Victoria","Lake Turkana","Lake Naivasha","Lake Nakuru"], answer:1, hint:"Also known as the Jade Sea."},
+    {q:"The Kenyan constitution was promulgated in:", options:["2008","2010","2013","2002"], answer:1, hint:"Replaced the old independence constitution."},
+    {q:"Which Kenyan athlete holds world records in long distance?", options:["Habel Kiprotich","Eliud Kipchoge","David Rudisha","Kenenisa Bekele"], answer:1, hint:"Famous marathon runner."},
+    {q:"What is the term for a traditional African community leader?", options:["Governor","Chief","Senator","MP"], answer:1, hint:"Traditionally the head of a community."},
+    {q:"Kenya's motto is:", options:["Unity in Diversity","Harambee","Peace and Love","One Nation"], answer:1, hint:"Means 'pulling together' in Swahili."},
+    {q:"Which desert is found in Northern Kenya?", options:["Sahara","Chalbi","Kalahari","Gobi"], answer:1, hint:"Near Lake Turkana."},
+    {q:"The three branches of government in Kenya are:", options:["Executive, Legislative, Judicial","Army, Police, Courts","President, PM, Speaker","County, National, Regional"], answer:0, hint:"They check and balance each other."}
+  ],
+
+  kiswahili: [
+    {q:"Nini maana ya neno 'shukrani'?", options:["Pole","Asante","Karibu","Tafadhali"], answer:1, hint:"Unasema wakati umepewa kitu."},
+    {q:"Wingi wa 'mtoto' ni:", options:["Watoto","Mitoto","Mtoto","Atoto"], answer:0, hint:"M- hubadilika kuwa Wa-."},
+    {q:"Neno 'kukimbia' ni neno la aina gani?", options:["Nomino","Kitenzi","Sifa","Viambishi"], answer:1, hint:"Kinachoonyesha tendo."},
+    {q:"Chagua kinyume cha 'kubwa':", options:["Refu","Ndogo","Nene","Kali"], answer:1, hint:"Kinyume chake ni kitu kisicho na ukubwa."},
+    {q:"'Anaenda shuleni.' Hii ni nyakati gani?", options:["Iliopita","Sasa","Itakayokuja","Hapo zamani"], answer:1, hint:"Tendo linaendelea sasa."},
+    {q:"Nini maana ya 'mwalimu'?", options:["Daktari","Mchoraji","Mfundishaji","Mkulima"], answer:2, hint:"Anayekufundisha shuleni."},
+    {q:"Chagua sentensi sahihi:", options:["Yeye anaenda sokoni.","Yeye anaenda sokoni","Yeye anakwenda sokoni.","Yeye anakwenda sokoni"], answer:0, hint:"Angalia herufi kubwa na alama ya nukta."},
+    {q:"'Maji' ni nomino ya ngeli gani?", options:["M-Wa","M-Mi","Ki-Vi","Ji-Ma"], answer:3, hint:"Maji - maji. Haibadiliki."},
+    {q:"Neno 'haraka' ni aina gani ya neno?", options:["Nomino","Kitenzi","Kivumishi","Kielezi"], answer:3, hint:"Kinaeleza jinsi tendo linavyofanyika."},
+    {q:"Unganisha: 'mimi' + 'na' + 'yeye' =", options:["mimi naye","mimi na yeye","mimi nae","mimi naye"], answer:0, hint:"Mimi + naye."},
+    {q:"Tafsiri: 'Good morning' ni:", options:["Usiku mwema","Habari ya asubuhi","Habari ya jioni","Kwaheri"], answer:1, hint:"Unasema asubuhi."},
+    {q:"Chagua neno lisilo nomino:", options:["Meza","Kiti","Kukimbia","Gari"], answer:2, hint:"Ni kitendo, sio kitu."},
+    {q:"Wingi wa 'kikapu' ni:", options:["Vikapu","Mikapu","Kikapu","Makapu"], answer:0, hint:"Ki- hubadilika kuwa Vi-."},
+    {q:"'Jua' linatoka upande gani?", options:["Magharibi","Mashariki","Kaskazini","Kusini"], answer:1, hint:"Jua hupandama..."},
+    {q:"Nini kinyume cha 'giza'?", options:["Usiku","Mchana","Mwanga","Kiza"], answer:2, hint:"Tofauti na giza."},
+    {q:"Sentensi: 'Mama anapika chakula.' Kiundo ni:", options:["Mama","Anapika","Chakula","Chakula cha mama"], answer:1, hint:"Kitendo kinachofanywa."},
+    {q:"'Paka' ni mnyama wa aina gani?", options:["Wanyamapori","Mifugo","Wafugwa","Wadudu"], answer:2, hint:"Anayeishi na watu nyumbani."},
+    {q:"Chagua sifa katika: 'Mtoto mwenye furaha':", options:["Mtoto","Mwenye","Furaha","Mtoto mwenye"], answer:2, hint:"Inaeleza hali ya mtoto."},
+    {q:"'Tunasoma' - ni wakati gani?", options:["Iliopita","Sasa","Itakayokuja","Zamani"], answer:1, hint:"'Na-' inaonyesha sasa."},
+    {q:"Nini maana ya 'pole pole'?", options:["Haraka","Taratibu","Sana","Kidogo"], answer:1, hint:"Si haraka."},
+    {q:"'Bahari' ni aina gani ya nomino?", options:["Ma-Ji","M-Mi","Ki-Vi","M-Wa"], answer:0, hint:"Bahari - bahari."},
+    {q:"Chagua neno linalofaa: 'Nime___ kazi yangu.'", options:["fanya","fanya","kufanya","kufanya"], answer:2, hint:"Nime + infinitive."},
+    {q:"'Kichwa' ni kiungo gani cha mwili?", options:["Cha chini","Cha juu","Cha kati","Cha nyuma"], answer:1, hint:"Kipo juu kabisa."},
+    {q:"Tafsiri: 'I love my country' ni:", options:["Ninapenda nchi yangu","Ninapenda shule yangu","Ninapenda familia yangu","Ninapenda mwalimu wangu"], answer:0, hint:"Country = nchi."},
+    {q:"Chagua nomino kamili:", options:["Kukula","Urembo","Kusoma","Kucheza"], answer:1, hint:"Si kitendo - ni hali."},
+    {q:"'Walikuja' - wakati gani?", options:["Sasa","Iliopita","Itakayokuja","Zawadi"], answer:1, hint:"'Li-' inaonyesha iliyopita."},
+    {q:"Nini maana ya 'ujenzi'?", options:["Kuvunja","Kujenga","Kupiga","Kupanda"], answer:1, hint:"Kutengeneza majengo."},
+    {q:"'Mtoto ___ kula.' Jaza nafasi:", options:["anataka","anataka","anataka","anataka"], answer:0, hint:"Mtoto anataka kula."},
+    {q:"Chagua neno lisilo kitenzi:", options:["Kusoma","Kucheza","Mzuri","Kula"], answer:2, hint:"Ni sifa, si tendo."},
+    {q:"'Rafiki yangu anaitwa Ali.' Ali ni:", options:["Kivumishi","Kielezi","Jina","Nomino"], answer:2, hint:"Ni jina la mtu."}
+  ]
+};
+
+// ===== GAME STATE =====
+let state = {
+  topic: null,
+  difficulty: 'medium',
+  questions: [],
+  currentIndex: 0,
+  score: 0,
+  streak: 0,
+  bestStreak: 0,
+  correct: 0,
+  wrong: 0,
+  timer: 30,
+  timerInterval: null,
+  answered: false,
+  xp: parseInt(localStorage.getItem('cbcXP') || '0'),
+  level: parseInt(localStorage.getItem('cbcLevel') || '1'),
+  fiftyFifty: 2,
+  skips: 1,
+  extraTime: 2,
+  answers: [],
+  achievements: []
+};
+
+const levelNames = [
+  'Newbie','Learner','Student','Scholar','Brainiac',
+  'Genius','Professor','Master','Champion','Legend'
+];
+
+// ===== TOPIC & DIFFICULTY =====
+function selectTopic(topic) {
+  state.topic = topic;
+  document.getElementById('diffSection').style.display = 'block';
+  playSound('click');
+
+  document.querySelectorAll('.topic-card').forEach(c => c.style.opacity = '0.5');
+  document.querySelector(`.topic-card.${topic}`).style.opacity = '1';
+  document.querySelector(`.topic-card.${topic}`).style.borderColor = 'var(--secondary)';
+}
+
+function selectDifficulty(diff) {
+  state.difficulty = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`.diff-btn.${diff}`).classList.add('selected');
+  playSound('click');
+}
+
+// ===== START GAME =====
+function startGame() {
+  if (!state.topic) return;
+
+  state.questions = shuffleArray([...questionsDB[state.topic]]);
+  state.currentIndex = 0;
+  state.score = 0;
+  state.streak = 0;
+  state.bestStreak = 0;
+  state.correct = 0;
+  state.wrong = 0;
+  state.answered = false;
+  state.answers = [];
+
+  switch(state.difficulty) {
+    case 'easy': state.timer = 45; state.fiftyFifty = 3; state.skips = 2; state.extraTime = 3; break;
+    case 'medium': state.timer = 30; state.fiftyFifty = 2; state.skips = 1; state.extraTime = 2; break;
+    case 'hard': state.timer = 20; state.fiftyFifty = 1; state.skips = 0; state.extraTime = 1; break;
+  }
+
+  showScreen('gameScreen');
+  updatePowerupUI();
+  loadQuestion();
+}
+
+// ===== LOAD QUESTION =====
+function loadQuestion() {
+  if (state.currentIndex >= state.questions.length) {
+    endGame();
+    return;
+  }
+
+  state.answered = false;
+  const q = state.questions[state.currentIndex];
+  const letters = ['A', 'B', 'C', 'D'];
+
+  document.getElementById('qNumber').textContent = `Question ${state.currentIndex + 1}`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('qHint').textContent = '💡 Hint: ' + q.hint;
+  document.getElementById('questionNum').textContent = `${state.currentIndex + 1}/${state.questions.length}`;
+  document.getElementById('scoreDisplay').textContent = state.score;
+  document.getElementById('streakDisplay').textContent = `🔥${state.streak}`;
+  document.getElementById('progressBar').style.width = `${(state.currentIndex / state.questions.length) * 100}%`;
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.setAttribute('data-letter', letters[i]);
+    btn.setAttribute('data-index', i);
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(i, btn);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextBtn').className = 'next-btn';
+
+  // Animate card
+  document.getElementById('questionCard').style.animation = 'none';
+  setTimeout(() => document.getElementById('questionCard').style.animation = 'questionSlide 0.5s ease', 10);
+
+  startTimer();
+}
+
+// ===== TIMER =====
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    state.timer--;
+    document.getElementById('timerDisplay').textContent = state.timer;
+    if (state.timer <= 5) {
+      document.getElementById('timerDisplay').style.animation = 'wrongShake 0.5s ease';
+    }
+    if (state.timer <= 0) {
+      clearInterval(state.timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function timeUp() {
+  if (state.answered) return;
+  state.answered = true;
+  state.wrong++;
+  state.streak = 0;
+
+  const q = state.questions[state.currentIndex];
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.classList.add('disabled');
+    if (parseInt(btn.getAttribute('data-index')) === q.answer) {
+      btn.classList.add('show-correct');
+    }
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback wrong show';
+  fb.textContent = '⏰ Time\'s up! The correct answer is highlighted.';
+
+  state.answers.push({ question: q.q, correct: q.options[q.answer], selected: 'Time Up', isCorrect: false });
+  document.getElementById('nextBtn').className = 'next-btn show';
+  playSound('wrong');
+}
+
+// ===== SELECT ANSWER =====
+function selectAnswer(index, btn) {
+  if (state.answered) return;
+  state.answered = true;
+  clearInterval(state.timerInterval);
+
+  const q = state.questions[state.currentIndex];
+  const isCorrect = index === q.answer;
+  const timeBonus = Math.max(0, state.timer);
+  const streakBonus = state.streak * 5;
+
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    state.correct++;
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+
+    let points = 10 + timeBonus + streakBonus;
+    if (state.difficulty === 'hard') points *= 2;
+    else if (state.difficulty === 'easy') points = Math.floor(points * 0.7);
+
+    state.score += points;
+    document.getElementById('scoreDisplay').textContent = state.score;
+    document.getElementById('streakDisplay').textContent = `🔥${state.streak}`;
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback correct show';
+
+    if (state.streak === 3) {
+      fb.textContent = '🔥 3 in a row! Amazing! +' + points + ' pts';
+      showCombo('🔥 ON FIRE!', '#00CEC9');
+      playSound('combo');
+    } else if (state.streak === 5) {
+      fb.textContent = '⭐ 5 STREAK! Unstoppable! +' + points + ' pts';
+      showCombo('⭐ UNSTOPPABLE!', '#FDCB6E');
+      playSound('combo');
+      showAchievement('5 Correct Streak!');
+    } else if (state.streak === 10) {
+      fb.textContent = '👑 10 STREAK! LEGENDARY! +' + points + ' pts';
+      showCombo('👑 LEGENDARY!', '#FD79A8');
+      playSound('combo');
+      showAchievement('10 Correct Streak!');
+    } else if (state.streak === 15) {
+      fb.textContent = '💎 PERFECT! 15 in a row! +' + points + ' pts';
+      showCombo('💎 PERFECT!', '#6C5CE7');
+      playSound('combo');
+    } else {
+      const msgs = ['✅ Correct! Great job!', '🎯 Spot on!', '🌟 Brilliant!', '💪 Well done!', '✨ Perfect!'];
+      fb.textContent = msgs[Math.floor(Math.random() * msgs.length)] + ' +' + points;
+    }
+    playSound('correct');
+  } else {
+    btn.classList.add('wrong');
+    state.wrong++;
+    state.streak = 0;
+    document.getElementById('streakDisplay').textContent = '🔥0';
+
+    // Show correct answer
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (parseInt(b.getAttribute('data-index')) === q.answer) {
+        b.classList.add('show-correct');
+      }
+    });
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback wrong show';
+    fb.textContent = '❌ Not quite! The answer was: ' + q.options[q.answer];
+    playSound('wrong');
+  }
+
+  state.answers.push({
+    question: q.q,
+    correct: q.options[q.answer],
+    selected: q.options[index],
+    isCorrect
+  });
+
+  document.getElementById('nextBtn').className = 'next-btn show';
+}
+
+// ===== NEXT QUESTION =====
+function nextQuestion() {
+  state.currentIndex++;
+  loadQuestion();
+  playSound('click');
+}
+
+// ===== POWER-UPS =====
+function updatePowerupUI() {
+  document.getElementById('fiftyCount').textContent = state.fiftyFifty;
+  document.getElementById('skipCount').textContent = state.skips;
+  document.getElementById('timeCount').textContent = state.extraTime;
+  document.getElementById('fiftyBtn').disabled = state.fiftyFifty <= 0;
+  document.getElementById('skipBtn').disabled = state.skips <= 0;
+  document.getElementById('timeBtn').disabled = state.extraTime <= 0;
+}
+
+function useFiftyFifty() {
+  if (state.fiftyFifty <= 0 || state.answered) return;
+  state.fiftyFifty--;
+  updatePowerupUI();
+  playSound('click');
+
+  const q = state.questions[state.currentIndex];
+  const wrongIndices = [0,1,2,3].filter(i => i !== q.answer);
+  const toRemove = shuffleArray(wrongIndices).slice(0, 2);
+
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    const idx = parseInt(btn.getAttribute('data-index'));
+    if (toRemove.includes(idx)) {
+      btn.style.opacity = '0.2';
+      btn.style.pointerEvents = 'none';
+    }
+  });
+
+  showAchievement('50:50 Used!');
+}
+
+function useSkip() {
+  if (state.skips <= 0 || state.answered) return;
+  state.skips--;
+  updatePowerupUI();
+  clearInterval(state.timerInterval);
+  playSound('click');
+
+  state.answers.push({
+    question: state.questions[state.currentIndex].q,
+    correct: state.questions[state.currentIndex].options[state.questions[state.currentIndex].answer],
+    selected: 'Skipped',
+    isCorrect: false
+  });
+
+  state.currentIndex++;
+  loadQuestion();
+  showAchievement('Question Skipped!');
+}
+
+function useExtraTime() {
+  if (state.extraTime <= 0 || state.answered) return;
+  state.extraTime--;
+  updatePowerupUI();
+  state.timer += 10;
+  document.getElementById('timerDisplay').textContent = state.timer;
+  playSound('click');
+  showAchievement('+10 Seconds!');
+}
+
+// ===== END GAME =====
+function endGame() {
+  clearInterval(state.timerInterval);
+  const accuracy = Math.round((state.correct / state.questions.length) * 100);
+  const xpEarned = state.score + (state.correct * 5);
+
+  // Update XP
+  state.xp += xpEarned;
+  localStorage.setItem('cbcXP', state.xp);
+
+  // Level up
+  const newLevel = Math.floor(state.xp / 500) + 1;
+  if (newLevel > state.level) {
+    state.level = newLevel;
+    localStorage.setItem('cbcLevel', state.level);
+    showAchievement(`Level Up! Level ${state.level} - ${levelNames[Math.min(state.level-1, levelNames.length-1)]}`);
+  }
+  updateXPBar();
+
+  // Show results
+  const emoji = accuracy >= 90 ? '🏆' : accuracy >= 70 ? '🌟' : accuracy >= 50 ? '👍' : '💪';
+  const title = accuracy >= 90 ? 'Outstanding!' : accuracy >= 70 ? 'Great Job!' : accuracy >= 50 ? 'Good Effort!' : 'Keep Trying!';
+  const subtitle = accuracy >= 90 ? 'You\'re a true champion! 🎉' : accuracy >= 70 ? 'Almost perfect! Keep it up!' : accuracy >= 50 ? 'You\'re getting better!' : 'Practice makes perfect!';
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSubtitle').textContent = subtitle;
+  document.getElementById('finalScore').textContent = state.score;
+  document.getElementById('finalCorrect').textContent = state.correct;
+  document.getElementById('finalWrong').textContent = state.wrong;
+  document.getElementById('finalAccuracy').textContent = accuracy + '%';
+  document.getElementById('finalStreak').textContent = state.bestStreak;
+  document.getElementById('finalXP').textContent = '+' + xpEarned;
+
+  // Stars
+  const starsContainer = document.getElementById('starsContainer');
+  starsContainer.innerHTML = '';
+  const starCount = accuracy >= 90 ? 3 : accuracy >= 70 ? 2 : accuracy >= 50 ? 1 : 0;
+  for (let i = 0; i < 3; i++) {
+    const star = document.createElement('span');
+    star.className = 'star' + (i < starCount ? ' earned' : '');
+    star.textContent = '⭐';
+    star.style.animationDelay = (i * 0.3) + 's';
+    starsContainer.appendChild(star);
+  }
+
+  // Review list
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  state.answers.forEach((a, i) => {
+    const item = document.createElement('div');
+    item.className = 'review-item ' + (a.isCorrect ? 'correct-review' : 'wrong-review');
+    item.innerHTML = `
+      <div class="q">${i+1}. ${a.question}</div>
+      <div class="a">✅ Correct: <span class="correct-ans">${a.correct}</span> | Your answer: <span class="${a.isCorrect ? 'correct-ans' : 'your-ans'}">${a.selected}</span></div>
+    `;
+    reviewList.appendChild(item);
+  });
+
+  showScreen('resultScreen');
+
+  if (accuracy >= 70) {
+    launchConfetti();
+    playSound('complete');
+  } else {
+    playSound('correct');
+  }
+}
+
+// ===== XP BAR =====
+function updateXPBar() {
+  const xpInLevel = state.xp % 500;
+  const pct = (xpInLevel / 500) * 100;
+  document.getElementById('xpBar').style.width = pct + '%';
+  document.getElementById('xpText').textContent = `${xpInLevel} / 500 XP`;
+  const levelName = levelNames[Math.min(state.level - 1, levelNames.length - 1)];
+  document.getElementById('levelBadge').textContent = `⭐ Level ${state.level} - ${levelName}`;
+}
+
+// ===== REVIEW TOGGLE =====
+function toggleReview() {
+  document.getElementById('reviewList').classList.toggle('show');
+  playSound('click');
+}
+
+// ===== NAVIGATION =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  clearInterval(state.timerInterval);
+  showScreen('topicScreen');
+  document.querySelectorAll('.topic-card').forEach(c => {
+    c.style.opacity = '1';
+    c.style.borderColor = '';
+  });
+  document.getElementById('diffSection').style.display = 'none';
+  updateXPBar();
+  playSound('click');
+}
+
+function restartGame() {
+  if (state.topic) {
+    startGame();
+  } else {
+    goHome();
+  }
+}
+
+function confirmQuit() {
+  if (confirm('Are you sure you want to quit? Your progress will be lost.')) {
+    clearInterval(state.timerInterval);
+    goHome();
+  }
+}
+
+// ===== UTILITY =====
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ===== INIT =====
+updateXPBar();
+</script>
+</body>
+</html>
