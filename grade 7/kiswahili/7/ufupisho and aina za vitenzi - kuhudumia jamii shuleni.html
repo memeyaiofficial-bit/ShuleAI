@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CBC Grade 7 | Ufupisho & Vitenzi: Kuhudumia Jamii</title>
+  <style>
+    :root {
+      --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --muted: #64748b;
+      --primary: #4f46e5; --primary-light: #818cf8; --primary-dark: #3730a3;
+      --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+      --shadow: 0 8px 30px rgba(0,0,0,0.12); --radius: 16px;
+      --gradient: linear-gradient(135deg, #4f46e5, #059669, #d97706);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 12px; line-height: 1.5; }
+    
+    .container { max-width: 900px; margin: 0 auto; }
+    .header { background: var(--gradient); color: white; padding: 1.2rem; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; margin-bottom: 1.2rem; position: relative; overflow: hidden; }
+    .header::before { content: ''; position: absolute; top: 0; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 60%); animation: pulse 4s infinite; pointer-events: none; }
+    @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.6 } 50% { transform: scale(1.05); opacity: 0.9 } }
+    .header h1 { font-size: 1.4rem; font-weight: 800; position: relative; }
+    .header p { font-size: 0.85rem; opacity: 0.95; margin-top: 4px; position: relative; }
+    
+    .stats { background: var(--card); padding: 10px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); flex-wrap: wrap; gap: 8px; }
+    .stat { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 3px 8px rgba(79,70,229,0.3); }
+    
+    .progress-wrap { background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), var(--warning), var(--primary)); width: 0%; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); border-radius: 10px; }
+    
+    .card { background: var(--card); border-radius: var(--radius); padding: 1.2rem; box-shadow: var(--shadow); margin-bottom: 16px; animation: slideIn 0.35s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+    
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; margin-bottom: 10px; }
+    .q-text { font-size: 1.05rem; font-weight: 600; margin-bottom: 14px; line-height: 1.5; padding-left: 10px; border-left: 4px solid var(--primary-light); }
+    .passage { background: #f0f9ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; font-size: 0.92rem; border-left: 4px solid var(--primary); line-height: 1.6; color: #1e3a8a; }
+    
+    .options { display: grid; gap: 10px; }
+    .opt { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    .opt:hover { border-color: var(--primary); background: #f8fafc; transform: translateX(4px); }
+    .opt.selected { border-color: var(--primary); background: #eef2ff; }
+    .opt.correct { border-color: var(--success); background: #d1fae5; color: #065f46; }
+    .opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+    .opt:disabled { cursor: default; opacity: 0.8; }
+    
+    .btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 12px; width: 100%; }
+    .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+    .btn-success { background: var(--success); }
+    .btn-warning { background: var(--warning); }
+    
+    .feedback { padding: 12px; border-radius: 10px; margin-top: 12px; font-weight: 600; display: none; }
+    .feedback.show { display: block; animation: slideIn 0.3s; }
+    .feedback.ok { background: #d1fae5; color: #065f46; border-left: 4px solid var(--success); }
+    .feedback.no { background: #fee2e2; color: #991b1b; border-left: 4px solid var(--danger); }
+    
+    .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 16px 0; }
+    .lvl { background: white; border: 2px solid #e2e8f0; border-radius: 16px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.25s; position: relative; }
+    .lvl:hover:not(.locked) { border-color: var(--primary); transform: translateY(-6px); box-shadow: 0 12px 24px rgba(79,70,229,0.2); }
+    .lvl.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.3); }
+    .lvl.locked::after { content: '🔒'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; }
+    .lvl.done { border-color: var(--success); background: #f0fdf4; }
+    .lvl h3 { margin: 6px 0; font-size: 1.1rem; }
+    .lvl p { font-size: 0.75rem; color: var(--muted); }
+    
+    .screen { display: none; animation: slideIn 0.35s; }
+    .screen.active { display: block; }
+    
+    .confetti { position: fixed; width: 10px; height: 10px; background: var(--warning); border-radius: 2px; animation: fall 3s linear forwards; z-index: 9999; pointer-events: none; }
+    @keyframes fall { 0% { transform: translateY(-100px) rotate(0); opacity: 1 } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0 } }
+    
+    .center { text-align: center; padding: 2rem 1rem; }
+    .emoji { font-size: 3.5rem; margin-bottom: 10px; display: block; }
+    .tip { background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 0.85rem; color: var(--muted); margin: 12px 0; border-left: 3px solid var(--primary); }
+    
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.2rem; }
+      .stats { padding: 8px 12px; }
+      .stat { padding: 5px 10px; font-size: 0.8rem; }
+      .q-text { font-size: 0.95rem; }
+      .opt { padding: 10px 12px; font-size: 0.9rem; }
+      .level-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📚 Ufupisho & Vitenzi: Kuhudumia Jamii</h1>
+      <p>Darasa 7 | CBC | Kusoma & Sarufi</p>
+    </div>
+
+    <!-- MENU -->
+    <div class="screen active" id="menu">
+      <div class="card center">
+        <span class="emoji">🇰🇪✍️🌱</span>
+        <h2 style="color: var(--primary); margin-bottom: 8px;">Karibu Mwanafunzi!</h2>
+        <p style="color: var(--muted); margin-bottom: 16px;">Jenga ujuzi wa <strong>Kufupisha maandishi</strong> na <strong>Vitenzi Vishirikishi</strong> katika muktadha wa <strong>Kuhudumia Jamii Shuleni</strong>.</p>
+        <div class="tip">💡 Lengo: Pata <strong>80%</strong> (24/30) kila ngazi ili kufungua inayofuata. Maswali 30 kila ngazi.</div>
+        <button class="btn" id="startBtn">🚀 ANZA KUCHEZA</button>
+      </div>
+    </div>
+
+    <!-- LEVEL SELECT -->
+    <div class="screen" id="levels">
+      <div class="card">
+        <h2 style="text-align:center; color: var(--primary); margin-bottom: 12px;">🗺️ CHAGUA NGAZI</h2>
+        <div class="level-grid" id="lvlGrid"></div>
+        <button class="btn" style="background: #64748b;" id="backHome">🏠 Nyumbani</button>
+      </div>
+    </div>
+
+    <!-- GAME -->
+    <div class="screen" id="game">
+      <div class="stats">
+        <div class="stat">🏆 Alama: <span id="score">0</span>/150</div>
+        <div class="stat">📖 Ngazi: <span id="lvl">1</span></div>
+      </div>
+      <div class="progress-wrap"><div class="progress-fill" id="prog"></div></div>
+      <div style="text-align:right; font-size:0.8rem; font-weight:700; margin-bottom:10px;"><span id="qNum">1</span>/30</div>
+      
+      <div class="card">
+        <span class="badge" id="badge">Ufupisho</span>
+        <div class="passage" id="pass" style="display:none;"></div>
+        <div class="q-text" id="qText"></div>
+        <div class="options" id="opts"></div>
+        <div class="feedback" id="fb"></div>
+        <button class="btn" id="checkBtn" disabled>✅ Wasilisha Jibu</button>
+        <button class="btn btn-success" id="nextBtn" style="display:none;">➡️ Swali Lijalo</button>
+      </div>
+    </div>
+
+    <!-- LEVEL COMPLETE -->
+    <div class="screen" id="complete">
+      <div class="card center">
+        <span class="emoji">🎉🏆</span>
+        <h2 style="color: var(--primary);">Ngazi Imekamilika!</h2>
+        <div id="resTxt" style="font-size:1.2rem; margin:12px 0; font-weight:700;"></div>
+        <div id="unlockMsg" style="font-weight:700; color: var(--success); margin-bottom: 16px;"></div>
+        <button class="btn btn-success" id="nextLvl" style="display:none;">🔜 Ngazi Inayofuata</button>
+        <button class="btn btn-warning" id="retryBtn">🔄 Jaribu Tena</button>
+        <button class="btn" style="background:#334155; margin-top:10px;" id="goLevels">🗺️ Orodha ya Ngazi</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ================= QUESTION BANK (150 QUESTIONS) =================
+const Q = [
+// LEVEL 1: Ufupisho & Vitenzi - MSINGI (30)
+{l:1,t:"ufupisho",p:"Wanafunzi wa darasa la saba wameanzisha programu ya \"Tusafishe Shule\" kila Ijumai asubuhi. Wanakusanya takataka, kupiga maji mimea, na kupaka rangi kuta zilizochakaa. Mwalimu mkuu anasema bidii ya wanafunzi inaboresha mazingira ya kujifunzia na kujenga moyo wa uchungaji.",q:"Mada kuu ya kifungu ni nini?",o:["Bidii ya mwalimu","Programu ya kusafisha shule na faida yake","Ugumu wa kupanda mimea","Michezo ya shuleni"],c:1,e:"Kifungu kinalenga programu ya kusafisha na jinsi inavyoboresha mazingira ya kujifunzia."},
+{l:1,t:"ufupisho",p:"Wanafunzi wa darasa la saba wameanzisha programu ya \"Tusafishe Shule\" kila Ijumai asubuhi. Wanakusanya takataka, kupiga maji mimea, na kupaka rangi kuta zilizochakaa. Mwalimu mkuu anasema bidii ya wanafunzi inaboresha mazingira ya kujifunzia na kujenga moyo wa uchungaji.",q:"Ni matukio gani yanayotajwa katika kifungu?",o:["Kukusanya takataka, kupiga maji, kupaka rangi","Kusoma vitabu, kuandika, kuchora","Kucheza mpira, kukimbia, kuruka","Kupika chakula, kula, kulala"],c:0,e:"Matukio makuu ni yale yanayohusiana na huduma za shule."},
+{l:1,t:"sarufi",q:"Katika sentensi 'Wanakusanya takataka', kitenzi kishirikishi ni?",o:["takataka","wanakusanya","Ijumai","shule"],c:1,e:"Kushirikishi ni kitenzi kinachohitaji kielezi. 'Wanakusanya' kinahitaji 'takataka'."},
+{l:1,t:"sarufi",q:"Tambua kielezi katika sentensi: 'Wanafunzi wanapanda miti shuleni.'",o:["wanapanda","wanafunzi","miti","shuleni"],c:2,e:"Kielezi ni kitu kinachotekelezwa. 'Miti' ni kielezi cha 'wanapanda'."},
+{l:1,t:"ufupisho",p:"Programu ya kusafisha imesaidia kupunguza magonjwa. Wanafunzi wamejifunza kuwa mazingira safi ni muhimu kwa afya na mwenendo bora. Kila mwanafunzi anachangia kwa kuja na mkeka au glovu.",q:"Kwa nini programu hii imezinduliwa?",o:["Kupunguza magonjwa na kuboresha afya","Kufanya shule iwe kubwa zaidi","Kupata zawadi kutoka serikali","Kujifunza kuimba nyimbo"],c:0,e:"Lengo kuu ni kupunguza magonjwa na kuboresha afya kwa mazingira safi."},
+{l:1,t:"sarufi",q:"Ni kitenzi gani kishirikishi?",o:["kulala","kukimbia","kuandika","kuimba"],c:2,e:"'Kuandika' kinahitaji kitu kuandikwa (kielezi). Kama 'kuandika barua'."},
+{l:1,t:"ufupisho",q:"Sifa ya ufupisho mzuri ni nini?",o:["Kuwa mrefu kuliko maandishi asilia","Kujumuisha mawazo yote makuu kwa ufupi","Kuondoa majina yote ya watu","Kutoa maoni binafsi ya mwanafunzi"],c:1,e:"Ufupisho mzuri unashikilia mawazo makuu kwa lugha fupi na wazi."},
+{l:1,t:"sarufi",q:"Katika 'Alisaidia mzee kuvuka njia', kielezi cha kitenzi 'alisaidia' ni?",o:["mzee","kuvuca","njia","alisaidia"],c:0,e:"Kielezi kinachotekeleza kitendo cha kusaidia ni 'mzee'."},
+{l:1,t:"ufupisho",p:"Mwalimu wa sayansi amefundisha jinsi ya kutengeneza mbolea asilia. Wanafunzi wanatumia majani na takataka za chakula kuzalisha mbolea. Mbolea hii inatumia kupanda mboga bustani ya shule na kupunguza gharama.",q:"Matokeo ya matumizi ya mbolea asilia ni yapi?",o:["Kupunguza gharama na kuzalisha mboga","Kuongeza bei ya mboga","Kuharibu mazingira","Kufanya wanafunzi wagule maji"],c:0,e:"Matokeo ni kupunguza gharama na kuzalisha mboga bustani."},
+{l:1,t:"sarufi",q:"Ni sentensi ipi HAIINA kitenzi kishirikishi?",o:["Tunasoma hadithi.","Wanaandika barua.","Anatembea shuleni polepole.","Ninapanda mti."],c:2,e:"'Anatembea' hakina kielezi. Ni kitenzi kisishirikishi."},
+{l:1,t:"ufupisho",p:"Shule ya Greenfield imepata tuzo ya 'Shule Safi ya Mwaka'. Wanafunzi wameandaa mpango wa kutunza usafi kila wiki. Kila darasa lina jukumu maalum.",q:"Kifungu kinashauri nini kwa shule nyingine?",o:["Kuanza mpango wa kutunza usafi","Kufunga shule kila wiki","Kununua bidhaa za nje","Kupiga picha tu"],c:0,e:"Shule inapokea tuzo kwa kuanza mpango wa usafi."},
+{l:1,t:"sarufi",q:"Katika sentensi 'Tunataka kuwasaidia', 'kuwasaidia' ni aina gani ya kitenzi?",o:["Kisishirikishi","Kishirikishi","Kiambishi","Kielezi"],c:1,e:"'Kuwasaidia' kinahitaji kielezi (mtu/kitu). Ni kishirikishi."},
+{l:1,t:"ufupisho",q:"Ni nini hatua ya kwanza katika kutengeneza ufupisho?",o:["Kuandika maoni yako mwenyewe","Kusoma kifungu kwa makini na kuelewa mada","Kuchora picha za watu","Kuhesabu maneno yote"],c:1,e:"Kusoma na kuelewa ndio msingi wa kufupisha vizuri."},
+{l:1,t:"sarufi",q:"'Wanafunzi wanapiga maji mimea.' Kielezi ni?",o:["wanapiga","majimimea","mimea","wanafunzi"],c:2,e:"Mimea ndio inayopigwa maji."},
+{l:1,t:"ufupisho",p:"Kampeni ya 'Usafi Ni Afya' imevutia wazazi wengi. Wanatoa rasilimali na kusaidia watoto wao shuleni. Ushirikiano huu umeongeza nguvu ya programu.",q:"Ushirikiano wa nani umetajwa katika kifungu?",o:["Wazazi na shule","Serikali na polisi","Makampuni na benki","Walimu pekee"],c:0,e:"Kifungu kinaonyesha ushirikiano wa wazazi na shule."},
+{l:1,t:"sarufi",q:"Ni kitenzi gani kisishirikishi?",o:["kula","kununua","kusafiri","kuandika"],c:2,e:"'Kusafiri' hakihitaji kielezi moja kwa moja. Kinaweza kusimama peke yake."},
+{l:1,t:"ufupisho",q:"Ni nini kinapaswa kuondolewa katika ufupisho?",o:["Mawazo makuu","Maelezo ya ziada yasiyo muhimu","Matokeo ya matendo","Jina la shule"],c:1,e:"Ufupisho unafuta maelezo ya ziada ili kubaki na kiini."},
+{l:1,t:"sarufi",q:"Tumia sentensi: 'Alikarisha mgeni.' Kielezi ni?",o:["alikarisha","mgeni","ali","karibu"],c:1,e:"Mgeni ndiye anayekarishwa."},
+{l:1,t:"ufupisho",p:"Wanafunzi wamepanda miti 50 karibu na ukuta. Miti hii itazuia uvujaji wa udongo na kutoa kivuli. Baada ya mwaka mmoja, eneo litaonekana zaidi ya kijani.",q:"Kwa nini miti imepandwa?",o:["Kuzuia uvujaji wa udongo na kutoa kivuli","Kupanda maua pekee","Kufanya shule iwe ndefu","Kupunguza maji"],c:0,e:"Madhumuni ni kulinda udongo na kutoa kivuli."},
+{l:1,t:"sarufi",q:"Ni sentensi ipi ina kielezi sahihi cha kitenzi kishirikishi?",o:["Anatembea.","Anasoma kitabu.","Anafurahi.","Anakimbia polepole."],c:1,e:"'Kitabu' ni kielezi cha 'anasoma'."},
+{l:1,t:"ufupisho",q:"Ufupisho unapaswa kuandikwa kwa lugha gani?",o:["Ngumu na ya kigeni","Rahisi, wazi, na isiyochanganya","Ya mitaani tu","Ya mashairi pekee"],c:1,e:"Lugha inapaswa kuwa wazi na rahisi kueleweka."},
+{l:1,t:"sarufi",q:"'Mwalimu alielekeza wanafunzi.' Kielezi ni?",o:["alielekeza","wanafunzi","mwalimu","shule"],c:1,e:"Wanafunzi ndio walioelekezwa."},
+{l:1,t:"ufupisho",p:"Kila mwaka, shule hufanya hafla ya 'Siku ya Jamii'. Wanafunzi hufanya kazi za kutoa msaada kwa wakongwe na wagonjwa. Hii inajenga huruma na uongozi.",q:"Ni sifa gani zinazojengwa kupitia siku ya jamii?",o:["Huruma na uongozi","Ucheshi na michezo","Kupanda miti tu","Kusoma vitabu"],c:0,e:"Siku hii inalenga kujenga sifa za huruma na uongozi."},
+{l:1,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Tunataka kusoma hadithi.'",o:["tunataka","kusoma","hadithi","tunataka kusoma"],c:1,e:"'Kusoma' ni kishirikishi kinachohitaji 'hadithi'."},
+{l:1,t:"ufupisho",q:"Ni nini tofauti kati ya ufupisho na muhtasari?",o:["Hakuna tofauti","Ufupisho unashikilia maudhui muhimu kwa ufupi","Muhtasari ni mrefu zaidi","Ufupisho hauhitaji maandishi asilia"],c:1,e:"Ufupisho unafupisha maudhui kwa kuzingatia kiini."},
+{l:1,t:"sarufi",q:"Katika 'Alinunua penseli', kitenzi kishirikishi ni?",o:["penseli","alinunua","shule","mwanafunzi"],c:1,e:"'Alinunua' kinahitaji kitu kununuliwa."},
+{l:1,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo. Matokeo yamekuwa ya kufurahisha.",q:"Je, ni matokeo gani?",o:["Matokeo ya kufurahisha","Kupoteza vitabu","Kusoma kwa shida","Kufunga maktaba"],c:0,e:"Matokeo yamekuwa chanya na ya kufurahisha."},
+{l:1,t:"sarufi",q:"Ni kitenzi gani kinachotumika kama kishirikishi katika sentensi?",o:["kufika","kupita","kupanda","kupumzika"],c:2,e:"'Kupanda' kinahitaji kielezi (mti, gari, n.k)."},
+{l:1,t:"ufupisho",q:"Kwa nini ni muhimu kusoma kifungu mara mbili kabla ya kufupisha?",o:["Kupoteza muda","Kuhakikisha uelewa kamili wa mawazo","Kuhesabu herufi","Kuandika kwa kasi"],c:1,e:"Somo la kwanza huleta uelewa, la pili huhakikisha usahihi."},
+{l:1,t:"sarufi",q:"'Wanafunzi wanashika mifuko.' Kielezi ni?",o:["wanashika","mifuko","wanafunzi","shule"],c:1,e:"Mifuko ndio inayoshikwa."},
+
+// LEVEL 2: UFUPISHO WA KINA & VITENZI KATIKA MUKTADHA (30)
+{l:2,t:"ufupisho",p:"Shule ya Mwangaza imefanya mabadiliko makubwa. Wanafunzi wamepanga mazingira ya shule kwa kupanda mimea 200, kusafisha vijiko, na kujenga bustani mbadala. Mwalimu anasema juhudi hizi zinapunguza unyevunyevu na kukuza afya ya akili.",q:"Ni nini mabadiliko makubwa yanayotajwa?",o:["Kupanda mimea, kusafisha vijiko, kujenga bustani","Kunasa wanyama","Kupanda maji tu","Kufanya shule iwe nyekundu"],c:0,e:"Mabadiliko ni pamoja na kupanda, kusafisha, na kujenga bustani."},
+{l:2,t:"sarufi",p:"Wanafunzi wanatumia mbolea asilia kuzalisha mboga. Mwalimu anawafundisha jinsi ya kuchagua mbegu bora. Wanapanda na kuwaandikia watu ujumbe wa mazingira.",q:"Tambua kitenzi kishirikishi katika sentensi ya pili.",o:["anafundisha","mbegu","bora","wanafunzi"],c:0,e:"'Anawafundisha' kinahitaji kielezi (wanafunzi/jinsi)."},
+{l:2,t:"ufupisho",q:"Katika ufupisho, maneno ya kuzidisha kama 'sana', 'mno' yanapaswa?",o:["Kuongezwa","Kuondolewa au kupunguzwa","Kubaki yote","Kuandikwa kwa rangi"],c:1,e:"Yanapunguza uzito wa mawazo. Inafaa kuyaondoa."},
+{l:2,t:"sarufi",q:"Ni sentensi ipi ina muundo sahihi wa kitenzi kishirikishi + kielezi?",o:["Anatembea haraka.","Anasoma kitabu kizuri.","Anafurahi sana.","Anakimbia mbio."],c:1,e:"'Kitabu' ni kielezi sahihi cha 'anasoma'."},
+{l:2,t:"ufupisho",p:"Kampeni ya 'Chunguka Maisha' imevutia shule 5 za jirani. Wameanza kubadilishana rasilimali na mawazo. Wanafunzi wamejifunza kuwa ushirikiano unazaa matunda.",q:"Matokeo ya kampeni ni?",o:["Kuanza kubadilishana rasilimali na mawazo","Kufunga shule","Kupoteza wanafunzi","Kuvunja madarasa"],c:0,e:"Shule nyingine zimejiunga na kubadilishana rasilimali."},
+{l:2,t:"sarufi",q:"'Mwalimu alitoa mwongozo.' Kielezi ni?",o:["alitoa","mwongozo","mwalimu","shule"],c:1,e:"Mwongozo ndio uliotolewa."},
+{l:2,t:"ufupisho",q:"Ufupisho wa kifungu kinachohusu huduma za shule unapaswa zingatia?",o:["Jina la mwalimu pekee","Mawazo kuu kuhusu huduma na matokeo","Rangi ya kuta","Saa za mapumziko"],c:1,e:"Kiini ni huduma na matokeo yake."},
+{l:2,t:"sarufi",q:"Ni kitenzi gani kinachotumika kwa wingi na kielezi?",o:["kulala","kununua","kupumzika","kukaa"],c:1,e:"'Kununua' kinaweza kuchukua wingi wa vielezi (matunda, vitabu, n.k)."},
+{l:2,t:"ufupisho",p:"Wanafunzi wamepanga mpango wa kufundisha watoto wa shule ya msingi. Wanatumia vitabu na michezo ya elimu. Hii inasaidia kuimarisha ufasaha wa kujisomea.",q:"Lengo kuu la mpango ni nini?",o:["Kuongeza ufasaha wa kujisomea","Kupata pesa","Kuvunja vitabu","Kufundisha watu wazima"],c:0,e:"Mpango unalenga kuimarisha ufasaha wa kujisomea."},
+{l:2,t:"sarufi",q:"Katika 'Tunataka kuweka mazingira safi', kielezi cha 'kuweka' ni?",o:["tunataka","mazingira","safi","tunataka kuweka"],c:1,e:"Mazingira ndiyo yanayowekwa."},
+{l:2,t:"ufupisho",q:"Ni hatua gani ya mwisho katika kutengeneza ufupisho?",o:["Kusoma tena na kurekebisha makosa","Kuandika jina la mwalimu","Kuchora picha","Kuhesabu maneno"],c:0,e:"Kusoma tena kunahakikisha usahihi na ufasaha."},
+{l:2,t:"sarufi",q:"Tumia sentensi: 'Wanakaribu mgeni.' Je, 'wanakaribu' ni kitenzi?",o:["Hapana, ni kielezi","Ndiyo, ni kitenzi kishirikishi","Hapana, ni nomino","Ndiyo, ni kiambishi"],c:1,e:"'Wanakaribu' ni kitenzi kinachohitaji kielezi (mgeni)."},
+{l:2,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo. Matokeo yamekuwa ya kufurahisha.",q:"Kwa nini programu imezinduliwa?",o:["Kuongeza ufasaha wa kujisomea","Kupunguza vitabu","Kuvunja maktaba","Kufanya shule iwe kubwa"],c:0,e:"Lengo ni kuimarisha ufasaha wa kujisomea."},
+{l:2,t:"sarufi",q:"Ni kitenzi gani kisishirikishi katika seti hii?",o:["kula","kupanda","kupumzika","kuandika"],c:2,e:"'Kupumzika' hakihitaji kielezi moja kwa moja."},
+{l:2,t:"ufupisho",q:"Ni nini kinachotofautisha ufupisho bora?",o:["Kuwa na maneno 500","Kushikilia kiini kwa lugha fupi","Kujumuisha hadithi nyingi","Kuandika kwa lugha ya kigeni"],c:1,e:"Bora ni kushikilia kiini kwa lugha fupi."},
+{l:2,t:"sarufi",q:"'Alipanda mti kubwa.' Kielezi ni?",o:["alipanda","mti kubwa","mti","alipanda mti"],c:2,e:"Mti ndio uliopandwa."},
+{l:2,t:"ufupisho",p:"Kila mwaka, shule hufanya hafla ya 'Siku ya Jamii'. Wanafunzi hufanya kazi za kutoa msaada kwa wakongwe na wagonjwa. Hii inajenga huruma na uongozi.",q:"Ni matukio gani yanayotajwa?",o:["Kutoa msaada kwa wakongwe na wagonjwa","Kucheza mpira","Kupanda miti","Kusoma vitabu"],c:0,e:"Matukio ni kutoa msaada kwa wakongwe na wagonjwa."},
+{l:2,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Wanafunzi wanajenga makazi.'",o:["makazi","wanajenga","wanafunzi","shule"],c:1,e:"'Wanajenga' kinahitaji kielezi (makazi)."},
+{l:2,t:"ufupisho",q:"Ni nini unachopaswa kufanya ukipata maelezo yanayojirudia?",o:["Kuyaongeza","Kuyaondoa au kuyafupisha","Kuyaandika tena","Kuyapuuza"],c:1,e:"Kurudia hufanya ufupisho uzito. Fupisha."},
+{l:2,t:"sarufi",q:"Katika sentensi 'Tunataka kuwapa msaada', kielezi ni?",o:["tunataka","kuwapa","msaada","tunataka kuwapa"],c:2,e:"Msaada ndio unaopewa."},
+{l:2,t:"ufupisho",p:"Shule ya Mwangaza imefanya mabadiliko makubwa. Wanafunzi wamepanga mazingira ya shule kwa kupanda mimea 200, kusafisha vijiko, na kujenga bustani mbadala.",q:"Je, ni nini matokeo ya mabadiliko hayo?",o:["Mazingira yamepangwa vizuri","Maji yamepungua","Shule imekuwa ndogo","Wanafunzi wamepungua"],c:0,e:"Matokeo ni mazingira yaliyopangwa vizuri."},
+{l:2,t:"sarufi",q:"Ni sentensi ipi HAIINA kielezi?",o:["Anasoma kitabu.","Anatembea shuleni polepole.","Anafurahi.","Anaandika barua."],c:2,e:"'Anafurahi' hakina kielezi. Ni kitenzi kisishirikishi."},
+{l:2,t:"ufupisho",q:"Ni nini lengo la kueleza matokeo katika ufupisho?",o:["Kuongeza urefu","Kuonyesha athari za matendo","Kupoteza wakati","Kuandika kwa kasi"],c:1,e:"Matokeo yanaonyesha umuhimu wa matendo."},
+{l:2,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Mwalimu alielekeza wanafunzi.'",o:["alielekeza","wanafunzi","mwalimu","shule"],c:0,e:"'Alielekeza' ni kitenzi kinachohitaji kielezi."},
+{l:2,t:"ufupisho",p:"Wanafunzi wamepanga mpango wa kufundisha watoto wa shule ya msingi. Wanatumia vitabu na michezo ya elimu. Hii inasaidia kuimarisha ufasaha wa kujisomea.",q:"Ni nini kinachosaidia ufasaha?",o:["Vitabu na michezo ya elimu","Kucheza tu","Kulala","Kusoma kwa kasi"],c:0,e:"Vitabu na michezo ya elimu vinachangia ufasaha."},
+{l:2,t:"sarufi",q:"'Tunataka kuwasaidia watoto.' Kielezi ni?",o:["tunataka","kuwasaidia","watoto","tunataka kuwasaidia"],c:2,e:"Watoto ndio wanaosaidiwa."},
+{l:2,t:"ufupisho",q:"Kwa nini ni muhimu kutumia viunganishi kama 'pia', 'zaidi', 'kwa hiyo' katika ufupisho?",o:["Kufanya maneno yaongezwe","Kuunganisha mawazo kwa mtiririko","Kupunguza uzito","Kuandika kwa kasi"],c:1,e:"Viunganishi huleta mtiririko na uhusiano."},
+{l:2,t:"sarufi",q:"Ni kitenzi gani kinachoweza kuchukua kielezi cha wingi?",o:["kukaa","kupumzika","kununu","kulala"],c:2,e:"'Kununua' kinaweza kuchukua vingi (vitabu, nyama, n.k)."},
+{l:2,t:"ufupisho",p:"Kampeni ya 'Chunguka Maisha' imevutia shule 5 za jirani. Wameanza kubadilishana rasilimali na mawazo. Wanafunzi wamejifunza kuwa ushirikiano unazaa matunda.",q:"Ni nini kinachojifunzwa?",o:["Ushirikiano unazaa matunda","Kufunga shule","Kupoteza rasilimali","Kuvunja vitabu"],c:0,e:"Kifungu kinasema ushirikiano unazaa matunda."},
+{l:2,t:"sarufi",q:"Katika sentensi 'Wanafunzi wanapanda mimea', kielezi ni?",o:["wanapanda","mimea","wanafunzi","shule"],c:1,e:"Mimea ndiyo inayopandwa."},
+
+// LEVEL 3: UCHAMBUZI WA KINA & MAHUSIANO YA VITENZI-KIELEZI (30)
+{l:3,t:"ufupisho",p:"Shule ya Uaminifu imeanzisha klabu ya mazingira. Wanachama hupanda miti, kutenganisha takataka, na kufundisha wanafunzi wengine. Mwalimu anasema klabu hii inakuza uongozi na uwajibikaji. Baada ya miezi sita, shule imepata tuzo ya mazingira bora.",q:"Ni nini mada kuu ya kifungu?",o:["Klabu ya mazingira na matokeo yake","Michezo ya shuleni","Kujenga madarasa mapya","Kupika chakula"],c:0,e:"Klabu ya mazingira na matokeo yake ndio kiini."},
+{l:3,t:"sarufi",p:"Wanafunzi wanatenganisha takataka kwa makini. Wanaandaa mifuko ya plastiki na karatasi. Mwalimu anawasifu kwa bidii yao.",q:"Tambua mahusiano ya kitenzi-kielezi katika 'wanatenganisha takataka'.",o:["Kitenzi: wanatenganisha, Kielezi: takataka","Kitenzi: takataka, Kielezi: wanatenganisha","Kitenzi: makini, Kielezi: mifuko","Hakina mahusiano"],c:0,e:"Kitenzi 'wanatenganisha' kinachukua kielezi 'takataka'."},
+{l:3,t:"ufupisho",q:"Katika ufupisho, ni nini unachofanya ikiwa kifungu kina mifano mingi?",o:["Kuorodhesha yote","Kubaki na mfano mmoja au mbili muhimu","Kuondoa mifano yote","Kuandika mifano yote"],c:1,e:"Ufupisho hubaki na mifano michache muhimu tu."},
+{l:3,t:"sarufi",q:"Ni sentensi ipi ina muundo usio sahihi wa kitenzi kishirikishi?",o:["Anasoma kitabu.","Anatembea mti.","Anaandika barua.","Anapanda mbegu."],c:1,e:"'Anatembea' hakina kielezi moja kwa moja. 'Mti' sio kielezi hapa."},
+{l:3,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo. Matokeo yamekuwa ya kufurahisha. Walimu wamesema wanafunzi wameongeza ufasaha wa kusoma kwa 40%.",q:"Ni nini uthibitisho wa mafanikio katika kifungu?",o:["Kuongeza ufasaha kwa 40%","Kupoteza vitabu","Kufunga maktaba","Kupunguza wanafunzi"],c:0,e:"Kuongeza ufasaha kwa 40% ni uthibitisho wa mafanikio."},
+{l:3,t:"sarufi",q:"'Mwalimu alitoa mwongozo kwa wanafunzi.' Kielezi cha kwanza ni?",o:["alitoa","mwongozo","wanafunzi","mwalimu"],c:1,e:"'Mwongozo' ndio uliotolewa kwanza."},
+{l:3,t:"ufupisho",q:"Ni nini tofauti kati ya kiini na msaada wa maandishi?",o:["Kiini ni muhimu, msaada ni wa ziada","Hakuna tofauti","Kiini ni mrefu, msaada ni mfupi","Msaaada ni muhimu zaidi"],c:0,e:"Kiini hushikwa, msaada hufutwa au hufupishwa."},
+{l:3,t:"sarufi",q:"Tumia sentensi: 'Wanafunzi wanataka kuwasaidia wakongwe.' Je, 'kuwasaidia' ni kitenzi kishirikishi?",o:["Hapana","Ndiyo, kinahitaji kielezi","Ni nomino","Ni kiambishi"],c:1,e:"'Kuwasaidia' kinahitaji kielezi (wakongwe)."},
+{l:3,t:"ufupisho",p:"Kampeni ya 'Chunguka Maisha' imevutia shule 5 za jirani. Wameanza kubadilishana rasilimali na mawazo. Wanafunzi wamejifunza kuwa ushirikiano unazaa matunda. Shule ya msingi imepata vifaa vya kutosha.",q:"Ni nini matokeo ya kubadilishana rasilimali?",o:["Shule ya msingi imepata vifaa","Kufunga shule","Kupoteza mawazo","Kuvunja madarasa"],c:0,e:"Matokeo ni kupata vifaa vya kutosha."},
+{l:3,t:"sarufi",q:"Ni kitenzi gani kinachoweza kubadilika kwa wingi wa kielezi?",o:["kukaa","kupumzika","kupanda","kulala"],c:2,e:"'Kupanda' kinaweza kuchukua wingi (miti, mimea, mbegu, n.k)."},
+{l:3,t:"ufupisho",q:"Ni nini kinachotofautisha ufupisho bora wa kisasa?",o:["Kuwa na maneno 1000","Kutambua mawazo makuu na kuonyesha uhusiano","Kupoteza muda","Kuandika kwa kasi"],c:1,e:"Bora hutambua mawazo na kuonyesha uhusiano."},
+{l:3,t:"sarufi",q:"Katika sentensi 'Tunataka kuweka mazingira safi', kielezi ni?",o:["tunataka","kuweka","mazingira","safi"],c:2,e:"Mazingira ndiyo yanayowekwa."},
+{l:3,t:"ufupisho",p:"Wanafunzi wamepanga mpango wa kufundisha watoto wa shule ya msingi. Wanatumia vitabu na michezo ya elimu. Hii inasaidia kuimarisha ufasaha wa kujisomea. Watoto wameongeza alama za kusoma.",q:"Ni nini uthibitisho wa mafanikio?",o:["Kuongeza alama za kusoma","Kupoteza vitabu","Kufunga shule","Kupunguza wanafunzi"],c:0,e:"Kuongeza alama ni uthibitisho wa mafanikio."},
+{l:3,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Mwalimu alielekeza wanafunzi.'",o:["alielekeza","wanafunzi","mwalimu","shule"],c:0,e:"'Alielekeza' ni kitenzi kinachohitaji kielezi."},
+{l:3,t:"ufupisho",q:"Ni nini unachopaswa kufanya ukipata maneno yanayorudia?",o:["Kuyaongeza","Kuyaondoa au kuyafupisha","Kuyaandika tena","Kuyapuuza"],c:1,e:"Kurudia hufanya ufupisho uzito. Fupisha."},
+{l:3,t:"sarufi",q:"Katika sentensi 'Wanafunzi wanataka kuwasaidia watoto', kielezi ni?",o:["tunataka","kuwasaidia","watoto","tunataka kuwasaidia"],c:2,e:"Watoto ndio wanaosaidiwa."},
+{l:3,t:"ufupisho",p:"Kila mwaka, shule hufanya hafla ya 'Siku ya Jamii'. Wanafunzi hufanya kazi za kutoa msaada kwa wakongwe na wagonjwa. Hii inajenga huruma na uongozi. Shule imepata tuzo ya utendaji bora.",q:"Ni nini kinachojengwa katika siku ya jamii?",o:["Huruma na uongozi","Michezo","Kupanda miti","Kusoma vitabu"],c:0,e:"Siku hii inalenga kujenga huruma na uongozi."},
+{l:3,t:"sarufi",q:"Ni sentensi ipi HAIINA kielezi?",o:["Anasoma kitabu.","Anatembea shuleni polepole.","Anafurahi.","Anaandika barua."],c:2,e:"'Anafurahi' hakina kielezi. Ni kitenzi kisishirikishi."},
+{l:3,t:"ufupisho",q:"Ni nini lengo la kueleza matokeo katika ufupisho?",o:["Kuongeza urefu","Kuonyesha athari za matendo","Kupoteza wakati","Kuandika kwa kasi"],c:1,e:"Matokeo yanaonyesha umuhimu wa matendo."},
+{l:3,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Wanafunzi wanapanda mimea.'",o:["mimea","wanapanda","wanafunzi","shule"],c:1,e:"'Wanapanda' kinahitaji kielezi (mimea)."},
+{l:3,t:"ufupisho",p:"Shule ya Uaminifu imeanzisha klabu ya mazingira. Wanachama hupanda miti, kutenganisha takataka, na kufundisha wanafunzi wengine. Mwalimu anasema klabu hii inakuza uongozi na uwajibikaji.",q:"Ni nini kinachokuza uongozi?",o:["Klabu ya mazingira","Michezo","Kupika","Kulala"],c:0,e:"Klabu ya mazingira ndiyo inayokuza uongozi."},
+{l:3,t:"sarufi",q:"Katika sentensi 'Tunataka kuwapa msaada', kielezi ni?",o:["tunataka","kuwapa","msaada","tunataka kuwapa"],c:2,e:"Msaada ndio unaopewa."},
+{l:3,t:"ufupisho",q:"Kwa nini ni muhimu kutumia viunganishi katika ufupisho?",o:["Kufanya maneno yaongezwe","Kuunganisha mawazo kwa mtiririko","Kupunguza uzito","Kuandika kwa kasi"],c:1,e:"Viunganishi huleta mtiririko na uhusiano."},
+{l:3,t:"sarufi",q:"Ni kitenzi gani kinachoweza kuchukua kielezi cha wingi?",o:["kukaa","kupumzika","kununua","kulala"],c:2,e:"'Kununua' kinaweza kuchukua vingi."},
+{l:3,t:"ufupisho",p:"Wanafunzi wamepanda miti 50 karibu na ukuta. Miti hii itazuia uvujaji wa udongo na kutoa kivuli. Baada ya mwaka mmoja, eneo litaonekana zaidi ya kijani.",q:"Ni nini kinachozuia uvujaji wa udongo?",o:["Miti","Maji","Jua","Upepo"],c:0,e:"Miti ndio inayozuia uvujaji wa udongo."},
+{l:3,t:"sarufi",q:"Tambua mahusiano ya kitenzi-kielezi katika 'Wanakusanya takataka'.",o:["Kitenzi: wanakusanya, Kielezi: takataka","Kitenzi: takataka, Kielezi: wanakusanya","Kitenzi: maji, Kielezi: shule","Hakina mahusiano"],c:0,e:"'Wanakusanya' kinachukua 'takataka' kama kielezi."},
+{l:3,t:"ufupisho",q:"Ni nini unachopaswa kufanya ikiwa kifungu kina maelezo mengi ya ziada?",o:["Kuyaongeza","Kuyaondoa","Kuyaandika tena","Kuyapuuza"],c:1,e:"Ufupisho unafuta maelezo ya ziada."},
+{l:3,t:"sarufi",q:"Ni sentensi ipi ina muundo sahihi?",o:["Anasoma kitabu kizuri.","Anatembea mti.","Anafurahi sana.","Anakimbia mbio."],c:0,e:"'Kitabu kizuri' ni kielezi sahihi."},
+{l:3,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo. Matokeo yamekuwa ya kufurahisha.",q:"Ni nini matokeo ya programu?",o:["Yamekuwa ya kufurahisha","Kupoteza vitabu","Kufunga maktaba","Kupunguza wanafunzi"],c:0,e:"Matokeo yamekuwa ya kufurahisha."},
+{l:3,t:"sarufi",q:"Katika sentensi 'Alinunua penseli', kitenzi kishirikishi ni?",o:["penseli","alinunua","shule","mwanafunzi"],c:1,e:"'Alinunua' kinahitaji kitu kununuliwa."},
+
+// LEVEL 4: UCHAMBUZI WA KINA & VITENZI VISHIRIKISHI KATIKA SENTENSI TATIZI (30)
+{l:4,t:"ufupisho",p:"Shule ya Uaminifu imeanzisha klabu ya mazingira. Wanachama hupanda miti, kutenganisha takataka, na kufundisha wanafunzi wengine. Mwalimu anasema klabu hii inakuza uongozi na uwajibikaji. Baada ya miezi sita, shule imepata tuzo ya mazingira bora. Wanafunzi wamejifunza kuwa mazingira safi ni nguzo ya afya.",q:"Ni nini mada kuu?",o:["Klabu ya mazingira na mafanikio yake","Michezo ya shuleni","Kujenga madarasa","Kupika chakula"],c:0,e:"Kiini ni klabu ya mazingira na mafanikio yake."},
+{l:4,t:"sarufi",p:"Wanafunzi wanatenganisha takataka kwa makini. Wanaandaa mifuko ya plastiki na karatasi. Mwalimu anawasifu kwa bidii yao.",q:"Tambua kitenzi kishirikishi katika sentensi ya kwanza.",o:["wanatenganisha","takataka","makini","wanaandaa"],c:0,e:"'Wanatenganisha' ni kitenzi kinachohitaji kielezi."},
+{l:4,t:"ufupisho",q:"Ni nini unachofanya ikiwa kifungu kina hoja mbili tofauti?",o:["Kuunganisha zote kwa mfupi","Kuondoa moja kabisa","Kuandika kwa urefu","Kupoteza wakati"],c:0,e:"Ufupisho bora huunganisha hoja zote kwa ufupi."},
+{l:4,t:"sarufi",q:"Ni sentensi ipi ina muundo usio sahihi wa kitenzi kishirikishi?",o:["Anasoma kitabu.","Anatembea mti.","Anaandika barua.","Anapanda mbegu."],c:1,e:"'Anatembea' hakina kielezi moja kwa moja."},
+{l:4,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo. Matokeo yamekuwa ya kufurahisha. Walimu wamesema wanafunzi wameongeza ufasaha wa kusoma kwa 40%.",q:"Ni nini uthibitisho wa mafanikio?",o:["Kuongeza ufasaha kwa 40%","Kupoteza vitabu","Kufunga maktaba","Kupunguza wanafunzi"],c:0,e:"Kuongeza ufasaha kwa 40% ni uthibitisho."},
+{l:4,t:"sarufi",q:"'Mwalimu alitoa mwongozo kwa wanafunzi.' Kielezi cha kwanza ni?",o:["alitoa","mwongozo","wanafunzi","mwalimu"],c:1,e:"'Mwongozo' ndio uliotolewa kwanza."},
+{l:4,t:"ufupisho",q:"Ni nini tofauti kati ya kiini na msaada?",o:["Kiini ni muhimu, msaada ni wa ziada","Hakuna tofauti","Kiini ni mrefu, msaada ni mfupi","Msaaada ni muhimu zaidi"],c:0,e:"Kiini hushikwa, msaada hufutwa."},
+{l:4,t:"sarufi",q:"Tumia sentensi: 'Wanafunzi wanataka kuwasaidia wakongwe.' Je, 'kuwasaidia' ni kitenzi kishirikishi?",o:["Hapana","Ndiyo, kinahitaji kielezi","Ni nomino","Ni kiambishi"],c:1,e:"'Kuwasaidia' kinahitaji kielezi (wakongwe)."},
+{l:4,t:"ufupisho",p:"Kampeni ya 'Chunguka Maisha' imevutia shule 5 za jirani. Wameanza kubadilishana rasilimali na mawazo. Wanafunzi wamejifunza kuwa ushirikiano unazaa matunda.",q:"Ni nini kinachojifunzwa?",o:["Ushirikiano unazaa matunda","Kufunga shule","Kupoteza rasilimali","Kuvunja vitabu"],c:0,e:"Ushirikiano unazaa matunda."},
+{l:4,t:"sarufi",q:"Ni kitenzi gani kinachoweza kubadilika kwa wingi wa kielezi?",o:["kukaa","kupumzika","kupanda","kulala"],c:2,e:"'Kupanda' kinaweza kuchukua wingi."},
+{l:4,t:"ufupisho",q:"Ni nini kinachotofautisha ufupisho bora?",o:["Kuwa na maneno 1000","Kutambua mawazo makuu na kuonyesha uhusiano","Kupoteza muda","Kuandika kwa kasi"],c:1,e:"Bora hutambua mawazo na kuonyesha uhusiano."},
+{l:4,t:"sarufi",q:"Katika sentensi 'Tunataka kuweka mazingira safi', kielezi ni?",o:["tunataka","kuweka","mazingira","safi"],c:2,e:"Mazingira ndiyo yanayowekwa."},
+{l:4,t:"ufupisho",p:"Wanafunzi wamepanga mpango wa kufundisha watoto wa shule ya msingi. Wanatumia vitabu na michezo ya elimu. Hii inasaidia kuimarisha ufasaha wa kujisomea.",q:"Ni nini kinachosaidia ufasaha?",o:["Vitabu na michezo ya elimu","Kucheza tu","Kulala","Kusoma kwa kasi"],c:0,e:"Vitabu na michezo ya elimu vinachangia."},
+{l:4,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Mwalimu alielekeza wanafunzi.'",o:["alielekeza","wanafunzi","mwalimu","shule"],c:0,e:"'Alielekeza' ni kitenzi kinachohitaji kielezi."},
+{l:4,t:"ufupisho",q:"Ni nini unachopaswa kufanya ukipata maneno yanayorudia?",o:["Kuyaongeza","Kuyaondoa au kuyafupisha","Kuyaandika tena","Kuyapuuza"],c:1,e:"Kurudia hufanya ufupisho uzito."},
+{l:4,t:"sarufi",q:"Katika sentensi 'Wanafunzi wanataka kuwasaidia watoto', kielezi ni?",o:["tunataka","kuwasaidia","watoto","tunataka kuwasaidia"],c:2,e:"Watoto ndio wanaosaidiwa."},
+{l:4,t:"ufupisho",p:"Kila mwaka, shule hufanya hafla ya 'Siku ya Jamii'. Wanafunzi hufanya kazi za kutoa msaada kwa wakongwe na wagonjwa. Hii inajenga huruma na uongozi.",q:"Ni nini kinachojengwa?",o:["Huruma na uongozi","Michezo","Kupanda miti","Kusoma vitabu"],c:0,e:"Huruma na uongozi ndio zinazojengwa."},
+{l:4,t:"sarufi",q:"Ni sentensi ipi HAIINA kielezi?",o:["Anasoma kitabu.","Anatembea shuleni polepole.","Anafurahi.","Anaandika barua."],c:2,e:"'Anafurahi' hakina kielezi."},
+{l:4,t:"ufupisho",q:"Ni nini lengo la kueleza matokeo?",o:["Kuongeza urefu","Kuonyesha athari za matendo","Kupoteza wakati","Kuandika kwa kasi"],c:1,e:"Matokeo yanaonyesha umuhimu."},
+{l:4,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Wanafunzi wanapanda mimea.'",o:["mimea","wanapanda","wanafunzi","shule"],c:1,e:"'Wanapanda' kinahitaji kielezi."},
+{l:4,t:"ufupisho",p:"Shule ya Uaminifu imeanzisha klabu ya mazingira. Wanachama hupanda miti, kutenganisha takataka, na kufundisha wanafunzi wengine. Mwalimu anasema klabu hii inakuza uongozi na uwajibikaji.",q:"Ni nini kinachokuza uongozi?",o:["Klabu ya mazingira","Michezo","Kupika","Kulala"],c:0,e:"Klabu ya mazingira ndiyo inayokuza."},
+{l:4,t:"sarufi",q:"Katika sentensi 'Tunataka kuwapa msaada', kielezi ni?",o:["tunataka","kuwapa","msaada","tunataka kuwapa"],c:2,e:"Msaada ndio unaopewa."},
+{l:4,t:"ufupisho",q:"Kwa nini ni muhimu kutumia viunganishi?",o:["Kufanya maneno yaongezwe","Kuunganisha mawazo kwa mtiririko","Kupunguza uzito","Kuandika kwa kasi"],c:1,e:"Viunganishi huleta mtiririko."},
+{l:4,t:"sarufi",q:"Ni kitenzi gani kinachoweza kuchukua kielezi cha wingi?",o:["kukaa","kupumzika","kununua","kulala"],c:2,e:"'Kununua' kinaweza kuchukua vingi."},
+{l:4,t:"ufupisho",p:"Wanafunzi wamepanda miti 50 karibu na ukuta. Miti hii itazuia uvujaji wa udongo na kutoa kivuli. Baada ya mwaka mmoja, eneo litaonekana zaidi ya kijani.",q:"Ni nini kinachozuia uvujaji?",o:["Miti","Maji","Jua","Upepo"],c:0,e:"Miti ndio inayozuia."},
+{l:4,t:"sarufi",q:"Tambua mahusiano ya kitenzi-kielezi katika 'Wanakusanya takataka'.",o:["Kitenzi: wanakusanya, Kielezi: takataka","Kitenzi: takataka, Kielezi: wanakusanya","Kitenzi: maji, Kielezi: shule","Hakina mahusiano"],c:0,e:"'Wanakusanya' kinachukua 'takataka'."},
+{l:4,t:"ufupisho",q:"Ni nini unachopaswa kufanya ikiwa kifungu kina maelezo mengi ya ziada?",o:["Kuyaongeza","Kuyaondoa","Kuyaandika tena","Kuyapuuza"],c:1,e:"Ufupisho unafuta maelezo ya ziada."},
+{l:4,t:"sarufi",q:"Ni sentensi ipi ina muundo sahihi?",o:["Anasoma kitabu kizuri.","Anatembea mti.","Anafurahi sana.","Anakimbia mbio."],c:0,e:"'Kitabu kizuri' ni kielezi sahihi."},
+{l:4,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo. Matokeo yamekuwa ya kufurahisha.",q:"Ni nini matokeo?",o:["Yamekuwa ya kufurahisha","Kupoteza vitabu","Kufunga maktaba","Kupunguza wanafunzi"],c:0,e:"Matokeo yamekuwa ya kufurahisha."},
+{l:4,t:"sarufi",q:"Katika sentensi 'Alinunua penseli', kitenzi kishirikishi ni?",o:["penseli","alinunua","shule","mwanafunzi"],c:1,e:"'Alinunua' kinahitaji kitu."},
+
+// LEVEL 5: MAJIBU TATIZI & UCHAMBUZI WA KINA (30)
+{l:5,t:"ufupisho",p:"Shule ya Uaminifu imeanzisha klabu ya mazingira. Wanachama hupanda miti, kutenganisha takataka, na kufundisha wanafunzi wengine. Mwalimu anasema klabu hii inakuza uongozi na uwajibikaji. Baada ya miezi sita, shule imepata tuzo ya mazingira bora. Wanafunzi wamejifunza kuwa mazingira safi ni nguzo ya afya.",q:"Ni nini mada kuu?",o:["Klabu ya mazingira na mafanikio","Michezo","Kujenga madarasa","Kupika"],c:0,e:"Kiini ni klabu na mafanikio."},
+{l:5,t:"sarufi",p:"Wanafunzi wanatenganisha takataka kwa makini. Wanaandaa mifuko ya plastiki na karatasi. Mwalimu anawasifu kwa bidii yao.",q:"Tambua kitenzi kishirikishi katika sentensi ya kwanza.",o:["wanatenganisha","takataka","makini","wanaandaa"],c:0,e:"'Wanatenganisha' ni kitenzi."},
+{l:5,t:"ufupisho",q:"Ni nini unachofanya ikiwa kifungu kina hoja mbili tofauti?",o:["Kuunganisha zote kwa mfupi","Kuondoa moja","Kuandika kwa urefu","Kupoteza wakati"],c:0,e:"Ufupisho bora huunganisha hoja zote."},
+{l:5,t:"sarufi",q:"Ni sentensi ipi ina muundo usio sahihi?",o:["Anasoma kitabu.","Anatembea mti.","Anaandika barua.","Anapanda mbegu."],c:1,e:"'Anatembea' hakina kielezi."},
+{l:5,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo. Matokeo yamekuwa ya kufurahisha.",q:"Ni nini uthibitisho wa mafanikio?",o:["Matokeo ya kufurahisha","Kupoteza vitabu","Kufunga maktaba","Kupunguza wanafunzi"],c:0,e:"Matokeo ni uthibitisho."},
+{l:5,t:"sarufi",q:"'Mwalimu alitoa mwongozo kwa wanafunzi.' Kielezi cha kwanza ni?",o:["alitoa","mwongozo","wanafunzi","mwalimu"],c:1,e:"'Mwongozo' ndio uliotolewa."},
+{l:5,t:"ufupisho",q:"Ni nini tofauti kati ya kiini na msaada?",o:["Kiini ni muhimu, msaada ni wa ziada","Hakuna tofauti","Kiini ni mrefu, msaada ni mfupi","Msaaada ni muhimu zaidi"],c:0,e:"Kiini hushikwa, msaada hufutwa."},
+{l:5,t:"sarufi",q:"Tumia sentensi: 'Wanafunzi wanataka kuwasaidia wakongwe.' Je, 'kuwasaidia' ni kitenzi kishirikishi?",o:["Hapana","Ndiyo","Ni nomino","Ni kiambishi"],c:1,e:"'Kuwasaidia' kinahitaji kielezi."},
+{l:5,t:"ufupisho",p:"Kampeni ya 'Chunguka Maisha' imevutia shule 5 za jirani. Wameanza kubadilishana rasilimali na mawazo. Wanafunzi wamejifunza kuwa ushirikiano unazaa matunda.",q:"Ni nini kinachojifunzwa?",o:["Ushirikiano unazaa matunda","Kufunga shule","Kupoteza rasilimali","Kuvunja vitabu"],c:0,e:"Ushirikiano unazaa matunda."},
+{l:5,t:"sarufi",q:"Ni kitenzi gani kinachoweza kubadilika kwa wingi wa kielezi?",o:["kukaa","kupumzika","kupanda","kulala"],c:2,e:"'Kupanda' kinaweza kuchukua wingi."},
+{l:5,t:"ufupisho",q:"Ni nini kinachotofautisha ufupisho bora?",o:["Kuwa na maneno 1000","Kutambua mawazo makuu","Kupoteza muda","Kuandika kwa kasi"],c:1,e:"Bora hutambua mawazo."},
+{l:5,t:"sarufi",q:"Katika sentensi 'Tunataka kuweka mazingira safi', kielezi ni?",o:["tunataka","kuweka","mazingira","safi"],c:2,e:"Mazingira ndiyo yanayowekwa."},
+{l:5,t:"ufupisho",p:"Wanafunzi wamepanga mpango wa kufundisha watoto wa shule ya msingi. Wanatumia vitabu na michezo ya elimu. Hii inasaidia kuimarisha ufasaha wa kujisomea.",q:"Ni nini kinachosaidia ufasaha?",o:["Vitabu na michezo","Kucheza","Kulala","Kusoma kwa kasi"],c:0,e:"Vitabu na michezo vinachangia."},
+{l:5,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Mwalimu alielekeza wanafunzi.'",o:["alielekeza","wanafunzi","mwalimu","shule"],c:0,e:"'Alielekeza' ni kitenzi."},
+{l:5,t:"ufupisho",q:"Ni nini unachopaswa kufanya ukipata maneno yanayorudia?",o:["Kuyaongeza","Kuyaondoa","Kuyaandika tena","Kuyapuuza"],c:1,e:"Kurudia hufanya ufupisho uzito."},
+{l:5,t:"sarufi",q:"Katika sentensi 'Wanafunzi wanataka kuwasaidia watoto', kielezi ni?",o:["tunataka","kuwasaidia","watoto","tunataka kuwasaidia"],c:2,e:"Watoto ndio wanaosaidiwa."},
+{l:5,t:"ufupisho",p:"Kila mwaka, shule hufanya hafla ya 'Siku ya Jamii'. Wanafunzi hufanya kazi za kutoa msaada kwa wakongwe na wagonjwa. Hii inajenga huruma na uongozi.",q:"Ni nini kinachojengwa?",o:["Huruma na uongozi","Michezo","Kupanda miti","Kusoma vitabu"],c:0,e:"Huruma na uongozi ndio zinazojengwa."},
+{l:5,t:"sarufi",q:"Ni sentensi ipi HAIINA kielezi?",o:["Anasoma kitabu.","Anatembea shuleni polepole.","Anafurahi.","Anaandika barua."],c:2,e:"'Anafurahi' hakina kielezi."},
+{l:5,t:"ufupisho",q:"Ni nini lengo la kueleza matokeo?",o:["Kuongeza urefu","Kuonyesha athari","Kupoteza wakati","Kuandika kwa kasi"],c:1,e:"Matokeo yanaonyesha umuhimu."},
+{l:5,t:"sarufi",q:"Tambua kitenzi kishirikishi katika: 'Wanafunzi wanapanda mimea.'",o:["mimea","wanapanda","wanafunzi","shule"],c:1,e:"'Wanapanda' kinahitaji kielezi."},
+{l:5,t:"ufupisho",p:"Shule ya Uaminifu imeanzisha klabu ya mazingira. Wanachama hupanda miti, kutenganisha takataka, na kufundisha wanafunzi wengine.",q:"Ni nini kinachokuza uongozi?",o:["Klabu ya mazingira","Michezo","Kupika","Kulala"],c:0,e:"Klabu ya mazingira ndiyo inayokuza."},
+{l:5,t:"sarufi",q:"Katika sentensi 'Tunataka kuwapa msaada', kielezi ni?",o:["tunataka","kuwapa","msaada","tunataka kuwapa"],c:2,e:"Msaada ndio unaopewa."},
+{l:5,t:"ufupisho",q:"Kwa nini ni muhimu kutumia viunganishi?",o:["Kufanya maneno yaongezwe","Kuunganisha mawazo","Kupunguza uzito","Kuandika kwa kasi"],c:1,e:"Viunganishi huleta mtiririko."},
+{l:5,t:"sarufi",q:"Ni kitenzi gani kinachoweza kuchukua kielezi cha wingi?",o:["kukaa","kupumzika","kununua","kulala"],c:2,e:"'Kununua' kinaweza kuchukua vingi."},
+{l:5,t:"ufupisho",p:"Wanafunzi wamepanda miti 50 karibu na ukuta. Miti hii itazuia uvujaji wa udongo na kutoa kivuli.",q:"Ni nini kinachozuia uvujaji?",o:["Miti","Maji","Jua","Upepo"],c:0,e:"Miti ndio inayozuia."},
+{l:5,t:"sarufi",q:"Tambua mahusiano ya kitenzi-kielezi katika 'Wanakusanya takataka'.",o:["Kitenzi: wanakusanya, Kielezi: takataka","Kitenzi: takataka, Kielezi: wanakusanya","Kitenzi: maji, Kielezi: shule","Hakina mahusiano"],c:0,e:"'Wanakusanya' kinachukua 'takataka'."},
+{l:5,t:"ufupisho",q:"Ni nini unachopaswa kufanya ikiwa kifungu kina maelezo mengi ya ziada?",o:["Kuyaongeza","Kuyaondoa","Kuyaandika tena","Kuyapuuza"],c:1,e:"Ufupisho unafuta maelezo ya ziada."},
+{l:5,t:"sarufi",q:"Ni sentensi ipi ina muundo sahihi?",o:["Anasoma kitabu kizuri.","Anatembea mti.","Anafurahi sana.","Anakimbia mbio."],c:0,e:"'Kitabu kizuri' ni kielezi sahihi."},
+{l:5,t:"ufupisho",p:"Programu ya 'Soma na Chunguka' imeanzishwa. Wanafunzi husoma vitabu 2 kwa wiki na kujadili mawazo.",q:"Ni nini matokeo?",o:["Yamekuwa ya kufurahisha","Kupoteza vitabu","Kufunga maktaba","Kupunguza wanafunzi"],c:0,e:"Matokeo yamekuwa ya kufurahisha."},
+{l:5,t:"sarufi",q:"Katika sentensi 'Alinunua penseli', kitenzi kishirikishi ni?",o:["penseli","alinunua","shule","mwanafunzi"],c:1,e:"'Alinunua' kinahitaji kitu."},
+{l:5,t:"mchanganyiko",q:"Ni nini umuhimu wa kufupisha maandishi ya huduma za jamii?",o:["Kuwezesha usomaji haraka na kuelewa mawazo makuu","Kupoteza muda","Kuandika kwa kasi","Kupunguza uzito"],c:0,e:"Ufupisho huleta uelewa haraka na kiini wazi."}
+];
+
+// ================= GAME ENGINE =================
+let currentLevel = 1;
+let currentScore = 0;
+let questionIndex = 0;
+let selectedOption = null;
+let answered = false;
+let unlockedLevels = [1];
+let levelStatus = [0,0,0,0,0]; // 0: locked, 1: open, 2: completed
+
+const getLevelQuestions = (lvl) => Q.filter(q => q.l === lvl);
+const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updateUI() {
+  document.getElementById('score').textContent = currentScore;
+  document.getElementById('lvl').textContent = currentLevel;
+  document.getElementById('qNum').textContent = questionIndex + 1;
+  document.getElementById('prog').style.width = `${((questionIndex) / 30) * 100}%`;
+}
+
+function loadQuestion() {
+  const q = Q.find((item, i) => item.l === currentLevel && i >= 0 && i < 30) || getLevelQuestions(currentLevel)[questionIndex];
+  if(!q) return;
+  
+  document.getElementById('badge').textContent = q.t === 'ufupisho' ? '📝 Ufupisho' : '🔤 Sarufi';
+  const passEl = document.getElementById('pass');
+  if(q.p) {
+    passEl.style.display = 'block';
+    passEl.textContent = q.p;
+  } else {
+    passEl.style.display = 'none';
+  }
+  
+  document.getElementById('qText').textContent = q.q;
+  const optsContainer = document.getElementById('opts');
+  optsContainer.innerHTML = '';
+  
+  const shuffledOpts = shuffle([...q.o.map((text, idx) => ({ text, idx: idx }))]);
+  
+  shuffledOpts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span style="background:#e2e8f0; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">${String.fromCharCode(65 + opt.idx)}</span> ${opt.text}`;
+    btn.onclick = () => {
+      if(answered) return;
+      document.querySelectorAll('.opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOption = opt.idx;
+      document.getElementById('checkBtn').disabled = false;
+    };
+    optsContainer.appendChild(btn);
+  });
+  
+  document.getElementById('checkBtn').style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('fb').className = 'feedback';
+  answered = false;
+  selectedOption = null;
+  updateUI();
+}
+
+document.getElementById('checkBtn').onclick = () => {
+  if(selectedOption === null || answered) return;
+  answered = true;
+  
+  const q = getLevelQuestions(currentLevel)[questionIndex];
+  const isCorrect = selectedOption === q.c;
+  const opts = document.querySelectorAll('.opt');
+  
+  opts.forEach((btn, i) => {
+    const originalIdx = Array.from(opts).findIndex(b => b.querySelector('span')?.textContent === btn.querySelector('span')?.textContent);
+    btn.disabled = true;
+    // Reconstruct index mapping safely
+    if(btn.classList.contains('selected')) {
+      if(isCorrect) btn.classList.add('correct');
+      else btn.classList.add('wrong');
+    }
+  });
+  
+  // Highlight correct
+  opts[q.c].classList.add('correct');
+  
+  const fb = document.getElementById('fb');
+  if(isCorrect) {
+    currentScore += 5;
+    fb.innerHTML = `✅ SAHIHI! <br><small>${q.e}</small>`;
+    fb.className = 'feedback ok show';
+  } else {
+    fb.innerHTML = `❌ SI SAHIHI. Jibu: ${q.o[q.c]} <br><small>${q.e}</small>`;
+    fb.className = 'feedback no show';
+  }
+  
+  document.getElementById('score').textContent = currentScore;
+  document.getElementById('checkBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'block';
+  
+  if(currentScore % 25 === 0 && currentScore > 0) spawnConfetti();
+};
+
+document.getElementById('nextBtn').onclick = () => {
+  questionIndex++;
+  if(questionIndex >= 30) {
+    finishLevel();
+  } else {
+    loadQuestion();
+  }
+};
+
+function finishLevel() {
+  const passed = currentScore >= 24 * 5; // 80% of 150
+  const resTxt = document.getElementById('resTxt');
+  const unlockMsg = document.getElementById('unlockMsg');
+  const nextLvlBtn = document.getElementById('nextLvl');
+  
+  resTxt.innerHTML = `Alama: ${currentScore}/150<br><small>Maswali Sahihi: ${currentScore/5}/30</small>`;
+  
+  if(passed) {
+    if(currentLevel < 5 && !unlockedLevels.includes(currentLevel + 1)) {
+      unlockedLevels.push(currentLevel + 1);
+    }
+    levelStatus[currentLevel - 1] = 2;
+    unlockMsg.textContent = '🎉 Hongera! Umefaulu. Ngazi inayofuata imefunguliwa!';
+    nextLvlBtn.style.display = 'block';
+    spawnConfetti();
+  } else {
+    unlockMsg.textContent = '😔 Haukupata 80%. Jaribu tena ili kuendelea.';
+    nextLvlBtn.style.display = 'none';
+  }
+  
+  showScreen('complete');
+  renderLevels();
+}
+
+function renderLevels() {
+  const grid = document.getElementById('lvlGrid');
+  grid.innerHTML = '';
+  const names = ['Msingi', 'Ufupisho wa Kina', 'Uchambuzi wa Vitenzi', 'Sentensi Tatizi', 'Mchanganyiko'];
+  
+  for(let i=1; i<=5; i++) {
+    const div = document.createElement('div');
+    div.className = `lvl ${!unlockedLevels.includes(i) ? 'locked' : ''} ${levelStatus[i-1]===2 ? 'done' : ''}`;
+    div.innerHTML = `<h3>Ngazi ${i}</h3><p>${names[i-1]}</p>${levelStatus[i-1]===2 ? '<p style="color:var(--success)">✓ Imekamilika</p>' : ''}`;
+    if(unlockedLevels.includes(i)) {
+      div.onclick = () => { currentLevel = i; currentScore = 0; questionIndex = 0; updateUI(); loadQuestion(); showScreen('game'); };
+    }
+    grid.appendChild(div);
+  }
+}
+
+function spawnConfetti() {
+  for(let i=0; i<30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = `${Math.random() * 100}%`;
+    c.style.backgroundColor = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6'][Math.floor(Math.random()*5)];
+    c.style.animationDuration = `${2 + Math.random()*2}s`;
+    c.style.width = `${8 + Math.random()*6}px`;
+    c.style.height = c.style.width;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+
+// Event Listeners
+document.getElementById('startBtn').onclick = () => { showScreen('levels'); renderLevels(); };
+document.getElementById('backHome').onclick = () => showScreen('menu');
+document.getElementById('retryBtn').onclick = () => { currentScore = 0; questionIndex = 0; updateUI(); loadQuestion(); showScreen('game'); };
+document.getElementById('goLevels').onclick = () => showScreen('levels');
+document.getElementById('nextLvl').onclick = () => {
+  if(currentLevel < 5) {
+    currentLevel++;
+    currentScore = 0;
+    questionIndex = 0;
+    updateUI();
+    loadQuestion();
+    showScreen('game');
+  } else {
+    showScreen('menu');
+  }
+};
+
+// Init
+updateUI();
+</script>
+</body>
+</html>

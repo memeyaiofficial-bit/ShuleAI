@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1b4332">
+  <title>Safari ya Uhuru: Nomino za Wanyama</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a; --bg-card: #1e293b; --text: #f8fafc;
+      --primary: #2a9d8f; --success: #4ade80; --danger: #f87171;
+      --accent: #f59e0b; --warning: #fbbf24; --gray: #64748b;
+      --radius: 16px; --shadow: 0 10px 30px rgba(0,0,0,0.4);
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font); background: linear-gradient(135deg, #0f172a, #111827);
+      color: var(--text); min-height: 100dvh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 16px; overflow-x: hidden;
+    }
+    .container {
+      width: 100%; max-width: 700px; background: var(--bg-card);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: clamp(16px, 5vw, 28px); position: relative; overflow: hidden;
+      border: 1px solid #334155;
+    }
+    .screen { display: none; animation: fadeIn 0.3s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    .stat {
+      background: #334155; padding: 10px; border-radius: 12px; text-align: center;
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
+    }
+    .stat span { display: block; font-size: 1.25rem; margin-top: 4px; color: var(--primary); }
+    
+    .progress-wrap { height: 8px; background: #334155; border-radius: 4px; margin: 12px 0; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); width: 0%; transition: width 0.4s ease; border-radius: 4px; }
+    
+    .timer-wrap { height: 6px; background: #334155; border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+    .timer-fill { height: 100%; background: var(--danger); width: 100%; transition: width 0.1s linear; border-radius: 3px; }
+    
+    .level-badge {
+      display: inline-block; background: var(--primary); color: white; padding: 6px 14px;
+      border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(42,157,143,0.4);
+    }
+    .streak-badge {
+      position: absolute; top: 16px; right: 16px; background: var(--warning);
+      color: #451a03; padding: 4px 10px; border-radius: 20px; font-weight: bold;
+      font-size: 0.75rem; opacity: 0; transform: scale(0.8); transition: all 0.3s;
+    }
+    .streak-badge.show { opacity: 1; transform: scale(1); }
+
+    .question-box {
+      background: #0f172a; padding: 20px; border-radius: 12px; margin-bottom: 20px;
+      font-size: clamp(1rem, 2.5vw, 1.25rem); line-height: 1.6; min-height: 80px;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      border-left: 5px solid var(--accent); position: relative;
+    }
+    .q-number { position: absolute; top: 8px; left: 10px; font-size: 0.7rem; color: var(--gray); }
+
+    .input-area { display: flex; gap: 10px; margin-bottom: 16px; }
+    .answer-input {
+      flex: 1; background: #0f172a; border: 2px solid #475569; color: white;
+      padding: 14px 16px; border-radius: 12px; font-size: 16px; /* Prevents iOS zoom */
+      font-family: var(--font); outline: none; transition: border-color 0.2s;
+    }
+    .answer-input:focus { border-color: var(--primary); }
+    .answer-input::placeholder { color: #64748b; }
+    .check-btn {
+      background: var(--primary); color: white; border: none; padding: 14px 20px;
+      border-radius: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s;
+      font-size: 1rem; white-space: nowrap;
+    }
+    .check-btn:active { transform: scale(0.98); }
+    .check-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .ctrl-btn {
+      padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.2s; flex: 1; max-width: 160px;
+    }
+    .hint-btn { background: #334155; color: #e2e8f0; }
+    .next-btn { background: var(--success); color: #064e3b; display: none; }
+    .skip-btn { background: var(--danger); color: white; }
+
+    .feedback {
+      margin-top: 16px; padding: 14px; border-radius: 10px; text-align: center;
+      font-weight: 600; min-height: 48px; display: none;
+    }
+    .feedback.correct { background: rgba(74,222,128,0.15); color: var(--success); border: 1px solid var(--success); }
+    .feedback.wrong { background: rgba(248,113,113,0.15); color: var(--danger); border: 1px solid var(--danger); }
+
+    .btn-large {
+      width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 1.1rem;
+      font-weight: bold; cursor: pointer; margin-top: 20px; transition: all 0.2s;
+    }
+    .btn-start { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; }
+    .btn-restart { background: var(--gray); color: white; }
+
+    .center-text { text-align: center; margin: 10px 0; }
+    .emoji-big { font-size: 3rem; margin: 10px 0; display: block; }
+    h1, h2 { margin-bottom: 8px; text-align: center; }
+    p { color: #94a3b8; line-height: 1.5; text-align: center; margin-bottom: 12px; }
+
+    @media (max-width: 480px) {
+      header { grid-template-columns: repeat(2, 1fr); }
+      .stat { padding: 8px; font-size: 0.75rem; }
+      .stat span { font-size: 1rem; }
+      .input-area { flex-direction: column; }
+      .check-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen" class="screen active">
+      <span class="emoji-big">🦁🌍🕊️</span>
+      <h1>Safari ya Uhuru</h1>
+      <p class="center-text">Andika majibu sahihi ili kuwaokoa wanyama na kuwapatia uhuru!</p>
+      <p class="center-text" style="font-size:0.85rem;">Ngazi 5 • Maswali 150 • Andika Jibu • Sarufi ya CBC</p>
+      <button class="btn-large btn-start" onclick="game.start()">ANZA SAFARI 🚀</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+      <div class="streak-badge" id="streak-badge">🔥 0</div>
+      <header>
+        <div class="stat">Ngazi <span id="level-display">1</span></div>
+        <div class="stat">Alama <span id="score-display">0</span></div>
+        <div class="stat">Moyo <span id="lives-display">❤️❤️❤️</span></div>
+        <div class="stat">Muda <span id="timer-display">25s</span></div>
+      </header>
+      <div class="level-badge" id="level-name">🦒 Mbuga ya Savanna</div>
+      <div class="timer-wrap"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="progress-wrap"><div class="progress-fill" id="progress-fill"></div></div>
+      
+      <div class="question-box">
+        <span class="q-number" id="q-num">Swali 1/30</span>
+        <span id="question-text">Subiri...</span>
+      </div>
+
+      <div class="input-area">
+        <input type="text" id="answer-input" class="answer-input" placeholder="Andika jibu hapa..." autocomplete="off" autocapitalize="off">
+        <button class="check-btn" id="check-btn" onclick="game.checkAnswer()">Thibitisha ✅</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="ctrl-btn hint-btn" id="hint-btn" onclick="game.useHint()">💡 Kidokezo (3)</button>
+        <button class="ctrl-btn next-btn" id="next-btn" onclick="game.nextQuestion()">Inayofuata ➡️</button>
+        <button class="ctrl-btn skip-btn" id="skip-btn" onclick="game.skipQuestion()">Ruka ⏭️</button>
+      </div>
+    </div>
+
+    <div id="level-screen" class="screen">
+      <span class="emoji-big" id="level-emoji">🎉</span>
+      <h2 id="level-title">Hongera!</h2>
+      <p id="level-msg">Umekamilisha ngazi hii kwa ufanisi.</p>
+      <p class="center-text">Alama ya Ngazi: <strong id="level-score" style="color:var(--primary);font-size:1.5rem;">0</strong></p>
+      <button class="btn-large btn-start" onclick="game.startNextLevel()">ENDELEA ➡️</button>
+    </div>
+
+    <div id="end-screen" class="screen">
+      <span class="emoji-big" id="end-emoji">🏆</span>
+      <h2 id="end-title">Safari Imekamilika!</h2>
+      <p id="end-msg">Wanyama wote wamepata uhuru wao.</p>
+      <p class="center-text">Alama ya Jumla: <strong id="final-score" style="color:var(--primary);font-size:1.8rem;">0</strong></p>
+      <button class="btn-large btn-restart" onclick="game.restart()">CHEZA TENA 🔄</button>
+    </div>
+  </div>
+
+<script>
+// 150 CBC Grade 7 Questions (Nomino za Wingi & Vitenzi-jina) - Uhuru wa Wanyama Theme
+const QDB = [
+  // LEVEL 1: Basic Plurals (30)
+  {q:"Neno la wingi la 'simba' ni:",a:"masimba",acc:["masimba","ma simba"],h:"Kiambishi awali 'ma-' kwa wanyama wengi.",l:1},
+  {q:"Wingi wa 'mnyama' ni:",a:"wanyama",acc:["wanyama"],h:"'Wa-' kwa wanyama wengi.",l:1},
+  {q:"Tafuta wingi: 'ndege'",a:"ndege",acc:["ndege"],h:"Neno hili halibadiliki kwenye wingi.",l:1},
+  {q:"'Jiko' linakuwa nini kwenye wingi?",a:"majiko",acc:["majiko","ma jiko"],h:"Kiambishi awali 'ma-' kinatumika kwa vitu vingi vya kundi hili.",l:1},
+  {q:"Wingi wa 'kitu' ni:",a:"vitu",acc:["vitu","vi tu"],h:"'Vi-' ni kiambishi awali cha wingi cha 'ki-'.",l:1},
+  {q:"Tafuta wingi wa 'jicho':",a:"macho",acc:["macho","ma cho"],h:"'Ji-' hubadilika kuwa 'ma-' kwenye wingi.",l:1},
+  {q:"Wingi wa 'mti' ni:",a:"miti",acc:["miti","mi ti"],h:"'M-' ya mwanzo hubadilika kuwa 'mi-'.",l:1},
+  {q:"Chagua wingi sahihi: 'punda'",a:"punda",acc:["punda"],h:"Baadhi ya nomino hazibadiliki.",l:1},
+  {q:"'Chakula' kwenye wingi ni:",a:"chakula",acc:["chakula"],h:"Neno hili halina tofauti ya umoja na wingi.",l:1},
+  {q:"Wingi wa 'mtu' ni:",a:"watu",acc:["watu","wa tu"],h:"Kiambishi awali 'wa-' kwa watu wengi.",l:1},
+  {q:"Tafuta wingi: 'nyumba'",a:"nyumba",acc:["nyumba"],h:"Neno hili halibadiliki kwenye wingi.",l:1},
+  {q:"Wingi wa 'kifaru' ni:",a:"vifaru",acc:["vifaru","vi faru"],h:"'Ki-' hubadilika kuwa 'vi-'.",l:1},
+  {q:"'Chui' kwenye wingi ni:",a:"chui",acc:["chui"],h:"Neno hili halibadiliki.",l:1},
+  {q:"Wingi wa 'jina' ni:",a:"majina",acc:["majina","ma jina"],h:"'Ji-' hubadilika kuwa 'ma-'.",l:1},
+  {q:"Tafuta wingi: 'kiboko'",a:"viboko",acc:["viboko","vi boko"],h:"'Ki-' inakuwa 'vi-'.",l:1},
+  {q:"Wingi wa 'maji' ni:",a:"maji",acc:["maji"],h:"Neno hili tayari liko kwenye umbo la wingi/thabiti.",l:1},
+  {q:"'Simanzi' kwenye wingi ni:",a:"simanzi",acc:["simanzi"],h:"Baadhi ya majina ya wanyama hayabadiliki.",l:1},
+  {q:"Wingi wa 'chuma' ni:",a:"vyuma",acc:["vyuma","vi uma"],h:"'Ch-' inakuwa 'vy-'.",l:1},
+  {q:"Tafuta wingi: 'ng'ombe'",a:"ng'ombe",acc:["ng'ombe","ngombe"],h:"Neno hili halibadiliki kwenye wingi.",l:1},
+  {q:"Wingi wa 'moyo' ni:",a:"mioyo",acc:["mioyo","mi oyo"],h:"'M-' inakuwa 'mi-'.",l:1},
+  {q:"'Paa' kwenye wingi ni:",a:"paa",acc:["paa"],h:"Neno hili halibadiliki.",l:1},
+  {q:"Wingi wa 'kiatu' ni:",a:"viatu",acc:["viatu","vi atu"],h:"'Ki-' inakuwa 'vi-'.",l:1},
+  {q:"Tafuta wingi: 'mwezi'",a:"miezi",acc:["miezi","mi ezi"],h:"'M-' inakuwa 'mi-'.",l:1},
+  {q:"Wingi wa 'kamba' ni:",a:"kamba",acc:["kamba"],h:"Neno hili halibadiliki.",l:1},
+  {q:"Wingi wa 'jani' ni:",a:"majani",acc:["majani","ma jani"],h:"'Ji-' inakuwa 'ma-'.",l:1},
+  {q:"Tafuta wingi: 'kuku'",a:"kuku",acc:["kuku"],h:"Neno hili halibadiliki.",l:1},
+  {q:"Wingi wa 'mto' ni:",a:"mito",acc:["mito","mi to"],h:"'M-' inakuwa 'mi-'.",l:1},
+  {q:"'Nyoka' kwenye wingi ni:",a:"nyoka",acc:["nyoka"],h:"Neno hili halibadiliki.",l:1},
+  {q:"Wingi wa 'kitabu' ni:",a:"vitabu",acc:["vitabu","vi tabu"],h:"'Ki-' inakuwa 'vi-'.",l:1},
+  {q:"'Chumba' kwenye wingi ni:",a:"vyumba",acc:["vyumba","vi umba"],h:"'Ch-' inakuwa 'vy-'.",l:1},
+
+  // LEVEL 2: Verb-Derived Nouns Intro + Mixed (30)
+  {q:"Neno 'kupanda' linabadilika kuwa nomino ya mtu anayefanya:",a:"mpandaji",acc:["mpandaji","m pandaji"],h:"M- + shina la kitenzi + -ji",l:2},
+  {q:"Chagua nomino ya mtu kutoka 'kusoma':",a:"msomaji",acc:["msomaji","m somaji"],h:"M- + soma + -ji",l:2},
+  {q:"'Kuvunja' inakuwa nini kama nomino ya mtu?",a:"mvunjaji",acc:["mvunjaji","m vunjaji"],h:"M- + vunja + -ji",l:2},
+  {q:"Tafuta nomino ya kitendo/dhana kutoka 'kufuga':",a:"ufugaji",acc:["ufugaji","u fugaji"],h:"U- + fuga + -ji",l:2},
+  {q:"Wingi wa 'mtu anayeokoa wanyama' ni:",a:"waokozi",acc:["waokozi","wa okozi"],h:"M- + okoa + -zi",l:2},
+  {q:"'Kuhifadhi' inakuwa nomino ya kitendo:",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"U- + hifadhi + -i",l:2},
+  {q:"Chagua wingi sahihi: 'mchawi'",a:"wachawi",acc:["wachawi","wa chawi"],h:"M-/Wa- class.",l:2},
+  {q:"Neno 'kufundisha' linatoa nomino ya mtu:",a:"mfundishaji",acc:["mfundishaji","m fundishaji"],h:"M- + fundisha + -ji",l:2},
+  {q:"'Kupiga' inakuwa nomino ya kitendo gani?",a:"upigaji",acc:["upigaji","u pigaji"],h:"U- + piga + -ji",l:2},
+  {q:"Tafuta wingi: 'kifaa'",a:"vifaa",acc:["vifaa","vi faa"],h:"Ki- inakuwa Vi-",l:2},
+  {q:"'Kupenda' inakuwa nomino ya hali/dhana:",a:"upendo",acc:["upendo","u pendo"],h:"U- + pend + -o",l:2},
+  {q:"Wingi wa 'jengo' ni:",a:"majengo",acc:["majengo","ma jengo"],h:"Ji- inakuwa Ma-",l:2},
+  {q:"Chagua nomino ya mtu: 'kutengeneza'",a:"mtengenezaji",acc:["mtengenezaji","m tengenezaji"],h:"M- + tengeneza + -ji",l:2},
+  {q:"'Kusafiri' inakuwa nomino ya kitendo:",a:"usafiri",acc:["usafiri","u safiri"],h:"U- + safari + -i",l:2},
+  {q:"Wingi wa 'chumba' ni:",a:"vyumba",acc:["vyumba","vi umba"],h:"Ch- inakuwa Vy-",l:2},
+  {q:"'Kulima' inakuwa nomino ya mtu:",a:"mkulima",acc:["mkulima","m kulima"],h:"M- + lima + -a",l:2},
+  {q:"Tafuta wingi: 'kitabu'",a:"vitabu",acc:["vitabu","vi tabu"],h:"Ki- inakuwa Vi-",l:2},
+  {q:"'Kujenga' inakuwa nomino ya kitendo:",a:"ujenzi",acc:["ujenzi","u jenzi"],h:"U- + jenga + -i",l:2},
+  {q:"Wingi wa 'mti' ni:",a:"miti",acc:["miti","mi ti"],h:"M- inakuwa Mi-",l:2},
+  {q:"'Kusaidia' inakuwa nomino ya mtu:",a:"msaidizi",acc:["msaidizi","m saidizi"],h:"M- + saidia + -zi",l:2},
+  {q:"Chagua wingi: 'jua' (katika muktadha huu neno halibadiliki)",a:"jua",acc:["jua"],h:"Thabiti",l:2},
+  {q:"'Kufanya' inakuwa nomino ya kitendo:",a:"ufanyaji",acc:["ufanyaji","u fanyaji"],h:"U- + fanya + -ji",l:2},
+  {q:"Wingi wa 'kiatu' ni:",a:"viatu",acc:["viatu","vi atu"],h:"Ki- inakuwa Vi-",l:2},
+  {q:"'Kupanda' inakuwa nomino ya kitendo (dhana):",a:"upandaji",acc:["upandaji","u pandaji"],h:"U- + panda + -ji",l:2},
+  {q:"Tafuta wingi: 'ndege' (mnyama)",a:"ndege",acc:["ndege"],h:"Thabiti",l:2},
+  {q:"'Kusikia' inakuwa nomino ya kitendo:",a:"usikivu",acc:["usikivu","u sikivu"],h:"U- + sik + -ivu",l:2},
+  {q:"Wingi wa 'moto' ni:",a:"mioto",acc:["mioto","mi oto"],h:"M- inakuwa Mi-",l:2},
+  {q:"'Kufunga' inakuwa nomino ya mtu:",a:"mfungaji",acc:["mfungaji","m fungaji"],h:"M- + funga + -ji",l:2},
+  {q:"Chagua wingi: 'jicho'",a:"macho",acc:["macho","ma cho"],h:"Ji- inakuwa Ma-",l:2},
+  {q:"'Kusoma' inakuwa nomino ya kitendo (dhana):",a:"usomaji",acc:["usomaji","u somaji"],h:"U- + soma + -ji",l:2},
+
+  // LEVEL 3: Context & Application (30)
+  {q:"Sentensi: '______ wa wanyama unahitaji heshima.'",a:"ulindaji",acc:["ulindaji","u lindaji"],h:"Nomino ya kitendo/dhana inayotokana na 'kulinda'.",l:3},
+  {q:"'Wanafunzi wanaandaa ______ ya kuwaokoa tembo.'",a:"mikakati",acc:["mikakati","mi kakati"],h:"Wingi wa 'mkakati'.",l:3},
+  {q:"Tafuta nomino ya vitenzi-jina: '______ wa nyumba umeisha.'",a:"ujenzi",acc:["ujenzi","u jenzi"],h:"Kitendo cha kujenga.",l:3},
+  {q:"Sentensi sahihi ni: 'Wanyama wanahitaji uhuru ______.'",a:"wao",acc:["wao"],h:"Uhuru ni nomino ya kiungo, inafuatana na 'wao'.",l:3},
+  {q:"'______ wa miti ni muhimu kwa mazingira.'",a:"upandaji",acc:["upandaji","u pandaji"],h:"Kitendo cha kupanda.",l:3},
+  {q:"Chagua wingi sahihi: 'Haya ni ______ ya wanyama.'",a:"matumbo",acc:["matumbo","ma tumbo"],h:"Ji- inakuwa Ma-",l:3},
+  {q:"Neno 'kuhama' linatoa nomino ya kitendo:",a:"uhamaaji",acc:["uhamaaji","u hamaaji","uhamaji"],h:"U- + hama + -ji",l:3},
+  {q:"'Viongozi wanashauri ______ wa misitu.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:3},
+  {q:"Sentensi yenye kosa la sarufi ni: 'Wanyama wengi wanakimbia ______.'",a:"yao",acc:["yao"],h:"'Yao' inatumika kwa vitu, si wanyama/watu.",l:3},
+  {q:"'______ wa wanyama hufanywa na wataalamu.'",a:"uokoaji",acc:["uokoaji","u okoaji"],h:"Kitendo cha kuokoa.",l:3},
+  {q:"Wingi wa 'kifaa cha kufuatilia' ni:",a:"vifaa",acc:["vifaa","vi faa"],h:"Ki- inakuwa Vi-",l:3},
+  {q:"'Tunaamini ______ wa wanyama utaimarika.'",a:"uhuru",acc:["uhuru","u huru"],h:"Nomino ya dhana kutoka 'kuwa huru'.",l:3},
+  {q:"Chagua jibu sahihi: '______ wa maji ni ngumu siku hizi.'",a:"upatikanaji",acc:["upatikanaji","u patikanaji"],h:"U- + patikana + -ji",l:3},
+  {q:"Sentensi: 'Wakulima wanaunga mkono ______ wa ardhi.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:3},
+  {q:"'______ wa nyota unavutia watalii.'",a:"uangavu",acc:["uangavu","u angavu"],h:"U- + angavu",l:3},
+  {q:"Wingi wa 'jicho la mnyama' ni:",a:"macho",acc:["macho","ma cho"],h:"Ji- inakuwa Ma-",l:3},
+  {q:"'______ wa wanyama unahitaji sheria madhubuti.'",a:"ulindaji",acc:["ulindaji","u lindaji"],h:"U- + linda + -ji",l:3},
+  {q:"Chagua sentensi sahihi: 'Wanyama wanapenda uhuru ______.'",a:"wao",acc:["wao"],h:"Uhuru + wao",l:3},
+  {q:"'______ wa mazingira ni jukumu letu.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:3},
+  {q:"Wingi wa 'mtoto wa paka' ni:",a:"watoto",acc:["watoto","wa toto"],h:"Wingi huathiri nomino kuu.",l:3},
+  {q:"'______ wa wanyama unatokana na kupoteza makazi.'",a:"uhamisho",acc:["uhamisho","u hamisho"],h:"U- + hamisha + -o",l:3},
+  {q:"Sentensi: 'Tunahitaji ______ wa vyanzo vya maji.'",a:"ulinzi",acc:["ulinzi","u linzi"],h:"Kitendo/dhana ya kulinda.",l:3},
+  {q:"Chagua wingi sahihi: 'kiwango cha elimu'",a:"viwango",acc:["viwango","vi wango"],h:"Ki- inakuwa Vi-",l:3},
+  {q:"'______ wa wanyama unahitaji ushirikiano.'",a:"uokoaji",acc:["uokoaji","u okoaji"],h:"Kitendo cha kuokoa.",l:3},
+  {q:"Wingi wa 'jina la mnyama' ni:",a:"majina",acc:["majina","ma jina"],h:"Ji- inakuwa Ma-",l:3},
+  {q:"'______ wa misitu unapunguza mabadiliko ya tabianchi.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:3},
+  {q:"Chagua sentensi yenye kosa: 'Wanyama wanahitaji uhuru ______.'",a:"wake",acc:["wake","yake"],h:"Uhuru + wao",l:3},
+  {q:"'______ wa wanyama ni muhimu kwa kizazi kijacho.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:3},
+  {q:"Wingi wa 'chumba cha wanyama' ni:",a:"vyumba",acc:["vyumba","vi umba"],h:"Ch- inakuwa Vy-",l:3},
+  {q:"'______ wa wanyama unahitaji usalama.'",a:"ulinzi",acc:["ulinzi","u linzi"],h:"U- + linda + -i",l:3},
+
+  // LEVEL 4: Advanced & Error Correction (30)
+  {q:"Chagua sentensi iliyo na kosa la sarufi: 'Wanyama wanahitaji uhuru ______.'",a:"wake",acc:["wake","yake","zao","yao"],h:"Uhuru ni kiungo, kinatumika na 'wao'.",l:4},
+  {q:"Nomino ya vitenzi-jina kutoka 'kujenga' ni:",a:"ujenzi",acc:["ujenzi","u jenzi"],h:"U- + jenga + -i",l:4},
+  {q:"Wingi wa 'kiwango' ni:",a:"viwango",acc:["viwango","vi wango"],h:"Ki- inakuwa Vi-",l:4},
+  {q:"Sentensi sahihi ni: 'Uhuru wa wanyama unahitaji heshima ______.'",a:"yetu",acc:["yetu","yao"],h:"Heshima + yetu (kulingana na muktadha).",l:4},
+  {q:"'______ wa misitu ni muhimu.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:4},
+  {q:"Chagua wingi sahihi: 'jicho la mnyama'",a:"macho",acc:["macho","ma cho"],h:"Ji- inakuwa Ma-",l:4},
+  {q:"'______ wa wanyama unatokana na shughuli za binadamu.'",a:"uhamisho",acc:["uhamisho","u hamisho"],h:"U- + hamisha + -o",l:4},
+  {q:"Sentensi yenye kosa ni: 'Wanyama wanapenda uhuru ______.'",a:"zao",acc:["zao","wake","yake","yao"],h:"Uhuru + wao",l:4},
+  {q:"Nomino ya mtu kutoka 'kuokoa' ni:",a:"muokoaji",acc:["muokoaji","m uokoaji"],h:"M- + okoa + -ji",l:4},
+  {q:"Wingi wa 'mti' ni:",a:"miti",acc:["miti","mi ti"],h:"M- inakuwa Mi-",l:4},
+  {q:"'______ wa wanyama ni haki yao asilia.'",a:"uhuru",acc:["uhuru","u huru"],h:"Nomino ya dhana.",l:4},
+  {q:"Chagua sentensi sahihi: 'Wanyama wengi wanakimbia ______.'",a:"",acc:["wao","wewe","nyao","yao"],h:"Kitenzi hakihitaji kiambishi cha ziada hapa (achia tupu au andika 'wao' ikiwa lazima).",l:4},
+  {q:"'______ wa maji ni ngumu.'",a:"upatikanaji",acc:["upatikanaji","u patikanaji"],h:"U- + patikana + -ji",l:4},
+  {q:"Wingi wa 'chumba' ni:",a:"vyumba",acc:["vyumba","vi umba"],h:"Ch- inakuwa Vy-",l:4},
+  {q:"'______ wa wanyama unahitaji sheria.'",a:"ulindaji",acc:["ulindaji","u lindaji"],h:"U- + linda + -ji",l:4},
+  {q:"Chagua wingi sahihi: 'jina la mnyama'",a:"majina",acc:["majina","ma jina"],h:"Ji- inakuwa Ma-",l:4},
+  {q:"Sentensi yenye kosa la sarufi ni: 'Uhuru wa wanyama unahitaji heshima ______.'",a:"yao",acc:["yao","wake","zao"],h:"Uhuru + wao",l:4},
+  {q:"Nomino ya kitendo kutoka 'kufuga' ni:",a:"ufugaji",acc:["ufugaji","u fugaji"],h:"U- + fuga + -ji",l:4},
+  {q:"Wingi wa 'kiatu' ni:",a:"viatu",acc:["viatu","vi atu"],h:"Ki- inakuwa Vi-",l:4},
+  {q:"'______ wa wanyama unahitaji usalama.'",a:"uokoaji",acc:["uokoaji","u okoaji"],h:"Kitendo cha kuokoa.",l:4},
+  {q:"Chagua sentensi sahihi: 'Wanyama wanahitaji uhuru ______.'",a:"wao",acc:["wao"],h:"Uhuru + wao",l:4},
+  {q:"Wingi wa 'moto' ni:",a:"mioto",acc:["mioto","mi oto"],h:"M- inakuwa Mi-",l:4},
+  {q:"'______ wa misitu ni muhimu.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:4},
+  {q:"Chagua wingi sahihi: 'kifaa cha kufuatilia'",a:"vifaa",acc:["vifaa","vi faa"],h:"Ki- inakuwa Vi-",l:4},
+  {q:"'______ wa wanyama ni haki yao.'",a:"uhuru",acc:["uhuru","u huru"],h:"Nomino ya dhana.",l:4},
+  {q:"Sentensi yenye kosa ni: 'Wanyama wengi wanakimbia ______.'",a:"yao",acc:["yao","wao","wewe"],h:"Kitenzi hakihitaji kiambishi cha ziada.",l:4},
+  {q:"Wingi wa 'jicho' ni:",a:"macho",acc:["macho","ma cho"],h:"Ji- inakuwa Ma-",l:4},
+  {q:"'______ wa wanyama unahitaji ushirikiano.'",a:"ulindaji",acc:["ulindaji","u lindaji"],h:"U- + linda + -ji",l:4},
+  {q:"Chagua sentensi sahihi: 'Uhuru wa wanyama unahitaji heshima ______.'",a:"yetu",acc:["yetu","yao"],h:"Uhuru + wao",l:4},
+  {q:"Nomino ya mtu kutoka 'kulima' ni:",a:"mkulima",acc:["mkulima","m kulima"],h:"M- + lima + -a",l:4},
+
+  // LEVEL 5: Complex Application & Speed (30)
+  {q:"Katika muktadha wa uhuru wa wanyama, '______' ni nomino inayoelezea kitendo cha kuwafanya wanyama waishi kwa amani.",a:"ulindaji",acc:["ulindaji","u lindaji"],h:"U- + linda + -ji",l:5},
+  {q:"Wingi wa 'kiwango cha elimu ya mazingira' ni:",a:"viwango",acc:["viwango","vi wango"],h:"Ki- inakuwa Vi-",l:5},
+  {q:"Chagua sentensi iliyoandikwa kwa sarufi sahihi: 'Uhuru wa wanyama unahitaji heshima ______.'",a:"yetu",acc:["yetu","yao"],h:"Uhuru + wao (yetu inalingana na heshima).",l:5},
+  {q:"Nomino ya dhana kutoka 'kuhifadhi' ni:",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"U- + hifadhi",l:5},
+  {q:"Wingi wa 'jicho la mnyama aliyeokolewa' ni:",a:"macho",acc:["macho","ma cho"],h:"Ji- inakuwa Ma-",l:5},
+  {q:"'______ wa wanyama unahitaji mikakati madhubuti.'",a:"uokoaji",acc:["uokoaji","u okoaji"],h:"U- + okoa + -ji",l:5},
+  {q:"Chagua wingi sahihi: 'chumba cha wanyama'",a:"vyumba",acc:["vyumba","vi umba"],h:"Ch- inakuwa Vy-",l:5},
+  {q:"Sentensi yenye kosa la sarufi ni: 'Wanyama wengi wanapenda uhuru ______.'",a:"wake",acc:["wake","yake","zao","yao"],h:"Uhuru + wao",l:5},
+  {q:"Nomino ya mtu kutoka 'kufundisha' ni:",a:"mwalimu",acc:["mwalimu","m fundishaji","mfundishaji"],h:"M- + fundisha + -ji",l:5},
+  {q:"Wingi wa 'mti' ni:",a:"miti",acc:["miti","mi ti"],h:"M- inakuwa Mi-",l:5},
+  {q:"'______ wa misitu ni muhimu kwa tabianchi.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:5},
+  {q:"Chagua sentensi sahihi: 'Wanyama wanahitaji uhuru ______.'",a:"wao",acc:["wao"],h:"Uhuru + wao",l:5},
+  {q:"Wingi wa 'moto' ni:",a:"mioto",acc:["mioto","mi oto"],h:"M- inakuwa Mi-",l:5},
+  {q:"'______ wa wanyama unahitaji usalama.'",a:"ulinzi",acc:["ulinzi","u linzi"],h:"U- + linda + -i",l:5},
+  {q:"Chagua wingi sahihi: 'jina la mnyama'",a:"majina",acc:["majina","ma jina"],h:"Ji- inakuwa Ma-",l:5},
+  {q:"Sentensi yenye kosa la sarufi ni: 'Uhuru wa wanyama unahitaji heshima ______.'",a:"yake",acc:["yake","zao","yao","wake"],h:"Uhuru + wao",l:5},
+  {q:"Nomino ya kitendo kutoka 'kufuga' ni:",a:"ufugaji",acc:["ufugaji","u fugaji"],h:"U- + fuga + -ji",l:5},
+  {q:"Wingi wa 'kiatu' ni:",a:"viatu",acc:["viatu","vi atu"],h:"Ki- inakuwa Vi-",l:5},
+  {q:"'______ wa wanyama ni haki yao asilia.'",a:"uhuru",acc:["uhuru","u huru"],h:"Nomino ya dhana.",l:5},
+  {q:"Chagua sentensi sahihi: 'Wanyama wengi wanakimbia ______.'",a:"",acc:["wao","wewe","nyao","yao"],h:"Kitenzi hakihitaji kiambishi.",l:5},
+  {q:"Wingi wa 'jicho' ni:",a:"macho",acc:["macho","ma cho"],h:"Ji- inakuwa Ma-",l:5},
+  {q:"'______ wa wanyama unahitaji ushirikiano.'",a:"uokoaji",acc:["uokoaji","u okoaji"],h:"Kitendo cha kuokoa.",l:5},
+  {q:"Chagua wingi sahihi: 'kifaa cha kufuatilia'",a:"vifaa",acc:["vifaa","vi faa"],h:"Ki- inakuwa Vi-",l:5},
+  {q:"'______ wa misitu ni muhimu.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:5},
+  {q:"Sentensi yenye kosa ni: 'Wanyama wanahitaji uhuru ______.'",a:"yao",acc:["yao","wake","yake","zao"],h:"Uhuru + wao",l:5},
+  {q:"Nomino ya mtu kutoka 'kulima' ni:",a:"mkulima",acc:["mkulima","m kulima"],h:"M- + lima + -a",l:5},
+  {q:"Wingi wa 'chumba' ni:",a:"vyumba",acc:["vyumba","vi umba"],h:"Ch- inakuwa Vy-",l:5},
+  {q:"'______ wa wanyama unahitaji sheria madhubuti.'",a:"ulindaji",acc:["ulindaji","u lindaji"],h:"U- + linda + -ji",l:5},
+  {q:"Chagua sentensi sahihi: 'Uhuru wa wanyama unahitaji heshima ______.'",a:"yetu",acc:["yetu","yao"],h:"Uhuru + wao",l:5},
+  {q:"'______ wa wanyama ni jukumu letu.'",a:"uhifadhi",acc:["uhifadhi","u hifadhi"],h:"Dhana ya kuhifadhi.",l:5}
+];
+
+const game = {
+  level: 1,
+  qIndex: 0,
+  score: 0,
+  lives: 3,
+  streak: 0,
+  hints: 3,
+  timer: null,
+  timeLeft: 25,
+  maxTime: 25,
+  levelQs: [],
+  answered: false,
+  
+  init() {
+    this.showScreen('start-screen');
+    this.bindEvents();
+  },
+
+  bindEvents() {
+    const input = document.getElementById('answer-input');
+    input.addEventListener('input', () => {
+      document.getElementById('check-btn').disabled = input.value.trim() === '';
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !document.getElementById('check-btn').disabled && !this.answered) {
+        this.checkAnswer();
+      } else if (e.key === 'Enter' && this.answered) {
+        this.nextQuestion();
+      }
+    });
+  },
+
+  start() {
+    this.level = 1;
+    this.score = 0;
+    this.lives = 3;
+    this.startLevel();
+  },
+
+  startLevel() {
+    this.qIndex = 0;
+    this.hints = 3;
+    this.streak = 0;
+    this.levelQs = QDB.filter(q => q.l === this.level).sort(() => Math.random() - 0.5);
+    this.showScreen('game-screen');
+    this.updateUI();
+    this.loadQuestion();
+  },
+
+  startNextLevel() {
+    this.level++;
+    if (this.level > 5) {
+      this.endGame(true);
+    } else {
+      this.startLevel();
+    }
+  },
+
+  loadQuestion() {
+    this.answered = false;
+    this.timeLeft = [0, 25, 22, 19, 16, 13][this.level];
+    this.maxTime = this.timeLeft;
+    document.getElementById('hint-btn').style.display = 'flex';
+    document.getElementById('next-btn').style.display = 'none';
+    document.getElementById('skip-btn').style.display = 'flex';
+    document.getElementById('feedback').style.display = 'none';
+    
+    const input = document.getElementById('answer-input');
+    input.value = '';
+    input.focus();
+    document.getElementById('check-btn').disabled = true;
+    
+    const q = this.levelQs[this.qIndex];
+    document.getElementById('question-text').textContent = q.q;
+    document.getElementById('q-num').textContent = `Swali ${this.qIndex + 1}/30`;
+    
+    this.startTimer();
+    this.updateUI();
+  },
+
+  startTimer() {
+    clearInterval(this.timer);
+    const fill = document.getElementById('timer-fill');
+    fill.style.width = '100%';
+    this.timer = setInterval(() => {
+      this.timeLeft -= 0.1;
+      fill.style.width = `${(this.timeLeft / this.maxTime) * 100}%`;
+      if (this.timeLeft <= 0) {
+        clearInterval(this.timer);
+        if (!this.answered) this.timeOut();
+      }
+    }, 100);
+  },
+
+  timeOut() {
+    this.answered = true;
+    this.lives--;
+    this.streak = 0;
+    this.showFeedback(false, 'Muda umekwisha! ⏳');
+    document.getElementById('hint-btn').style.display = 'none';
+    document.getElementById('skip-btn').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'flex';
+    this.checkGameOver();
+  },
+
+  normalize(str) {
+    return str.toLowerCase().replace(/[-\s]+/g, ' ').trim();
+  },
+
+  checkAnswer() {
+    if (this.answered) return;
+    this.answered = true;
+    clearInterval(this.timer);
+    
+    const input = document.getElementById('answer-input').value.trim();
+    const q = this.levelQs[this.qIndex];
+    const normInput = this.normalize(input);
+    const correct = q.acc.some(ans => this.normalize(ans) === normInput);
+    
+    this.showFeedback(correct);
+    document.getElementById('hint-btn').style.display = 'none';
+    document.getElementById('skip-btn').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'flex';
+    
+    if (correct) {
+      this.score += 100 + (this.streak * 15) + Math.floor(this.timeLeft * 2);
+      this.streak++;
+    } else {
+      this.lives--;
+      this.streak = 0;
+    }
+    
+    this.checkGameOver();
+    this.updateUI();
+  },
+
+  showFeedback(correct, msg = '') {
+    const fb = document.getElementById('feedback');
+    fb.style.display = 'block';
+    const q = this.levelQs[this.qIndex];
+    fb.innerHTML = correct 
+      ? `✅ Sahihi! Hongera! (+${100 + (this.streak*15)} alama)` 
+      : (msg || `❌ Sio sahihi. Jibu sahihi: <strong>${q.a}</strong>`);
+    fb.className = `feedback ${correct ? 'correct' : 'wrong'}`;
+  },
+
+  useHint() {
+    if (this.hints <= 0 || this.answered) return;
+    this.hints--;
+    const q = this.levelQs[this.qIndex];
+    const input = document.getElementById('answer-input');
+    const hint = q.acc[0];
+    input.value = hint.substring(0, 3) + '...';
+    input.focus();
+    this.updateUI();
+  },
+
+  skipQuestion() {
+    if (this.answered) return;
+    this.answered = true;
+    clearInterval(this.timer);
+    this.lives--;
+    this.streak = 0;
+    this.showFeedback(false, 'Umeruka swali.');
+    document.getElementById('hint-btn').style.display = 'none';
+    document.getElementById('skip-btn').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'flex';
+    this.checkGameOver();
+  },
+
+  nextQuestion() {
+    this.qIndex++;
+    if (this.qIndex >= 30 || this.lives <= 0) {
+      if (this.lives <= 0) this.checkGameOver();
+      else this.completeLevel();
+    } else {
+      this.loadQuestion();
+    }
+  },
+
+  completeLevel() {
+    clearInterval(this.timer);
+    document.getElementById('level-score').textContent = this.score;
+    document.getElementById('level-emoji').textContent = ['🦁','🐘','🦍','🦅','🐋'][this.level-1];
+    document.getElementById('level-title').textContent = `Hongera! Umekamilisha Ngazi ${this.level}`;
+    document.getElementById('level-msg').textContent = `Wanyama ${Math.floor((this.level/5)*100)}% wamepata uhuru!`;
+    this.showScreen('level-screen');
+  },
+
+  endGame(win) {
+    clearInterval(this.timer);
+    document.getElementById('end-emoji').textContent = win ? '🏆' : '💔';
+    document.getElementById('end-title').textContent = win ? 'Safari Imekamilika!' : 'Safari Imekatizwa';
+    document.getElementById('end-msg').textContent = win 
+      ? 'Wanyama wote wamepata uhuru wao. Wewe ni Shujaa wa Sarufi!' 
+      : 'Jaribu tena. Wanyama wanakuhitaji!';
+    document.getElementById('final-score').textContent = this.score;
+    this.showScreen('end-screen');
+  },
+
+  checkGameOver() {
+    if (this.lives <= 0) {
+      setTimeout(() => this.endGame(false), 1200);
+    }
+  },
+
+  restart() {
+    this.start();
+  },
+
+  showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  },
+
+  updateUI() {
+    document.getElementById('level-display').textContent = this.level;
+    document.getElementById('score-display').textContent = this.score;
+    document.getElementById('lives-display').textContent = '❤️'.repeat(Math.max(0, this.lives));
+    document.getElementById('timer-display').textContent = `${Math.ceil(this.timeLeft)}s`;
+    document.getElementById('hint-btn').textContent = `💡 Kidokezo (${this.hints})`;
+    document.getElementById('progress-fill').style.width = `${(this.qIndex/30)*100}%`;
+    
+    const levelNames = ['🦒 Mbuga ya Savanna', '🌳 Msitu wa Tropiki', '🏜️ Bonde la Uhuru', '🏔️ Milima ya Changamoto', '🌊 Bahari ya Uhuru'];
+    document.getElementById('level-name').textContent = levelNames[this.level-1];
+    
+    const streakBadge = document.getElementById('streak-badge');
+    if (this.streak >= 2) {
+      streakBadge.textContent = `🔥 ${this.streak}`;
+      streakBadge.classList.add('show');
+    } else {
+      streakBadge.classList.remove('show');
+    }
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => game.init());
+</script>
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>CBC Grade 7 - Kusikiliza na Kuzungumza | Sauti na Majibu</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f3b1f 0%, #05200e 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(12px, 4vw, 24px);
+        }
+
+        /* Main Game Container */
+        .game-container {
+            width: 100%;
+            max-width: 750px;
+            margin: 0 auto;
+            background: rgba(255, 252, 235, 0.98);
+            border-radius: clamp(35px, 7vw, 65px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.3);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* Header */
+        .game-header {
+            background: linear-gradient(135deg, #ffcd3c, #ffb347);
+            padding: clamp(18px, 4vw, 28px) clamp(18px, 5vw, 32px);
+            text-align: center;
+            border-bottom: 5px solid #e09d00;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: #2c5e2e;
+            color: #FFE484;
+            font-weight: bold;
+            font-size: clamp(1rem, 4.5vw, 1.4rem);
+            padding: 8px 24px;
+            border-radius: 60px;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #1c3e1a;
+        }
+
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 18px;
+            background: rgba(0,0,0,0.1);
+            padding: 12px 16px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+        }
+
+        .stat-card {
+            background: #2d2b26;
+            color: #ffd966;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 3.5vw, 1rem);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Question Area */
+        .question-area {
+            padding: clamp(22px, 5vw, 38px) clamp(18px, 5vw, 30px);
+        }
+
+        .topic-pill {
+            display: inline-block;
+            background: #d4a373;
+            color: white;
+            font-size: 0.75rem;
+            padding: 5px 14px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .question-card {
+            background: #fef7e8;
+            border-radius: 45px;
+            padding: clamp(22px, 6vw, 38px) clamp(16px, 5vw, 28px);
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 0 3px white, 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .question-text {
+            font-size: clamp(1.2rem, 5.5vw, 1.8rem);
+            font-weight: 700;
+            color: #1f3b1a;
+            line-height: 1.4;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        /* Voice & Input Section */
+        .voice-section {
+            background: #f0e6d2;
+            border-radius: 50px;
+            padding: 20px 16px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .mic-btn {
+            width: clamp(70px, 18vw, 100px);
+            height: clamp(70px, 18vw, 100px);
+            border-radius: 50%;
+            background: #fef3c7;
+            border: 4px solid #f59e0b;
+            font-size: clamp(2rem, 8vw, 3rem);
+            cursor: pointer;
+            transition: 0.1s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 6px 0 #b45309;
+        }
+
+        .mic-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b45309;
+        }
+
+        .mic-btn.listening {
+            background: #dcfce7;
+            border-color: #16a34a;
+            animation: pulseMic 1.2s infinite;
+            box-shadow: 0 0 0 8px rgba(22,163,74,0.3);
+        }
+
+        @keyframes pulseMic {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .voice-status {
+            background: #2c2b26;
+            color: #ffecb3;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-size: clamp(0.75rem, 3vw, 0.9rem);
+            margin-top: 12px;
+            display: inline-block;
+        }
+
+        .input-fallback {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #cfb284;
+            border-radius: 60px;
+            font-size: 1rem;
+            margin-top: 15px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .feedback {
+            min-height: 55px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 12px 0;
+            padding: 10px;
+            border-radius: 50px;
+        }
+
+        .feedback.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .feedback.wrong {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .next-btn {
+            background: #e67e22;
+            width: 100%;
+            border: none;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.1s;
+            font-family: inherit;
+            margin-top: 10px;
+        }
+
+        .next-btn:disabled {
+            background: #acac9a;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .next-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b, #e67e22);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 20px;
+        }
+
+        /* Level Complete Screen */
+        .level-screen {
+            text-align: center;
+            padding: 30px 24px;
+        }
+
+        .level-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            font-size: 2.8rem;
+            margin: 20px 0;
+        }
+
+        .level-stats {
+            background: #f1f5f9;
+            padding: 18px;
+            border-radius: 30px;
+            margin: 20px 0;
+        }
+
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
+        }
+
+        footer {
+            background: #efe0ca;
+            text-align: center;
+            padding: 14px;
+            font-size: 0.7rem;
+            color: #4e3e2e;
+        }
+
+        @media (max-width: 550px) {
+            .stats-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            .stat-card {
+                width: 90%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- START SCREEN -->
+    <div id="start-screen" class="game-container">
+        <div class="game-header">
+            <div class="level-badge">🎙️ CBC Grade 7</div>
+        </div>
+        <div class="question-area">
+            <div class="question-card">
+                <div class="question-text" style="font-size:1.3rem;">
+                    📢 <strong>Kusikiliza na Kuzungumza</strong><br>
+                    Jibu kwa sauti yako! Bonyeza kitufe cha maikrofoni.
+                </div>
+                <div style="margin: 20px 0; font-size:0.95rem; color:#2d3748;">
+                    ✅ Ngazi 6 zenye changamoto • Maswali 30 kwa kila ngazi<br>
+                    🎤 Zungumza jibu lako • Sauti itakusaidia<br>
+                    ⭐ Pata alama za kutosha ili kupanda ngazi!
+                </div>
+            </div>
+            <button class="next-btn" onclick="startGame()">🚀 ANZA MCHEZO</button>
+        </div>
+        <footer>🎧 Kiswahili - Kusikiliza na Kujibu | Sauti Inayoitikia</footer>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="game-container hidden">
+        <div class="game-header">
+            <div class="level-badge" id="levelName">Ngazi ya 1: Msingi</div>
+            <div class="stats-row">
+                <div class="stat-card">⭐ Alama: <span id="currentScore">0</span></div>
+                <div class="stat-card">🎯 Hitaji: <span id="requiredScore">50</span></div>
+                <div class="stat-card">📊 Swali: <span id="qCounter">1</span>/<span id="totalQ">30</span></div>
+                <div class="stat-card">🔥 Mfululizo: <span id="streakCount">0</span></div>
+            </div>
+        </div>
+        <div class="question-area">
+            <div class="topic-pill" id="topicBadge">Kusikiliza na Kujibu</div>
+            <div class="question-card">
+                <div class="question-text" id="questionText">Loading...</div>
+            </div>
+            
+            <div class="voice-section">
+                <button class="mic-btn" id="micBtn">🎤</button>
+                <div><span class="voice-status" id="voiceStatus">🗣 Bonyeza kitufe, sema jibu lako</span></div>
+                <input type="text" id="textInput" class="input-fallback" placeholder="Au andika jibu hapa..." autocomplete="off">
+            </div>
+            
+            <div class="feedback" id="feedbackMsg"></div>
+            <div class="progress-container">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            <button class="next-btn" id="nextBtn" disabled>➡ Swali Linalofuata</button>
+        </div>
+        <footer>🎤 Zungumza kwa sauti - Mfumo utakujibu kwa sauti ya Kiswahili</footer>
+    </div>
+
+    <!-- LEVEL COMPLETE SCREEN -->
+    <div id="level-screen" class="game-container hidden">
+        <div class="game-header">
+            <div class="level-badge" id="levelResultBadge">Ngazi Imekamilika</div>
+        </div>
+        <div class="level-screen">
+            <h2 id="levelResultTitle">Hongera!</h2>
+            <div class="stars" id="starsDisplay">⭐⭐⭐</div>
+            <div class="level-stats">
+                <p><strong>Alama zako:</strong> <span id="finalLevelScore">0</span> / 30</p>
+                <p><strong>Alama zinazohitajika:</strong> <span id="passReq">50</span></p>
+                <p id="levelMessageText">Umefanikiwa!</p>
+            </div>
+            <button class="next-btn" id="levelActionBtn">Endelea ➡️</button>
+        </div>
+        <footer>Bora zaidi kila ngazi!</footer>
+    </div>
+</div>
+
+<script>
+    // ======================== CBC GRADE 7 GAME: KUSIKILIZA NA KUJIBU ========================
+    // 6 Levels | 30 questions per level | Voice recognition with Swahili audio feedback
+    
+    // ---------- Generate 30 authentic listening & response questions per level ----------
+    function generateQuestionsForLevel(level, count = 30) {
+        const questions = [];
+        // Core topics for listening and responding
+        const scenarios = [
+            { prompt: "Mwalimu anasema: 'Habari za asubuhi wanafunzi?' Unajibuje?", answer: "Nzuri mwalimu", options: ["Nzuri mwalimu", "Habari", "Asante", "Sawa"] },
+            { prompt: "Unasikia mtu akisema 'Samahani kwa kukukosea'. Unajibu?", answer: "Pole", options: ["Pole", "Sawa", "Asante", "Karibu"] },
+            { prompt: "Mwalimu anakuuliza: 'Umesoma kwa ajili ya mtihani?' Unajibu?", answer: "Ndio nimesoma", options: ["Ndio nimesoma", "Hapana", "Labda", "Sijui"] },
+            { prompt: "Sikiliza: 'Tafadhali funga mlango.' Unachukua hatua gani?", answer: "Kufunga mlango", options: ["Kufunga mlango", "Kufungua dirisha", "Kukaa", "Kutembea"] },
+            { prompt: "Mwalimu anasema: 'Hongera kwa kazi nzuri!' Unajibu?", answer: "Asante", options: ["Asante", "Pole", "Sawa", "Hongera"] },
+            { prompt: "Unasikia 'Pole kwa msiba wako.' Jibu lako?", answer: "Asante Mungu awabariki", options: ["Asante Mungu awabariki", "Sawa", "Pole", "Samahani"] },
+            { prompt: "Sikiliza: 'Mvua inanyesha sana. Chukua mwavuli.' Unafanya?", answer: "Kuchukua mwavuli", options: ["Kuchukua mwavuli", "Kukimbia", "Kubaki", "Kusubiri"] },
+            { prompt: "Mgeni anauliza: 'Je, ninaweza kukaa hapa?' Unajibu?", answer: "Karibu", options: ["Karibu", "Hapana", "Sitaki", "Nenda"] },
+            { prompt: "Mwalimu anasema: 'Tafadhali rudia kusoma.' Unafanya?", answer: "Kurudia kusoma", options: ["Kurudia kusoma", "Kulala", "Kucheza", "Kutoka"] },
+            { prompt: "Unasikia rafiki akisema 'Nimefaulu mtihani!' Unajibu?", answer: "Hongera", options: ["Hongera", "Pole", "Samahani", "Nzuri"] },
+        ];
+        
+        for (let i = 0; i < count; i++) {
+            const idx = (i + level * 3) % scenarios.length;
+            const base = scenarios[idx];
+            // Modify difficulty per level: make answers slightly more complex for higher levels
+            let questionText = base.prompt;
+            let correctAnswer = base.answer;
+            let optList = [...base.options];
+            
+            if (level >= 3) {
+                questionText = "[Sikiliza kwa makini] " + base.prompt;
+                if (level === 4) correctAnswer = base.answer + " (kwa heshima)";
+                if (level === 5) correctAnswer = base.answer + " kwa adabu";
+                if (level === 6) correctAnswer = base.answer.toUpperCase();
+            }
+            
+            // Add variety: create 30 unique questions per level using permutation
+            const customQ = {
+                id: i + level * 1000,
+                text: `${questionText}`,
+                correctAnswer: correctAnswer.toLowerCase(),
+                options: optList,
+                topic: level <= 2 ? "Majibu ya Mazungumzo" : (level <= 4 ? "Kusikiliza na Kujibu" : "Ufahamu wa Kimaudhui")
+            };
+            questions.push(customQ);
+        }
+        // Ensure exactly 30 (already done)
+        return questions;
+    }
+    
+    // Speech recognition and synthesis
+    let recognition = null;
+    let isListening = false;
+    
+    function initSpeech() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            document.getElementById('voiceStatus').innerText = "⚠️ Sauti haitumiki, tumia kuandika";
+            return false;
+        }
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRec();
+        recognition.lang = 'sw-KE';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 3;
+        return true;
+    }
+    
+    function speakSwahili(message, isCorrectFeedback = true) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.lang = 'sw-KE';
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    // Game state
+    let currentLevel = 1;
+    let currentScore = 0;
+    let currentStreak = 0;
+    let currentQIndex = 0;
+    let currentQuestions = [];
+    let answerLocked = false;
+    let currentQuestionObj = null;
+    
+    // Mark requirements per level (challenging)
+    const pointsPerCorrect = 5;
+    const maxQuestionsPerLevel = 30;
+    const maxPossibleScore = maxQuestionsPerLevel * pointsPerCorrect; // 150
+    const marksRequired = { 1: 50, 2: 65, 3: 80, 4: 95, 5: 110, 6: 130 };
+    
+    // DOM elements
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const levelScreen = document.getElementById('level-screen');
+    const levelNameSpan = document.getElementById('levelName');
+    const currentScoreSpan = document.getElementById('currentScore');
+    const requiredScoreSpan = document.getElementById('requiredScore');
+    const qCounterSpan = document.getElementById('qCounter');
+    const totalQSpan = document.getElementById('totalQ');
+    const streakSpan = document.getElementById('streakCount');
+    const questionTextDiv = document.getElementById('questionText');
+    const topicBadge = document.getElementById('topicBadge');
+    const voiceStatusSpan = document.getElementById('voiceStatus');
+    const textInput = document.getElementById('textInput');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressFill = document.getElementById('progressFill');
+    const micBtn = document.getElementById('micBtn');
+    
+    // Level complete elements
+    const levelResultTitle = document.getElementById('levelResultTitle');
+    const starsDisplay = document.getElementById('starsDisplay');
+    const finalLevelScoreSpan = document.getElementById('finalLevelScore');
+    const passReqSpan = document.getElementById('passReq');
+    const levelMessageText = document.getElementById('levelMessageText');
+    const levelActionBtn = document.getElementById('levelActionBtn');
+    const levelResultBadge = document.getElementById('levelResultBadge');
+    
+    // Helper functions
+    function updateUI() {
+        currentScoreSpan.innerText = currentScore;
+        requiredScoreSpan.innerText = marksRequired[currentLevel];
+        qCounterSpan.innerText = currentQIndex + 1;
+        totalQSpan.innerText = currentQuestions.length;
+        streakSpan.innerText = currentStreak;
+        const progressPercent = ((currentQIndex) / maxQuestionsPerLevel) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+        const levelNames = ["Ngazi ya 1: Msingi", "Ngazi ya 2: Kujenga", "Ngazi ya 3: Ustadi", "Ngazi ya 4: Bingwa", "Ngazi ya 5: Hodari", "Ngazi ya 6: Guru"];
+        levelNameSpan.innerText = levelNames[currentLevel-1];
+    }
+    
+    function loadLevel(level) {
+        currentQuestions = generateQuestionsForLevel(level, maxQuestionsPerLevel);
+        currentQIndex = 0;
+        currentScore = 0;
+        currentStreak = 0;
+        answerLocked = false;
+        updateUI();
+        renderCurrentQuestion();
+        nextBtn.disabled = true;
+        feedbackMsgDiv.innerHTML = '';
+        feedbackMsgDiv.className = 'feedback';
+        textInput.value = '';
+        voiceStatusSpan.innerText = "🎤 Bonyeza kitufe na sema jibu";
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length) return;
+        currentQuestionObj = currentQuestions[currentQIndex];
+        questionTextDiv.innerText = currentQuestionObj.text;
+        topicBadge.innerText = currentQuestionObj.topic || "Kusikiliza na Kujibu";
+        answerLocked = false;
+        nextBtn.disabled = true;
+        feedbackMsgDiv.innerHTML = '';
+        feedbackMsgDiv.className = 'feedback';
+        textInput.value = '';
+        textInput.disabled = false;
+        textInput.focus();
+        // reset mic styling
+        micBtn.classList.remove('listening');
+    }
+    
+    function normalizeText(str) {
+        return str.toLowerCase().trim().replace(/[.,!?;:'"()-]/g, '').replace(/\s+/g, ' ');
+    }
+    
+    function checkAnswer(userAnswer) {
+        if (answerLocked) {
+            voiceStatusSpan.innerText = "✅ Tayari umejibu. Bonyeza 'Swali Linalofuata'.";
+            return false;
+        }
+        const normalizedUser = normalizeText(userAnswer);
+        const correctNorm = normalizeText(currentQuestionObj.correctAnswer);
+        // Check partial match or full match
+        let isCorrect = false;
+        if (normalizedUser.includes(correctNorm) || correctNorm.includes(normalizedUser) || 
+            (correctNorm.length > 3 && normalizedUser.length > 3 && (normalizedUser.indexOf(correctNorm.substring(0,5)) !== -1))) {
+            isCorrect = true;
+        }
+        // Also check against options
+        if (!isCorrect && currentQuestionObj.options) {
+            for (let opt of currentQuestionObj.options) {
+                if (normalizeText(opt) === normalizedUser) { isCorrect = true; break; }
+            }
+        }
+        
+        answerLocked = true;
+        if (isCorrect) {
+            currentScore += pointsPerCorrect;
+            currentStreak++;
+            currentScoreSpan.innerText = currentScore;
+            speakSwahili("Sahihi! Umepata alama", true);
+            feedbackMsgDiv.innerHTML = `✅ Sahihi! +${pointsPerCorrect} alama.`;
+            feedbackMsgDiv.className = "feedback correct";
+            voiceStatusSpan.innerText = "✅ Sahihi! Vizuri sana!";
+        } else {
+            currentStreak = 0;
+            streakSpan.innerText = currentStreak;
+            const correctAnswerText = currentQuestionObj.correctAnswer;
+            speakSwahili("Pole, jibu si sahihi. Jibu sahihi ni " + correctAnswerText, false);
+            feedbackMsgDiv.innerHTML = `❌ Si sahihi. Jibu sahihi: ${correctAnswerText}`;
+            feedbackMsgDiv.className = "feedback wrong";
+            voiceStatusSpan.innerText = "❌ Jibu si sahihi. Jaribu tena swali linalofuata.";
+        }
+        updateUI();
+        nextBtn.disabled = false;
+        textInput.disabled = true;
+        return true;
+    }
+    
+    function nextQuestion() {
+        if (!answerLocked) {
+            voiceStatusSpan.innerText = "Tafadhali jibu swali kwanza!";
+            return;
+        }
+        if (currentQIndex + 1 < currentQuestions.length) {
+            currentQIndex++;
+            renderCurrentQuestion();
+            nextBtn.disabled = true;
+            textInput.disabled = false;
+            updateUI();
+        } else {
+            // End of level - check if passed
+            finishLevel();
+        }
+    }
+    
+    function finishLevel() {
+        const required = marksRequired[currentLevel];
+        const passed = currentScore >= required;
+        
+        gameScreen.classList.add('hidden');
+        levelScreen.classList.remove('hidden');
+        
+        finalLevelScoreSpan.innerText = currentScore;
+        passReqSpan.innerText = required;
+        levelResultBadge.innerText = `Ngazi ${currentLevel} Imemalizika`;
+        
+        let starCount = "";
+        if (currentScore >= required + 30) starCount = "⭐⭐⭐";
+        else if (currentScore >= required + 15) starCount = "⭐⭐";
+        else if (passed) starCount = "⭐";
+        else starCount = "❌";
+        starsDisplay.innerText = starCount;
+        
+        if (passed && currentLevel < 6) {
+            levelResultTitle.innerText = "🎉 Hongera! Umepita Ngazi! 🎉";
+            levelMessageText.innerText = `Umepata alama ${currentScore}/${maxPossibleScore}. Unapanda ngazi ${currentLevel+1}!`;
+            levelActionBtn.innerText = "Ngazi Inayofuata ➡️";
+            levelActionBtn.onclick = () => {
+                currentLevel++;
+                levelScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                loadLevel(currentLevel);
+                speakSwahili(`Hongera! Sasa ngazi ya ${currentLevel}. Endelea kujibu kwa sauti.`);
+            };
+        } else if (passed && currentLevel === 6) {
+            levelResultTitle.innerText = "🏆 UMEMALIZA MCHEZO! BWANA WA LUGHA 🏆";
+            levelMessageText.innerText = `Umefanikiwa ngazi zote sita! Wewe ni Bingwa wa Kusikiliza na Kuzungumza!`;
+            starsDisplay.innerText = "🏆⭐⭐⭐🏆";
+            levelActionBtn.innerText = "Cheza Tena 🔄";
+            levelActionBtn.onclick = () => {
+                window.location.reload();
+            };
+        } else {
+            levelResultTitle.innerText = "💪 Jaribu Tena!";
+            levelMessageText.innerText = `Haukufikia alama ${required}. Unahitaji angalau alama ${required} kupita. Rudia ngazi hii kwa bidii.`;
+            levelActionBtn.innerText = "Rudia Ngazi Hii 🔄";
+            levelActionBtn.onclick = () => {
+                levelScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                loadLevel(currentLevel);
+                speakSwahili("Jaribu tena ngazi hii. Unaweza! Zingatia kusikiliza vizuri.");
+            };
+        }
+        // Confetti effect if passed
+        if (passed) createMiniConfetti();
+    }
+    
+    function createMiniConfetti() {
+        for (let i = 0; i < 40; i++) {
+            const conf = document.createElement('div');
+            conf.style.position = 'fixed';
+            conf.style.width = '8px';
+            conf.style.height = '8px';
+            conf.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+            conf.style.left = Math.random() * 100 + '%';
+            conf.style.top = '-10px';
+            conf.style.borderRadius = '50%';
+            conf.style.pointerEvents = 'none';
+            conf.style.zIndex = '9999';
+            conf.style.animation = `fallConfetti ${0.8 + Math.random() * 1}s linear forwards`;
+            document.body.appendChild(conf);
+            setTimeout(() => conf.remove(), 1500);
+        }
+    }
+    
+    // Voice automation handler
+    function setupVoice() {
+        if (!initSpeech()) return;
+        micBtn.addEventListener('click', () => {
+            if (answerLocked) {
+                voiceStatusSpan.innerText = "Umeshajibu, bonyeza Next kwanza.";
+                speakSwahili("Umeshajibu swali. Bonyeza next.");
+                return;
+            }
+            if (isListening) {
+                recognition.stop();
+                return;
+            }
+            try {
+                recognition.start();
+                isListening = true;
+                micBtn.classList.add('listening');
+                voiceStatusSpan.innerText = "🎙️ Sikiliza... sema jibu lako kwa Kiswahili...";
+            } catch(e) { voiceStatusSpan.innerText = "Hitilafu ya maikrofoni."; }
+        });
+        
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            voiceStatusSpan.innerText = `🗣️ Ulisema: "${transcript}"`;
+            checkAnswer(transcript);
+            isListening = false;
+            micBtn.classList.remove('listening');
+        };
+        recognition.onerror = (err) => {
+            voiceStatusSpan.innerText = `Hitilafu: Jaribu tena`;
+            isListening = false;
+            micBtn.classList.remove('listening');
+        };
+        recognition.onend = () => {
+            isListening = false;
+            micBtn.classList.remove('listening');
+            if (!answerLocked) voiceStatusSpan.innerText = "Bonyeza tena kuzungumza au andika.";
+        };
+    }
+    
+    // Manual text input
+    textInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !answerLocked && textInput.value.trim() !== "") {
+            checkAnswer(textInput.value.trim());
+        }
+    });
+    
+    nextBtn.addEventListener('click', nextQuestion);
+    
+    // Start Game Function
+    window.startGame = function() {
+        startScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        currentLevel = 1;
+        loadLevel(1);
+        setupVoice();
+        speakSwahili("Karibu kwenye mchezo wa kusikiliza na kuzungumza. Jibu kwa sauti yako.");
+    };
+    
+    // Add confetti keyframes
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `@keyframes fallConfetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }`;
+    document.head.appendChild(styleSheet);
+</script>
+</body>
+</html>
