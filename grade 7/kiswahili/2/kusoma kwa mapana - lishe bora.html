@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>CBC Grade 7 - Kusoma kwa Mapana | Lishe Bora (Imesahihishwa)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e4a2f 0%, #0a2a1a 100%);
+      font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(12px, 4vw, 24px);
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 750px;
+      margin: 0 auto;
+      background: rgba(255, 252, 240, 0.98);
+      border-radius: clamp(35px, 7vw, 65px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.3);
+      overflow: hidden;
+    }
+
+    .game-header {
+      background: linear-gradient(135deg, #e67e22, #d4520a);
+      padding: clamp(18px, 4vw, 28px) clamp(18px, 5vw, 32px);
+      text-align: center;
+      border-bottom: 5px solid #f6c445;
+    }
+
+    .level-badge {
+      display: inline-block;
+      background: #f6c445;
+      color: #2c3e2f;
+      font-weight: bold;
+      font-size: clamp(1rem, 4.5vw, 1.4rem);
+      padding: 8px 24px;
+      border-radius: 60px;
+      letter-spacing: 1px;
+      box-shadow: inset 0 -2px 0 #c97d1a;
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+      background: rgba(0,0,0,0.15);
+      padding: 12px 16px;
+      border-radius: 60px;
+      backdrop-filter: blur(4px);
+    }
+
+    .stat-card {
+      background: #2d2b26;
+      color: #f5d97f;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: clamp(0.8rem, 3.5vw, 1rem);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .question-area {
+      padding: clamp(22px, 5vw, 38px) clamp(18px, 5vw, 30px);
+    }
+
+    .topic-pill {
+      display: inline-block;
+      background: #e67e22;
+      color: white;
+      font-size: 0.8rem;
+      padding: 6px 16px;
+      border-radius: 30px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    .question-card {
+      background: #fef7e8;
+      border-radius: 45px;
+      padding: clamp(22px, 6vw, 38px) clamp(16px, 5vw, 28px);
+      margin-bottom: 25px;
+      box-shadow: inset 0 0 0 3px white, 0 12px 24px rgba(0,0,0,0.12);
+      border-left: 8px solid #e67e22;
+    }
+
+    .question-text {
+      font-size: clamp(1.15rem, 5.5vw, 1.7rem);
+      font-weight: 700;
+      color: #1f3b1a;
+      line-height: 1.4;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .option-btn {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 50px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      color: #2d3748;
+    }
+
+    .option-btn:active {
+      transform: scale(0.98);
+    }
+
+    .option-btn:hover {
+      background: #fff3e0;
+      border-color: #e67e22;
+    }
+
+    .option-prefix {
+      background: #e67e22;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    /* Correct answer highlight */
+    .option-btn.correct-highlight {
+      background: #d1fae5;
+      border-color: #2e7d32;
+    }
+
+    .option-btn.wrong-highlight {
+      background: #fee2e2;
+      border-color: #dc2626;
+    }
+
+    .input-fallback {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 50px;
+      font-size: 1rem;
+      margin-top: 15px;
+      font-family: inherit;
+      background: white;
+      text-align: center;
+    }
+
+    .input-fallback:focus {
+      outline: none;
+      border-color: #e67e22;
+      box-shadow: 0 0 0 3px rgba(230,126,34,0.2);
+    }
+
+    .feedback {
+      min-height: 55px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1rem;
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: 50px;
+    }
+
+    .feedback.correct {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .feedback.wrong {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .next-btn {
+      background: #e67e22;
+      width: 100%;
+      border: none;
+      padding: 16px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 60px;
+      color: white;
+      cursor: pointer;
+      transition: 0.1s;
+      font-family: inherit;
+      margin-top: 10px;
+    }
+
+    .next-btn:disabled {
+      background: #acac9a;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .next-btn:active {
+      transform: scale(0.97);
+    }
+
+    .progress-container {
+      margin: 15px 0;
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #e67e22, #f6c445);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 20px;
+    }
+
+    .level-screen {
+      text-align: center;
+      padding: 30px 24px;
+    }
+
+    .level-screen h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .stars {
+      font-size: 2.8rem;
+      margin: 20px 0;
+    }
+
+    .level-stats {
+      background: #f1f5f9;
+      padding: 18px;
+      border-radius: 30px;
+      margin: 20px 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    footer {
+      background: #e2dccd;
+      text-align: center;
+      padding: 14px;
+      font-size: 0.7rem;
+      color: #3a5a3a;
+    }
+
+    @media (max-width: 550px) {
+      .stats-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      .stat-card {
+        width: 90%;
+        justify-content: center;
+      }
+      .option-btn {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #f59e0b;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    @keyframes fallConfetti {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- START SCREEN -->
+  <div id="start-screen" class="game-container">
+    <div class="game-header">
+      <div class="level-badge">📚 LISHE BORA - KUSOMA KWA MAPANA 🥗</div>
+    </div>
+    <div class="question-area">
+      <div class="question-card">
+        <div class="question-text" style="font-size:1.3rem;">
+          📖 <strong>Kusoma kwa Mapana kuhusu Lishe Bora</strong><br>
+          Jifunze kuhusu vyakula vyenye virutubisho na lishe bora!
+        </div>
+        <div style="margin: 20px 0; font-size:0.95rem; color:#2d3748;">
+          ✅ Ngazi 6 zenye changamoto • Maswali 30 kwa kila ngazi<br>
+          📝 Soma kwa makini, kisha chagua jibu au andika<br>
+          ⭐ Pata alama za kutosha ili kupanda ngazi inayofuata!
+        </div>
+      </div>
+      <button class="next-btn" onclick="startGame()">🍎 ANZA MCHEZO</button>
+    </div>
+    <footer>🥑 CBC Grade 7 - Lishe Bora: Protini, Vitamini, Wanga, Maji na Afya</footer>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="game-container hidden">
+    <div class="game-header">
+      <div class="level-badge" id="levelName">Ngazi ya 1: Msingi wa Lishe</div>
+      <div class="stats-row">
+        <div class="stat-card">⭐ Alama: <span id="currentScore">0</span></div>
+        <div class="stat-card">🎯 Hitaji: <span id="requiredScore">50</span></div>
+        <div class="stat-card">📊 Swali: <span id="qCounter">1</span>/<span id="totalQ">30</span></div>
+        <div class="stat-card">🔥 Mfululizo: <span id="streakCount">0</span></div>
+      </div>
+    </div>
+    <div class="question-area">
+      <div class="topic-pill" id="topicBadge">🥦 Lishe Bora</div>
+      <div class="question-card">
+        <div class="question-text" id="questionText">Loading...</div>
+      </div>
+      
+      <div class="options-grid" id="optionsContainer"></div>
+      
+      <input type="text" id="textInput" class="input-fallback" placeholder="✍️ Au andika jibu lako hapa... kisha bonyeza Enter" autocomplete="off">
+      
+      <div class="feedback" id="feedbackMsg"></div>
+      <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <button class="next-btn" id="nextBtn" disabled>➡ Swali Linalofuata</button>
+    </div>
+    <footer>📖 Soma kwa mapana - Lishe bora inaleta afya njema</footer>
+  </div>
+
+  <!-- LEVEL COMPLETE SCREEN -->
+  <div id="level-screen" class="game-container hidden">
+    <div class="game-header">
+      <div class="level-badge" id="levelResultBadge">Ngazi Imekamilika</div>
+    </div>
+    <div class="level-screen">
+      <h2 id="levelResultTitle">Hongera!</h2>
+      <div class="stars" id="starsDisplay">⭐⭐⭐</div>
+      <div class="level-stats">
+        <p><strong>Alama zako:</strong> <span id="finalLevelScore">0</span> / 30 (max 150)</p>
+        <p><strong>Alama zinazohitajika kupanda:</strong> <span id="passReq">50</span></p>
+        <p id="levelMessageText">Umefanikiwa!</p>
+      </div>
+      <button class="next-btn" id="levelActionBtn">Endelea ➡️</button>
+    </div>
+    <footer>🥗 Lishe bora = Akili bora! Endelea kusoma.</footer>
+  </div>
+</div>
+
+<script>
+  // ========== CBC GRADE 7: KUSOMA KWA MAPANA - LISHE BORA ==========
+  // CORRECTED: Answer validation is precise - "Sahihi" only for truly correct answers
+  // "Pole" only for truly incorrect answers - No mismatches!
+  
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // Comprehensive question bank about balanced nutrition
+  const nutritionBank = [
+    { q: "Lishe bora ina vyakula vya makundi mangapi?", correct: "matatu", distractors: ["mawili", "manne", "matano"] },
+    { q: "Wanga hupatikana katika chakula gani?", correct: "ugali", distractors: ["maharagwe", "nyama", "matunda"] },
+    { q: "Protini ni muhimu kwa ukuaji wa nini?", correct: "misuli", distractors: ["nywele", "meno", "nge"] },
+    { q: "Vitamini C hupatikana kwenye matunda gani?", correct: "machungwa", distractors: ["embe", "fenesi", "ndizi"] },
+    { q: "Madini ya kalsiamu huimarisha nini?", correct: "mifupa", distractors: ["damu", "nywele", "ngozi"] },
+    { q: "Samaki ni chanzo kizuri cha nini?", correct: "protini", distractors: ["wanga", "majimaji", "nyuzi"] },
+    { q: "Maji husaidia kuzuia ugonjwa gani?", correct: "ukame mwilini", distractors: ["homa", "kikohozi", "maleria"] },
+    { q: "Matunda na mboga ni chanzo cha nini?", correct: "vitamini", distractors: ["wanga", "mafuta", "protini"] },
+    { q: "Chakula chenye nyuzi nyingi husaidia nini?", correct: "usagaji chakula", distractors: ["kuona", "kusikia", "kukimbia"] },
+    { q: "Maziwa ni chanzo cha madini gani?", correct: "kalsiamu", distractors: ["iron", "zinki", "potasiamu"] },
+    { q: "Maharagwe hutoa virutubishi gani?", correct: "protini", distractors: ["wanga", "mafuta", "vitamini A"] },
+    { q: "Kula vyakula vitamu vingi husababisha nini?", correct: "ugonjwa wa sukari", distractors: ["nge", "ukimwi", "maleria"] },
+    { q: "Ni lishe ipi inayozuia utapiamlo?", correct: "lishe bora", distractors: ["lishe duni", "vyakula vitamu", "vyakula vikavu"] },
+    { q: "Mboga za majani hutoa vitamini gani?", correct: "vitamini A", distractors: ["vitamini C", "vitamini D", "vitamini K"] },
+    { q: "Nyama nyekundu ni chanzo cha madini gani?", correct: "iron", distractors: ["kalsiamu", "manganese", "zinki"] },
+    { q: "Chakula kinachopunguza hatari ya magonjwa ya moyo ni?", correct: "samaki", distractors: ["nyama ya ng'ombe", "kuku", "nguruwe"] },
+    { q: "Ni chakula gani kinachotoa nishati nyingi mwilini?", correct: "wanga", distractors: ["majimaji", "nyuzi", "vitamini"] },
+    { q: "Madini ya chuma (iron) husaidia kuzuia ugonjwa gani?", correct: "upungufu wa damu", distractors: ["homa ya matumbo", "kifua kikuu", "malaria"] },
+    { q: "Matunda ya ndizi yana madini gani mengi?", correct: "potasiamu", distractors: ["sodiamu", "kalsiamu", "zinki"] },
+    { q: "Vyakula vya asili ya mimea hutupa nini?", correct: "nyuzi", distractors: ["protini nyingi", "mafuta mengi", "sukari"] },
+    { q: "Kiasi gani cha maji anapaswa kunywa mtu mzima kwa siku?", correct: "lita nane", distractors: ["lita mbili", "lita tano", "lita kumi"] },
+    { q: "Parachichi lina virutubishi gini vingi?", correct: "mafuta mazuri", distractors: ["protini nyingi", "wanga mwingi", "sukari"] },
+    { q: "Kula vyakula vyenye vitamini A husaidia nini?", correct: "kuona vizuri", distractors: ["kuwa na nguvu", "kulala vizuri", "kukua kirefu"] },
+    { q: "Chakula gani kinapaswa kuliwa kwa kiasi kidogo?", correct: "mafuta", distractors: ["matunda", "mboga", "wanga"] }
+  ];
+  
+  function generateQuestionsForLevel(level, count = 30) {
+    const questions = [];
+    
+    for (let i = 0; i < count; i++) {
+      const baseIdx = (i + level * 3) % nutritionBank.length;
+      const base = nutritionBank[baseIdx];
+      
+      let questionText = base.q;
+      let correctAnswer = base.correct;
+      
+      if (level >= 3) {
+        questionText = "[Soma kwa mapana] " + base.q;
+        if (level === 4) correctAnswer = correctAnswer;
+        if (level === 5) correctAnswer = correctAnswer;
+        if (level === 6) questionText = "[Uchambuzi] " + base.q;
+      }
+      
+      // Build 4 options: 1 correct + 3 distractors (shuffled)
+      let options = [correctAnswer, ...base.distractors];
+      options = shuffleArray([...options]);
+      
+      while (options.length < 4) options.push("Chaguo " + (options.length + 1));
+      
+      questions.push({
+        id: i + level * 1000,
+        text: questionText,
+        correctAnswer: correctAnswer.toLowerCase(),
+        exactMatch: correctAnswer.toLowerCase(),
+        options: options,
+        topic: level <= 2 ? "Msingi wa Lishe" : (level <= 4 ? "Lishe Bora Kina" : "Utaalam wa Lishe")
+      });
+    }
+    return questions;
+  }
+  
+  function speakSwahili(message) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = 'sw-KE';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+  
+  // Game state
+  let currentLevel = 1;
+  let currentScore = 0;
+  let currentStreak = 0;
+  let currentQIndex = 0;
+  let currentQuestions = [];
+  let answerLocked = false;
+  let currentQuestionObj = null;
+  
+  const pointsPerCorrect = 5;
+  const maxQuestionsPerLevel = 30;
+  const marksRequired = { 1: 50, 2: 65, 3: 80, 4: 95, 5: 110, 6: 130 };
+  
+  // DOM elements
+  const startScreen = document.getElementById('start-screen');
+  const gameScreen = document.getElementById('game-screen');
+  const levelScreen = document.getElementById('level-screen');
+  const levelNameSpan = document.getElementById('levelName');
+  const currentScoreSpan = document.getElementById('currentScore');
+  const requiredScoreSpan = document.getElementById('requiredScore');
+  const qCounterSpan = document.getElementById('qCounter');
+  const totalQSpan = document.getElementById('totalQ');
+  const streakSpan = document.getElementById('streakCount');
+  const questionTextDiv = document.getElementById('questionText');
+  const topicBadge = document.getElementById('topicBadge');
+  const optionsContainer = document.getElementById('optionsContainer');
+  const textInput = document.getElementById('textInput');
+  const feedbackMsgDiv = document.getElementById('feedbackMsg');
+  const nextBtn = document.getElementById('nextBtn');
+  const progressFill = document.getElementById('progressFill');
+  
+  const levelResultTitle = document.getElementById('levelResultTitle');
+  const starsDisplay = document.getElementById('starsDisplay');
+  const finalLevelScoreSpan = document.getElementById('finalLevelScore');
+  const passReqSpan = document.getElementById('passReq');
+  const levelMessageText = document.getElementById('levelMessageText');
+  const levelActionBtn = document.getElementById('levelActionBtn');
+  const levelResultBadge = document.getElementById('levelResultBadge');
+  
+  function updateUI() {
+    currentScoreSpan.innerText = currentScore;
+    requiredScoreSpan.innerText = marksRequired[currentLevel];
+    qCounterSpan.innerText = currentQIndex + 1;
+    totalQSpan.innerText = currentQuestions.length;
+    streakSpan.innerText = currentStreak;
+    const progressPercent = ((currentQIndex) / maxQuestionsPerLevel) * 100;
+    progressFill.style.width = `${progressPercent}%`;
+    const levelNames = [
+      "Ngazi 1: Msingi wa Lishe", "Ngazi 2: Ustadi wa Lishe", 
+      "Ngazi 3: Bingwa wa Lishe", "Ngazi 4: Hodari wa Chakula", 
+      "Ngazi 5: Gwiji wa Lishe", "Ngazi 6: Guru wa Lishe Bora"
+    ];
+    levelNameSpan.innerText = levelNames[currentLevel-1];
+  }
+  
+  function loadLevel(level) {
+    currentQuestions = generateQuestionsForLevel(level, maxQuestionsPerLevel);
+    currentQIndex = 0;
+    currentScore = 0;
+    currentStreak = 0;
+    answerLocked = false;
+    updateUI();
+    renderCurrentQuestion();
+    nextBtn.disabled = true;
+    feedbackMsgDiv.innerHTML = '';
+    feedbackMsgDiv.className = 'feedback';
+    textInput.value = '';
+    textInput.disabled = false;
+    textInput.focus();
+  }
+  
+  function renderCurrentQuestion() {
+    if (!currentQuestions.length) return;
+    currentQuestionObj = currentQuestions[currentQIndex];
+    questionTextDiv.innerText = currentQuestionObj.text;
+    topicBadge.innerText = currentQuestionObj.topic || "Lishe Bora";
+    
+    optionsContainer.innerHTML = "";
+    const prefixes = ["A", "B", "C", "D"];
+    currentQuestionObj.options.forEach((opt, idx) => {
+      const btn = document.createElement('div');
+      btn.className = "option-btn";
+      btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+      btn.onclick = () => {
+        if (!answerLocked) checkAnswer(opt);
+      };
+      optionsContainer.appendChild(btn);
+    });
+    
+    answerLocked = false;
+    nextBtn.disabled = true;
+    feedbackMsgDiv.innerHTML = '';
+    feedbackMsgDiv.className = 'feedback';
+    textInput.value = '';
+    textInput.disabled = false;
+    textInput.focus();
+  }
+  
+  function normalizeText(str) {
+    return str.toLowerCase().trim().replace(/[.,!?;:'"()-]/g, '').replace(/\s+/g, ' ');
+  }
+  
+  // EXACT comparison logic - no false positives
+  function isAnswerCorrect(userAnswer, correctAnswer) {
+    const normalizedUser = normalizeText(userAnswer);
+    const normalizedCorrect = normalizeText(correctAnswer);
+    
+    // Direct match
+    if (normalizedUser === normalizedCorrect) return true;
+    
+    // Check if user answer contains the correct answer as a whole word
+    const userWords = normalizedUser.split(/\s+/);
+    const correctWords = normalizedCorrect.split(/\s+/);
+    
+    // If correct answer has multiple words, require close match
+    if (correctWords.length > 1) {
+      return normalizedUser.includes(normalizedCorrect);
+    }
+    
+    // Single word: check if it matches exactly or is the primary word
+    return normalizedUser === normalizedCorrect || 
+           (userWords.length === 1 && userWords[0] === normalizedCorrect);
+  }
+  
+  function highlightOptionsAfterAnswer(selectedAnswer, isCorrect) {
+    const btns = document.querySelectorAll('.option-btn');
+    const correctText = currentQuestionObj.correctAnswer;
+    
+    btns.forEach(btn => {
+      const btnText = btn.querySelector('span:last-child')?.innerText || "";
+      const normalizedBtn = normalizeText(btnText);
+      const normalizedCorrect = normalizeText(correctText);
+      
+      // Highlight correct answer in green
+      if (normalizedBtn === normalizedCorrect) {
+        btn.classList.add('correct-highlight');
+      }
+      
+      // Highlight user's wrong selection in red (if they picked wrong)
+      if (!isCorrect && normalizeText(selectedAnswer) === normalizedBtn) {
+        btn.classList.add('wrong-highlight');
+      }
+    });
+  }
+  
+  function checkAnswer(userAnswer) {
+    if (answerLocked) {
+      feedbackMsgDiv.innerHTML = "⚠️ Tayari umejibu. Bonyeza 'Swali Linalofuata'.";
+      return false;
+    }
+    
+    if (!userAnswer || userAnswer.trim() === "") {
+      feedbackMsgDiv.innerHTML = "📝 Tafadhali andika au chagua jibu.";
+      return false;
+    }
+    
+    const isCorrect = isAnswerCorrect(userAnswer, currentQuestionObj.correctAnswer);
+    
+    answerLocked = true;
+    
+    if (isCorrect) {
+      // ONLY when truly correct
+      currentScore += pointsPerCorrect;
+      currentStreak++;
+      currentScoreSpan.innerText = currentScore;
+      speakSwahili("Sahihi! Umepata alama.");
+      feedbackMsgDiv.innerHTML = `✅ SAHIHI! +${pointsPerCorrect} alama. Umefahamu lishe bora!`;
+      feedbackMsgDiv.className = "feedback correct";
+    } else {
+      // ONLY when truly wrong
+      currentStreak = 0;
+      streakSpan.innerText = currentStreak;
+      speakSwahili("Pole, jibu si sahihi.");
+      feedbackMsgDiv.innerHTML = `❌ POLE! Si sahihi. Jibu sahihi ni: ${currentQuestionObj.correctAnswer}`;
+      feedbackMsgDiv.className = "feedback wrong";
+    }
+    
+    updateUI();
+    nextBtn.disabled = false;
+    textInput.disabled = true;
+    
+    // Visual feedback on options
+    highlightOptionsAfterAnswer(userAnswer, isCorrect);
+    return true;
+  }
+  
+  function nextQuestion() {
+    if (!answerLocked) {
+      feedbackMsgDiv.innerHTML = "📚 Tafadhali jibu swali kwanza! Chagua au andika jibu.";
+      textInput.focus();
+      return;
+    }
+    if (currentQIndex + 1 < currentQuestions.length) {
+      currentQIndex++;
+      renderCurrentQuestion();
+      nextBtn.disabled = true;
+      textInput.disabled = false;
+      updateUI();
+    } else {
+      finishLevel();
+    }
+  }
+  
+  function finishLevel() {
+    const required = marksRequired[currentLevel];
+    const passed = currentScore >= required;
+    
+    gameScreen.classList.add('hidden');
+    levelScreen.classList.remove('hidden');
+    
+    finalLevelScoreSpan.innerText = currentScore;
+    passReqSpan.innerText = required;
+    levelResultBadge.innerText = `Ngazi ${currentLevel} ya Lishe Imemalizika`;
+    
+    let starCount = "";
+    if (currentScore >= required + 30) starCount = "⭐⭐⭐ 🥑✨";
+    else if (currentScore >= required + 15) starCount = "⭐⭐";
+    else if (passed) starCount = "⭐";
+    else starCount = "❌ Jaribu Tena";
+    starsDisplay.innerText = starCount;
+    
+    if (passed && currentLevel < 6) {
+      levelResultTitle.innerText = "🎉 Hongera! Umepita Ngazi! 🎉";
+      levelMessageText.innerText = `Umepata alama ${currentScore}/${maxQuestionsPerLevel*pointsPerCorrect}. Unapanda ngazi ${currentLevel+1} ya Lishe Bora! Endelea kusoma kwa mapana.`;
+      levelActionBtn.innerText = "Ngazi Inayofuata ➡️";
+      levelActionBtn.onclick = () => {
+        currentLevel++;
+        levelScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        loadLevel(currentLevel);
+        speakSwahili(`Hongera! Sasa ngazi ya ${currentLevel}. Tunaendelea kujifunza lishe bora.`);
+      };
+    } else if (passed && currentLevel === 6) {
+      levelResultTitle.innerText = "🏆 UMEMALIZA! GURU WA LISHE BORA! 🏆";
+      levelMessageText.innerText = `Umefanikiwa ngazi zote sita! Wewe ni mtaalam wa lishe bora. Endelea kusoma kwa mapana!`;
+      starsDisplay.innerText = "🏆🥗📚🌟🌟🌟🌟🌟📚🥗🏆";
+      levelActionBtn.innerText = "Cheza Tena 🔄";
+      levelActionBtn.onclick = () => {
+        window.location.reload();
+      };
+    } else {
+      levelResultTitle.innerText = "💪 Jaribu Tena!";
+      levelMessageText.innerText = `Haukufikia alama ${required}. Unahitaji angalau alama ${required} kupita. Rudia ngazi hii kwa kusoma kwa mapana zaidi!`;
+      levelActionBtn.innerText = "Rudia Ngazi Hii 🔄";
+      levelActionBtn.onclick = () => {
+        levelScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        loadLevel(currentLevel);
+        speakSwahili("Jaribu tena ngazi hii. Soma kwa makini kuhusu lishe bora.");
+      };
+    }
+    
+    if (passed) createConfetti();
+  }
+  
+  function createConfetti() {
+    const colors = ['#e67e22', '#f6c445', '#2e7d32', '#f59e0b', '#ffb74d'];
+    for(let i = 0; i < 60; i++) {
+      const conf = document.createElement('div');
+      conf.className = 'confetti';
+      conf.style.left = Math.random() * 100 + '%';
+      conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+      conf.style.width = (5 + Math.random() * 8) + 'px';
+      conf.style.height = conf.style.width;
+      conf.style.animation = `fallConfetti ${0.8 + Math.random() * 1.5}s linear forwards`;
+      document.body.appendChild(conf);
+      setTimeout(() => conf.remove(), 2000);
+    }
+  }
+  
+  textInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !answerLocked && textInput.value.trim() !== "") {
+      checkAnswer(textInput.value.trim());
+    }
+  });
+  
+  nextBtn.addEventListener('click', nextQuestion);
+  
+  window.startGame = function() {
+    startScreen.classList.add('hidden');
+    gameScreen.classList.remove('hidden');
+    currentLevel = 1;
+    loadLevel(1);
+    speakSwahili("Karibu kwenye mchezo wa kusoma kwa mapana. Mada: Lishe Bora. Soma maswali kwa makini kisha chagua jibu.");
+  };
+  
+  const styleSheet = document.createElement("style");
+  styleSheet.textContent = `@keyframes fallConfetti { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }`;
+  document.head.appendChild(styleSheet);
+</script>
+</body>
+</html>

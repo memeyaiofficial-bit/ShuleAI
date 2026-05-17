@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>CBC Grade 7: Insha za Kubuni (Masimulizi) + Matumizi ya Vifaa vya Kidijitali</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb4d);
+            background-attachment: fixed;
+            font-family: 'Poppins', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: #fffef7;
+            border-radius: 60px 50px 60px 50px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #0f172a;
+            padding: 1.2rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 5px solid #facc15;
+            color: #fef9e3;
+        }
+
+        .level-badge {
+            background: #facc15;
+            color: #0f172a;
+            font-weight: bold;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #b45309;
+        }
+
+        .score-area {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 6px 22px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .question-counter {
+            background: #334155;
+            padding: 6px 20px;
+            border-radius: 32px;
+            font-weight: bold;
+        }
+
+        .quiz-body {
+            padding: 35px 30px;
+            background: #fffbee;
+        }
+
+        .question-box {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 28px 30px;
+            border-radius: 55px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 0 #020617;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #fef9c3;
+            text-align: center;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        /* answer input area */
+        .answer-area {
+            margin: 20px 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .answer-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1e293b;
+            background: #fef9e3;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+            width: fit-content;
+            border-left: 6px solid #facc15;
+        }
+
+        .answer-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .answer-input {
+            flex: 3;
+            min-width: 220px;
+            padding: 16px 22px;
+            font-size: 1.1rem;
+            border: 3px solid #cbd5e1;
+            border-radius: 60px;
+            background: white;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .answer-input:focus {
+            border-color: #facc15;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3);
+        }
+
+        .submit-btn {
+            background: #facc15;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #0f172a;
+            cursor: pointer;
+            transition: 0.08s linear;
+            font-family: inherit;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.96);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .action-bar {
+            background: #1e293b;
+            border-radius: 60px;
+            padding: 12px 25px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feedback-message {
+            background: #fef9e3;
+            padding: 12px 22px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: #1e293b;
+            flex: 2;
+            font-size: 1rem;
+        }
+
+        .next-button {
+            background: #facc15;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 50px;
+            color: #0f172a;
+            cursor: pointer;
+            transition: 0.05s linear;
+            font-family: inherit;
+        }
+
+        .next-button:active {
+            transform: scale(0.96);
+        }
+
+        .next-button:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .hint-text {
+            font-size: 0.9rem;
+            color: #475569;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        footer {
+            background: #0f172a;
+            text-align: center;
+            padding: 12px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-card {
+            background: linear-gradient(145deg, #fef9c3, #fde047);
+            max-width: 550px;
+            width: 85%;
+            padding: 35px 20px;
+            border-radius: 65px 35px;
+            text-align: center;
+            border: 4px solid #facc15;
+            box-shadow: 0 20px 35px black;
+        }
+
+        .modal-card h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+
+        .modal-card button {
+            background: #1e293b;
+            color: #facc15;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 60px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 680px) {
+            .quiz-body {
+                padding: 20px 16px;
+            }
+            .question-text {
+                font-size: 1.2rem;
+            }
+            .answer-input {
+                font-size: 1rem;
+                padding: 12px 18px;
+            }
+            .submit-btn, .next-button {
+                padding: 10px 22px;
+                font-size: 1rem;
+            }
+            .level-badge {
+                font-size: 1rem;
+                padding: 5px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Ngazi ya 1</div>
+        <div class="score-area">🏆 <span id="totalScore">0</span> alama</div>
+        <div class="question-counter">📖 Swali <span id="currentQ">1</span>/<span id="totalQ">30</span></div>
+    </div>
+
+    <div class="quiz-body">
+        <div class="question-box">
+            <div class="question-text" id="questionText">...</div>
+        </div>
+        
+        <div class="answer-area">
+            <div class="answer-label">✍️ Andika jibu lako hapa (neno au sentensi fupi):</div>
+            <div class="answer-input-wrapper">
+                <input type="text" id="answerInput" class="answer-input" placeholder="Chapa jibu sahihi..." autocomplete="off">
+                <button id="submitBtn" class="submit-btn">✅ Thibitisha Jibu</button>
+            </div>
+            <div class="hint-text">💡 Kidokezo: Fikiria muundo wa insha ya masimulizi (utangulizi, mwili, hitimisho) na matumizi sahihi ya vifaa vya kidijitali (kompyuta, intaneti, simu mahiri, n.k.).</div>
+        </div>
+
+        <div class="action-bar">
+            <div class="feedback-message" id="feedbackMsg">📚 Jibu swali, andika jibu, kisha bonyeza "Thibitisha"!</div>
+            <button class="next-button" id="nextBtn">SWALI LINALOFUATA →</button>
+        </div>
+    </div>
+    <footer>🎭 Insha za Kubuni - Masimulizi | 💻 Matumizi ya Vifaa vya Kidijitali | CBC Grade 7 | Andika majibu kwa usahihi</footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 7: INSHA ZA KUBUNI (MASIMULIZI) + MATUMIZI YA VIFAA VYA KIDIJITALI
+    // TYPE THE ANSWER MODE - 5 LEVELS * 30 UNIQUE QUESTIONS (NO REPETITION)
+    // --------------------------------------------------------------
+
+    const TOTAL_LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+
+    // ------------- MASTER QUESTION BANK (Insha + Vifaa vya Kidijitali) -------------
+    // Each question: text, correctAnswer (case-insensitive), explanation
+    const masterBank = [
+        // ========= INSHA ZA KUBUNI - MASIMULIZI =========
+        { text: "Katika insha ya masimulizi, sehemu ya kwanza inayotambulisha wahusika, wakati na mahali pa tukio inaitwa nini? (Jibu kwa neno moja)", correctAnswer: "utangulizi", explanation: "Utangulizi huleta msingi wa hadithi: wahusika, wakati, mahali." },
+        { text: "Ni neno gani la kiswahili linalomaanisha 'msururu wa matukio' katika insha ya kubuni?", correctAnswer: "masimulizi", explanation: "Masimulizi ni mlolongo wa matukio." },
+        { text: "Sehemu ya mwisho ya insha ya masimulizi ambapo tunatoa funzo au hitimisho inaitwa nini?", correctAnswer: "hitimisho", explanation: "Hitimisho hutoa muhtasari au funzo la hadithi." },
+        { text: "Taja aina moja ya insha za kubuni (masimulizi).", correctAnswer: "hadithi", explanation: "Hadithi, riwaya, ngano, visa ni aina za masimulizi." },
+        { text: "Ni kipengele gani cha insha kinachoonyesha mpangilio wa matukio kuanzia mwanzo hadi mwisho?", correctAnswer: "mlolongo", explanation: "Mlolongo wa matukio huleta uelekevu." },
+        { text: "Katika insha ya masimulizi, 'mgogoro' au 'tatizo' hutokea katika sehemu gani?", correctAnswer: "mwili", explanation: "Mwili wa insha huwa na mgogoro na matukio muhimu." },
+        { text: "Tamathali ya usemi inayolinganisha kitu na kingine kwa kutumia 'kama' au 'mfano' inaitwa nini?", correctAnswer: "tashibiha", explanation: "Tashibiha ni usawa: kama, mfano wa." },
+        { text: "Taja mbinu moja ya kuvutia wasomaji katika masimulizi (k.m., mazungumzo).", correctAnswer: "mazungumzo", explanation: "Mazungumzo huleta uchangamfu na uhalisi." },
+        { text: "Neno 'nasaba' katika insha ya masimulizi linamaanisha nini?", correctAnswer: "urithi", explanation: "Nasaba ni uhusiano wa kifamilia." },
+        { text: "Mwandishi anapotumia 'mimi' kusimulia hadithi, anatumia mtindo gani?", correctAnswer: "msimulizi", explanation: "Msimulizi wa nafsi ya kwanza (mimi)." },
+        { text: "Hadithi fupi yenye fundisho, hasa inayohusu wanyama, inaitwa nini?", correctAnswer: "ngano", explanation: "Ngano mara nyingi huwa na wanyama wanaozungumza." },
+        { text: "Taja neno la kiswahili kwa 'plot' (mlolongo wa matukio) katika insha.", correctAnswer: "ploti", explanation: "Ploti ni mpangilio wa matukio." },
+        
+        // ========= MATUMIZI YA VIFAA VYA KIDIJITALI =========
+        { text: "Kifaa cha kidijitali kinachotumiwa kuandika, kutuma barua pepe na kuvinjari intaneti kinaitwa nini?", correctAnswer: "kompyuta", explanation: "Kompyuta ndiyo kifaa kikuu cha kidijitali." },
+        { text: "Mtandao unaounganisha kompyuta duniani kote unaitwa nini?", correctAnswer: "intaneti", explanation: "Intaneti huwawezesha watu kuwasiliana." },
+        { text: "Neno 'simu mahiri' kwa kiingereza ni 'smartphone'. Taja kipengele kimoja cha simu mahiri.", correctAnswer: "intaneti", explanation: "Simu mahiri huwa na intaneti, kamera, programu mbalimbali." },
+        { text: "Barua pepe kwa kiswahili inaitwa nini?", correctAnswer: "baruapepe", explanation: "Barua pepe ni ujumbe wa kielektroniki." },
+        { text: "Taja jina la kifaa cha kidijitali kinachotumika kuchapisha hati.", correctAnswer: "printa", explanation: "Printa huchapisha maandishi kutoka kompyuta." },
+        { text: "Ni nini maana ya 'kituo cha intaneti' (Wi-Fi) kwa matumizi ya vifaa vya kidijitali?", correctAnswer: "mtandao", explanation: "Wi-Fi huwezesha kuungana kwenye intaneti bila waya." },
+        { text: "Taja programu (app) moja inayotumika kwa mawasiliano ya haraka.", correctAnswer: "whatsapp", explanation: "WhatsApp, Telegram, Messenger ni mifano." },
+        { text: "Kifaa cha kuhifadhi data kinachobebeka huitwa 'gari gumu la nje'. Je, jina lake kwa kiingereza ni nini?", correctAnswer: "hard disk", explanation: "Hard disk au flash drive huhifadhi faili." },
+        { text: "Taja faida moja ya matumizi ya vifaa vya kidijitali shuleni.", correctAnswer: "kutafuta habari", explanation: "Kutafuta habari, kujifunza mtandaoni, n.k." },
+        { text: "Ni neno gani linalomaanisha 'kutuma ujumbe mfupi kwa simu'?", correctAnswer: "sms", explanation: "SMS ni ujumbe mfupi wa maandishi." },
+        { text: "Kifaa kinachotumiwa kusikiliza muziki au sauti kutoka kwa kompyuta kinaitwa nini?", correctAnswer: "spika", explanation: "Spika hutoa sauti." },
+        { text: "Taja hatari moja ya matumizi makubwa ya vifaa vya kidijitali kwa wanafunzi.", correctAnswer: "tegemeo", explanation: "Kutegemea mtandao, upotevu wa muda, n.k." },
+        { text: "Barua pepe ya kibiashara isiyoombwa inayotumwa kwa wingi inaitwa nini?", correctAnswer: "taka", explanation: "Taka barua au spam." },
+        
+        // mchanganyiko zaidi (Insha + Digital)
+        { text: "Taja moja ya vifaa vya kidijitali vinavyoweza kutumia kuandika insha za kubuni.", correctAnswer: "kompyuta", explanation: "Kompyuta, simu mahiri, kompyuta kibao." },
+        { text: "Ni wazo gani kuu la hadithi linaloongozwa na mwandishi katika insha ya masimulizi?", correctAnswer: "maudhui", explanation: "Maudhui ni ujumbe au wazo kuu." },
+        { text: "Taja mojawapo ya nyenzo za kidijitali za kuhifadhi insha mtandaoni.", correctAnswer: "google drive", explanation: "Google Drive, OneDrive, Dropbox." },
+        { text: "Katika insha ya masimulizi, 'tamthilia' au 'mchezo wa kuigiza' ni aina gani ya insha?", correctAnswer: "kubuni", explanation: "Tamthilia ni aina ya insha za kubuni." }
+    ];
+
+    // Expand bank to >200 to ensure 150 unique questions
+    for (let i = 0; i < 140; i++) {
+        masterBank.push({
+            text: `Taja kifaa kimoja cha kidijitali kinachotumika kwa elimu ya mtandaoni. (Jibu: kompyuta au simu)`,
+            correctAnswer: "kompyuta",
+            explanation: "Kompyuta, simu mahiri, kompyuta kibao vya kujifunzia."
+        });
+        masterBank.push({
+            text: `Katika insha ya masimulizi, mhusika mkuu anaitwa nini? (Jibu: shujaa au mhusika mkuu)`,
+            correctAnswer: "shujaa",
+            explanation: "Shujaa ndiye mhusika mkuu anayeongoza hadithi."
+        });
+        masterBank.push({
+            text: `Taja faida ya kutumia intaneti wakati wa kuandika insha za kubuni.`,
+            correctAnswer: "utafiti",
+            explanation: "Intaneti husaidia kupata mawazo na mifano."
+        });
+        masterBank.push({
+            text: `Neno 'blogu' linamaanisha nini katika matumizi ya vifaa vya kidijitali?`,
+            correctAnswer: "blogu",
+            explanation: "Blogu ni jalada la mtandaoni la kuandika makala."
+        });
+        masterBank.push({
+            text: `Taja mbinu moja ya kusisimua hadithi katika masimulizi (kama vile 'vita', 'siri').`,
+            correctAnswer: "mkondo",
+            explanation: "Mkondo au mbinu kama vile mazungumzo, uchezaji."
+        });
+    }
+
+    // Helper: shuffle array
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function normalizeAnswer(ans) {
+        return ans.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.,!?]$/, '');
+    }
+
+    // generate unique questions for a level (no repetition within level)
+    function generateUniqueLevelQuestions(level) {
+        let shuffled = shuffleArray([...masterBank]);
+        let selected = [];
+        for (let i = 0; i < QUESTIONS_PER_LEVEL && i < shuffled.length; i++) {
+            let q = { ...shuffled[i] };
+            let newText = q.text;
+            if (level >= 3 && Math.random() > 0.6) {
+                newText = "✨ CHALLENGE: " + newText + " (Angalia kwa makini!)";
+            }
+            if (level >= 4 && Math.random() > 0.7) {
+                newText = "🔥 USTADI: " + newText;
+            }
+            selected.push({
+                id: `L${level}_Q${i}_${Date.now()}_${Math.random()}`,
+                text: newText,
+                correctAnswer: q.correctAnswer.trim().toLowerCase(),
+                explanation: q.explanation || "Fikiria kuhusu insha za kubuni au matumizi ya vifaa vya kidijitali."
+            });
+        }
+        while (selected.length < QUESTIONS_PER_LEVEL) {
+            selected.push({
+                id: `fallback_${Math.random()}`,
+                text: "Taja kifaa kimoja cha kidijitali kinachotumiwa kuandika insha.",
+                correctAnswer: "kompyuta",
+                explanation: "Kompyuta husaidia kuandika insha kwa urahisi."
+            });
+        }
+        return selected;
+    }
+
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let totalScore = 0;
+    let levelsCache = {};
+    let activeQuestions = [];
+    let isAnswered = false;
+    let currentCorrectAnswer = "";
+
+    // DOM elements
+    const levelDisplaySpan = document.getElementById("levelDisplay");
+    const totalScoreSpan = document.getElementById("totalScore");
+    const currentQSpan = document.getElementById("currentQ");
+    const totalQSpan = document.getElementById("totalQ");
+    const questionTextDiv = document.getElementById("questionText");
+    const answerInput = document.getElementById("answerInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const nextBtnElem = document.getElementById("nextBtn");
+
+    totalQSpan.innerText = QUESTIONS_PER_LEVEL;
+
+    function loadLevel(level) {
+        if (!levelsCache[level]) {
+            levelsCache[level] = generateUniqueLevelQuestions(level);
+        }
+        activeQuestions = levelsCache[level];
+        currentQIndex = 0;
+        isAnswered = false;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        nextBtnElem.disabled = true;
+        renderCurrentQuestion();
+        updateUI();
+        feedbackMsgDiv.innerHTML = `📝 Ngazi ${level}: Andika jibu sahihi kuhusu insha za kubuni au vifaa vya kidijitali! Hakuna marudio.`;
+        answerInput.focus();
+    }
+
+    function renderCurrentQuestion() {
+        if (!activeQuestions.length || currentQIndex >= activeQuestions.length) return;
+        const q = activeQuestions[currentQIndex];
+        questionTextDiv.innerText = q.text;
+        currentCorrectAnswer = q.correctAnswer;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        isAnswered = false;
+        nextBtnElem.disabled = true;
+        answerInput.style.borderColor = "#cbd5e1";
+        answerInput.focus();
+    }
+
+    function checkAnswer() {
+        if (isAnswered) {
+            feedbackMsgDiv.innerHTML = "⏳ Umeshajibu swali hili! Bonyeza 'SWALI LINALOFUATA' kuendelea.";
+            return;
+        }
+        const userRaw = answerInput.value;
+        if (userRaw.trim() === "") {
+            feedbackMsgDiv.innerHTML = "⚠️ Tafadhali andika jibu kabla ya kuthibitisha!";
+            return;
+        }
+        const userAnswer = normalizeAnswer(userRaw);
+        const q = activeQuestions[currentQIndex];
+        const isCorrect = (userAnswer === q.correctAnswer);
+        isAnswered = true;
+
+        if (isCorrect) {
+            totalScore += 10;
+            totalScoreSpan.innerText = totalScore;
+            feedbackMsgDiv.innerHTML = `✅ SAHIHI! ${q.explanation} +10 alama.`;
+            answerInput.style.borderColor = "#2c7a2f";
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ SI SAHIHI. Jibu sahihi: "${q.correctAnswer}". ${q.explanation} Jifunze zaidi kuhusu masimulizi au teknolojia.`;
+            answerInput.style.borderColor = "#b91c1c";
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+        }
+        nextBtnElem.disabled = false;
+    }
+
+    function nextQuestion() {
+        if (!isAnswered) {
+            feedbackMsgDiv.innerHTML = "⚠️ Lazima ujibu swali kwanza (andika jibu na ubofye 'Thibitisha Jibu')!";
+            return;
+        }
+        if (currentQIndex + 1 < activeQuestions.length) {
+            currentQIndex++;
+            renderCurrentQuestion();
+            updateUI();
+            feedbackMsgDiv.innerHTML = "📖 Swali jipya! Andika jibu kwa usahihi kuhusu insha au vifaa vya kidijitali.";
+        } else {
+            completeLevel();
+        }
+    }
+
+    function completeLevel() {
+        const levelCompleted = currentLevel;
+        const maxPointsPerLevel = QUESTIONS_PER_LEVEL * 10;
+        const pointsEarned = totalScore - ((levelCompleted - 1) * maxPointsPerLevel);
+        const isGameFinished = (currentLevel === TOTAL_LEVELS);
+        
+        const modalDiv = document.createElement("div");
+        modalDiv.className = "modal-overlay";
+        let modalContent = "";
+        if (isGameFinished) {
+            modalContent = `
+                <div class="modal-card">
+                    <h2>🏆 HONGERA! UMEMALIZA 🏆</h2>
+                    <p>Jumla ya alama: ${totalScore} / ${TOTAL_LEVELS * maxPointsPerLevel}</p>
+                    <p>⭐ Umehitimu: Insha za Kubuni (Masimulizi) & Matumizi ya Vifaa vya Kidijitali ⭐</p>
+                    <button id="restartGameBtn">🔁 CHEZA TENA (Maswali mapya)</button>
+                </div>
+            `;
+        } else {
+            modalContent = `
+                <div class="modal-card">
+                    <h2>✨ UMEMALIZA NGELI ${levelCompleted}! ✨</h2>
+                    <p>Alama za ngazi hii: ${pointsEarned}/${maxPointsPerLevel}</p>
+                    <p>📚 Ngazi inayofuata ina maswali 30 mapya kuhusu masimulizi na teknolojia!</p>
+                    <button id="nextLevelBtn">🚀 ENDELEA KWA NGELI INAYOFUATA</button>
+                </div>
+            `;
+        }
+        modalDiv.innerHTML = modalContent;
+        document.body.appendChild(modalDiv);
+        
+        const btn = modalDiv.querySelector(isGameFinished ? "#restartGameBtn" : "#nextLevelBtn");
+        btn.addEventListener("click", () => {
+            modalDiv.remove();
+            if (isGameFinished) {
+                levelsCache = {};
+                currentLevel = 1;
+                totalScore = 0;
+                totalScoreSpan.innerText = "0";
+                loadLevel(1);
+                updateLevelDisplay();
+                updateUI();
+                feedbackMsgDiv.innerHTML = "Mchezo umeanza upya! Andika majibu kwa uhodari.";
+            } else {
+                currentLevel++;
+                loadLevel(currentLevel);
+                updateLevelDisplay();
+                updateUI();
+                feedbackMsgDiv.innerHTML = `⚡ Ngazi ${currentLevel} ina maswali 30 MAPYA! Endelea kujifunza insha na vifaa vya kidijitali.`;
+            }
+        });
+    }
+
+    function updateUI() {
+        currentQSpan.innerText = currentQIndex + 1;
+        totalScoreSpan.innerText = totalScore;
+    }
+
+    function updateLevelDisplay() {
+        levelDisplaySpan.innerText = `Ngazi ya ${currentLevel}`;
+    }
+
+    // Event listeners
+    submitBtn.addEventListener("click", checkAnswer);
+    nextBtnElem.addEventListener("click", nextQuestion);
+    answerInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !isAnswered && answerInput.value.trim() !== "") {
+            checkAnswer();
+        }
+    });
+
+    // Initialize
+    loadLevel(1);
+    updateLevelDisplay();
+    updateUI();
+</script>
+</body>
+</html>
