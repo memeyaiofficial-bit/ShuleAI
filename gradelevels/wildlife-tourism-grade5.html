@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 5 Social Studies - Wildlife & Tourism in Kenya</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1b4d1f 0%, #0e3a12 100%);
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fffff0;
+            border-radius: 70px 50px 70px 50px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.6);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .game-header {
+            background: #e68a2e;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #c46a1a;
+            color: #fef9c3;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #1e3a1e;
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: #fde047;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -1px 0 #0f2a0f, 0 3px 0 #0a1e0a;
+            font-weight: 600;
+        }
+
+        .timer-box {
+            background: #2d4a2d;
+            color: #ffe082;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer-warning {
+            background: #c73d23;
+            color: white;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            100% { opacity: 0.7; transform: scale(1.02);}
+        }
+
+        .question-area {
+            padding: 30px 28px 25px;
+            background: #fffff5;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 20px;
+            color: #2d5a27;
+            background: #f8f3df;
+            padding: 22px;
+            border-radius: 55px;
+            text-align: center;
+            word-break: break-word;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #2d6a4f;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 5px 0 #1b4d3a;
+        }
+
+        .voice-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #1b4d3a;
+        }
+
+        .hint-area {
+            background: #fff7e0;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            flex: 1;
+            text-align: center;
+            color: #b45f1b;
+            font-weight: 600;
+            border-left: 6px solid #fbbf24;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .answer-input-area {
+            margin: 15px 0 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            border-radius: 100px;
+            border: 2px solid #c0a86a;
+            background: white;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #e68a2e;
+            box-shadow: 0 0 0 3px rgba(230,138,46,0.3);
+        }
+
+        .submit-btn {
+            background: #e68a2e;
+            width: 100%;
+            margin-top: 18px;
+            padding: 16px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 6px 0 #b45f1b;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b45f1b;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            background: #eef2ff;
+            padding: 14px;
+            border-radius: 50px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: #fff7e8;
+            max-width: 90%;
+            width: 420px;
+            padding: 30px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            border: 3px solid #ffbc6e;
+        }
+
+        .modal-card button {
+            background: #e68a2e;
+            margin-top: 25px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .question-text {
+                font-size: 1.2rem;
+                padding: 16px;
+            }
+            .game-header {
+                justify-content: center;
+            }
+            .voice-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+            .submit-btn {
+                font-size: 1.2rem;
+            }
+        }
+
+        .correct-feedback {
+            background: #dcfce7;
+            color: #15803d;
+            border-left: 8px solid #22c55e;
+        }
+
+        .wrong-feedback {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-left: 8px solid #ef4444;
+        }
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🦁 Level 1</div>
+        <div class="score-badge" id="scoreDisplay">⭐ Score: 0 / 0</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Welcome! Let's explore Wildlife & Tourism in Kenya!</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-area" id="hintMessage">💡 Hint appears when 10 seconds remain</div>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✅ CHECK ANSWER</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">✨ Answer each question. Score 80% to unlock next level!</div>
+    </div>
+</div>
+
+<script>
+    // ------------------- VOICE SYSTEM -------------------
+    function speakMessage(message, pitchVal = 1.0) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.92;
+            utterance.pitch = pitchVal;
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    // ------------------- ANSWER NORMALIZATION -------------------
+    function normalize(ans) {
+        let norm = ans.trim().toLowerCase();
+        norm = norm.replace(/[.,?!;:()]/g, '');
+        norm = norm.replace(/\s+/g, ' ').trim();
+        return norm;
+    }
+
+    function isAnswerCorrect(correct, user) {
+        const normUser = normalize(user);
+        const normCorrect = normalize(correct);
+        if (normUser === normCorrect) return true;
+        
+        // Common variations for wildlife and tourism in Kenya
+        const variations = {
+            "maasai mara": ["mara", "masai mara", "maasai mara reserve"],
+            "amboseli": ["amboseli national park", "amboseli park"],
+            "tsavo": ["tsavo east", "tsavo west", "tsavo national park"],
+            "lake nakuru": ["nakuru", "lake nakuru national park"],
+            "nairobi national park": ["nairobi park", "nairobi safari"],
+            "samburu": ["samburu reserve", "samburu national reserve"],
+            "meru national park": ["meru park", "meru"],
+            "mount kenya": ["mt kenya", "mt. kenya"],
+            "diani": ["diani beach"],
+            "watamu": ["watamu beach", "watamu marine park"],
+            "lamu": ["lamu island", "lamu old town"],
+            "mombasa": ["mom basa", "fort jesus"],
+            "giraffe": ["giraffes"],
+            "elephant": ["elephants", "jumbo"],
+            "rhinoceros": ["rhino", "black rhino", "white rhino"],
+            "leopard": ["leopards"],
+            "lion": ["lions", "simba"],
+            "cheetah": ["cheetahs"],
+            "buffalo": ["cape buffalo"],
+            "zebra": ["zebras"],
+            "wildebeest": ["gnu", "wildebeests"],
+            "hippopotamus": ["hippo", "hippos"],
+            "crocodile": ["crocs"],
+            "flamingo": ["flamingos", "lesser flamingo"],
+            "ostrich": ["ostriches"],
+            "warthog": ["warthogs"],
+            "hyena": ["spotted hyena"],
+            "wild dog": ["african wild dog", "painted wolf"],
+            "kws": ["kenya wildlife service"],
+            "ktb": ["kenya tourism board"]
+        };
+        
+        for (let [key, aliases] of Object.entries(variations)) {
+            if (normCorrect === key && (aliases.includes(normUser) || normUser === key)) return true;
+            if (aliases.includes(normCorrect) && normUser === key) return true;
+        }
+        return false;
+    }
+
+    // ------------------- QUESTION BANK: WILDLIFE & TOURISM IN KENYA (5 levels x 30 questions) -------------------
+    const LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+    const PASS_PERCENT = 80;
+    const BASE_TIME_SEC = 40;
+
+    const questionBank = [[], [], [], [], []];
+
+    function addToLevel(level, qArray) {
+        questionBank[level].push(...qArray);
+    }
+
+    // ========== LEVEL 1: National Parks and Reserves ==========
+    const l1 = [
+        { text: "What is the most famous national reserve in Kenya known for the wildebeest migration?", correct: "Maasai Mara" },
+        { text: "Which national park is at the foot of Mount Kilimanjaro, famous for elephants?", correct: "Amboseli" },
+        { text: "Name the largest national park in Kenya, divided into East and West.", correct: "Tsavo" },
+        { text: "Which lake is famous for its millions of flamingos and is a national park?", correct: "Lake Nakuru" },
+        { text: "What is the only national park in the world located within a capital city?", correct: "Nairobi National Park" },
+        { text: "Name the park in northern Kenya known for its unique wildlife like the reticulated giraffe.", correct: "Samburu" },
+        { text: "Which park is known for its rhino sanctuary and was the home of Elsa the lioness?", correct: "Meru National Park" },
+        { text: "What is the name of the mountain that is also a national park and UNESCO site?", correct: "Mount Kenya" },
+        { text: "Which marine park is known for its coral reefs and turtles?", correct: "Watamu Marine Park" },
+        { text: "Name the park in the Rift Valley famous for hot springs and geysers.", correct: "Hell's Gate" },
+        { text: "Which park is known for its red elephants due to the red soil?", correct: "Tsavo" },
+        { text: "What is the name of the island with donkeys and Swahili culture, a tourist attraction?", correct: "Lamu" },
+        { text: "Which beach in Kenya is famous for white sand and luxury resorts?", correct: "Diani" },
+        { text: "Name the coastal city known for Fort Jesus and Old Town.", correct: "Mombasa" },
+        { text: "Which conservancy in Laikipia is famous for rhino protection?", correct: "Ol Pejeta" },
+        { text: "What is the name of the park on the shores of Lake Victoria?", correct: "Ruma National Park" },
+        { text: "Which park is known as 'The Land of Giants' for its large elephants?", correct: "Tsavo" },
+        { text: "Name the park famous for its baboons and scenic cliffs.", correct: "Hell's Gate" },
+        { text: "Which reserve is known for the 'Samburu Special Five' animals?", correct: "Samburu" },
+        { text: "What is the name of the forest near Nairobi with walking trails and colobus monkeys?", correct: "Karura Forest" },
+        { text: "Which island park is known for its birdlife and mangrove forests?", correct: "Kisite-Mpunguti Marine Park" },
+        { text: "Name the park that has the only remaining population of the Sable antelope in Kenya.", correct: "Shimba Hills" },
+        { text: "Which park is famous for its leopard population and night game drives?", correct: "Samburu" },
+        { text: "What is the name of the sanctuary that rescues orphaned elephants and rhinos?", correct: "Sheldrick Wildlife Trust" },
+        { text: "Which park has a unique feature of walking safaris and cycling?", correct: "Hell's Gate" },
+        { text: "Name the marine park near Malindi known for its underwater caves.", correct: "Malindi Marine Park" },
+        { text: "Which reserve is located on the shores of Lake Naivasha?", correct: "Lake Naivasha" },
+        { text: "What is the name of the park in western Kenya with the only population of Rothschild giraffes?", correct: "Ruma National Park" },
+        { text: "Which park is known as the 'Home of the African Elephant'?", correct: "Amboseli" },
+        { text: "Name the private conservancy that has the last two northern white rhinos.", correct: "Ol Pejeta" }
+    ];
+    addToLevel(0, l1.slice(0,30));
+
+    // ========== LEVEL 2: Animals (Big Five and Unique Wildlife) ==========
+    const l2 = [
+        { text: "Name one of the 'Big Five' animals that is the king of the jungle.", correct: "lion" },
+        { text: "Which 'Big Five' animal has a horn and is heavily poached?", correct: "rhinoceros" },
+        { text: "Name the largest land animal, also one of the 'Big Five'.", correct: "elephant" },
+        { text: "Which 'Big Five' animal is known as 'Mbogo' in Kiswahili?", correct: "buffalo" },
+        { text: "Name the spotted 'Big Five' cat that is the fastest land animal.", correct: "cheetah" },
+        { text: "Which 'Big Five' animal is actually not a cat but a bovine?", correct: "buffalo" },
+        { text: "Name the animal with a long neck that lives in the savannah.", correct: "giraffe" },
+        { text: "Which striped animal is a close relative of the horse?", correct: "zebra" },
+        { text: "Name the animal that migrates in millions from Serengeti to Maasai Mara.", correct: "wildebeest" },
+        { text: "Which water-loving animal has a huge mouth and spends most time in water?", correct: "hippopotamus" },
+        { text: "Name the reptile that can be found in rivers and lakes, known for its jaws.", correct: "crocodile" },
+        { text: "Which pink bird is famous for its population at Lake Nakuru?", correct: "flamingo" },
+        { text: "Name the bird that cannot fly and is the largest in Africa.", correct: "ostrich" },
+        { text: "Which small animal is known for its upright posture and eating ants?", correct: "aardvark" },
+        { text: "Name the wild dog that hunts in packs and is endangered.", correct: "African wild dog" },
+        { text: "Which spotted hyena is known for its laughing call?", correct: "hyena" },
+        { text: "Name the antelope with twisted horns that lives in the savannah.", correct: "kudu" },
+        { text: "Which antelope is the largest and can be found in Tsavo?", correct: "eland" },
+        { text: "Name the antelope with a hump and long nose, known as 'gnu'.", correct: "wildebeest" },
+        { text: "Which monkey is known for its black and white fur and is found in forests?", correct: "colobus monkey" },
+        { text: "Name the baboon species with a colorful bottom found in Kenya.", correct: "olive baboon" },
+        { text: "Which small cat is known for its long legs and large ears?", correct: "serval" },
+        { text: "Name the animal with a long snout that eats ants and termites.", correct: "aardvark" },
+        { text: "Which animal is known as the 'waterbuck' for its habitat near water?", correct: "waterbuck" },
+        { text: "Name the antelope with a distinctive 'M' mark on its backside.", correct: "impala" },
+        { text: "Which animal is known for its beautiful spiral horns and shy nature?", correct: "bongo" },
+        { text: "Name the animal that is a cross between a leopard and a lion (mythical?).", correct: "leopard" },
+        { text: "Which big cat has spots and is an excellent climber?", correct: "leopard" },
+        { text: "Name the fast-running bird that lives in the savannah.", correct: "ostrich" },
+        { text: "Which animal is known for its long, curved tusks and is a symbol of Kenya?", correct: "elephant" }
+    ];
+    addToLevel(1, l2.slice(0,30));
+
+    // ========== LEVEL 3: Tourism Activities and Attractions ==========
+    const l3 = [
+        { text: "What is the main activity tourists do in Maasai Mara to see animals?", correct: "game drive" },
+        { text: "Name the activity of watching birds in their natural habitat.", correct: "bird watching" },
+        { text: "What is the activity of walking in the wilderness with a guide called?", correct: "nature walk" },
+        { text: "Which activity involves climbing Mount Kenya to see the peak?", correct: "mountain climbing" },
+        { text: "Name the water sport enjoyed at Diani and Watamu beaches.", correct: "snorkeling" },
+        { text: "What is the activity of riding a bicycle through Hell's Gate National Park?", correct: "cycling" },
+        { text: "Which activity involves observing the night sky in remote parks?", correct: "astrotourism" },
+        { text: "Name the cultural activity of visiting Maasai villages.", correct: "cultural tour" },
+        { text: "What is the activity of taking photos of wildlife called?", correct: "safari photography" },
+        { text: "Which activity involves sailing on a traditional dhow at the coast?", correct: "dhow cruise" },
+        { text: "Name the activity of fishing for sport in the Indian Ocean.", correct: "deep sea fishing" },
+        { text: "What is the activity of riding a hot air balloon over the Mara?", correct: "balloon safari" },
+        { text: "Which activity involves visiting museums like the Nairobi National Museum?", correct: "cultural tourism" },
+        { text: "Name the activity of watching the wildebeest cross the Mara River.", correct: "river crossing" },
+        { text: "What is the activity of staying in a lodge to observe animals at night?", correct: "night game drive" },
+        { text: "Which activity involves swimming with dolphins at the coast?", correct: "dolphin watching" },
+        { text: "Name the activity of riding a camel in the northern parks like Samburu.", correct: "camel safari" },
+        { text: "What is the activity of visiting the Giraffe Centre to feed giraffes?", correct: "giraffe feeding" },
+        { text: "Which activity involves visiting the David Sheldrick Wildlife Trust?", correct: "elephant orphanage" },
+        { text: "Name the activity of walking on the beach and relaxing.", correct: "beach holiday" },
+        { text: "What is the activity of visiting historical sites like Fort Jesus?", correct: "heritage tour" },
+        { text: "Which activity involves watching traditional dances and music performances?", correct: "cultural performance" },
+        { text: "Name the activity of cycling along the shores of Lake Naivasha.", correct: "cycling" },
+        { text: "What is the activity of visiting tea and coffee farms in the highlands?", correct: "agritourism" },
+        { text: "Which activity involves watching sea turtles lay eggs at night?", correct: "turtle watching" },
+        { text: "Name the activity of rock climbing in Hell's Gate.", correct: "rock climbing" },
+        { text: "What is the activity of visiting the Kitum Cave in Mount Elgon?", correct: "caving" },
+        { text: "Which activity involves flying over the national parks in a small plane?", correct: "fly-in safari" },
+        { text: "Name the activity of fishing for tilapia in Lake Naivasha.", correct: "fishing" },
+        { text: "What is the activity of visiting the Nairobi Snake Park?", correct: "reptile exhibition" }
+    ];
+    addToLevel(2, l3.slice(0,30));
+
+    // ========== LEVEL 4: Conservation and Challenges ==========
+    const l4 = [
+        { text: "What is the illegal hunting of animals called?", correct: "poaching" },
+        { text: "Name the organization that manages wildlife protection in Kenya.", correct: "Kenya Wildlife Service" },
+        { text: "What is the main reason elephants are poached?", correct: "ivory" },
+        { text: "Which rhino horn is valued for traditional medicine, leading to poaching?", correct: "rhino horn" },
+        { text: "Name the international treaty that bans ivory trade.", correct: "CITES" },
+        { text: "What is the destruction of animal habitats due to farming called?", correct: "habitat loss" },
+        { text: "Which human-wildlife conflict involves lions attacking livestock?", correct: "predation" },
+        { text: "Name the fencing project that separates wildlife from farms in Laikipia.", correct: "conservation fence" },
+        { text: "What is the translocation of animals to safer areas called?", correct: "relocation" },
+        { text: "Which organization works with communities to reduce human-wildlife conflict?", correct: "WildlifeDirect" },
+        { text: "Name the global campaign to stop poaching, using the slogan 'Blood Ivory'.", correct: "Save the Elephants" },
+        { text: "What is the main cause of coral bleaching in marine parks?", correct: "climate change" },
+        { text: "Which plastic ban in Kenya has helped reduce pollution in parks?", correct: "plastic bag ban" },
+        { text: "Name the community-based conservation program that compensates for livestock losses.", correct: "predator compensation" },
+        { text: "What is the name of the annual wildebeest count in Maasai Mara?", correct: "great migration count" },
+        { text: "Which disease spread from domestic dogs threatens African wild dogs?", correct: "rabies" },
+        { text: "Name the project that uses drones to monitor poachers.", correct: "anti-poaching drone" },
+        { text: "What is the illegal trade of bushmeat called?", correct: "bushmeat hunting" },
+        { text: "Which organization runs the 'Hands Off Our Elephants' campaign?", correct: "KWS" },
+        { text: "Name the international charity that helps protect mountain gorillas (not in Kenya but relevant).", correct: "WWF" },
+        { text: "What is the name of the elephant collaring program to track movements?", correct: "GPS tracking" },
+        { text: "Which protected area is a UNESCO World Heritage Site and faces threats?", correct: "Lake Turkana National Park" },
+        { text: "Name the invasive plant that chokes water sources in parks.", correct: "water hyacinth" },
+        { text: "What is the main challenge of overtourism in Maasai Mara?", correct: "traffic jams" },
+        { text: "Which fund provides money for wildlife conservation in Kenya?", correct: "Wildlife Fund" },
+        { text: "Name the strategy of involving local people in tourism benefits.", correct: "community tourism" },
+        { text: "What is the name of the anti-poaching unit that uses dogs?", correct: "canine unit" },
+        { text: "Which technology helps track poachers using hidden cameras?", correct: "camera traps" },
+        { text: "Name the conservation area where no human activity is allowed.", correct: "strict nature reserve" },
+        { text: "What is the main goal of 'The Big Life Foundation'?", correct: "protect wildlife" }
+    ];
+    addToLevel(3, l4.slice(0,30));
+
+    // ========== LEVEL 5: Advanced Tourism and Eco-Tourism ==========
+    const l5 = [
+        { text: "What does 'eco-tourism' focus on?", correct: "sustainable travel" },
+        { text: "Name the camp in Maasai Mara that is solar-powered and eco-friendly.", correct: "eco camp" },
+        { text: "Which Kenyan beach resort has a turtle conservation program?", correct: "Watamu" },
+        { text: "What is the name of the green building at the Giraffe Manor?", correct: "boutique hotel" },
+        { text: "Which organization certifies eco-lodges in Kenya?", correct: "Eco-Tourism Kenya" },
+        { text: "Name the annual tourism fair held in Nairobi.", correct: "Magical Kenya Travel Expo" },
+        { text: "What is the name of the tourist train that goes from Nairobi to Mombasa?", correct: "Madaraka Express" },
+        { text: "Which airline is Kenya's national carrier?", correct: "Kenya Airways" },
+        { text: "Name the domestic airline that flies to Maasai Mara airstrips.", correct: "Safarilink" },
+        { text: "What is the name of the mobile app for booking safaris in Kenya?", correct: "Tourism app" },
+        { text: "Which tourism slogan is used by Kenya to attract visitors?", correct: "Magical Kenya" },
+        { text: "Name the tourist visa that allows visitors to enter Kenya electronically.", correct: "e-visa" },
+        { text: "What is the name of the new cruise terminal in Mombasa?", correct: "Mombasa Cruise Terminal" },
+        { text: "Which luxury train travels through Kenya from Mombasa to Kisumu?", correct: "Luxury train" },
+        { text: "Name the high-end safari lodge in Amboseli with views of Kilimanjaro.", correct: "Tortilis Camp" },
+        { text: "What is the name of the treehouse lodge in Aberdare National Park?", correct: "Treetops" },
+        { text: "Which hotel in Mombasa is shaped like a castle?", correct: "Castle Royal" },
+        { text: "Name the floating restaurant in Lamu.", correct: "dhow restaurant" },
+        { text: "What is the name of the cultural festival in Lamu each year?", correct: "Lamu Cultural Festival" },
+        { text: "Which event in August celebrates Kenya's music and arts?", correct: "Koroga Festival" },
+        { text: "Name the marathon that attracts tourists to run in the wildlife.", correct: "Safari Marathon" },
+        { text: "What is the name of the sky diving location in Diani?", correct: "Skydive Diani" },
+        { text: "Which tourism board promotes Kenya globally?", correct: "Kenya Tourism Board" },
+        { text: "Name the government ministry responsible for tourism.", correct: "Ministry of Tourism" },
+        { text: "What is the name of the eco-lodge that uses only renewable energy in Laikipia?", correct: "Eco-lodge" },
+        { text: "Which concept involves tourists planting trees to offset carbon?", correct: "carbon offsetting" },
+        { text: "Name the community that hosts tourists for traditional dances in the Mara.", correct: "Maasai" },
+        { text: "What is the name of the conservancy that only allows high-end, low-impact tourism?", correct: "private conservancy" },
+        { text: "Which virtual safari became popular during the COVID-19 pandemic?", correct: "virtual safari" },
+        { text: "Name the future trend where tourists work remotely from safari camps.", correct: "workation" }
+    ];
+    addToLevel(4, l5.slice(0,30));
+
+    // ------------------- GAME ENGINE -------------------
+    let currentLevel = 0;
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let score = 0;
+    let answeredCount = 0;
+    let timerInterval = null;
+    let timeLeft = BASE_TIME_SEC;
+    let canAnswer = true;
+    let waitingNext = false;
+
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionText = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintDiv = document.getElementById('hintMessage');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+
+    function updateUI() {
+        levelDisplay.innerText = `🦁 Level ${currentLevel+1}`;
+        scoreDisplay.innerText = `⭐ Score: ${score} / ${answeredCount}`;
+        if (currentQuestions[currentQIndex])
+            questionText.innerText = currentQuestions[currentQIndex].text;
+    }
+
+    function stopTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function startTimer() {
+        stopTimer();
+        timeLeft = BASE_TIME_SEC;
+        timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+        timerDisplay.classList.remove('timer-warning');
+        timerInterval = setInterval(() => {
+            if (!canAnswer) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+                if (timeLeft <= 10) {
+                    timerDisplay.classList.add('timer-warning');
+                    const curr = currentQuestions[currentQIndex];
+                    if (curr && curr.correct) {
+                        hintDiv.innerHTML = `⏰ Hint: answer starts with "${curr.correct.substring(0,3)}..." Think about animals, parks, or tourism.`;
+                    } else {
+                        hintDiv.innerHTML = `💡 Focus on Kenya's amazing wildlife, national parks, and tourist activities!`;
+                    }
+                } else {
+                    timerDisplay.classList.remove('timer-warning');
+                    hintDiv.innerHTML = `💡 Read carefully! 40 seconds. Type your answer about Wildlife & Tourism.`;
+                }
+            }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if (!canAnswer) return;
+        canAnswer = false;
+        const correctAns = currentQuestions[currentQIndex].correct;
+        speakMessage(`Time is up! The correct answer is ${correctAns}.`, 0.8);
+        feedbackDiv.innerHTML = `⏰ TIME'S UP! Correct: "${correctAns}". Next question...`;
+        feedbackDiv.classList.add('wrong-feedback');
+        setTimeout(() => nextQuestion(), 1600);
+    }
+
+    function checkAnswer() {
+        if (!canAnswer || waitingNext) {
+            feedbackDiv.innerHTML = "⏳ Please wait...";
+            return;
+        }
+        const userAns = answerInput.value.trim();
+        if (userAns === "") {
+            feedbackDiv.innerHTML = "📝 Type your answer before submitting!";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        const correctFlag = isAnswerCorrect(currentQ.correct, userAns);
+        stopTimer();
+        canAnswer = false;
+        if (correctFlag) {
+            score++;
+            feedbackDiv.innerHTML = `✅ CORRECT! "${userAns}" is right! +1 point 🎉`;
+            feedbackDiv.classList.add('correct-feedback');
+            speakMessage("Correct! Excellent work.", 1.2);
+        } else {
+            feedbackDiv.innerHTML = `❌ INCORRECT! "${userAns}" is wrong. Correct: ${currentQ.correct}. Keep trying!`;
+            feedbackDiv.classList.add('wrong-feedback');
+            speakMessage(`Incorrect. The correct answer is ${currentQ.correct}.`, 0.9);
+        }
+        answeredCount++;
+        updateUI();
+        setTimeout(() => nextQuestion(), 1500);
+    }
+
+    function nextQuestion() {
+        waitingNext = false;
+        currentQIndex++;
+        if (currentQIndex >= currentQuestions.length) {
+            const percent = (score / QUESTIONS_PER_LEVEL) * 100;
+            if (percent >= PASS_PERCENT) {
+                if (currentLevel + 1 < LEVELS) {
+                    showModal(`🎉 Level ${currentLevel+1} complete! ${Math.floor(percent)}% (${score}/${QUESTIONS_PER_LEVEL}). Proceed to Level ${currentLevel+2}.`, true);
+                } else {
+                    showModal(`🏆 FANTASTIC! You mastered Wildlife & Tourism in Kenya! 🐘🦁🌍\nFinal Score: ${score}/${QUESTIONS_PER_LEVEL}. You're a true Safari Expert!`, false);
+                }
+            } else {
+                showModal(`😓 Level ${currentLevel+1} failed. ${Math.floor(percent)}% (need 80%). Restarting level...`, false);
+                resetCurrentLevel();
+            }
+            return;
+        }
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetCurrentLevel() {
+        stopTimer();
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+        loadQuestionsForLevel(currentLevel);
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetQInterface() {
+        answerInput.value = "";
+        feedbackDiv.classList.remove('correct-feedback', 'wrong-feedback');
+        feedbackDiv.innerHTML = "✨ New question! Type your answer carefully.";
+        hintDiv.innerHTML = "💡 Hint will appear when 10 seconds remain.";
+        timerDisplay.classList.remove('timer-warning');
+        canAnswer = true;
+        waitingNext = false;
+        if (timerInterval) stopTimer();
+        startTimer();
+    }
+
+    function loadCurrentQuestion() {
+        if (currentQuestions[currentQIndex]) {
+            questionText.innerText = currentQuestions[currentQIndex].text;
+            updateUI();
+            startTimer();
+            canAnswer = true;
+        }
+    }
+
+    function loadQuestionsForLevel(level) {
+        currentQuestions = [...questionBank[level]];
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+    }
+
+    function showModal(message, goNext) {
+        stopTimer();
+        canAnswer = false;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `<div class="modal-card"><p>${message}</p><button id="modalBtn">${goNext ? '➡️ NEXT LEVEL ⬅️' : '🔄 RESTART LEVEL'}</button></div>`;
+        document.body.appendChild(overlay);
+        document.getElementById('modalBtn').addEventListener('click', () => {
+            overlay.remove();
+            if (goNext) {
+                currentLevel++;
+                loadQuestionsForLevel(currentLevel);
+                resetQInterface();
+                loadCurrentQuestion();
+            } else {
+                resetCurrentLevel();
+            }
+        });
+    }
+
+    function init() {
+        loadQuestionsForLevel(0);
+        resetQInterface();
+        loadCurrentQuestion();
+        speakBtn.addEventListener('click', () => {
+            if (currentQuestions[currentQIndex])
+                speakMessage(currentQuestions[currentQIndex].text, 1.0);
+        });
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    }
+    init();
+</script>
+</body>
+</html>

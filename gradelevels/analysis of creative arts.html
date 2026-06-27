@@ -1,0 +1,3439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBC Creative Arts & Sports Quest - Grade 7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --dark: #1A535C;
+            --light: #F7FFF7;
+            --success: #06D6A0;
+            --warning: #FF9E6D;
+            --danger: #EF476F;
+            --shadow: 0 4px 12px rgba(0,0,0,0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--dark));
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes confetti {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            text-shadow: 2px 2px 0 var(--accent);
+            margin-bottom: 5px;
+            animation: bounce 2s infinite;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .logo {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 12px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            font-weight: bold;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--dark);
+        }
+        
+        .timer {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--danger);
+            text-align: center;
+            margin: 10px 0;
+            animation: pulse 1s infinite;
+        }
+        
+        .question-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: var(--shadow);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.3rem;
+            position: relative;
+            border: 3px dashed var(--secondary);
+        }
+        
+        .voice-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            transition: var(--transition);
+            z-index: 10;
+        }
+        
+        .voice-btn:hover {
+            transform: scale(1.1);
+            background: #ffc107;
+        }
+        
+        .voice-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .option {
+            background: white;
+            border: 3px solid var(--secondary);
+            border-radius: 16px;
+            padding: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .option:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            background: #f9f9f9;
+        }
+        
+        .option.selected {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--dark);
+            transform: scale(1.03);
+        }
+        
+        .option.correct {
+            background: var(--success);
+            color: white;
+            border-color: #05a677;
+            animation: pulse 0.5s;
+        }
+        
+        .option.incorrect {
+            background: var(--danger);
+            color: white;
+            border-color: #d63056;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: bold;
+            box-shadow: 0 4px 0 rgba(200, 50, 50, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(200, 50, 50, 0.9);
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(200, 50, 50, 0.8);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            box-shadow: 0 4px 0 rgba(40, 150, 140, 0.8);
+        }
+        
+        .btn-secondary:hover {
+            background: #44b8b0;
+            box-shadow: 0 6px 0 rgba(40, 150, 140, 0.9);
+        }
+        
+        .btn-large {
+            padding: 16px 40px;
+            font-size: 1.4rem;
+        }
+        
+        .level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .level-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .level-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+        
+        .level-card.locked {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .level-card.locked::after {
+            content: "🔒";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: rgba(0,0,0,0.3);
+        }
+        
+        .level-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .level-title {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .level-unlocked .level-card {
+            border-color: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 16px;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feedback.correct {
+            background: rgba(6, 214, 160, 0.2);
+            color: #059669;
+            border: 2px solid var(--success);
+        }
+        
+        .feedback.incorrect {
+            background: rgba(239, 71, 111, 0.2);
+            color: #c51a4a;
+            border: 2px solid var(--danger);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: confetti 5s ease-in-out forwards;
+            z-index: 100;
+        }
+        
+        .celebration {
+            text-align: center;
+            padding: 20px;
+            animation: pulse 1s infinite;
+        }
+        
+        .celebration h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin: 15px 0;
+            text-shadow: 2px 2px 0 var(--accent);
+        }
+        
+        .stars {
+            font-size: 3rem;
+            margin: 10px 0;
+            color: var(--accent);
+            animation: bounce 1.5s infinite;
+        }
+        
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 10px 0;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        
+        .next-level-requirement {
+            background: rgba(255, 214, 102, 0.3);
+            border-left: 4px solid var(--accent);
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 12px 12px 0;
+            font-weight: bold;
+        }
+        
+        .topic-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .instructions {
+            background: rgba(78, 205, 196, 0.15);
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header .subtitle {
+                font-size: 1rem;
+            }
+            
+            .logo {
+                font-size: 2.8rem;
+            }
+            
+            .question-container {
+                font-size: 1.15rem;
+                padding: 15px;
+                min-height: 130px;
+            }
+            
+            .option {
+                font-size: 1rem;
+                padding: 12px;
+            }
+            
+            .btn {
+                padding: 12px 24px;
+                font-size: 1.1rem;
+            }
+            
+            .btn-large {
+                padding: 14px 32px;
+                font-size: 1.3rem;
+            }
+            
+            .stats {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .stat-item {
+                min-width: 60px;
+            }
+            
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            
+            .timer {
+                font-size: 1.5rem;
+            }
+            
+            .level-select {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            
+            .level-number {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            #game-container {
+                padding: 15px;
+                border-radius: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .question-container {
+                font-size: 1.1rem;
+                padding: 12px;
+            }
+            
+            .option {
+                font-size: 0.95rem;
+                padding: 10px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+        
+        /* Focus states for accessibility */
+        button:focus, .option:focus {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
+        }
+        
+        /* Hide scrollbars but allow scrolling */
+        #game-container {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+        #game-container::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="header">
+                <div class="logo">🎨⚽</div>
+                <h1>CBC Creative Arts & Sports Quest</h1>
+                <div class="subtitle">Grade 7 Learning Adventure</div>
+            </div>
+            
+            <div class="instructions">
+                <strong>How to Play:</strong>
+                <ol>
+                    <li>Answer 40 questions per level about Creative Arts & Sports</li>
+                    <li>Tap 🔊 to hear questions read aloud</li>
+                    <li>Beat the timer for each question!</li>
+                    <li>Score 80% or higher to unlock the next level</li>
+                    <li>Complete all 5 levels to become a Creative Champion! 🏆</li>
+                </ol>
+            </div>
+            
+            <div style="text-align: center; margin: 25px 0;">
+                <div style="font-size: 4rem; margin-bottom: 10px;">🌟</div>
+                <div style="font-weight: bold; font-size: 1.3rem; margin-bottom: 5px;">Topics Covered:</div>
+                <div>
+                    <span class="topic-badge">Introduction to Arts & Sports</span>
+                    <span class="topic-badge">Components of Arts & Sports</span>
+                    <span class="topic-badge">Drawing & Painting</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button id="start-btn" class="btn btn-large">
+                    🚀 Start Adventure!
+                </button>
+            </div>
+            
+            <div style="text-align: center; font-size: 0.9rem; color: #666; margin-top: 15px;">
+                💡 Tip: Use headphones for the best voice experience!
+            </div>
+        </div>
+        
+        <!-- Level Select Screen -->
+        <div id="level-select-screen" class="screen">
+            <div class="header">
+                <div class="logo">🏆</div>
+                <h1>Select Your Level</h1>
+                <div class="subtitle">Complete levels to unlock more challenges!</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-score">0</div>
+                    <div class="stat-label">Total Points</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="levels-completed">0/5</div>
+                    <div class="stat-label">Levels Done</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stars-earned">0</div>
+                    <div class="stat-label">Stars Earned</div>
+                </div>
+            </div>
+            
+            <div class="level-select" id="level-select-container">
+                <!-- Levels will be generated by JavaScript -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="back-to-start" class="btn btn-secondary">← Back to Start</button>
+            </div>
+        </div>
+        
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div class="logo">❓</div>
+                <h1>Level <span id="current-level">1</span>: <span id="level-title">Introduction</span></h1>
+                <div class="subtitle">Question <span id="question-number">1</span> of 40</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="correct-count">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="timer-display">30s</div>
+                    <div class="stat-label">Time Left</div>
+                </div>
+            </div>
+            
+            <div class="timer" id="main-timer">30 seconds</div>
+            
+            <div class="question-container">
+                <button class="voice-btn" id="voice-btn" title="Listen to question">🔊</button>
+                <div id="question-text">Loading question...</div>
+            </div>
+            
+            <div class="options-container" id="options-container">
+                <!-- Options will be generated by JavaScript -->
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <div class="controls">
+                <button id="next-btn" class="btn" disabled>Next Question →</button>
+            </div>
+        </div>
+        
+        <!-- Level Complete Screen -->
+        <div id="level-complete-screen" class="screen">
+            <div class="header">
+                <div class="logo">🎉</div>
+                <h1>Level Complete!</h1>
+                <div class="subtitle">Great job, Creative Champion!</div>
+            </div>
+            
+            <div class="celebration">
+                <div class="stars">★★★★★</div>
+                <div class="score-display" id="level-score">32/40</div>
+                <div style="font-size: 1.4rem; font-weight: bold; margin: 10px 0;">
+                    You scored <span id="percentage">80</span>%!
+                </div>
+            </div>
+            
+            <div class="next-level-requirement" id="progression-message">
+                🎯 You need 80% to unlock the next level. Keep practicing!
+            </div>
+            
+            <div style="text-align: center; margin: 25px 0;">
+                <button id="retry-btn" class="btn btn-secondary">🔄 Try Level Again</button>
+                <button id="next-level-btn" class="btn btn-large" disabled>✨ Next Level →</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <button id="back-to-levels" class="btn">← Choose Different Level</button>
+            </div>
+        </div>
+        
+        <!-- Game Complete Screen -->
+        <div id="game-complete-screen" class="screen">
+            <div class="header">
+                <div class="logo">🏆✨</div>
+                <h1>Creative Champion!</h1>
+                <div class="subtitle">You've mastered all 5 levels!</div>
+            </div>
+            
+            <div class="celebration">
+                <div style="font-size: 5rem; margin: 10px 0;">🎨⚽🏅</div>
+                <h2 style="font-size: 2rem; margin: 15px 0;">Congratulations!</h2>
+                <div class="score-display" id="final-score">200/200</div>
+                <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">
+                    You earned <span id="final-stars">25</span> stars!
+                </div>
+                <p style="margin: 20px 0; font-size: 1.2rem;">
+                    You've learned all about Creative Arts and Sports!<br>
+                    Keep creating and playing! 🌈
+                </p>
+            </div>
+            
+            <div style="text-align: center; margin: 25px 0;">
+                <button id="play-again-btn" class="btn btn-large">🔄 Play Again</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: #666;">
+                Share your achievement with your teacher! 📚
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CBC Grade 7 Creative Arts & Sports Questions Database
+        // 5 levels × 40 questions = 200 questions total
+        const questionsDatabase = {
+            1: [ // Level 1: Introduction to Creative Arts and Sports
+                {
+                    question: "What is Creative Arts?",
+                    options: [
+                        "Activities that help us express our feelings and ideas",
+                        "Only drawing pictures",
+                        "Playing football only",
+                        "Reading books silently"
+                    ],
+                    correct: 0,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which of these is a sport?",
+                    options: [
+                        "Painting",
+                        "Singing",
+                        "Football",
+                        "Dancing"
+                    ],
+                    correct: 2,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Creative Arts help us to:",
+                    options: [
+                        "Only win competitions",
+                        "Express ourselves and be creative",
+                        "Stay quiet all the time",
+                        "Avoid playing with friends"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which activity is BOTH art and sport?",
+                    options: [
+                        "Mathematics",
+                        "Dancing",
+                        "Sleeping",
+                        "Eating"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Why do we learn Creative Arts in school?",
+                    options: [
+                        "To become famous immediately",
+                        "To develop our talents and creativity",
+                        "To avoid doing homework",
+                        "To watch TV all day"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which of these is NOT a creative art?",
+                    options: [
+                        "Drawing",
+                        "Singing",
+                        "Running a race",
+                        "Making clay models"
+                    ],
+                    correct: 2,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Sports help our bodies to:",
+                    options: [
+                        "Get tired and sick",
+                        "Stay healthy and strong",
+                        "Grow smaller",
+                        "Forget how to move"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "When we draw, we can use:",
+                    options: [
+                        "Only black pens",
+                        "Crayons, pencils, or paints",
+                        "Just our fingers",
+                        "Only computers"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which is a benefit of playing sports?",
+                    options: [
+                        "Making new friends",
+                        "Feeling lonely",
+                        "Getting bad grades",
+                        "Breaking rules"
+                    ],
+                    correct: 0,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Creative Arts can include:",
+                    options: [
+                        "Only painting",
+                        "Music, dance, drama, and visual arts",
+                        "Just watching cartoons",
+                        "Only using computers"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "What should we do before starting a sport?",
+                    options: [
+                        "Eat a big meal",
+                        "Warm up our bodies",
+                        "Go to sleep",
+                        "Watch TV"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which material can we use for drawing?",
+                    options: [
+                        "Water only",
+                        "Pencils, crayons, or markers",
+                        "Just sand",
+                        "Only mud"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Dancing is part of:",
+                    options: [
+                        "Only sports",
+                        "Only mathematics",
+                        "Creative Arts",
+                        "Science experiments"
+                    ],
+                    correct: 2,
+                    topic: "Introduction"
+                },
+                {
+                    question: "When playing team sports, we should:",
+                    options: [
+                        "Only think about ourselves",
+                        "Work together and share",
+                        "Argue with teammates",
+                        "Ignore the rules"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which of these helps us tell stories through art?",
+                    options: [
+                        "Only numbers",
+                        "Drawings and paintings",
+                        "Just listening",
+                        "Sleeping"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "What is important when doing Creative Arts?",
+                    options: [
+                        "Copying others exactly",
+                        "Being creative and having fun",
+                        "Rushing to finish first",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which sport uses a ball and a net?",
+                    options: [
+                        "Swimming",
+                        "Running",
+                        "Football or basketball",
+                        "Chess"
+                    ],
+                    correct: 2,
+                    topic: "Introduction"
+                },
+                {
+                    question: "When we paint, we can mix colors to:",
+                    options: [
+                        "Make them disappear",
+                        "Create new colors",
+                        "Make them louder",
+                        "Turn them into numbers"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Creative Arts help us to:",
+                    options: [
+                        "Only win prizes",
+                        "Understand our culture and feelings",
+                        "Avoid learning other subjects",
+                        "Stay inside all day"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which is a safety rule in sports?",
+                    options: [
+                        "Push others to win",
+                        "Wear proper clothing and equipment",
+                        "Ignore the teacher",
+                        "Play on broken equipment"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "What can we create with clay?",
+                    options: [
+                        "Only flat pictures",
+                        "3D models and sculptures",
+                        "Just sounds",
+                        "Only numbers"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Why is it good to try different art activities?",
+                    options: [
+                        "To waste time",
+                        "To discover what we enjoy and are good at",
+                        "To make messes only",
+                        "To avoid learning"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which activity helps us express emotions?",
+                    options: [
+                        "Only running",
+                        "Drawing, dancing, or singing",
+                        "Just eating",
+                        "Sleeping"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "In sports, what does 'fair play' mean?",
+                    options: [
+                        "Only caring about winning",
+                        "Playing by the rules and respecting others",
+                        "Cheating to win",
+                        "Ignoring teammates"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which tool is used for drawing straight lines?",
+                    options: [
+                        "A spoon",
+                        "A ruler",
+                        "A ball",
+                        "A whistle"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Creative Arts can be done:",
+                    options: [
+                        "Only in school",
+                        "At school, home, or in the community",
+                        "Only on computers",
+                        "Only with expensive materials"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which sport is played in water?",
+                    options: [
+                        "Football",
+                        "Swimming",
+                        "Basketball",
+                        "Tennis"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "When creating art, mistakes can:",
+                    options: [
+                        "Always ruin our work",
+                        "Sometimes lead to new creative ideas",
+                        "Never happen",
+                        "Only make us sad"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "What should we do after playing sports?",
+                    options: [
+                        "Eat junk food only",
+                        "Cool down and drink water",
+                        "Go straight to bed",
+                        "Ignore our bodies"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which of these is a visual art?",
+                    options: [
+                        "Running",
+                        "Painting",
+                        "Singing",
+                        "Jumping"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Creative Arts help us appreciate:",
+                    options: [
+                        "Only our own work",
+                        "Different cultures and traditions",
+                        "Just one type of music",
+                        "Only modern things"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which equipment is used in football?",
+                    options: [
+                        "A bat and ball",
+                        "A football and goal posts",
+                        "A racket",
+                        "A swimming cap"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "When we share our art with others, we:",
+                    options: [
+                        "Should keep it secret",
+                        "Can inspire and connect with people",
+                        "Must sell it immediately",
+                        "Should hide it"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which activity combines movement and music?",
+                    options: [
+                        "Reading",
+                        "Dancing",
+                        "Writing",
+                        "Counting"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "What is important when using art materials?",
+                    options: [
+                        "Wasting as much as possible",
+                        "Using them safely and responsibly",
+                        "Sharing them with no care",
+                        "Only using the most expensive ones"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Sports teach us valuable lessons like:",
+                    options: [
+                        "How to cheat",
+                        "Teamwork and perseverance",
+                        "How to avoid exercise",
+                        "Only focusing on winning"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which color do we get when mixing red and yellow?",
+                    options: [
+                        "Blue",
+                        "Green",
+                        "Orange",
+                        "Purple"
+                    ],
+                    correct: 2,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Why do we warm up before sports?",
+                    options: [
+                        "To get tired faster",
+                        "To prepare our muscles and prevent injury",
+                        "To waste time",
+                        "To make the game longer"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Creative Arts can help us solve problems by:",
+                    options: [
+                        "Ignoring them",
+                        "Thinking in new and creative ways",
+                        "Only copying solutions",
+                        "Avoiding challenges"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                },
+                {
+                    question: "Which of these is a traditional Kenyan art form?",
+                    options: [
+                        "Digital animation only",
+                        "Beadwork and basket weaving",
+                        "Only oil painting",
+                        "Just photography"
+                    ],
+                    correct: 1,
+                    topic: "Introduction"
+                }
+            ],
+            2: [ // Level 2: Components of Creative Arts and Sports
+                {
+                    question: "Which is a component of visual arts?",
+                    options: [
+                        "Running fast",
+                        "Line, shape, and color",
+                        "Only singing",
+                        "Just eating"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In sports, what is 'teamwork'?",
+                    options: [
+                        "Playing alone",
+                        "Working together with others to achieve a goal",
+                        "Ignoring teammates",
+                        "Only caring about yourself"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which element helps create mood in a painting?",
+                    options: [
+                        "Only the frame",
+                        "Color and lighting",
+                        "Just the size",
+                        "The price"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is rhythm in dance?",
+                    options: [
+                        "Standing still",
+                        "A pattern of movement in time with music",
+                        "Only jumping",
+                        "Ignoring the music"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which is a component of a good sports team?",
+                    options: [
+                        "Only having the best player",
+                        "Communication and cooperation",
+                        "Arguing during games",
+                        "Ignoring the coach"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In art, what does 'texture' refer to?",
+                    options: [
+                        "Only the color",
+                        "How something feels or looks like it feels",
+                        "Just the size",
+                        "The price of materials"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which is important in both art and sports?",
+                    options: [
+                        "Only winning",
+                        "Practice and dedication",
+                        "Avoiding effort",
+                        "Copying others"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is balance in art composition?",
+                    options: [
+                        "Only using one color",
+                        "Arranging elements so the artwork feels stable",
+                        "Making everything the same size",
+                        "Using only straight lines"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In sports, what is 'strategy'?",
+                    options: [
+                        "Running as fast as possible",
+                        "A plan to achieve a goal during a game",
+                        "Ignoring the rules",
+                        "Only playing randomly"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which component helps tell a story in drama?",
+                    options: [
+                        "Only loud voices",
+                        "Characters, plot, and setting",
+                        "Just costumes",
+                        "Ignoring the audience"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is contrast in visual arts?",
+                    options: [
+                        "Using only one color",
+                        "Differences between elements like light/dark or big/small",
+                        "Making everything the same",
+                        "Only using bright colors"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which is a component of physical fitness in sports?",
+                    options: [
+                        "Only eating candy",
+                        "Strength, flexibility, and endurance",
+                        "Watching TV all day",
+                        "Avoiding exercise"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In music, what is 'tempo'?",
+                    options: [
+                        "Only the volume",
+                        "The speed of the music",
+                        "Just the lyrics",
+                        "The color of instruments"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What does 'composition' mean in art?",
+                    options: [
+                        "Only the frame",
+                        "How elements are arranged in an artwork",
+                        "Just the subject",
+                        "The price of the artwork"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which is important for fair play in sports?",
+                    options: [
+                        "Cheating to win",
+                        "Respecting rules, opponents, and officials",
+                        "Ignoring the referee",
+                        "Only caring about yourself"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In drawing, what is 'perspective'?",
+                    options: [
+                        "Only using black and white",
+                        "Creating the illusion of depth and distance",
+                        "Making everything flat",
+                        "Using only one shape"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is coordination in sports?",
+                    options: [
+                        "Only using your feet",
+                        "Using different body parts together smoothly",
+                        "Moving randomly",
+                        "Ignoring your body"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which component helps create interest in a painting?",
+                    options: [
+                        "Only using one color",
+                        "Variety in shapes, colors, and textures",
+                        "Making everything the same",
+                        "Using only straight lines"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In team sports, what is 'communication'?",
+                    options: [
+                        "Only shouting",
+                        "Sharing information and ideas with teammates",
+                        "Ignoring others",
+                        "Only listening to yourself"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is emphasis in art?",
+                    options: [
+                        "Making everything equally important",
+                        "Making one part stand out as the focal point",
+                        "Using only small shapes",
+                        "Avoiding bright colors"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which is a component of a healthy sports routine?",
+                    options: [
+                        "Only playing when you feel like it",
+                        "Regular practice, rest, and proper nutrition",
+                        "Eating junk food before games",
+                        "Skipping warm-ups"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In dance, what is 'expression'?",
+                    options: [
+                        "Only following steps exactly",
+                        "Showing feelings and ideas through movement",
+                        "Standing still",
+                        "Ignoring the music"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is pattern in visual arts?",
+                    options: [
+                        "Only using one shape",
+                        "A repeated decorative design",
+                        "Making everything random",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which component helps athletes improve?",
+                    options: [
+                        "Only natural talent",
+                        "Practice, feedback, and goal-setting",
+                        "Avoiding challenges",
+                        "Copying others without understanding"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In art, what does 'proportion' mean?",
+                    options: [
+                        "Making everything the same size",
+                        "The relationship between sizes of different parts",
+                        "Only using big shapes",
+                        "Ignoring size completely"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is sportsmanship?",
+                    options: [
+                        "Only caring about winning",
+                        "Playing fairly, respecting others, and accepting results gracefully",
+                        "Cheating when no one is looking",
+                        "Blaming others for losses"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which element creates movement in an artwork?",
+                    options: [
+                        "Only using straight lines",
+                        "Lines, shapes, and colors that guide the eye",
+                        "Making everything static",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In music, what is 'dynamics'?",
+                    options: [
+                        "Only the speed",
+                        "The volume or loudness of the music",
+                        "Just the lyrics",
+                        "The color of instruments"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is unity in art composition?",
+                    options: [
+                        "Making everything look separate",
+                        "Elements working together to create harmony",
+                        "Using only one shape",
+                        "Avoiding color completely"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which is important for safety in sports?",
+                    options: [
+                        "Ignoring equipment",
+                        "Using proper gear and following rules",
+                        "Playing on unsafe surfaces",
+                        "Avoiding warm-ups"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In drawing, what is 'shading'?",
+                    options: [
+                        "Only using black",
+                        "Adding darkness to show light and form",
+                        "Making everything flat",
+                        "Using only bright colors"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is agility in sports?",
+                    options: [
+                        "Only running in straight lines",
+                        "The ability to change direction quickly and control movement",
+                        "Moving slowly",
+                        "Ignoring your body"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which component helps create emotion in music?",
+                    options: [
+                        "Only playing loudly",
+                        "Melody, rhythm, and dynamics working together",
+                        "Playing only one note",
+                        "Ignoring the audience"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In team sports, what is 'support'?",
+                    options: [
+                        "Only cheering when you win",
+                        "Encouraging teammates during challenges and successes",
+                        "Ignoring teammates when they struggle",
+                        "Only focusing on yourself"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is space in visual arts?",
+                    options: [
+                        "Only the background",
+                        "The area around, between, and within objects",
+                        "Just the subject",
+                        "Ignoring the edges"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which is a component of creative thinking in arts?",
+                    options: [
+                        "Only copying others",
+                        "Imagination, experimentation, and problem-solving",
+                        "Avoiding new ideas",
+                        "Only following instructions exactly"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In sports, what is 'endurance'?",
+                    options: [
+                        "Only sprinting short distances",
+                        "The ability to keep going during prolonged activity",
+                        "Stopping as soon as you're tired",
+                        "Avoiding exercise"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "What is harmony in art?",
+                    options: [
+                        "Only using bright colors",
+                        "Elements that look pleasing together",
+                        "Making everything clash",
+                        "Using only one shape"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "Which component helps dancers remember routines?",
+                    options: [
+                        "Only watching others",
+                        "Practice, repetition, and mental rehearsal",
+                        "Avoiding practice",
+                        "Only dancing when they feel like it"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                },
+                {
+                    question: "In art, what does 'value' refer to?",
+                    options: [
+                        "Only the price",
+                        "The lightness or darkness of a color",
+                        "Just the size",
+                        "The frame"
+                    ],
+                    correct: 1,
+                    topic: "Components"
+                }
+            ],
+            3: [ // Level 3: Drawing and Painting
+                {
+                    question: "Which tool is best for drawing fine details?",
+                    options: [
+                        "A large brush",
+                        "A sharp pencil",
+                        "A sponge",
+                        "Your finger"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What happens when you mix blue and yellow paint?",
+                    options: [
+                        "Red",
+                        "Green",
+                        "Purple",
+                        "Orange"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which technique creates texture in a drawing?",
+                    options: [
+                        "Only using one color",
+                        "Cross-hatching or stippling",
+                        "Erasing everything",
+                        "Using only straight lines"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is a 'still life' drawing?",
+                    options: [
+                        "A drawing of moving animals",
+                        "A drawing of non-moving objects like fruit or vases",
+                        "Only drawing people",
+                        "Drawing with eyes closed"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which paper is best for watercolor painting?",
+                    options: [
+                        "Thin printer paper",
+                        "Thick watercolor paper",
+                        "Newspaper",
+                        "Cardboard"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What does 'blending' colors mean?",
+                    options: [
+                        "Keeping colors completely separate",
+                        "Mixing colors smoothly together",
+                        "Only using one color",
+                        "Scratching the paper"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which is a primary color?",
+                    options: [
+                        "Green",
+                        "Red",
+                        "Orange",
+                        "Purple"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'perspective drawing'?",
+                    options: [
+                        "Drawing everything flat",
+                        "Creating the illusion of depth and distance",
+                        "Only drawing circles",
+                        "Using only black and white"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which tool helps draw perfect circles?",
+                    options: [
+                        "A ruler",
+                        "A compass",
+                        "A sponge",
+                        "Your hand"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'wash' in watercolor painting?",
+                    options: [
+                        "Cleaning your brushes",
+                        "A thin, transparent layer of paint",
+                        "Erasing mistakes",
+                        "Using only thick paint"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which technique shows light and shadow?",
+                    options: [
+                        "Only using bright colors",
+                        "Shading and highlighting",
+                        "Using only one color",
+                        "Drawing only outlines"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is a 'color wheel' used for?",
+                    options: [
+                        "Measuring paper",
+                        "Understanding color relationships and mixing",
+                        "Cutting shapes",
+                        "Cleaning brushes"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which is a secondary color?",
+                    options: [
+                        "Red",
+                        "Blue",
+                        "Green",
+                        "Yellow"
+                    ],
+                    correct: 2,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What does 'composition' mean in painting?",
+                    options: [
+                        "Only the frame",
+                        "How elements are arranged in the artwork",
+                        "Just the subject",
+                        "The price of materials"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which brush is best for large areas?",
+                    options: [
+                        "A fine detail brush",
+                        "A flat or wide brush",
+                        "A toothbrush",
+                        "A pencil"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'dry brush' technique?",
+                    options: [
+                        "Using a wet brush on dry paper",
+                        "Using a brush with little paint on dry paper for texture",
+                        "Only using water",
+                        "Erasing with a dry cloth"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which color is made by mixing red and blue?",
+                    options: [
+                        "Yellow",
+                        "Green",
+                        "Purple",
+                        "Orange"
+                    ],
+                    correct: 2,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'sketching'?",
+                    options: [
+                        "A finished, detailed painting",
+                        "A quick, rough drawing to plan an artwork",
+                        "Only using colors",
+                        "Erasing everything"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which material is NOT typically used for painting?",
+                    options: [
+                        "Watercolors",
+                        "Acrylics",
+                        "Clay",
+                        "Tempera"
+                    ],
+                    correct: 2,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'foreground' in a painting?",
+                    options: [
+                        "The background area",
+                        "The area closest to the viewer",
+                        "Only the sky",
+                        "The frame"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which technique creates the illusion of movement?",
+                    options: [
+                        "Only using straight lines",
+                        "Blurred lines or repeated shapes",
+                        "Making everything static",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'value scale' in drawing?",
+                    options: [
+                        "Only the price of materials",
+                        "A range from light to dark values",
+                        "Just the size of paper",
+                        "The number of colors used"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which is a warm color?",
+                    options: [
+                        "Blue",
+                        "Green",
+                        "Red",
+                        "Purple"
+                    ],
+                    correct: 2,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What does 'palette' refer to in painting?",
+                    options: [
+                        "Only the frame",
+                        "The surface for mixing colors or the range of colors used",
+                        "Just the brushes",
+                        "The paper type"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which technique is good for drawing hair or grass?",
+                    options: [
+                        "Only using thick lines",
+                        "Short, quick strokes or lines",
+                        "Making everything smooth",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'background' in a painting?",
+                    options: [
+                        "The area closest to the viewer",
+                        "The area farthest from the viewer",
+                        "Only the subject",
+                        "The frame"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which color is made by mixing all primary colors in paint?",
+                    options: [
+                        "White",
+                        "Black or dark brown",
+                        "Rainbow",
+                        "Clear"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'outline' in drawing?",
+                    options: [
+                        "Only the background",
+                        "The line that defines the edge of a shape",
+                        "Just the colors",
+                        "The paper texture"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which is a cool color?",
+                    options: [
+                        "Red",
+                        "Orange",
+                        "Blue",
+                        "Yellow"
+                    ],
+                    correct: 2,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What does 'layering' mean in painting?",
+                    options: [
+                        "Only using one layer",
+                        "Applying paint in successive layers to build depth",
+                        "Erasing between layers",
+                        "Using only water"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which tool helps blend colored pencils?",
+                    options: [
+                        "A ruler",
+                        "A blending stump or tissue",
+                        "A hammer",
+                        "A sponge with water"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'negative space' in art?",
+                    options: [
+                        "Only the subject",
+                        "The space around and between the subject",
+                        "Just the background color",
+                        "The frame"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which technique creates texture with paint?",
+                    options: [
+                        "Only smooth brushes",
+                        "Using sponges, salt, or palette knives",
+                        "Only water",
+                        "Erasing the paint"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'proportion' in drawing?",
+                    options: [
+                        "Making everything the same size",
+                        "The correct relationship between sizes of parts",
+                        "Only using big shapes",
+                        "Ignoring size"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which is NOT a painting medium?",
+                    options: [
+                        "Watercolor",
+                        "Oil",
+                        "Clay",
+                        "Acrylic"
+                    ],
+                    correct: 2,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What does 'hue' mean in color theory?",
+                    options: [
+                        "Only the brightness",
+                        "The name of a color (like red, blue, green)",
+                        "Just the darkness",
+                        "The texture"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which technique is good for drawing clouds?",
+                    options: [
+                        "Only sharp lines",
+                        "Soft blending and light strokes",
+                        "Making everything dark",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'contrast' in painting?",
+                    options: [
+                        "Using only one color",
+                        "Differences between elements like light/dark or complementary colors",
+                        "Making everything the same",
+                        "Only using bright colors"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "Which material is water-soluble?",
+                    options: [
+                        "Oil paint",
+                        "Watercolor",
+                        "Clay",
+                        "Charcoal (when fixed)"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                },
+                {
+                    question: "What is 'focal point' in a painting?",
+                    options: [
+                        "Only the background",
+                        "The area that draws the viewer's attention first",
+                        "Just the frame",
+                        "The signature"
+                    ],
+                    correct: 1,
+                    topic: "Drawing & Painting"
+                }
+            ],
+            4: [ // Level 4: Mixed Application
+                {
+                    question: "Which activity combines drawing and storytelling?",
+                    options: [
+                        "Only running",
+                        "Creating a comic strip",
+                        "Just singing",
+                        "Sleeping"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In a team sport, what should you do if a teammate makes a mistake?",
+                    options: [
+                        "Laugh at them",
+                        "Encourage them and help them improve",
+                        "Ignore them completely",
+                        "Blame them for losing"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which color scheme uses colors next to each other on the color wheel?",
+                    options: [
+                        "Complementary",
+                        "Analogous",
+                        "Monochromatic",
+                        "Triadic"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "When creating art about Kenyan culture, which element might you include?",
+                    options: [
+                        "Only modern cityscapes",
+                        "Traditional patterns, colors, or symbols",
+                        "Just foreign flags",
+                        "Only abstract shapes with no meaning"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which is a good warm-up activity before drawing?",
+                    options: [
+                        "Only staring at blank paper",
+                        "Simple sketches or hand exercises",
+                        "Running around the classroom",
+                        "Eating snacks"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In sports, what should you do after a game win or loss?",
+                    options: [
+                        "Only celebrate if you win",
+                        "Thank opponents and reflect on what you learned",
+                        "Blame others for losses",
+                        "Ignore the results"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which technique would you use to show rain in a painting?",
+                    options: [
+                        "Only bright yellow",
+                        "Diagonal lines and gray washes",
+                        "Making everything dry",
+                        "Using only thick paint"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "When working on a group art project, what is important?",
+                    options: [
+                        "Only doing your own part",
+                        "Communication, sharing ideas, and respecting others' contributions",
+                        "Ignoring teammates",
+                        "Taking all the credit"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which sport teaches balance and coordination?",
+                    options: [
+                        "Only watching TV",
+                        "Gymnastics or dance",
+                        "Sleeping",
+                        "Eating"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "What is a good way to fix a mistake in pencil drawing?",
+                    options: [
+                        "Tear up the paper",
+                        "Use an eraser gently or incorporate it into the design",
+                        "Only use black paint to cover it",
+                        "Give up immediately"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which color combination creates high contrast?",
+                    options: [
+                        "Blue and green",
+                        "Red and green (complementary colors)",
+                        "Light blue and dark blue",
+                        "Yellow and orange"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "When painting outdoors, what should you consider?",
+                    options: [
+                        "Only the subject",
+                        "Light changes, weather, and protecting your materials",
+                        "Ignoring the environment",
+                        "Using only indoor materials"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which activity helps develop both artistic and athletic skills?",
+                    options: [
+                        "Only reading",
+                        "Dance or martial arts",
+                        "Watching movies",
+                        "Playing video games only"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "What should you do with art materials after use?",
+                    options: [
+                        "Leave them messy",
+                        "Clean and store them properly",
+                        "Throw them away immediately",
+                        "Hide them"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In a relay race, what is most important?",
+                    options: [
+                        "Only running fast alone",
+                        "Smooth baton passes and teamwork",
+                        "Ignoring teammates",
+                        "Starting before your turn"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which technique creates depth in a landscape drawing?",
+                    options: [
+                        "Only using one size",
+                        "Making distant objects smaller and lighter",
+                        "Making everything the same",
+                        "Using only bright colors everywhere"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "When creating art about emotions, which element is important?",
+                    options: [
+                        "Only realistic details",
+                        "Color choices, lines, and composition that express feelings",
+                        "Using only black and white",
+                        "Copying someone else's work"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which is a respectful way to appreciate someone's art?",
+                    options: [
+                        "Only saying 'I don't like it'",
+                        "Looking carefully and commenting on specific elements you notice",
+                        "Laughing at it",
+                        "Ignoring it completely"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "What should you do if you don't have a specific art material?",
+                    options: [
+                        "Give up immediately",
+                        "Adapt with available materials or try a different technique",
+                        "Only copy others exactly",
+                        "Complain without trying"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In sports, why is hydration important?",
+                    options: [
+                        "Only when you're thirsty",
+                        "To maintain energy and prevent injury",
+                        "Only after winning",
+                        "It's not important"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which color might represent happiness in art?",
+                    options: [
+                        "Dark gray",
+                        "Bright yellow",
+                        "Black",
+                        "Dark blue"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "When drawing from observation, what should you do first?",
+                    options: [
+                        "Start with fine details",
+                        "Look carefully and sketch basic shapes and proportions",
+                        "Close your eyes",
+                        "Only use your imagination"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which activity combines music and movement?",
+                    options: [
+                        "Only painting",
+                        "Dance",
+                        "Reading silently",
+                        "Writing essays"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "What is a good way to practice drawing skills daily?",
+                    options: [
+                        "Only drawing when inspired",
+                        "Quick sketches of everyday objects or scenes",
+                        "Avoiding practice",
+                        "Only copying famous artworks"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In team sports, what does 'supporting teammates' look like?",
+                    options: [
+                        "Only cheering when they score",
+                        "Encouraging during challenges and celebrating efforts",
+                        "Ignoring them when they struggle",
+                        "Only focusing on your own performance"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which technique would you use to show texture of tree bark?",
+                    options: [
+                        "Only smooth lines",
+                        "Rough, irregular lines and shading",
+                        "Making everything flat",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "When creating art for a school event, what should you consider?",
+                    options: [
+                        "Only your personal preference",
+                        "The theme, audience, and purpose of the event",
+                        "Ignoring the requirements",
+                        "Only using expensive materials"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which is a benefit of participating in both arts and sports?",
+                    options: [
+                        "Only winning prizes",
+                        "Developing creativity, discipline, and teamwork",
+                        "Avoiding other subjects",
+                        "Only focusing on one talent"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "What should you do if you feel frustrated while creating art?",
+                    options: [
+                        "Tear up your work immediately",
+                        "Take a break, try a different approach, or ask for help",
+                        "Only copy others to avoid frustration",
+                        "Give up on art forever"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In sports, why is listening to the coach important?",
+                    options: [
+                        "Only to avoid punishment",
+                        "To learn skills, strategies, and stay safe",
+                        "It's not important",
+                        "Only when you feel like it"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which color scheme uses one color with its tints and shades?",
+                    options: [
+                        "Complementary",
+                        "Analogous",
+                        "Monochromatic",
+                        "Triadic"
+                    ],
+                    correct: 2,
+                    topic: "Application"
+                },
+                {
+                    question: "When painting a portrait, what is important to capture?",
+                    options: [
+                        "Only the hair color",
+                        "Proportions, expression, and unique features",
+                        "Just the background",
+                        "Only using bright colors"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which activity helps develop hand-eye coordination?",
+                    options: [
+                        "Only watching TV",
+                        "Drawing, painting, or playing ball sports",
+                        "Sleeping",
+                        "Eating"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "What is a respectful way to share your art with others?",
+                    options: [
+                        "Only showing it to people who will praise it",
+                        "Being open to feedback while staying true to your vision",
+                        "Hiding it because you're afraid",
+                        "Only sharing if it's perfect"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In sports, what should you do if you see someone get hurt?",
+                    options: [
+                        "Ignore it and keep playing",
+                        "Stop and get help from a teacher or coach",
+                        "Laugh at them",
+                        "Blame them for getting hurt"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which technique creates the illusion of water in a painting?",
+                    options: [
+                        "Only thick paint",
+                        "Horizontal strokes, reflections, and transparent washes",
+                        "Making everything dry",
+                        "Using only dark colors"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "When creating art about nature, which elements might you include?",
+                    options: [
+                        "Only city buildings",
+                        "Plants, animals, landscapes, and natural patterns",
+                        "Just abstract shapes with no reference",
+                        "Only using man-made objects"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "Which is a good habit for both artists and athletes?",
+                    options: [
+                        "Skipping practice",
+                        "Regular practice, rest, and reflection",
+                        "Only focusing on winning",
+                        "Avoiding challenges"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "What should you do with constructive feedback on your art?",
+                    options: [
+                        "Ignore it completely",
+                        "Consider it thoughtfully and use what helps you grow",
+                        "Get angry and quit",
+                        "Only accept praise"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                },
+                {
+                    question: "In sports, why is warming down important after activity?",
+                    options: [
+                        "Only if you have time",
+                        "To help muscles recover and prevent soreness",
+                        "It's not important",
+                        "Only for professional athletes"
+                    ],
+                    correct: 1,
+                    topic: "Application"
+                }
+            ],
+            5: [ // Level 5: Advanced Application & Creativity
+                {
+                    question: "Which project combines drawing, painting, and storytelling?",
+                    options: [
+                        "Only a single sketch",
+                        "Creating an illustrated storybook",
+                        "Just a color chart",
+                        "A list of sports rules"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When designing a poster for a sports event, what elements are important?",
+                    options: [
+                        "Only bright colors",
+                        "Clear message, appealing visuals, and key information",
+                        "Just the date",
+                        "Only using small text"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which color theory concept helps create visual interest?",
+                    options: [
+                        "Only using one color",
+                        "Complementary colors or contrasting values",
+                        "Making everything the same",
+                        "Avoiding color completely"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can art be used to promote healthy sports habits?",
+                    options: [
+                        "Only drawing trophies",
+                        "Creating posters about teamwork, exercise, or nutrition",
+                        "Ignoring health topics",
+                        "Only using dark colors"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which technique would you use to show movement in a sports drawing?",
+                    options: [
+                        "Only static poses",
+                        "Action lines, blurred edges, or dynamic composition",
+                        "Making everything still",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When creating art about Kenyan sports heroes, what might you emphasize?",
+                    options: [
+                        "Only their uniforms",
+                        "Their achievements, determination, and positive values",
+                        "Just the background",
+                        "Only using foreign symbols"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which project integrates multiple art forms?",
+                    options: [
+                        "Only a pencil sketch",
+                        "A performance combining dance, music, and visual elements",
+                        "Just a color wheel",
+                        "A single photograph"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can sports principles apply to art practice?",
+                    options: [
+                        "Only winning competitions",
+                        "Regular practice, setting goals, and learning from mistakes",
+                        "Avoiding effort",
+                        "Only copying others"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which composition technique creates balance in an artwork?",
+                    options: [
+                        "Only placing everything on one side",
+                        "Symmetrical arrangement or visual weight distribution",
+                        "Making everything chaotic",
+                        "Using only one element"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When creating art for a community event, what should you consider?",
+                    options: [
+                        "Only your personal style",
+                        "Cultural relevance, audience, and event purpose",
+                        "Ignoring the community",
+                        "Only using expensive materials"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which approach helps develop a unique artistic style?",
+                    options: [
+                        "Only copying famous artists",
+                        "Experimenting, practicing, and reflecting on your work",
+                        "Avoiding new techniques",
+                        "Only using one medium"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can art and sports both promote cultural appreciation?",
+                    options: [
+                        "Only focusing on one culture",
+                        "Exploring traditional arts, games, and values from different communities",
+                        "Ignoring cultural differences",
+                        "Only using modern styles"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which technique creates depth using color?",
+                    options: [
+                        "Only using bright colors everywhere",
+                        "Atmospheric perspective: cooler, lighter colors for distant objects",
+                        "Making everything the same color",
+                        "Using only dark colors"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When collaborating on a large mural, what is essential?",
+                    options: [
+                        "Only working on your section",
+                        "Planning, communication, and respecting the overall design",
+                        "Ignoring others' contributions",
+                        "Changing the design without discussion"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which project demonstrates understanding of both art elements and sports?",
+                    options: [
+                        "Only a list of sports rules",
+                        "Designing team uniforms with meaningful colors and symbols",
+                        "Just a color chart",
+                        "A single action photo"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can reflection improve both art and sports performance?",
+                    options: [
+                        "Only focusing on mistakes",
+                        "Analyzing what worked, what didn't, and planning improvements",
+                        "Ignoring results",
+                        "Only celebrating wins"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which approach shows creative problem-solving in art?",
+                    options: [
+                        "Only following instructions exactly",
+                        "Adapting techniques, materials, or ideas to overcome challenges",
+                        "Giving up when stuck",
+                        "Only copying solutions"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When creating art about environmental conservation through sports, what might you include?",
+                    options: [
+                        "Only sports equipment",
+                        "Images of clean environments, athletes as role models, and conservation messages",
+                        "Ignoring the environment",
+                        "Only using dark, gloomy colors"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which composition technique guides the viewer's eye through an artwork?",
+                    options: [
+                        "Only placing elements randomly",
+                        "Leading lines, focal points, and visual flow",
+                        "Making everything equally busy",
+                        "Using only one color"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can digital tools enhance traditional art and sports learning?",
+                    options: [
+                        "Only replacing traditional methods",
+                        "Creating animations, designing strategies, or sharing work globally",
+                        "Ignoring technology",
+                        "Only using social media"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which project integrates art, sports, and academic learning?",
+                    options: [
+                        "Only a sports schedule",
+                        "Creating infographics about sports science or art history timelines",
+                        "Just a color wheel",
+                        "A single photograph"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When presenting your artwork, what makes an effective display?",
+                    options: [
+                        "Only hanging it randomly",
+                        "Considering lighting, arrangement, and context to enhance the work",
+                        "Ignoring the display space",
+                        "Only showing unfinished work"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which approach demonstrates growth mindset in art and sports?",
+                    options: [
+                        "Only focusing on natural talent",
+                        "Embracing challenges, learning from feedback, and persisting through difficulties",
+                        "Avoiding difficult tasks",
+                        "Only comparing to others"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can art be used to document sports events?",
+                    options: [
+                        "Only taking photos",
+                        "Creating sketches, paintings, or comics that capture moments and emotions",
+                        "Ignoring the event",
+                        "Only writing reports"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which technique creates mood through color in painting?",
+                    options: [
+                        "Only using bright colors",
+                        "Choosing color temperature and harmony to evoke feelings",
+                        "Using random colors",
+                        "Only using black and white"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When creating art about teamwork in sports, what elements might you emphasize?",
+                    options: [
+                        "Only individual stars",
+                        "Connected figures, shared goals, and supportive interactions",
+                        "Ignoring team dynamics",
+                        "Only using dark colors"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which project shows understanding of cultural heritage through art and sports?",
+                    options: [
+                        "Only modern styles",
+                        "Researching and recreating traditional games, dances, or art forms",
+                        "Ignoring cultural context",
+                        "Only using foreign elements"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can feedback be used constructively in creative projects?",
+                    options: [
+                        "Only accepting praise",
+                        "Listening thoughtfully, selecting useful suggestions, and maintaining your vision",
+                        "Ignoring all feedback",
+                        "Changing everything based on one opinion"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which approach demonstrates innovation in art or sports?",
+                    options: [
+                        "Only copying what's been done before",
+                        "Combining ideas, techniques, or materials in new ways",
+                        "Avoiding experimentation",
+                        "Only following rules exactly"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When creating art for social change through sports, what is important?",
+                    options: [
+                        "Only aesthetic appeal",
+                        "Clear message, emotional connection, and call to action",
+                        "Ignoring the message",
+                        "Only using abstract forms"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which technique creates unity in a complex artwork?",
+                    options: [
+                        "Only using random elements",
+                        "Repetition of colors, shapes, or themes throughout the piece",
+                        "Making everything different",
+                        "Using only one element"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can art and sports both build community?",
+                    options: [
+                        "Only individual achievements",
+                        "Creating shared experiences, celebrating diversity, and working toward common goals",
+                        "Ignoring others",
+                        "Only focusing on competition"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which project demonstrates mastery of multiple skills?",
+                    options: [
+                        "Only a simple sketch",
+                        "A multimedia presentation combining art, performance, and technology",
+                        "Just a color chart",
+                        "A single photograph"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When reflecting on your creative journey, what is valuable?",
+                    options: [
+                        "Only focusing on final products",
+                        "Recognizing growth, challenges overcome, and lessons learned",
+                        "Ignoring the process",
+                        "Only comparing to others"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which approach shows leadership in art or sports projects?",
+                    options: [
+                        "Only directing others",
+                        "Inspiring teammates, facilitating collaboration, and supporting others' growth",
+                        "Ignoring team input",
+                        "Taking all credit"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can art preserve sports history and culture?",
+                    options: [
+                        "Only taking photos",
+                        "Creating portraits, murals, or stories that honor athletes and traditions",
+                        "Ignoring history",
+                        "Only focusing on current events"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which technique creates emphasis in a composition?",
+                    options: [
+                        "Only making everything equal",
+                        "Using contrast, placement, or size to highlight the focal point",
+                        "Avoiding focal points",
+                        "Using only one element"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "When creating art about personal growth through sports, what might you express?",
+                    options: [
+                        "Only winning moments",
+                        "Journey, challenges, resilience, and transformation",
+                        "Ignoring the process",
+                        "Only using dark colors"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "Which project demonstrates creative synthesis of learning?",
+                    options: [
+                        "Only repeating facts",
+                        "Designing a community event that integrates art, sports, and education",
+                        "Ignoring connections",
+                        "Only focusing on one subject"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                },
+                {
+                    question: "How can you share your creative work to inspire others?",
+                    options: [
+                        "Only keeping it private",
+                        "Presenting thoughtfully, explaining your process, and inviting dialogue",
+                        "Ignoring your audience",
+                        "Only sharing if perfect"
+                    ],
+                    correct: 1,
+                    topic: "Advanced Application"
+                }
+            ]
+        };
+
+        // Game State
+        const gameState = {
+            currentLevel: 1,
+            currentQuestionIndex: 0,
+            score: 0,
+            correctAnswers: 0,
+            timer: null,
+            timeLeft: 30,
+            questions: [],
+            unlockedLevels: [1],
+            totalScore: 0,
+            starsEarned: 0,
+            speechSynthesis: window.speechSynthesis,
+            voiceEnabled: true
+        };
+
+        // DOM Elements
+        const screens = {
+            start: document.getElementById('start-screen'),
+            levelSelect: document.getElementById('level-select-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            levelComplete: document.getElementById('level-complete-screen'),
+            gameComplete: document.getElementById('game-complete-screen')
+        };
+
+        // Initialize the game
+        function initGame() {
+            // Event Listeners
+            document.getElementById('start-btn').addEventListener('click', showLevelSelect);
+            document.getElementById('back-to-start').addEventListener('click', showStartScreen);
+            document.getElementById('back-to-levels').addEventListener('click', showLevelSelect);
+            document.getElementById('retry-btn').addEventListener('click', retryLevel);
+            document.getElementById('next-level-btn').addEventListener('click', goToNextLevel);
+            document.getElementById('play-again-btn').addEventListener('click', restartGame);
+            document.getElementById('voice-btn').addEventListener('click', speakQuestion);
+            document.getElementById('next-btn').addEventListener('click', nextQuestion);
+            
+            // Initialize level selection
+            renderLevelSelect();
+            
+            // Check for speech synthesis support
+            if (!gameState.speechSynthesis) {
+                document.getElementById('voice-btn').style.display = 'none';
+                gameState.voiceEnabled = false;
+            }
+        }
+
+        // Screen Navigation
+        function showScreen(screenName) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active'));
+            screens[screenName].classList.add('active');
+        }
+
+        function showStartScreen() {
+            showScreen('start');
+        }
+
+        function showLevelSelect() {
+            renderLevelSelect();
+            updateStatsDisplay();
+            showScreen('levelSelect');
+        }
+
+        function showQuiz(level) {
+            gameState.currentLevel = level;
+            gameState.currentQuestionIndex = 0;
+            gameState.score = 0;
+            gameState.correctAnswers = 0;
+            gameState.questions = [...questionsDatabase[level]]; // Clone array
+            
+            // Shuffle questions
+            gameState.questions = shuffleArray(gameState.questions);
+            
+            updateLevelTitle();
+            renderQuestion();
+            showScreen('quiz');
+        }
+
+        function showLevelComplete() {
+            const percentage = Math.round((gameState.correctAnswers / 40) * 100);
+            const stars = calculateStars(percentage);
+            
+            document.getElementById('level-score').textContent = `${gameState.correctAnswers}/40`;
+            document.getElementById('percentage').textContent = percentage;
+            
+            // Update progression message
+            const progressionMsg = document.getElementById('progression-message');
+            if (percentage >= 80 && gameState.currentLevel < 5) {
+                progressionMsg.innerHTML = `🎉 Excellent! You've unlocked Level ${gameState.currentLevel + 1}!`;
+                progressionMsg.style.background = 'rgba(6, 214, 160, 0.2)';
+                progressionMsg.style.borderColor = 'var(--success)';
+                document.getElementById('next-level-btn').disabled = false;
+                
+                // Unlock next level if not already unlocked
+                if (!gameState.unlockedLevels.includes(gameState.currentLevel + 1)) {
+                    gameState.unlockedLevels.push(gameState.currentLevel + 1);
+                }
+            } else if (gameState.currentLevel === 5 && percentage >= 80) {
+                progressionMsg.innerHTML = `🏆 Amazing! You've completed all levels!`;
+                progressionMsg.style.background = 'rgba(255, 209, 102, 0.3)';
+                progressionMsg.style.borderColor = 'var(--accent)';
+                document.getElementById('next-level-btn').disabled = true;
+                document.getElementById('next-level-btn').style.display = 'none';
+                document.getElementById('retry-btn').textContent = '🔄 Play Again';
+            } else {
+                progressionMsg.innerHTML = `🎯 You need 80% to unlock the next level. Keep practicing!`;
+                progressionMsg.style.background = 'rgba(255, 214, 102, 0.3)';
+                progressionMsg.style.borderColor = 'var(--accent)';
+                document.getElementById('next-level-btn').disabled = true;
+            }
+            
+            // Update stats
+            gameState.totalScore += gameState.score;
+            gameState.starsEarned += stars;
+            
+            // Create confetti celebration for high scores
+            if (percentage >= 80) {
+                createConfetti();
+            }
+            
+            showScreen('levelComplete');
+        }
+
+        function showGameComplete() {
+            document.getElementById('final-score').textContent = `${gameState.totalScore}/200`;
+            document.getElementById('final-stars').textContent = gameState.starsEarned;
+            createConfetti(50); // Extra confetti for final celebration
+            showScreen('gameComplete');
+        }
+
+        // Level Selection
+        function renderLevelSelect() {
+            const container = document.getElementById('level-select-container');
+            container.innerHTML = '';
+            
+            const levelTitles = [
+                "Introduction",
+                "Components",
+                "Drawing & Painting",
+                "Mixed Application",
+                "Advanced Creativity"
+            ];
+            
+            for (let i = 1; i <= 5; i++) {
+                const levelCard = document.createElement('div');
+                levelCard.className = `level-card ${gameState.unlockedLevels.includes(i) ? '' : 'locked'}`;
+                levelCard.innerHTML = `
+                    <div class="level-number">${i}</div>
+                    <div class="level-title">${levelTitles[i-1]}</div>
+                    ${gameState.unlockedLevels.includes(i) ? '<div style="margin-top:5px;font-size:1.2rem">⭐</div>' : ''}
+                `;
+                
+                if (gameState.unlockedLevels.includes(i)) {
+                    levelCard.addEventListener('click', () => showQuiz(i));
+                }
+                
+                container.appendChild(levelCard);
+            }
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('total-score').textContent = gameState.totalScore;
+            document.getElementById('levels-completed').textContent = `${gameState.unlockedLevels.length}/5`;
+            document.getElementById('stars-earned').textContent = gameState.starsEarned;
+        }
+
+        // Quiz Functions
+        function updateLevelTitle() {
+            const titles = [
+                "Introduction to Arts & Sports",
+                "Components of Arts & Sports",
+                "Drawing & Painting Techniques",
+                "Mixed Application Challenges",
+                "Advanced Creativity Quest"
+            ];
+            document.getElementById('level-title').textContent = titles[gameState.currentLevel - 1];
+            document.getElementById('current-level').textContent = gameState.currentLevel;
+        }
+
+        function renderQuestion() {
+            // Update progress
+            const progress = ((gameState.currentQuestionIndex) / 40) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('question-number').textContent = gameState.currentQuestionIndex + 1;
+            
+            // Get current question
+            const question = gameState.questions[gameState.currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            
+            // Render options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option';
+                optionEl.textContent = option;
+                optionEl.dataset.index = index;
+                optionEl.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionEl);
+            });
+            
+            // Reset feedback and timer
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('next-btn').disabled = true;
+            
+            // Start timer
+            startTimer();
+            
+            // Auto-speak question if voice is enabled
+            if (gameState.voiceEnabled) {
+                speakQuestion();
+            }
+        }
+
+        function startTimer() {
+            // Clear any existing timer
+            if (gameState.timer) clearInterval(gameState.timer);
+            
+            gameState.timeLeft = 30;
+            updateTimerDisplay();
+            
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer-display').textContent = `${gameState.timeLeft}s`;
+            document.getElementById('main-timer').textContent = `${gameState.timeLeft} seconds`;
+            
+            // Visual warning for low time
+            if (gameState.timeLeft <= 10) {
+                document.getElementById('main-timer').style.color = 'var(--danger)';
+                document.getElementById('timer-display').style.color = 'var(--danger)';
+            } else {
+                document.getElementById('main-timer').style.color = '';
+                document.getElementById('timer-display').style.color = '';
+            }
+        }
+
+        function handleTimeUp() {
+            // Auto-select no answer and show feedback
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (parseInt(opt.dataset.index) === gameState.questions[gameState.currentQuestionIndex].correct) {
+                    opt.classList.add('correct');
+                }
+            });
+            
+            showFeedback(false);
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function selectOption(selectedIndex) {
+            // Stop timer
+            clearInterval(gameState.timer);
+            
+            // Disable all options
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                const index = parseInt(opt.dataset.index);
+                if (index === gameState.questions[gameState.currentQuestionIndex].correct) {
+                    opt.classList.add('correct');
+                }
+                if (index === selectedIndex && index !== gameState.questions[gameState.currentQuestionIndex].correct) {
+                    opt.classList.add('incorrect');
+                }
+                if (index === selectedIndex) {
+                    opt.classList.add('selected');
+                }
+            });
+            
+            // Check answer
+            const isCorrect = selectedIndex === gameState.questions[gameState.currentQuestionIndex].correct;
+            if (isCorrect) {
+                gameState.score += 10;
+                gameState.correctAnswers++;
+                document.getElementById('score').textContent = gameState.score;
+                document.getElementById('correct-count').textContent = gameState.correctAnswers;
+            }
+            
+            // Show feedback
+            showFeedback(isCorrect);
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function showFeedback(isCorrect) {
+            const feedbackEl = document.getElementById('feedback');
+            if (isCorrect) {
+                feedbackEl.textContent = '🌟 Excellent! That\'s correct!';
+                feedbackEl.className = 'feedback correct';
+            } else {
+                feedbackEl.textContent = '💡 Keep learning! The correct answer is highlighted.';
+                feedbackEl.className = 'feedback incorrect';
+            }
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestionIndex++;
+            
+            if (gameState.currentQuestionIndex >= 40) {
+                // Level complete
+                clearInterval(gameState.timer);
+                showLevelComplete();
+            } else {
+                renderQuestion();
+            }
+        }
+
+        function retryLevel() {
+            if (gameState.currentLevel === 5 && gameState.correctAnswers >= 32) {
+                showGameComplete();
+            } else {
+                showQuiz(gameState.currentLevel);
+            }
+        }
+
+        function goToNextLevel() {
+            if (gameState.currentLevel < 5) {
+                showQuiz(gameState.currentLevel + 1);
+            } else {
+                showGameComplete();
+            }
+        }
+
+        function restartGame() {
+            // Reset game state
+            gameState.currentLevel = 1;
+            gameState.totalScore = 0;
+            gameState.starsEarned = 0;
+            gameState.unlockedLevels = [1];
+            
+            showStartScreen();
+        }
+
+        // Voice/Speech Functions
+        function speakQuestion() {
+            if (!gameState.voiceEnabled || !gameState.speechSynthesis) return;
+            
+            // Cancel any ongoing speech
+            gameState.speechSynthesis.cancel();
+            
+            const question = gameState.questions[gameState.currentQuestionIndex];
+            const utterance = new SpeechSynthesisUtterance(question.question);
+            
+            // Configure voice
+            utterance.rate = 0.9; // Slightly slower for kids
+            utterance.pitch = 1.1; // Slightly higher pitch
+            
+            // Try to use a child-friendly voice if available
+            const voices = gameState.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice => 
+                voice.name.includes('Google UK English Female') || 
+                voice.name.includes('Samantha') ||
+                voice.lang.includes('en')
+            );
+            
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            gameState.speechSynthesis.speak(utterance);
+            
+            // Visual feedback
+            const voiceBtn = document.getElementById('voice-btn');
+            voiceBtn.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                voiceBtn.style.transform = '';
+            }, 300);
+        }
+
+        // Utility Functions
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function calculateStars(percentage) {
+            if (percentage >= 95) return 5;
+            if (percentage >= 85) return 4;
+            if (percentage >= 80) return 3;
+            if (percentage >= 70) return 2;
+            return 1;
+        }
+
+        function createConfetti(count = 30) {
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#1A535C', '#06D6A0', '#EF476F'];
+            const container = document.getElementById('game-container');
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = confetti.style.width;
+                container.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load voices for speech synthesis
+            if (gameState.speechSynthesis) {
+                // Chrome requires this to load voices
+                gameState.speechSynthesis.onvoiceschanged = () => {};
+            }
+            
+            initGame();
+            
+            // Make game responsive to orientation changes
+            window.addEventListener('orientationchange', () => {
+                // Adjust font sizes if needed
+                const isMobile = window.innerWidth < 600;
+                document.body.style.fontSize = isMobile ? '14px' : '16px';
+            });
+        });
+
+        // Handle visibility change to pause timers
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && gameState.timer) {
+                clearInterval(gameState.timer);
+            }
+        });
+    </script>
+</body>
+</html>

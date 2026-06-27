@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Bobo's Journey to School - Grade 1 CBC | Features, Drawing & Safety</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2c7a47 0%, #1e5a35 100%);
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 70px 70px 80px 80px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #ffb84d;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #e09d32;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2e241f;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #ffecb3;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #5a3e2e, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            background: #9b4b1f;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .story-area {
+            background: #fff1df;
+            padding: 25px 20px 15px 20px;
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #2c7a47;
+            border-bottom: 3px dashed #f7d98c;
+            min-height: 130px;
+        }
+
+        .question-area {
+            padding: 25px 20px 20px;
+            background: #fff9ef;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .speaker-btn {
+            background: #2c7a47;
+            border: none;
+            font-size: 1.6rem;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #1a5a34;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speaker-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1a5a34;
+        }
+
+        .narrative-question {
+            background: #f5ebd2;
+            border-radius: 60px;
+            padding: 20px 18px;
+            font-size: 1.6rem;
+            text-align: center;
+            color: #2c4727;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.05);
+            font-weight: bold;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .answer-input-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            flex: 3;
+            min-width: 180px;
+            padding: 16px 20px;
+            font-size: 1.3rem;
+            font-family: inherit;
+            border-radius: 60px;
+            border: 3px solid #c8b27a;
+            background: white;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        #answerInput:focus {
+            border-color: #f3a712;
+            box-shadow: 0 0 0 3px rgba(243,167,18,0.3);
+        }
+
+        .btn-check {
+            background: #f3a712;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c2416;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b4621a;
+        }
+
+        .btn-check:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b4621a;
+        }
+
+        .feedback {
+            background: #e9e0cb;
+            border-radius: 50px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            min-height: 85px;
+            font-weight: bold;
+        }
+
+        .next-level-msg {
+            background: #cae3b5;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 550px) {
+            .narrative-question { font-size: 1.3rem; }
+            .story-area { font-size: 1.2rem; }
+            .level-badge, .score-badge, .timer-box { font-size: 0.9rem; padding: 5px 12px; }
+            .btn-check { padding: 10px 18px; font-size: 1.1rem; }
+            .speaker-btn { font-size: 1.3rem; padding: 6px 12px; }
+            #answerInput { font-size: 1rem; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level: 1</div>
+        <div class="score-badge" id="scoreDisplay">Score: 0 / 40</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="story-area" id="storyArea">
+        🏠➡️🏫 Bobo's Journey! Learn about features between home & school, drawing, and safety on the way.
+    </div>
+    <div class="question-area">
+        <div class="question-header">
+            <div class="narrative-question" id="questionText">
+                Question will appear here...
+            </div>
+            <button class="speaker-btn" id="speakQuestionBtn">🔊 Read Question</button>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" placeholder="Write your answer here..." autocomplete="off">
+            <button class="btn-check" id="submitBtn">✅ Check Answer</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">
+            🎤 Bobo will help you! Type the correct word. Click speaker to hear the question.
+        </div>
+        <div id="nextLevelMsg" class="next-level-msg"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- ENGLISH VOICE OUTPUT ----------
+    function speakEnglish(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function readCurrentQuestion() {
+        if (!allowAnswer) {
+            speakEnglish("Wait, this question is already answered. Next question coming soon.");
+            return;
+        }
+        const qData = currentQuestions[currentQuestionIndex];
+        if (qData) speakEnglish(qData.text);
+        else speakEnglish("No question at the moment.");
+    }
+
+    // ---------- QUESTION BANK: Features between home & school, Drawing features, Safety on the way ----------
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        
+        // FEATURES BETWEEN HOME AND SCHOOL (roads, bridges, shops, trees, traffic lights, etc.)
+        const features = [
+            { q: "You walk on the ______ to go from home to school.", a: "road" },
+            { q: "A place where cars stop for people to cross is a ______ crossing.", a: "zebra" },
+            { q: "The light that tells cars to stop is ______.", a: "red" },
+            { q: "The light that tells cars to go is ______.", a: "green" },
+            { q: "A building where people buy food and drinks is a ______.", a: "shop" },
+            { q: "A tall plant that gives shade on the way is a ______.", a: "tree" },
+            { q: "A structure that goes over a river is a ______.", a: "bridge" },
+            { q: "The path for people to walk beside the road is the ______.", a: "sidewalk" },
+            { q: "A sign that tells drivers the speed limit is a ______ sign.", a: "road" },
+            { q: "A place where many houses are together is a ______.", a: "neighborhood" }
+        ];
+        
+        // DRAWING FEATURES (maps, landmarks, symbols, colors, shapes)
+        const drawing = [
+            { q: "You draw a map of the journey using a ______ and paper.", a: "pencil" },
+            { q: "A small picture that stands for something on a map is a ______.", a: "symbol" },
+            { q: "You use a ______ to draw straight lines.", a: "ruler" },
+            { q: "The color used to draw trees is ______.", a: "green" },
+            { q: "The color used to draw the sky is ______.", a: "blue" },
+            { q: "A drawing that shows where places are is a ______.", a: "map" },
+            { q: "You draw your school as a big ______.", a: "building" },
+            { q: "A circle on a map can show a ______.", a: "roundabout" },
+            { q: "You draw a house with a door, windows and a ______.", a: "roof" },
+            { q: "A ______ shows the four directions: North, South, East, West.", a: "compass" }
+        ];
+        
+        // SAFETY ON THE WAY TO SCHOOL (rules, precautions, helpers, crossing streets)
+        const safety = [
+            { q: "You should always look ______ before crossing the road.", a: "both ways" },
+            { q: "You should hold an adult's ______ when crossing the street.", a: "hand" },
+            { q: "The person who helps children cross the road is a crossing ______.", a: "guard" },
+            { q: "You should wear bright ______ so drivers can see you.", a: "clothes" },
+            { q: "Never run ______ the road.", a: "across" },
+            { q: "You should walk on the ______ facing traffic if there is no sidewalk.", a: "left" },
+            { q: "Always use the ______ crossing when available.", a: "zebra" },
+            { q: "Don't play near the ______.", a: "road" },
+            { q: "Listen to the traffic ______ before crossing.", a: "sounds" },
+            { q: "Be careful near ______ because they are heavy and fast.", a: "cars" }
+        ];
+        
+        const allTopics = [...features, ...drawing, ...safety];
+        
+        for (let i = 1; i <= 40; i++) {
+            let idx = (i * level + i * 2) % allTopics.length;
+            let item = allTopics[idx];
+            let qText = item.q;
+            let correctAnswer = item.a;
+            
+            // Add narrative variety and challenge based on level
+            if (level >= 2 && i % 5 === 0) {
+                qText = "On his way to school, Bobo sees a big ______ that helps people cross the river.";
+                correctAnswer = "bridge";
+            }
+            if (level >= 3 && i % 6 === 0) {
+                qText = "Bobo draws a map. He uses a ______ to draw the school building.";
+                correctAnswer = "pencil";
+            }
+            if (level >= 4 && i % 7 === 0) {
+                qText = "For safety, Bobo always stops and looks ______ before crossing the street.";
+                correctAnswer = "both ways";
+            }
+            if (i % 8 === 0) {
+                qText = "Between home and school, there is a shop where Bobo buys ______.";
+                correctAnswer = "bread";
+            }
+            if (i % 9 === 0) {
+                qText = "When drawing his journey, Bobo colors the grass ______.";
+                correctAnswer = "green";
+            }
+            if (i % 11 === 0) {
+                qText = "The crossing guard wears a bright ______ vest to be seen.";
+                correctAnswer = "yellow";
+            }
+            questions.push({ text: qText, answer: correctAnswer.trim().toLowerCase() });
+        }
+        return questions.slice(0, 40);
+    }
+    
+    // Preload 5 levels
+    const levelsData = {
+        1: generateQuestionsForLevel(1),
+        2: generateQuestionsForLevel(2),
+        3: generateQuestionsForLevel(3),
+        4: generateQuestionsForLevel(4),
+        5: generateQuestionsForLevel(5)
+    };
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let currentQuestions = [...levelsData[1]];
+    let scoreCorrect = 0;
+    let totalQuestionsInLevel = 40;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let isWaitingForNext = false;
+    let allowAnswer = true;
+    let nextLevelUnlocked = false;
+    
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const storyAreaDiv = document.getElementById('storyArea');
+    const questionTextDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextLevelMsgDiv = document.getElementById('nextLevelMsg');
+    const speakBtn = document.getElementById('speakQuestionBtn');
+    
+    function updateScoreUI() {
+        scoreDisplay.innerText = `Score: ${scoreCorrect} / ${totalQuestionsInLevel}`;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        stopTimer();
+        if (!allowAnswer) return;
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+        timerInterval = setInterval(() => {
+            if (!allowAnswer) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (allowAnswer) {
+                    allowAnswer = false;
+                    timerDisplaySpan.innerText = `⏱️ 0s`;
+                    const correctAns = currentQuestions[currentQuestionIndex].answer;
+                    speakEnglish(`Time is up! The correct answer is ${correctAns}.`);
+                    feedbackMsgDiv.innerHTML = `⏰ Time's up! Correct answer: <strong>${correctAns}</strong>. Moving to next question.`;
+                    moveToNextQuestionAfterDelay();
+                }
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+            }
+        }, 1000);
+    }
+    
+    function moveToNextQuestionAfterDelay() {
+        if (isWaitingForNext) return;
+        isWaitingForNext = true;
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestionsInLevel) {
+                resetForNewQuestion();
+            } else {
+                endOfLevel();
+            }
+        }, 2000);
+    }
+    
+    function resetForNewQuestion() {
+        isWaitingForNext = false;
+        allowAnswer = true;
+        stopTimer();
+        const qData = currentQuestions[currentQuestionIndex];
+        questionTextDiv.innerText = qData.text;
+        answerInput.value = '';
+        feedbackMsgDiv.innerHTML = "🎤 Write your answer! Click speaker to hear the question again.";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answerInput.focus();
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        startTimer();
+        updateStoryNarrative();
+    }
+    
+    function updateStoryNarrative() {
+        let levelDesc = "";
+        if (currentLevel === 1) levelDesc = "Level 1: What do you see between home and school? Roads, trees, shops!";
+        else if (currentLevel === 2) levelDesc = "Level 2: Learn to draw features like maps, symbols, and buildings!";
+        else if (currentLevel === 3) levelDesc = "Level 3: Bobo needs your help! Safety rules on the way to school.";
+        else if (currentLevel === 4) levelDesc = "Level 4: Almost an expert! Crossing roads, traffic lights, and safe walking.";
+        else levelDesc = "Level 5: Final challenge! Become a Grade 1 Champion of Your Journey to School!";
+        const reqPass = Math.ceil(totalQuestionsInLevel * 0.8);
+        storyAreaDiv.innerHTML = `📘 ${levelDesc} | Question ${currentQuestionIndex+1}/${totalQuestionsInLevel}. Need at least ${reqPass} correct to proceed. ⏱️ 40s each.`;
+    }
+    
+    function endOfLevel() {
+        stopTimer();
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        const required = Math.ceil(totalQuestionsInLevel * 0.8);
+        const passed = (scoreCorrect >= required);
+        
+        if (passed) {
+            if (currentLevel === 5) {
+                feedbackMsgDiv.innerHTML = "🎉🏆 AMAZING! You completed all 5 levels! Bobo gives you a Safe Travel Champion Medal! 🏆🎉";
+                speakEnglish("Congratulations! You finished all five levels. You are a champion of features between home and school, drawing maps, and staying safe on the way!");
+                storyAreaDiv.innerHTML = "🏁 GAME COMPLETE! Bobo is proud of you! You know the landmarks, how to draw them, and safety rules! 🏠➡️🏫🛡️";
+                nextLevelMsgDiv.innerHTML = "✨ YOU WIN! Refresh the page to play again ✨";
+                return;
+            } else {
+                nextLevelUnlocked = true;
+                feedbackMsgDiv.innerHTML = `🎉 You passed! Score: ${scoreCorrect}/${totalQuestionsInLevel} (≥${required}). Moving to Level ${currentLevel+1}! 🎉`;
+                speakEnglish(`Congratulations! You passed level ${currentLevel}. Now moving to level ${currentLevel+1}. Keep learning about your journey to school!`);
+                nextLevelMsgDiv.innerHTML = "";
+                const nextBtn = document.createElement('button');
+                nextBtn.innerText = `🔓 Go to Level ${currentLevel+1}`;
+                nextBtn.className = "btn-check";
+                nextBtn.style.background = "#4caf50";
+                nextBtn.style.marginTop = "10px";
+                nextBtn.onclick = () => {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                };
+                nextLevelMsgDiv.appendChild(nextBtn);
+                return;
+            }
+        } else {
+            feedbackMsgDiv.innerHTML = `😭 Oops! You didn't reach 80%. Score: ${scoreCorrect}/${totalQuestionsInLevel}. Need ${required}. Try Level ${currentLevel} again.`;
+            speakEnglish(`Oh no! You need at least 80 percent to proceed. You have ${scoreCorrect} out of ${totalQuestionsInLevel}. Please try level ${currentLevel} again.`);
+            nextLevelMsgDiv.innerHTML = "";
+            const retryBtn = document.createElement('button');
+            retryBtn.innerText = `🔄 Retry Level ${currentLevel}`;
+            retryBtn.className = "btn-check";
+            retryBtn.style.background = "#ff9800";
+            retryBtn.onclick = () => {
+                loadLevel(currentLevel);
+            };
+            nextLevelMsgDiv.appendChild(retryBtn);
+            return;
+        }
+    }
+    
+    function loadLevel(level) {
+        currentLevel = level;
+        currentQuestions = [...levelsData[level]];
+        currentQuestionIndex = 0;
+        scoreCorrect = 0;
+        totalQuestionsInLevel = 40;
+        allowAnswer = true;
+        nextLevelUnlocked = false;
+        isWaitingForNext = false;
+        stopTimer();
+        levelDisplay.innerText = `Level: ${currentLevel}`;
+        updateScoreUI();
+        const firstQ = currentQuestions[0];
+        questionTextDiv.innerText = firstQ.text;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        feedbackMsgDiv.innerHTML = "🎤 Bobo is waiting! Type your answer. Click speaker to hear the question.";
+        nextLevelMsgDiv.innerHTML = "";
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        updateStoryNarrative();
+        startTimer();
+    }
+    
+    function checkAnswer() {
+        if (!allowAnswer) return;
+        const userAnswerRaw = answerInput.value.trim().toLowerCase();
+        if (userAnswerRaw === "") {
+            feedbackMsgDiv.innerHTML = "🔊 Please write an answer! Bobo is waiting.";
+            speakEnglish("Please write your answer.");
+            return;
+        }
+        const currentQ = currentQuestions[currentQuestionIndex];
+        const correctAns = currentQ.answer.toLowerCase();
+        const normalizedUser = userAnswerRaw.replace(/\s+/g, ' ').trim();
+        const normalizedCorrect = correctAns.replace(/\s+/g, ' ').trim();
+        let isCorrect = (normalizedUser === normalizedCorrect);
+        
+        // Kid-friendly forgiving variations
+        if (!isCorrect) {
+            const forgiving = {
+                "road": ["street", "path", "way"],
+                "zebra": ["crosswalk", "pedestrian crossing", "crossing"],
+                "red": ["stop light", "traffic light red"],
+                "green": ["go light", "traffic light green"],
+                "shop": ["store", "market", "kiosk"],
+                "tree": ["plant", "shade tree"],
+                "bridge": ["overpass", "walkway"],
+                "sidewalk": ["pavement", "footpath"],
+                "neighborhood": ["village", "community"],
+                "pencil": ["pen", "crayon"],
+                "symbol": ["icon", "mark"],
+                "ruler": ["straight edge", "measuring stick"],
+                "green": ["grass color"],
+                "blue": ["sky color"],
+                "map": ["drawing", "chart"],
+                "building": ["house", "structure"],
+                "roof": ["top", "ceiling"],
+                "compass": ["direction finder", "compass rose"],
+                "both ways": ["left and right", "both directions"],
+                "hand": ["palm", "fingers"],
+                "guard": ["crossing guard", "helper"],
+                "clothes": ["clothing", "uniform", "shirt"],
+                "across": ["over", "through"],
+                "left": ["left side"],
+                "cars": ["vehicles", "trucks", "buses"],
+                "bread": ["food", "snack"],
+                "yellow": ["bright yellow", "reflective"]
+            };
+            for (let key in forgiving) {
+                if (normalizedCorrect === key && forgiving[key].includes(normalizedUser)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+            // Accept plural/singular flexibility
+            if (!isCorrect && (normalizedCorrect + "s" === normalizedUser || (normalizedCorrect.endsWith('s') && normalizedCorrect.slice(0,-1) === normalizedUser))) {
+                isCorrect = true;
+            }
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            scoreCorrect++;
+            updateScoreUI();
+            feedbackMsgDiv.innerHTML = `✅ Correct! "${currentQ.answer}" is right! +1 point ✅`;
+            speakEnglish(`Correct! The answer is ${currentQ.answer}. You earned a point!`);
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Not correct. The right answer is: "${currentQ.answer}". Keep learning about your journey to school! ❌`;
+            speakEnglish(`Not correct. The correct answer is ${currentQ.answer}. Don't give up!`);
+        }
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        moveToNextQuestionAfterDelay();
+    }
+    
+    submitBtn.addEventListener('click', checkAnswer);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && allowAnswer) {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    loadLevel(1);
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            speakEnglish("Welcome to Bobo's Journey to School game! Learn about features you see between home and school, how to draw those features, and important safety rules on the way. You have 40 seconds for each question. Click the speaker to hear the question. Type your answer. Let's go on a safe adventure!");
+        }, 500);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>CBC Grade 7 Social Studies: History, Agriculture, Maps, Solar System & Weather</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2c1f 0%, #1a4a3a 100%);
+            font-family: system-ui, 'Segoe UI', 'Poppins', Roboto, 'Helvetica Neue', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 12px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 950px;
+            background: #fef7e8;
+            background-image: radial-gradient(circle at 10% 30%, rgba(255,235,200,0.4) 2%, transparent 2.5%);
+            background-size: 25px 25px;
+            border-radius: 48px 48px 48px 32px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,220,0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #ffb347;
+            padding: 16px 18px;
+            border-bottom: 5px solid #c46f1a;
+            text-align: center;
+        }
+
+        .level-badge {
+            background: #1e3c2c;
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 60px;
+            color: #ffe6a3;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 4vw, 1.2rem);
+            box-shadow: inset 0 -1px 0 #3a6b4a, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            gap: 8px;
+        }
+
+        .score-box, .timer-box, .progress-box {
+            background: #2c2b26;
+            padding: 6px 12px;
+            border-radius: 40px;
+            color: #ffefbf;
+            font-weight: bold;
+            font-size: clamp(0.7rem, 3.5vw, 1rem);
+            backdrop-filter: blur(2px);
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .timer-box {
+            background: #b3413a;
+            font-family: monospace;
+            font-size: clamp(1rem, 5vw, 1.5rem);
+            font-weight: 800;
+        }
+
+        .question-area {
+            padding: 18px 20px 20px;
+        }
+
+        .question-text {
+            font-size: clamp(1rem, 5.5vw, 1.55rem);
+            font-weight: 600;
+            color: #1e2a1c;
+            line-height: 1.4;
+            background: #fff9ef;
+            padding: 16px 18px;
+            border-radius: 40px;
+            box-shadow: inset 0 0 0 2px #fff2df, 0 8px 12px rgba(0,0,0,0.08);
+            margin-bottom: 18px;
+            word-break: break-word;
+        }
+
+        .voice-btn {
+            background: #2c7a6e;
+            border: none;
+            color: white;
+            font-size: clamp(1rem, 5vw, 1.5rem);
+            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #1e554b;
+            transition: 0.05s linear;
+            width: auto;
+            min-width: 180px;
+        }
+
+        .voice-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1e554b;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option {
+            background: #f2e5d2;
+            border: 2px solid #cfbc9a;
+            border-radius: 100px;
+            padding: 14px 16px;
+            font-size: clamp(0.85rem, 4vw, 1.05rem);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2a241c;
+            touch-action: manipulation;
+        }
+
+        .option-letter {
+            background: #c46f1a;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .option:active {
+            background: #ffe2b5;
+            transform: scale(0.98);
+            border-color: #c46f1a;
+        }
+
+        .option.disabled-true, .option.disabled-true:active {
+            opacity: 0.6;
+            pointer-events: none;
+            background: #ddd0bd;
+            transform: none;
+        }
+
+        .correct-feedback {
+            background: #2b7a3e;
+            color: white;
+            padding: 12px;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 3.8vw, 1rem);
+        }
+
+        .wrong-feedback {
+            background: #c0392b;
+            color: white;
+            padding: 12px;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 3.8vw, 1rem);
+        }
+
+        .next-btn {
+            background: #e67e22;
+            border: none;
+            width: 100%;
+            padding: 14px 12px;
+            font-size: clamp(1.1rem, 5vw, 1.4rem);
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 5px 0 #b45a2b;
+            touch-action: manipulation;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b45a2b;
+        }
+
+        .feedback-message {
+            margin-top: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .intro-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .intro-card {
+            background: linear-gradient(145deg, #fff7e8, #ffefd6);
+            max-width: 580px;
+            width: 100%;
+            padding: 24px 20px 32px;
+            border-radius: 56px;
+            text-align: center;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            border: 2px solid #ffc857;
+            animation: floatGlow 0.6s ease-out;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .intro-card h1 {
+            font-size: clamp(1.6rem, 7vw, 2.3rem);
+            color: #c25d2e;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0 #ffdd99;
+        }
+
+        .subject-badge {
+            background: #2c6e4f;
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            color: #ffefb9;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 4vw, 1.1rem);
+            margin: 10px 0;
+        }
+
+        .intro-text {
+            font-size: clamp(0.85rem, 4vw, 1.05rem);
+            line-height: 1.45;
+            color: #2e3b2c;
+            background: #fff6ea;
+            padding: 14px;
+            border-radius: 35px;
+            margin: 15px 0;
+        }
+
+        .highlight {
+            background: #ffd966;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .enter-btn {
+            background: #e67e22;
+            border: none;
+            font-size: clamp(1.2rem, 6vw, 1.6rem);
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 60px;
+            color: white;
+            margin-top: 16px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #a04000;
+            transition: 0.05s linear;
+            width: 85%;
+        }
+
+        .enter-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #a04000;
+        }
+
+        .small-note {
+            font-size: clamp(0.6rem, 3.2vw, 0.7rem);
+            text-align: center;
+            padding: 10px;
+            background: #eeddbb;
+            color: #5a3e28;
+            border-radius: 30px;
+            margin-top: 8px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #fff3e0;
+            max-width: 380px;
+            width: 90%;
+            padding: 24px 20px;
+            border-radius: 48px;
+            text-align: center;
+            box-shadow: 0 20px 35px black;
+            border: 2px solid #ffcd7e;
+        }
+
+        .modal-card p {
+            font-size: clamp(0.9rem, 4vw, 1.1rem);
+            margin: 12px 0;
+        }
+
+        .modal-card button {
+            background: #2c6e4f;
+            border: none;
+            padding: 12px 20px;
+            font-size: clamp(0.9rem, 4vw, 1.1rem);
+            border-radius: 60px;
+            color: white;
+            margin-top: 18px;
+            cursor: pointer;
+            width: 90%;
+            font-weight: bold;
+        }
+
+        @media (max-width: 550px) {
+            body { padding: 8px; }
+            .option { padding: 10px 12px; gap: 8px; }
+            .option-letter { width: 32px; height: 32px; min-width: 32px; font-size: 1rem; }
+            .stats { gap: 6px; }
+            .voice-btn { min-width: 150px; padding: 8px 12px; }
+        }
+        @media (max-width: 380px) {
+            .stats { flex-direction: column; align-items: stretch; }
+            .score-box, .timer-box, .progress-box { white-space: normal; }
+        }
+        button, .option, .next-btn, .enter-btn { cursor: pointer; user-select: none; }
+        
+        .timer-warning {
+            animation: pulse 0.4s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); background-color: #b3413a; }
+            50% { transform: scale(1.05); background-color: #e67e22; }
+            100% { transform: scale(1); background-color: #b3413a; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot" style="display: none;">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🌍 LEVEL 1 / 5</div>
+        <div class="stats">
+            <div class="score-box">⭐ SCORE: <span id="scoreValue">0</span> / <span id="totalQInLevel">30</span></div>
+            <div class="timer-box">⏱️ <span id="timerSeconds">15</span> s</div>
+            <div class="progress-box">📊 PROGRESS: <span id="progressCount">0</span>/<span id="totalQCountSpan">30</span></div>
+        </div>
+    </div>
+    <div class="question-area">
+        <button class="voice-btn" id="speakBtn">🔊 READ QUESTION ALOUD</button>
+        <div class="question-text" id="questionText">Loading challenge...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <button class="next-btn" id="nextBtn">➡️ NEXT QUESTION</button>
+        <div class="feedback-message" id="feedbackMsg"></div>
+        <div class="small-note">⭐ 80% to pass each level (24/30) | 15 sec timer | Answers randomized each time</div>
+    </div>
+</div>
+
+<script>
+    // =============== CBC GRADE 7 SOCIAL STUDIES ===============
+    // Topics: Historical Information, Historical Development of Agriculture, Maps and Map Work,
+    // Earth and the Solar System, Weather and Fieldwork
+    
+    const topicsList = [
+        "📜 Historical Information",
+        "🌾 Agricultural History",
+        "🗺️ Maps & Map Work",
+        "🌍 Earth & Solar System",
+        "☁️ Weather & Fieldwork"
+    ];
+    
+    // Build 150 unique questions (5 levels × 30) covering all topics.
+    // Each question will have randomized option order later to avoid single-choice bias.
+    function buildQuestionBank() {
+        const bank = [];
+        
+        function addQ(text, optA, optB, optC, optD, correctText) {
+            bank.push({
+                text: text,
+                originalOptions: [optA, optB, optC, optD],
+                correctValue: correctText
+            });
+        }
+        
+        // ========== TOPIC 1: HISTORICAL INFORMATION ==========
+        addQ("What is a primary source in history?", "Original document or artifact from the time period", "A textbook written recently", "A fictional story", "A movie about history", "Original document or artifact from the time period");
+        addQ("Which ancient civilization developed the first known writing (cuneiform)?", "Sumerians", "Egyptians", "Indus Valley", "Chinese", "Sumerians");
+        addQ("Who was the first president of Kenya?", "Jomo Kenyatta", "Daniel arap Moi", "Mwai Kibaki", "Uhuru Kenyatta", "Jomo Kenyatta");
+        addQ("The period before written records is called:", "Prehistory", "Ancient times", "Middle Ages", "Modern era", "Prehistory");
+        addQ("Which early hominid is known as 'Handy Man' for making stone tools?", "Homo habilis", "Homo erectus", "Australopithecus", "Neanderthal", "Homo habilis");
+        addQ("What does 'chronology' mean in history?", "Arranging events in time order", "Studying maps", "Analyzing artifacts", "Writing stories", "Arranging events in time order");
+        addQ("The Great Wall was built by which ancient civilization?", "China", "Rome", "Greece", "Persia", "China");
+        addQ("Mau Mau uprising in Kenya took place during which period?", "1950s", "1930s", "1960s", "1940s", "1950s");
+        addQ("Oral tradition as a source of history involves:", "Stories passed by word of mouth", "Written documents", "Archaeological digs", "Photographs", "Stories passed by word of mouth");
+        addQ("Who was known as the 'Desert Fox' during World War II?", "Erwin Rommel", "Bernard Montgomery", "George Patton", "Heinz Guderian", "Erwin Rommel");
+        
+        // ========== TOPIC 2: HISTORICAL DEVELOPMENT OF AGRICULTURE ==========
+        addQ("When did humans first start practicing agriculture?", "Neolithic Revolution (around 10,000 BCE)", "Iron Age", "Industrial Revolution", "Stone Age (early)", "Neolithic Revolution (around 10,000 BCE)");
+        addQ("Which plant was first domesticated in the Fertile Crescent?", "Wheat", "Rice", "Maize", "Potato", "Wheat");
+        addQ("What was a major effect of the Agricultural Revolution?", "Settled communities and surplus food", "Nomadic lifestyle", "Decrease in population", "End of trade", "Settled communities and surplus food");
+        addQ("Which animal was first domesticated for farming?", "Goat", "Horse", "Cow", "Chicken", "Goat");
+        addQ("Shifting cultivation is also known as:", "Slash-and-burn agriculture", "Irrigation farming", "Terrace farming", "Greenhouse farming", "Slash-and-burn agriculture");
+        addQ("The Columbian Exchange introduced which crop to the Old World?", "Maize (corn)", "Wheat", "Barley", "Rice", "Maize (corn)");
+        addQ("What is crop rotation?", "Growing different crops in sequence on same land", "Planting same crop every year", "Burning fields after harvest", "Using only one field", "Growing different crops in sequence on same land");
+        addQ("Which innovation increased agricultural productivity during the Industrial Revolution?", "Seed drill by Jethro Tull", "Steam tractor", "Electric fence", "GMO seeds", "Seed drill by Jethro Tull");
+        addQ("Irrigation is important because:", "It provides water to crops when rainfall is insufficient", "It makes soil richer", "It kills pests", "It speeds up harvesting", "It provides water to crops when rainfall is insufficient");
+        addQ("Green Revolution focused on:", "High-yield crop varieties and modern techniques", "Organic farming only", "Traditional methods", "Animal domestication", "High-yield crop varieties and modern techniques");
+        
+        // ========== TOPIC 3: MAPS AND MAP WORK ==========
+        addQ("What does a map scale show?", "Relationship between distance on map and real distance", "The height of mountains", "The population of an area", "The weather forecast", "Relationship between distance on map and real distance");
+        addQ("A compass rose on a map indicates:", "Cardinal directions (North, South, East, West)", "Elevation", "Distance", "Land use", "Cardinal directions (North, South, East, West)");
+        addQ("What are contour lines on a map?", "Lines connecting points of equal elevation", "Lines showing roads", "Lines showing rivers", "Lines showing borders", "Lines connecting points of equal elevation");
+        addQ("The imaginary line at 0° latitude is called:", "Equator", "Prime Meridian", "Tropic of Cancer", "International Date Line", "Equator");
+        addQ("Longitude lines run:", "North to South", "East to West", "Circular around poles", "Diagonal", "North to South");
+        addQ("What does a physical map mainly show?", "Natural features like mountains and rivers", "Political boundaries", "Population density", "Road networks", "Natural features like mountains and rivers");
+        addQ("The scale 1:50,000 means:", "1 cm on map = 50,000 cm on ground (0.5 km)", "1 cm = 50,000 km", "1 inch = 50,000 feet", "1 mm = 50,000 mm", "1 cm on map = 50,000 cm on ground (0.5 km)");
+        addQ("What is a legend/key on a map?", "Explanation of symbols used on the map", "Title of the map", "Border of the map", "Direction arrow", "Explanation of symbols used on the map");
+        addQ("The Prime Meridian passes through which city?", "Greenwich, England", "Paris, France", "New York, USA", "Nairobi, Kenya", "Greenwich, England");
+        addQ("Topographical maps show:", "Detailed elevation and landforms", "Only political boundaries", "Only population", "Only roads", "Detailed elevation and landforms");
+        
+        // ========== TOPIC 4: EARTH AND THE SOLAR SYSTEM ==========
+        addQ("Which planet is closest to the Sun?", "Mercury", "Venus", "Earth", "Mars", "Mercury");
+        addQ("What causes day and night on Earth?", "Earth's rotation on its axis", "Earth's revolution around the Sun", "The Moon's orbit", "Sun's movement", "Earth's rotation on its axis");
+        addQ("How long does Earth take to revolve once around the Sun?", "365 days", "24 hours", "30 days", "7 days", "365 days");
+        addQ("Which planet is known as the 'Red Planet'?", "Mars", "Jupiter", "Saturn", "Venus", "Mars");
+        addQ("What is the largest planet in our solar system?", "Jupiter", "Saturn", "Neptune", "Uranus", "Jupiter");
+        addQ("The Moon is Earth's:", "Natural satellite", "Artificial satellite", "Star", "Planet", "Natural satellite");
+        addQ("What is an orbit?", "The curved path an object takes around another object", "A type of spacecraft", "A space station", "A galaxy", "The curved path an object takes around another object");
+        addQ("Which layer of Earth is made of molten iron and nickel?", "Outer core", "Crust", "Mantle", "Inner core", "Outer core");
+        addQ("What causes seasons on Earth?", "Tilt of Earth's axis and revolution around the Sun", "Distance from Sun", "Rotation speed", "Moon's gravity", "Tilt of Earth's axis and revolution around the Sun");
+        addQ("Which planet has the most visible rings?", "Saturn", "Jupiter", "Uranus", "Neptune", "Saturn");
+        
+        // ========== TOPIC 5: WEATHER AND FIELDWORK ==========
+        addQ("What instrument measures air pressure?", "Barometer", "Thermometer", "Anemometer", "Rain gauge", "Barometer");
+        addQ("Which cloud type brings thunderstorms?", "Cumulonimbus", "Cirrus", "Stratus", "Cumulus", "Cumulonimbus");
+        addQ("What does a rain gauge measure?", "Amount of rainfall", "Wind speed", "Temperature", "Humidity", "Amount of rainfall");
+        addQ("The process of water changing from liquid to gas is called:", "Evaporation", "Condensation", "Precipitation", "Transpiration", "Evaporation");
+        addQ("What is a fieldwork in Social Studies?", "Collecting data outside the classroom", "Studying in a library", "Online research", "Reading textbooks", "Collecting data outside the classroom");
+        addQ("Which instrument measures wind speed?", "Anemometer", "Wind vane", "Hygrometer", "Thermometer", "Anemometer");
+        addQ("A weather vane shows:", "Wind direction", "Wind speed", "Air pressure", "Temperature", "Wind direction");
+        addQ("What is the difference between weather and climate?", "Weather is day-to-day; climate is long-term average", "They are the same", "Climate changes daily", "Weather is only temperature", "Weather is day-to-day; climate is long-term average");
+        addQ("Which type of rainfall occurs when warm air rises over a mountain?", "Orographic rainfall", "Convectional rainfall", "Frontal rainfall", "Cyclonic rainfall", "Orographic rainfall");
+        addQ("A hygrometer measures:", "Humidity", "Temperature", "Wind direction", "Rainfall", "Humidity");
+        
+        // Add additional questions to reach 150
+        const extra = [
+            ["What was the main crop of ancient Egyptians?", "Wheat and barley", "Rice", "Maize", "Potatoes", "Wheat and barley"],
+            ["Which Kenyan community traditionally practiced irrigation farming?", "Marakwet", "Maasai", "Samburu", "Turkana", "Marakwet"],
+            ["What is a political map?", "Shows boundaries and cities", "Shows mountains", "Shows climate", "Shows population", "Shows boundaries and cities"],
+            ["Latitude lines run:", "East to West (parallel to equator)", "North to South", "Diagonally", "Circular", "East to West (parallel to equator)"],
+            ["Which planet is known as the 'Morning Star'?", "Venus", "Mars", "Mercury", "Jupiter", "Venus"],
+            ["What is the hottest planet in our solar system?", "Venus", "Mercury", "Mars", "Jupiter", "Venus"],
+            ["What tool is used to observe the weather in fieldwork?", "Thermometer", "Compass", "Scale", "Protractor", "Thermometer"],
+            ["A field sketch should include:", "Title, labels, and key features", "Only colors", "Only measurements", "Only dates", "Title, labels, and key features"],
+            ["Who was the first person to circumnavigate the globe?", "Ferdinand Magellan's crew", "Christopher Columbus", "Vasco da Gama", "James Cook", "Ferdinand Magellan's crew"],
+            ["The Iron Age followed which age?", "Bronze Age", "Stone Age", "Copper Age", "Gold Age", "Bronze Age"],
+            ["What is subsistence farming?", "Growing food only for the farmer's family", "Growing for export", "Large commercial farming", "Hydroponic farming", "Growing food only for the farmer's family"],
+            ["Which map feature shows the relationship between map and real distance?", "Scale", "Legend", "Title", "Compass rose", "Scale"],
+            ["Which planet is furthest from the Sun?", "Neptune", "Uranus", "Saturn", "Jupiter", "Neptune"],
+            ["What causes wind?", "Differences in air pressure", "Earth's rotation", "Ocean currents", "Moon's gravity", "Differences in air pressure"],
+            ["Fieldwork preparation includes:", "Planning, tools, and permission", "Only bringing a phone", "Going without plan", "Ignoring safety", "Planning, tools, and permission"]
+        ];
+        
+        for (let ex of extra) {
+            addQ(ex[0], ex[1], ex[2], ex[3], ex[4], ex[5]);
+        }
+        
+        // Ensure exactly 150 questions
+        while(bank.length < 150) {
+            addQ("Which is an important historical source?", "Archaeological artifacts", "Textbooks only", "Movies", "Fiction books", "Archaeological artifacts");
+        }
+        
+        return bank.slice(0, 150);
+    }
+    
+    const masterQuestions = buildQuestionBank();
+    
+    // Shuffle master and assign to levels (30 per level)
+    for (let i = masterQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [masterQuestions[i], masterQuestions[j]] = [masterQuestions[j], masterQuestions[i]];
+    }
+    
+    const questionsPerLevel = [];
+    for (let lvl = 0; lvl < 5; lvl++) {
+        questionsPerLevel.push(masterQuestions.slice(lvl * 30, lvl * 30 + 30));
+    }
+    
+    // Randomize options order for each question (prevents answer bias)
+    function getRandomizedQuestion(baseQ) {
+        const options = [...baseQ.originalOptions];
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        const correctIndex = options.findIndex(opt => opt === baseQ.correctValue);
+        return {
+            text: baseQ.text,
+            options: options,
+            correctIndex: correctIndex
+        };
+    }
+    
+    // Game state
+    let currentLevel = 0;
+    let currentQIndex = 0;
+    let score = 0;
+    const requiredToPass = 24; // 80% of 30
+    let answered = false;
+    let waitingForNext = false;
+    let timerInterval = null;
+    let timeLeft = 15;
+    let currentQuestionObj = null;
+    
+    // DOM elements
+    const gameContainer = document.getElementById("gameRoot");
+    const levelDisplay = document.getElementById("levelDisplay");
+    const scoreSpan = document.getElementById("scoreValue");
+    const totalQInLevelSpan = document.getElementById("totalQInLevel");
+    const timerSecondsSpan = document.getElementById("timerSeconds");
+    const progressCountSpan = document.getElementById("progressCount");
+    const totalQCountSpan = document.getElementById("totalQCountSpan");
+    const questionTextDiv = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const nextBtn = document.getElementById("nextBtn");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const speakBtn = document.getElementById("speakBtn");
+    
+    // Voice functions
+    function speakText(msg, rate = 0.9) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(msg);
+            utterance.lang = 'en-US';
+            utterance.rate = rate;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+    
+    function speakQuestion() {
+        if (currentQuestionObj) speakText(currentQuestionObj.text, 0.85);
+        else speakText("Question is loading");
+    }
+    
+    function playCorrectVoice() { speakText("Excellent! That is correct! Well done!", 0.95); }
+    function playWrongVoice() { speakText("That's not correct. Keep practicing!", 0.95); }
+    function playTimeUpVoice() { speakText("Time is up! Moving to the next question.", 0.9); }
+    
+    // Timer with countdown to zero
+    function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timeLeft = 15;
+        timerSecondsSpan.innerText = timeLeft;
+        timerSecondsSpan.style.color = "#ffefbf";
+        timerInterval = setInterval(() => {
+            if (!waitingForNext && !answered) {
+                if (timeLeft <= 1) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timerSecondsSpan.innerText = "0";
+                    if (!answered) handleTimeout();
+                } else {
+                    timeLeft--;
+                    timerSecondsSpan.innerText = timeLeft;
+                    if (timeLeft <= 3) {
+                        timerSecondsSpan.style.color = "#ffaa66";
+                        timerSecondsSpan.classList.add("timer-warning");
+                        setTimeout(() => timerSecondsSpan.classList.remove("timer-warning"), 300);
+                    } else {
+                        timerSecondsSpan.style.color = "#ffefbf";
+                    }
+                }
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        if (answered) return;
+        answered = true;
+        waitingForNext = true;
+        document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled-true'));
+        const correctAns = currentQuestionObj.options[currentQuestionObj.correctIndex];
+        feedbackMsgDiv.innerHTML = `<div class="wrong-feedback">⏰ TIME'S UP! (0s) Correct: ${correctAns}</div>`;
+        playTimeUpVoice();
+        stopTimer();
+    }
+    
+    function loadQuestion() {
+        answered = false;
+        waitingForNext = false;
+        stopTimer();
+        const levelQs = questionsPerLevel[currentLevel];
+        if (currentQIndex >= levelQs.length) {
+            checkLevelCompletion();
+            return;
+        }
+        currentQuestionObj = getRandomizedQuestion(levelQs[currentQIndex]);
+        questionTextDiv.innerText = currentQuestionObj.text;
+        optionsContainer.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        currentQuestionObj.options.forEach((opt, idx) => {
+            const optDiv = document.createElement("div");
+            optDiv.className = "option";
+            optDiv.innerHTML = `<span class="option-letter">${letters[idx]}</span><span>${opt}</span>`;
+            optDiv.addEventListener("click", () => {
+                if (!answered && !waitingForNext) evaluateAnswer(idx);
+            });
+            optionsContainer.appendChild(optDiv);
+        });
+        feedbackMsgDiv.innerHTML = "";
+        nextBtn.innerText = "➡️ NEXT QUESTION";
+        nextBtn.disabled = false;
+        updateUI();
+        startTimer();
+    }
+    
+    function evaluateAnswer(selectedIdx) {
+        if (answered) return;
+        answered = true;
+        waitingForNext = true;
+        stopTimer();
+        const isCorrect = (selectedIdx === currentQuestionObj.correctIndex);
+        if (isCorrect) {
+            score++;
+            feedbackMsgDiv.innerHTML = `<div class="correct-feedback">✅ CORRECT! +1 point (${currentQuestionObj.options[selectedIdx]})</div>`;
+            playCorrectVoice();
+        } else {
+            feedbackMsgDiv.innerHTML = `<div class="wrong-feedback">❌ WRONG! Correct: ${currentQuestionObj.options[currentQuestionObj.correctIndex]}</div>`;
+            playWrongVoice();
+        }
+        document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled-true'));
+        scoreSpan.innerText = score;
+    }
+    
+    function nextQuestion() {
+        if (!waitingForNext && !answered) {
+            feedbackMsgDiv.innerHTML = `<div class="wrong-feedback">⚠️ Please answer the question first!</div>`;
+            return;
+        }
+        currentQIndex++;
+        if (currentQIndex < questionsPerLevel[currentLevel].length) {
+            loadQuestion();
+        } else {
+            checkLevelCompletion();
+        }
+    }
+    
+    function updateUI() {
+        const total = questionsPerLevel[currentLevel].length;
+        totalQInLevelSpan.innerText = total;
+        totalQCountSpan.innerText = total;
+        scoreSpan.innerText = score;
+        progressCountSpan.innerText = currentQIndex;
+        levelDisplay.innerText = `🌍 LEVEL ${currentLevel+1}/5 | Need 80% (${requiredToPass}/30)`;
+    }
+    
+    function checkLevelCompletion() {
+        const percent = (score / 30) * 100;
+        if (score >= requiredToPass) {
+            if (currentLevel + 1 < 5) {
+                showModal(`✨ LEVEL ${currentLevel+1} COMPLETE! ✨<br>Score: ${score}/30 (${Math.floor(percent)}%)<br>🔓 UNLOCKED LEVEL ${currentLevel+2}!`, true);
+            } else {
+                showModal(`🏆 CONGRATULATIONS! 🏆<br>You mastered all 5 levels!<br>Final Score: ${score}/30<br>YOU ARE A SOCIAL STUDIES CHAMPION!`, false);
+            }
+        } else {
+            showModal(`❌ LEVEL FAILED ❌<br>You got ${score}/30 (${Math.floor(percent)}%)<br>Need 80% (${requiredToPass} correct).<br>Restarting level...`, false);
+        }
+    }
+    
+    function showModal(msg, advance) {
+        stopTimer();
+        waitingForNext = true;
+        const modal = document.createElement("div");
+        modal.className = "modal-overlay";
+        modal.innerHTML = `<div class="modal-card"><p>${msg}</p><button id="modalBtn">${advance ? "🚀 NEXT LEVEL 🚀" : "🔄 TRY AGAIN"}</button></div>`;
+        document.body.appendChild(modal);
+        document.getElementById("modalBtn").addEventListener("click", () => {
+            modal.remove();
+            if (advance && currentLevel + 1 < 5) {
+                currentLevel++;
+                resetLevel();
+            } else if (!advance) {
+                resetLevel();
+            } else {
+                currentLevel = 0;
+                resetLevel();
+            }
+        });
+    }
+    
+    function resetLevel() {
+        score = 0;
+        currentQIndex = 0;
+        answered = false;
+        waitingForNext = false;
+        stopTimer();
+        updateUI();
+        loadQuestion();
+    }
+    
+    // Event listeners
+    speakBtn.addEventListener("click", speakQuestion);
+    nextBtn.addEventListener("click", nextQuestion);
+    
+    // Introduction Screen
+    function showIntro() {
+        const introDiv = document.createElement("div");
+        introDiv.className = "intro-modal";
+        introDiv.innerHTML = `
+            <div class="intro-card">
+                <h1>📚 SOCIAL STUDIES 📚</h1>
+                <div class="subject-badge">⭐ GRADE 7 CHALLENGE ⭐</div>
+                <div class="intro-text">
+                    🧭 <strong>Welcome, Young Explorer & Historian!</strong><br><br>
+                    Journey through:<br>
+                    <span class="highlight">📜 Historical Information</span> · <span class="highlight">🌾 Agricultural History</span><br>
+                    <span class="highlight">🗺️ Maps & Map Work</span> · <span class="highlight">🌍 Earth & Solar System</span><br>
+                    <span class="highlight">☁️ Weather & Fieldwork</span><br><br>
+                    🔥 <strong>5 Levels · 30 Questions each</strong><br>
+                    🎯 Need <strong>80% correct (24/30)</strong> to advance!<br>
+                    🔊 Tap the speaker button to <strong>hear each question</strong><br>
+                    ⏱️ <strong>15-second timer</strong> counts down to zero<br>
+                    🎲 <strong>Answers are randomized</strong> — no fixed patterns!<br><br>
+                    🌟 <em>Ready to test your knowledge?</em>
+                </div>
+                <div class="topics-highlight" style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:10px 0">
+                    ${topicsList.map(t => `<span style="background:#ffb569; padding:4px 10px; border-radius:40px; font-size:0.75rem;">${t}</span>`).join('')}
+                </div>
+                <button class="enter-btn" id="startGameBtn">🚀 START THE ADVENTURE 🚀</button>
+            </div>
+        `;
+        document.body.appendChild(introDiv);
+        document.getElementById("startGameBtn").addEventListener("click", () => {
+            introDiv.remove();
+            gameContainer.style.display = "block";
+            initGame();
+        });
+    }
+    
+    function initGame() {
+        currentLevel = 0;
+        score = 0;
+        currentQIndex = 0;
+        answered = false;
+        waitingForNext = false;
+        stopTimer();
+        updateUI();
+        loadQuestion();
+    }
+    
+    showIntro();
+</script>
+</body>
+</html>

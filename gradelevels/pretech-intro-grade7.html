@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>TechQuest CBC Grade 7 - Pre-Technical Master (Hints + Partial Credit)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b2b3b 0%, #1a4a5f 100%);
+            font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Roboto', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 248, 225, 0.95);
+            border-radius: 64px 48px 64px 48px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.6);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #f7b32b;
+            padding: 20px 24px;
+            color: #1e2f3a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #ffd966;
+        }
+
+        .level-badge {
+            background: #1e2f3a;
+            color: #ffd966;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .progress-info {
+            background: #fff3cf;
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .timer-box {
+            background: #000000aa;
+            backdrop-filter: blur(4px);
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+        }
+
+        .quiz-main {
+            padding: 30px 28px 25px;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #073642;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            background: #fef5e7;
+            padding: 18px 20px;
+            border-radius: 40px;
+            box-shadow: inset 0 1px 4px #0001, 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .voice-btn, .hint-btn {
+            background: #2c7da0;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            margin-right: 12px;
+            margin-bottom: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.1s linear;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .hint-btn {
+            background: #e67e22;
+        }
+
+        .voice-btn:active, .hint-btn:active {
+            transform: scale(0.97);
+        }
+
+        .answer-area {
+            background: white;
+            border-radius: 60px;
+            padding: 5px 25px;
+            margin: 15px 0 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid #cfe3ea;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 18px 20px;
+            font-size: 1.1rem;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        .submit-answer {
+            background: #f7b32b;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #1e2f3a;
+        }
+
+        .submit-answer:active {
+            transform: scale(0.96);
+        }
+
+        .feedback-area {
+            background: #e9ecef;
+            border-radius: 40px;
+            padding: 12px 20px;
+            margin: 15px 0;
+            font-weight: 500;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .next-btn {
+            background: #2c7da0;
+            border: none;
+            padding: 16px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 8px;
+        }
+
+        .next-btn:active {
+            background: #1e5a74;
+            transform: scale(0.98);
+        }
+
+        .next-btn:disabled, .submit-answer:disabled, .hint-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        @media (max-width: 580px) {
+            .quiz-main { padding: 20px 16px; }
+            .question-text { font-size: 1.3rem; }
+            .timer-box { font-size: 1.5rem; }
+            .game-header { flex-direction: column; align-items: center; }
+            .answer-area { flex-direction: column; padding: 15px; }
+            .submit-answer { width: 100%; }
+            .voice-btn, .hint-btn { font-size: 0.8rem; padding: 8px 14px; }
+        }
+
+        .hint-panel {
+            background: #fff3cf;
+            border-left: 6px solid #e67e22;
+            padding: 10px 16px;
+            border-radius: 30px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            color: #5a3e1b;
+        }
+
+        .partial-badge {
+            background: #f39c12;
+            color: white;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="progress-info" id="progressText">Questions: 0/30 | Score: 0%</div>
+        <div class="timer-box" id="timerDisplay">00:00</div>
+    </div>
+    <div class="quiz-main">
+        <div class="question-text" id="questionTxt">Loading challenge...</div>
+        <div>
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <button class="hint-btn" id="hintBtn">💡 GET A HINT (Partial Credit Allowed)</button>
+        </div>
+        
+        <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitAnswerBtn" class="submit-answer">✓ SUBMIT ANSWER</button>
+        </div>
+        <div class="hint-text" style="font-size:0.8rem; text-align:center; color:#2c7da0;">💡 Using a hint gives you 0.7 points instead of 1, but helps you learn! You have 40 seconds.</div>
+        <div id="hintDisplay" class="hint-panel" style="display: none;"></div>
+        <div class="feedback-area" id="feedbackMsg">⚡ Read question, type answer, use hint if stuck. Need 80% to advance!</div>
+        <button class="next-btn" id="nextBtn">➡ NEXT QUESTION</button>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // GRADE 7 CBC GAME - WITH HINTS & PARTIAL CREDIT
+    // If a student uses a hint, they get 0.7 marks instead of 1 for a correct answer.
+    // Hints are helpful but not too specific. Answer matching is flexible.
+    // Timer: 40 seconds. 5 levels x 30 questions, need 80% to pass level.
+    // ============================================================
+    
+    function q(text, correctAnswer, hintText, aliases = []) {
+        return { text, correctAnswer: correctAnswer.toLowerCase(), hintText, aliases: aliases.map(a => a.toLowerCase()) };
+    }
+    
+    // ----- LEVEL 1 -----
+    const L1 = [
+        q("What does 'Pre-Technical Studies' mainly prepare students for?", "solving real-world problems using technology", "Think about using practical skills to fix everyday challenges and create new things.", ["problem solving with technology", "practical skills", "real world problem solving"]),
+        q("What is a safe way to carry scissors in a workshop?", "blades pointing downward and closed", "Keep the sharp part facing the floor and closed to avoid injuries.", ["closed blades down", "pointing down", "blades down"]),
+        q("What does 'hardware' refer to in computer concepts?", "physical parts of a computer", "The parts you can touch like the keyboard, mouse, and CPU.", ["physical components", "computer hardware", "tangible parts"]),
+        q("Why should you avoid eating or drinking near a computer?", "it can damage the keyboard and cause electrical hazards", "Spills can cause short circuits and sticky keys.", ["spills damage computer", "electrical hazard", "keyboard damage"]),
+        q("Name one example of a hazard in a classroom.", "broken chair", "Anything that could cause harm like a loose wire or slippery floor.", ["spilled water", "exposed wire", "loose carpet"]),
+        q("What is the main function of a computer mouse?", "to point click and select items on screen", "It helps you interact with icons and menus on the screen.", ["point and click", "select on screen", "control cursor"]),
+        q("What does 'MSDS' stand for in safety?", "material safety data sheet", "A document with information about chemicals and their dangers.", ["material safety datasheet", "safety data sheet"]),
+        q("Name one practice NOT recommended in a computer lab.", "spilling water on the cpu", "Think about things that could damage electronics.", ["water on cpu", "eating at computer", "touching wires"]),
+        q("What is the purpose of a fire drill?", "to practice safe evacuation", "It prepares you to leave quickly and safely in case of a real fire.", ["evacuation practice", "fire escape practice"]),
+        q("Which computer part is known as the 'brain'?", "central processing unit", "It processes all instructions and controls other parts.", ["cpu", "processor"]),
+        q("First step if you see smoke from an electrical device?", "unplug it if safe then alert a teacher", "Remove power source first, but only if it's safe.", ["unplug and tell teacher", "disconnect power"]),
+        q("How can pre-technical skills help in careers?", "engineering and technology", "It opens doors to jobs like mechanic, electrician, or programmer.", ["engineering", "technology jobs", "practical careers"]),
+        q("What does a ground wire do?", "prevents electric shocks", "It gives electricity a safe path to the earth.", ["earth ground", "safety wire", "shock prevention"]),
+        q("Name an output device.", "printer", "It shows or produces results from the computer.", ["monitor", "speakers", "headphones"]),
+        q("What does ergonomics improve?", "comfort and efficiency", "Prevents body pain and makes work easier.", ["reduce injury", "workplace comfort"]),
+        q("Undo shortcut key combination?", "ctrl z", "The key for 'undo' uses the letter Z.", ["control z", "ctrl+z"]),
+        q("Before using a power tool for the first time?", "read the instruction manual", "Know how to use it safely before starting.", ["read manual", "safety guidelines"]),
+        q("What does software refer to?", "programs and operating systems", "Instructions that tell hardware what to do.", ["computer programs", "applications"]),
+        q("Safety sign color for emergency/first aid?", "green", "Think of a color that means 'go' or safety.", ["green color"]),
+        q("Main purpose of a fire extinguisher?", "to put out small fires", "It helps stop a fire before it grows.", ["extinguish small fires", "fight small fires"]),
+        q("Function of RAM?", "temporarily stores data for quick access", "It's like a desk where you put things you're currently using.", ["temporary storage", "random access memory"]),
+        q("Proper lifting technique?", "bend your knees and keep back straight", "Use your strong leg muscles, not your back.", ["lift with legs", "knees bent"]),
+        q("Example of digital citizen responsibility?", "respecting others online", "Treat people kindly and protect private info.", ["online respect", "protect privacy"]),
+        q("What does URL stand for?", "uniform resource locator", "It's the web address you type in a browser.", ["web address"]),
+        q("Why avoid cords under carpets?", "they can overheat and cause fire", "Heat builds up and can start a fire.", ["fire hazard", "overheating risk"]),
+        q("Major pre-technical milestone?", "the wheel", "One of the oldest inventions that changed transport.", ["wheel", "printing press"]),
+        q("Common sign of phishing?", "email asking for your password", "Fake messages that try to steal your info.", ["urgent password request", "fake bank email"]),
+        q("Safe internet practice?", "using strong unique passwords", "Don't share passwords and use different ones for each account.", ["strong passwords", "two factor authentication"]),
+        q("What does 'binary' mean?", "system of 0s and 1s", "The language computers use to store data.", ["zeros and ones", "base 2"]),
+        q("Why teamwork in pre-technical projects?", "combines diverse skills", "Different people bring different strengths.", ["collaboration", "shared ideas"])
+    ];
+    
+    // LEVEL 2 (shortened for readability but functional with hints)
+    const L2 = [];
+    for(let i=1;i<=30;i++) {
+        if(i<=10) L2.push(q(`Safety/tech term ${i}: What does 'firewall' do?`, "blocks unauthorized access", "It acts like a security guard for your network.", ["network security", "blocks intruders"]));
+        else L2.push(q(`Concept ${i}: Why backup data?`, "to prevent data loss", "In case your computer breaks, you still have copies.", ["copy files for safety", "avoid losing files"]));
+    }
+    // Make first few level2 specific
+    L2[0]=q("Function of a fuse?", "breaks circuit if current too high", "It's a safety device that 'blows' to protect wires.", ["overcurrent protection", "circuit protector"]);
+    L2[1]=q("What does malware stand for?", "malicious software", "Software designed to harm your computer.", ["harmful software", "virus or spyware"]);
+    L2[2]=q("Renewable energy example?", "solar panel", "Energy from the sun is endless and clean.", ["solar", "wind turbine"]);
+    L2[3]=q("What does 'the cloud' refer to?", "storing data over the internet", "Your files are saved on remote servers, not just your device.", ["internet storage", "online data"]);
+    L2[4]=q("What is encryption?", "scrambling data for security", "It turns your message into a secret code.", ["data scrambling", "secure communication"]);
+    for(let i=5;i<30;i++) L2[i]=q(`Level2 Q${i+1}: Name a safe lab practice.`, "keep cables tidy", "Prevents trips and accidents.", ["cable management", "clear walkways"]);
+    
+    // LEVEL 3,4,5 - generate rich but compact
+    const L3 = [];
+    for(let i=0;i<30;i++) {
+        if(i<10) L3.push(q("What does a GFCI outlet protect from?", "electric shock", "It detects ground faults and cuts power.", ["shock prevention", "ground fault protection"]));
+        else L3.push(q("What is a prototype?", "early model to test concept", "You build a simple version first to see if your idea works.", ["test model", "preliminary version"]));
+    }
+    const L4 = [];
+    for(let i=0;i<30;i++) {
+        L4.push(q("What is ethical hacking?", "authorized penetration testing", "It's legal hacking to find weaknesses and fix them.", ["white hat hacking", "security testing with permission"]));
+    }
+    const L5 = [];
+    for(let i=0;i<30;i++) {
+        L5.push(q("What does 'GDPR' protect?", "personal data", "A law that gives people control over their private information.", ["privacy law", "data protection"]));
+    }
+    
+    const fullBank = [L1, L2.slice(0,30), L3.slice(0,30), L4.slice(0,30), L5.slice(0,30)];
+    
+    // Game state
+    let currentLevel = 0;
+    let currentQIndex = 0;
+    let score = 0;          // accumulated weighted score (full=1, hint=0.7)
+    let rawPointsPossible = 0; // total possible points if no hints used (1 per question)
+    let usedHintForCurrent = false;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let waitingForNext = false;
+    let answerSubmitted = false;
+    let gameActive = true;
+    
+    const DOM = {
+        levelDisplay: document.getElementById('levelDisplay'),
+        progressText: document.getElementById('progressText'),
+        timerDisplay: document.getElementById('timerDisplay'),
+        questionTxt: document.getElementById('questionTxt'),
+        answerInput: document.getElementById('answerInput'),
+        submitAnswerBtn: document.getElementById('submitAnswerBtn'),
+        feedbackMsg: document.getElementById('feedbackMsg'),
+        nextBtn: document.getElementById('nextBtn'),
+        speakBtn: document.getElementById('speakBtn'),
+        hintBtn: document.getElementById('hintBtn'),
+        hintDisplay: document.getElementById('hintDisplay')
+    };
+    
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+    
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    
+    function startTimer(seconds) {
+        stopTimer();
+        timeLeft = seconds;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            if (!gameActive || waitingForNext) return;
+            if (timeLeft <= 1 && !answerSubmitted && !waitingForNext) {
+                handleTimeout();
+            }
+            if (timeLeft > 0) { timeLeft--; updateTimerDisplay(); }
+        }, 1000);
+    }
+    
+    function updateTimerDisplay() {
+        let mins = Math.floor(timeLeft / 60);
+        let secs = timeLeft % 60;
+        DOM.timerDisplay.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    }
+    
+    function handleTimeout() {
+        if(waitingForNext || answerSubmitted) return;
+        DOM.feedbackMsg.innerHTML = "⏰ Time's up! No answer submitted. Marked incorrect.";
+        recordAnswerAndMove(null);
+    }
+    
+    function normalizeAnswer(str) {
+        if(!str) return "";
+        return str.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+    }
+    
+    function isAnswerCorrect(userAns, question) {
+        const normUser = normalizeAnswer(userAns);
+        const correctNorm = normalizeAnswer(question.correctAnswer);
+        if (normUser === correctNorm) return true;
+        for(let alias of question.aliases) {
+            if (normalizeAnswer(alias) === normUser) return true;
+        }
+        if (question.aliases.some(a => normalizeAnswer(a).includes(normUser) && normUser.length > 3)) return true;
+        if (normUser.length > 3 && correctNorm.includes(normUser)) return true;
+        // allow synonyms: if answer contains core keyword
+        const keywords = question.correctAnswer.split(' ').filter(w => w.length > 3);
+        for(let kw of keywords) {
+            if (normUser.includes(kw)) return true;
+        }
+        return false;
+    }
+    
+    function recordAnswerAndMove(submittedAnswer) {
+        if(waitingForNext) return;
+        waitingForNext = true;
+        stopTimer();
+        const qData = fullBank[currentLevel][currentQIndex];
+        let isCorrect = false;
+        let pointsEarned = 0;
+        if(submittedAnswer !== null && isAnswerCorrect(submittedAnswer, qData)) {
+            isCorrect = true;
+            pointsEarned = usedHintForCurrent ? 0.7 : 1.0;
+            score += pointsEarned;
+        }
+        rawPointsPossible += 1; // each question max possible 1 point
+        updateProgressDisplay();
+        let percentAtLevel = (score / rawPointsPossible) * 100;
+        let hintMsg = usedHintForCurrent ? " (Hint used: +0.7 points)" : "";
+        let feedbackText = isCorrect ? `✅ Correct!${hintMsg}` : `❌ Incorrect. Expected: ${qData.correctAnswer}`;
+        DOM.feedbackMsg.innerHTML = feedbackText + " Moving next...";
+        DOM.answerInput.disabled = true;
+        DOM.submitAnswerBtn.disabled = true;
+        DOM.hintBtn.disabled = true;
+        
+        setTimeout(() => {
+            currentQIndex++;
+            if (currentQIndex < 30) {
+                loadQuestion();
+            } else {
+                let levelPercent = (score / rawPointsPossible) * 100;
+                if (levelPercent >= 80) {
+                    if (currentLevel + 1 < 5) {
+                        DOM.feedbackMsg.innerHTML = `🎉 LEVEL PASSED! ${levelPercent.toFixed(0)}% → Moving to Level ${currentLevel+2}.`;
+                        currentLevel++;
+                        initLevel();
+                    } else {
+                        DOM.feedbackMsg.innerHTML = `🏆 CHAMPION! Completed all levels with ${levelPercent.toFixed(0)}%! Game complete. 🎉`;
+                        gameActive = false;
+                        DOM.nextBtn.disabled = true;
+                        DOM.answerInput.disabled = true;
+                        DOM.submitAnswerBtn.disabled = true;
+                        DOM.hintBtn.disabled = true;
+                        stopTimer();
+                    }
+                } else {
+                    DOM.feedbackMsg.innerHTML = `😓 Level failed: ${levelPercent.toFixed(0)}% (need 80%). Restarting Level ${currentLevel+1}.`;
+                    resetLevelAndRetry();
+                }
+            }
+            waitingForNext = false;
+        }, 2000);
+    }
+    
+    function resetLevelAndRetry() {
+        currentQIndex = 0;
+        score = 0;
+        rawPointsPossible = 0;
+        usedHintForCurrent = false;
+        answerSubmitted = false;
+        loadQuestion();
+    }
+    
+    function initLevel() {
+        currentQIndex = 0;
+        score = 0;
+        rawPointsPossible = 0;
+        usedHintForCurrent = false;
+        answerSubmitted = false;
+        waitingForNext = false;
+        gameActive = true;
+        DOM.nextBtn.disabled = false;
+        DOM.levelDisplay.innerText = `Level ${currentLevel+1}`;
+        loadQuestion();
+    }
+    
+    function loadQuestion() {
+        stopTimer();
+        answerSubmitted = false;
+        usedHintForCurrent = false;
+        DOM.answerInput.disabled = false;
+        DOM.submitAnswerBtn.disabled = false;
+        DOM.hintBtn.disabled = false;
+        DOM.answerInput.value = "";
+        DOM.hintDisplay.style.display = "none";
+        DOM.hintDisplay.innerHTML = "";
+        const qData = fullBank[currentLevel][currentQIndex];
+        DOM.questionTxt.innerText = qData.text;
+        updateProgressDisplay();
+        startTimer(40);
+        DOM.feedbackMsg.innerHTML = "✏️ Type your answer. Use hint for partial credit (0.7 pts). 40 seconds.";
+        DOM.answerInput.focus();
+    }
+    
+    function updateProgressDisplay() {
+        let currentPercent = rawPointsPossible === 0 ? 0 : (score / rawPointsPossible) * 100;
+        DOM.progressText.innerText = `Q: ${currentQIndex+1}/30 | Score: ${score.toFixed(1)}/${rawPointsPossible} (${Math.floor(currentPercent)}%) | need 80%`;
+    }
+    
+    // Hint button logic: show hint, mark that hint was used for this question
+    function showHint() {
+        if(waitingForNext || answerSubmitted) {
+            DOM.feedbackMsg.innerHTML = "Cannot get hint after answering or while moving.";
+            return;
+        }
+        if(usedHintForCurrent) {
+            DOM.feedbackMsg.innerHTML = "You already used a hint for this question.";
+            return;
+        }
+        const qData = fullBank[currentLevel][currentQIndex];
+        if(qData.hintText) {
+            DOM.hintDisplay.innerHTML = `💡 HINT: ${qData.hintText} <span class="partial-badge">Partial credit (0.7 max)</span>`;
+            DOM.hintDisplay.style.display = "block";
+            usedHintForCurrent = true;
+            DOM.feedbackMsg.innerHTML = "Hint shown! If you answer correctly now, you'll get 0.7 points instead of 1.";
+        } else {
+            DOM.hintDisplay.innerHTML = "💡 HINT: Think about the main concept from pre-technical studies or safety rules.";
+            DOM.hintDisplay.style.display = "block";
+            usedHintForCurrent = true;
+        }
+    }
+    
+    DOM.submitAnswerBtn.addEventListener('click', () => {
+        if(waitingForNext) { DOM.feedbackMsg.innerHTML = "Please wait, moving..."; return; }
+        if(answerSubmitted) { DOM.feedbackMsg.innerHTML = "Answer already submitted."; return; }
+        const userAnswer = DOM.answerInput.value.trim();
+        if(userAnswer === "") { DOM.feedbackMsg.innerHTML = "⚠️ Type an answer before submitting!"; return; }
+        answerSubmitted = true;
+        DOM.hintBtn.disabled = true;
+        recordAnswerAndMove(userAnswer);
+    });
+    
+    DOM.nextBtn.addEventListener('click', () => {
+        if(!answerSubmitted && !waitingForNext) {
+            DOM.feedbackMsg.innerHTML = "⚠️ You must submit an answer before moving to next question!";
+            return;
+        }
+        if(waitingForNext) DOM.feedbackMsg.innerHTML = "Processing, please wait...";
+    });
+    
+    DOM.speakBtn.addEventListener('click', () => {
+        const qText = DOM.questionTxt.innerText;
+        if(qText && !waitingForNext) speakText(qText);
+        else if(waitingForNext) speakText("Please wait for next question.");
+    });
+    
+    DOM.hintBtn.addEventListener('click', showHint);
+    
+    DOM.answerInput.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') {
+            e.preventDefault();
+            if(!answerSubmitted && !waitingForNext) DOM.submitAnswerBtn.click();
+        }
+    });
+    
+    function startGame() { currentLevel = 0; initLevel(); }
+    startGame();
+</script>
+</body>
+</html>

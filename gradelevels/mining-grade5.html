@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 5 Social Studies - Mining, Fishing, Wildlife & Transport in Kenya</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f4c3a 0%, #073128 100%);
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fffcf0;
+            border-radius: 70px 50px 70px 50px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.6);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .game-header {
+            background: #e67e22;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #b45f1b;
+            color: #2d2b1f;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2c3e2b;
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: #f7e7b4;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -1px 0 #5e5b56, 0 3px 0 #12100e;
+            font-weight: 600;
+        }
+
+        .timer-box {
+            background: #1e3a2f;
+            color: #ffe082;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer-warning {
+            background: #c73d23;
+            color: white;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            100% { opacity: 0.7; transform: scale(1.02);}
+        }
+
+        .question-area {
+            padding: 30px 28px 25px;
+            background: #fffff5;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 20px;
+            color: #1e5a3a;
+            background: #eef4e3;
+            padding: 22px;
+            border-radius: 55px;
+            text-align: center;
+            word-break: break-word;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #2c6e4f;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 5px 0 #1c4532;
+        }
+
+        .voice-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #1c4532;
+        }
+
+        .hint-area {
+            background: #fff2df;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            flex: 1;
+            text-align: center;
+            color: #b45f1b;
+            font-weight: 600;
+            border-left: 6px solid #ffaa44;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .answer-input-area {
+            margin: 15px 0 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            border-radius: 100px;
+            border: 2px solid #d4b87a;
+            background: white;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #e67e22;
+            box-shadow: 0 0 0 3px rgba(230,126,34,0.3);
+        }
+
+        .submit-btn {
+            background: #e67e22;
+            width: 100%;
+            margin-top: 18px;
+            padding: 16px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 6px 0 #b45f1b;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b45f1b;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            background: #eae2cc;
+            padding: 14px;
+            border-radius: 50px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: #fff7e8;
+            max-width: 90%;
+            width: 420px;
+            padding: 30px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            border: 3px solid #ffbc6e;
+        }
+
+        .modal-card button {
+            background: #e67e22;
+            margin-top: 25px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .question-text {
+                font-size: 1.2rem;
+                padding: 16px;
+            }
+            .game-header {
+                justify-content: center;
+            }
+            .voice-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+            .submit-btn {
+                font-size: 1.2rem;
+            }
+        }
+
+        .correct-feedback {
+            background: #c8e6c1;
+            color: #1c631c;
+            border-left: 8px solid #2e7d32;
+        }
+
+        .wrong-feedback {
+            background: #ffe0db;
+            color: #b33;
+            border-left: 8px solid #d32f2f;
+        }
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">⛏️ Level 1</div>
+        <div class="score-badge" id="scoreDisplay">⭐ Score: 0 / 0</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Welcome! Explore Mining, Fishing, Wildlife, Tourism & Transport in Kenya.</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-area" id="hintMessage">💡 Hint appears when 10 seconds remain</div>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✅ CHECK ANSWER</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">✨ Answer each question. Score 80% to unlock next level!</div>
+    </div>
+</div>
+
+<script>
+    // ------------------- VOICE SYSTEM -------------------
+    function speakMessage(message, pitchVal = 1.0) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.92;
+            utterance.pitch = pitchVal;
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    // ------------------- ANSWER NORMALIZATION -------------------
+    function normalize(ans) {
+        let norm = ans.trim().toLowerCase();
+        norm = norm.replace(/[.,?!;:()]/g, '');
+        return norm;
+    }
+
+    function isAnswerCorrect(correct, user) {
+        const normUser = normalize(user);
+        const normCorrect = normalize(correct);
+        if (normUser === normCorrect) return true;
+        
+        // Common variations for mining, fishing, wildlife, transport
+        const variations = {
+            "soda ash": ["trona", "soda"],
+            "titanium": ["ilmenite", "rutile"],
+            "lake turkana": ["turkana", "jade sea"],
+            "lake victoria": ["victoria", "nnalubaale"],
+            "tilapia": ["nile tilapia"],
+            "nile perch": ["mputa", "sangara"],
+            "maasai mara": ["mara", "masai mara"],
+            "amboseli": ["amboseli national park"],
+            "tsavo": ["tsavo east", "tsavo west"],
+            "matatu": ["matatus", "public minibus"],
+            "boda boda": ["bodaboda", "motorbike taxi"],
+            "sgr": ["standard gauge railway", "madaraka express"],
+            "mombasa": ["mom basa"],
+            "kilindini": ["kilindini harbour"]
+        };
+        
+        for (let [key, aliases] of Object.entries(variations)) {
+            if (normCorrect === key && (aliases.includes(normUser) || normUser === key)) return true;
+            if (aliases.includes(normCorrect) && normUser === key) return true;
+        }
+        return false;
+    }
+
+    // ------------------- QUESTION BANK: Mining, Fishing, Wildlife/Tourism, Transport -------------------
+    const LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+    const PASS_PERCENT = 80;
+    const BASE_TIME_SEC = 40;
+
+    const questionBank = [[], [], [], [], []];
+
+    function addToLevel(level, qArray) {
+        questionBank[level].push(...qArray);
+    }
+
+    // ========== LEVEL 1: MINING IN KENYA ==========
+    const l1 = [
+        { text: "What is the main mineral mined in Magadi, Kenya?", correct: "soda ash" },
+        { text: "Which mineral is mined in Kwale County along the coast?", correct: "titanium" },
+        { text: "Name the mineral used to make cement, mined in Athi River.", correct: "limestone" },
+        { text: "Which area in Kenya is famous for gold mining?", correct: "Kakamega" },
+        { text: "What precious stone is mined in Taita Taveta region?", correct: "ruby" },
+        { text: "Name the salt mining area in northern Kenya near Lake Turkana.", correct: "Loyangalani" },
+        { text: "Which company mines titanium in Kwale?", correct: "Base Titanium" },
+        { text: "What is the main use of soda ash?", correct: "glass making" },
+        { text: "Name a mineral used in making jewellery found in Kenya.", correct: "garnet" },
+        { text: "Which county has large deposits of coal?", correct: "Kitui" },
+        { text: "What is the name of the mineral that produces iron?", correct: "iron ore" },
+        { text: "Where is limestone mainly mined for Bamburi Cement?", correct: "Mombasa" },
+        { text: "What is the main gemstone mined near Voi?", correct: "tsavorite" },
+        { text: "Name one disadvantage of mining.", correct: "pollution" },
+        { text: "Which mineral is used to make batteries?", correct: "manganese" },
+        { text: "What is the process of digging minerals from the ground called?", correct: "mining" },
+        { text: "Name a safety gear used by miners.", correct: "helmet" },
+        { text: "Which mineral is used to make fertilizer?", correct: "phosphate" },
+        { text: "Where is gold found in western Kenya?", correct: "Migori" },
+        { text: "What is the name of the open-pit mine in Magadi?", correct: "Lake Magadi" },
+        { text: "Which mineral is Kenya's top export after titanium?", correct: "soda ash" },
+        { text: "Name the government body regulating mining in Kenya.", correct: "Ministry of Mining" },
+        { text: "What is the main environmental effect of mining?", correct: "deforestation" },
+        { text: "Which mineral is used in making toothpaste?", correct: "fluorite" },
+        { text: "Name a gemstone mined in Kajiado county.", correct: "tourmaline" },
+        { text: "What is the term for a place where minerals are extracted?", correct: "mine" },
+        { text: "Which mineral is used in aircraft construction because it's light?", correct: "titanium" },
+        { text: "Name the coastal town where heavy sands are mined.", correct: "Kwale" },
+        { text: "What is the main advantage of mining to Kenya's economy?", correct: "employment" },
+        { text: "Name a mineral used in making paint.", correct: "kaolin" }
+    ];
+    addToLevel(0, l1.slice(0,30));
+
+    // ========== LEVEL 2: FISHING IN KENYA ==========
+    const l2 = [
+        { text: "What is the largest freshwater lake in Kenya where fishing is done?", correct: "Lake Victoria" },
+        { text: "Name the common fish species caught in Lake Victoria.", correct: "tilapia" },
+        { text: "Which type of fishing uses nets and boats on the Indian Ocean?", correct: "marine fishing" },
+        { text: "Name the second largest fishing lake in Kenya.", correct: "Lake Turkana" },
+        { text: "What is the main fishing method using a hook and line?", correct: "angling" },
+        { text: "Which town in Kenya is famous for its fish market on Lake Victoria?", correct: "Kisumu" },
+        { text: "Name the fish species that is large and introduced to Lake Victoria.", correct: "nile perch" },
+        { text: "What is the process of preserving fish by salting called?", correct: "salting" },
+        { text: "Which coastal town has a major fishing port?", correct: "Mombasa" },
+        { text: "Name a fishing gear made of fine mesh used to catch small fish.", correct: "seine net" },
+        { text: "What is the main challenge facing fishing in Lake Victoria?", correct: "water hyacinth" },
+        { text: "Which river in Kenya supports freshwater fishing?", correct: "Tana River" },
+        { text: "Name the traditional fishing raft used in Lake Victoria.", correct: "boat" },
+        { text: "What is the name of the fish that is dried and smoked for preservation?", correct: "omena" },
+        { text: "Which government department manages fisheries in Kenya?", correct: "Kenya Fisheries Service" },
+        { text: "What type of fishing occurs in creeks and mangroves at the coast?", correct: "estuarine fishing" },
+        { text: "Name a fish found in the Indian Ocean off Kenya's coast.", correct: "tuna" },
+        { text: "What is the main fishing method using a basket trap?", correct: "trapping" },
+        { text: "Which lake in the Rift Valley has a large fishing community?", correct: "Lake Baringo" },
+        { text: "Name a fish farming method practiced in ponds.", correct: "aquaculture" },
+        { text: "What is the main product from fishing besides fish?", correct: "fish oil" },
+        { text: "Which community along Lake Turkana is known for fishing?", correct: "El Molo" },
+        { text: "Name the fish that is a delicacy in coastal areas.", correct: "kingfish" },
+        { text: "What is the main cause of overfishing in Kenyan waters?", correct: "illegal nets" },
+        { text: "Which organization promotes sustainable fishing in Kenya?", correct: "KMFRI" },
+        { text: "Name a modern fish landing site in Homa Bay County.", correct: "Mbita" },
+        { text: "What is the name of the gear used to catch deep-sea fish?", correct: "longline" },
+        { text: "Which county is the leading producer of fish from Lake Victoria?", correct: "Homa Bay" },
+        { text: "Name the small sardine-like fish in Lake Victoria.", correct: "dagaa" },
+        { text: "What is the benefit of fish farming to rural families?", correct: "food security" }
+    ];
+    addToLevel(1, l2.slice(0,30));
+
+    // ========== LEVEL 3: WILDLIFE AND TOURISM IN KENYA ==========
+    const l3 = [
+        { text: "What is the most famous national reserve in Kenya known for wildebeest migration?", correct: "Maasai Mara" },
+        { text: "Which national park is at the foot of Mount Kilimanjaro?", correct: "Amboseli" },
+        { text: "Name the 'Big Five' animal that is a large mammal with a horn.", correct: "rhinoceros" },
+        { text: "What is the name of the park famous for red elephants?", correct: "Tsavo" },
+        { text: "Which lake in Kenya is known for flamingos?", correct: "Lake Nakuru" },
+        { text: "Name the safari walk in Nairobi where you can see lions and giraffes.", correct: "Nairobi National Park" },
+        { text: "What is the main tourist attraction in Lamu?", correct: "old town" },
+        { text: "Which coastal city attracts tourists with its beaches and Fort Jesus?", correct: "Mombasa" },
+        { text: "Name the animal that is Kenya's national symbol.", correct: "lion" },
+        { text: "What is the world's largest volcanic lake and a tourist site in northern Kenya?", correct: "Lake Turkana" },
+        { text: "Which conservancy in Laikipia is famous for rhino protection?", correct: "Ol Pejeta" },
+        { text: "Name the bird with a crown that is a symbol of Kenya.", correct: "crane" },
+        { text: "What is the main activity tourists do in Maasai Mara?", correct: "game drive" },
+        { text: "Which Kenyan beach is known for white sand and palm trees?", correct: "Diani" },
+        { text: "Name the mountain that is a UNESCO heritage site and hiking destination.", correct: "Mount Kenya" },
+        { text: "What is the name of the snake park in Nairobi?", correct: "Nairobi Snake Park" },
+        { text: "Which island is known for its donkeys and traditional Swahili culture?", correct: "Lamu" },
+        { text: "Name the animal that can run fastest and lives in the savannah.", correct: "cheetah" },
+        { text: "What is the main role of Kenya Wildlife Service?", correct: "protect wildlife" },
+        { text: "Which lake is a flamingo hotspot in the Rift Valley?", correct: "Lake Bogoria" },
+        { text: "Name a marine park in Kenya where you can see coral reefs.", correct: "Watamu" },
+        { text: "What is the 'Great Migration' famous for?", correct: "wildebeest crossing" },
+        { text: "Which animal is known as the 'gentle giant' of the savannah?", correct: "elephant" },
+        { text: "Name the national park located in Meru County.", correct: "Meru National Park" },
+        { text: "What is the main threat to wildlife in Kenya?", correct: "poaching" },
+        { text: "Which beach is near Malindi and popular with tourists?", correct: "Bamburi" },
+        { text: "Name the forest where you can see colobus monkeys near Nairobi.", correct: "Karura Forest" },
+        { text: "What is the name of the annual cultural tourism event in Mombasa?", correct: "Mombasa Carnival" },
+        { text: "Which organization manages tourism marketing in Kenya?", correct: "Kenya Tourism Board" },
+        { text: "Name a rare antelope found in the Samburu reserve.", correct: "gerenuk" }
+    ];
+    addToLevel(2, l3.slice(0,30));
+
+    // ========== LEVEL 4: TRANSPORT IN KENYA ==========
+    const l4 = [
+        { text: "What is the most common public transport minibus in Kenya?", correct: "matatu" },
+        { text: "Name the modern railway from Mombasa to Nairobi.", correct: "SGR" },
+        { text: "Which airport is the main international airport in Nairobi?", correct: "Jomo Kenyatta International Airport" },
+        { text: "What is the name of the ferry that connects Likoni to Mombasa island?", correct: "Likoni Ferry" },
+        { text: "Which highway connects Nairobi to Thika?", correct: "Thika Superhighway" },
+        { text: "Name the motorcycle taxis common in rural and urban areas.", correct: "boda boda" },
+        { text: "What is the main seaport in Kenya?", correct: "Mombasa" },
+        { text: "Which type of transport uses petroleum pipelines to move oil?", correct: "pipeline" },
+        { text: "Name the old railway line built during colonial times.", correct: "Lunatic Express" },
+        { text: "What is the main international airport in Mombasa?", correct: "Moi International Airport" },
+        { text: "Which road is a toll road reducing traffic in Nairobi?", correct: "Nairobi Expressway" },
+        { text: "Name the three-wheeler taxi common in Kisumu and coastal towns.", correct: "tuk tuk" },
+        { text: "What is the main challenge facing road transport in Kenya?", correct: "traffic jams" },
+        { text: "Which organization manages roads in Kenya?", correct: "KeNHA" },
+        { text: "Name the standard gauge railway station in Nairobi.", correct: "Nairobi Terminus" },
+        { text: "What type of transport moves goods by large ships?", correct: "maritime" },
+        { text: "Which county has a newly built airport in Eldoret?", correct: "Uasin Gishu" },
+        { text: "Name the air transport company that is the national carrier of Kenya.", correct: "Kenya Airways" },
+        { text: "What is the main advantage of the SGR?", correct: "speed" },
+        { text: "Which river port is used for transport on Lake Victoria?", correct: "Kisumu Port" },
+        { text: "Name the modern bus rapid transit being developed in Nairobi.", correct: "BRT" },
+        { text: "What is the main mode of transport for ferrying tourists to Maasai Mara?", correct: "safari van" },
+        { text: "Which government body registers vehicles in Kenya?", correct: "NTSA" },
+        { text: "Name the railway line that connects Nairobi to Nanyuki.", correct: "Nanyuki Railway" },
+        { text: "What is the main cargo airport in Kenya for flowers?", correct: "JKIA" },
+        { text: "Which transport mode is cheapest for long-distance bulk goods?", correct: "rail" },
+        { text: "Name the pedestrian footbridge over busy roads.", correct: "footbridge" },
+        { text: "What is the main challenge of air travel in remote areas?", correct: "cost" },
+        { text: "Which agency manages the Likoni Ferry operations?", correct: "Kenya Ferry Services" },
+        { text: "Name the digital system for electronic toll collection on Nairobi Expressway.", correct: "e-toll" }
+    ];
+    addToLevel(3, l4.slice(0,30));
+
+    // ========== LEVEL 5: Mixed Challenge (All topics combined) ==========
+    const l5 = [
+        { text: "Which mineral is found in large quantities around Kitui and used for cement?", correct: "limestone" },
+        { text: "Name the fish species that is native to Lake Turkana.", correct: "Nile crocodile" },
+        { text: "Which park is known as 'The Land of Giants' because of large elephants?", correct: "Tsavo" },
+        { text: "What is the name of the express train on the SGR?", correct: "Madaraka Express" },
+        { text: "Which gemstone is uniquely green and mined around Tsavo?", correct: "tsavorite" },
+        { text: "Name the main fishing village on the shores of Lake Baringo.", correct: "Kampi ya Samaki" },
+        { text: "What is the main tourist activity at Hell's Gate National Park?", correct: "cycling" },
+        { text: "Which airport serves the coastal tourism city of Malindi?", correct: "Malindi Airport" },
+        { text: "Name a mineral used in making steel, mined in Kajiado.", correct: "iron ore" },
+        { text: "Which lake has the highest fish production in Kenya?", correct: "Lake Victoria" },
+        { text: "Name the annual wildebeest migration crossing from Serengeti to Maasai Mara.", correct: "Mara River" },
+        { text: "What is the main mode of transport for school children in rural areas?", correct: "bicycle" },
+        { text: "Which mining town in Kitui has coal deposits?", correct: "Mui Basin" },
+        { text: "Name the traditional canoe used for fishing in Lake Victoria.", correct: "boat" },
+        { text: "Which conservancy is famous for the last northern white rhinos?", correct: "Ol Pejeta" },
+        { text: "What is the name of the new container terminal at Mombasa Port?", correct: "Kipevu" },
+        { text: "Which mineral is used to make glass and is mined in Magadi?", correct: "soda ash" },
+        { text: "Name a deep-sea fish caught off Kenya's coast.", correct: "marlin" },
+        { text: "Which national park is located on the shores of Lake Nakuru?", correct: "Lake Nakuru National Park" },
+        { text: "What is the main road linking Kenya to Ethiopia through Marsabit?", correct: "A2 road" },
+        { text: "Name the gold mining area in western Kenya near Lake Victoria.", correct: "Lihanda" },
+        { text: "Which type of net is illegal because it catches juvenile fish?", correct: "monofilament" },
+        { text: "Which animal is protected at the David Sheldrick Wildlife Trust?", correct: "elephant" },
+        { text: "What is the name of the railway that connects Malaba to Mombasa?", correct: "Northern Corridor" },
+        { text: "Which mineral is used in making ceramics, mined in Kajiado?", correct: "kaolin" },
+        { text: "Name the freshwater crab found in Kenyan rivers used as food.", correct: "crab" },
+        { text: "Which site in Amboseli allows tourists to see Kilimanjaro's peak?", correct: "Observation Hill" },
+        { text: "What is the main taxi app used for transport in Nairobi?", correct: "Uber" },
+        { text: "Which mining method uses large holes in the ground?", correct: "open cast" },
+        { text: "Name the bird watching paradise in Lake Baringo.", correct: "Gibraltar" }
+    ];
+    addToLevel(4, l5.slice(0,30));
+
+    // ------------------- GAME ENGINE -------------------
+    let currentLevel = 0;
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let score = 0;
+    let answeredCount = 0;
+    let timerInterval = null;
+    let timeLeft = BASE_TIME_SEC;
+    let canAnswer = true;
+    let waitingNext = false;
+
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionText = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintDiv = document.getElementById('hintMessage');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+
+    function updateUI() {
+        levelDisplay.innerText = `⛏️ Level ${currentLevel+1}`;
+        scoreDisplay.innerText = `⭐ Score: ${score} / ${answeredCount}`;
+        if (currentQuestions[currentQIndex])
+            questionText.innerText = currentQuestions[currentQIndex].text;
+    }
+
+    function stopTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function startTimer() {
+        stopTimer();
+        timeLeft = BASE_TIME_SEC;
+        timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+        timerDisplay.classList.remove('timer-warning');
+        timerInterval = setInterval(() => {
+            if (!canAnswer) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+                if (timeLeft <= 10) {
+                    timerDisplay.classList.add('timer-warning');
+                    const curr = currentQuestions[currentQIndex];
+                    if (curr && curr.correct) {
+                        hintDiv.innerHTML = `⏰ Hint: answer starts with "${curr.correct.substring(0,3)}..." Think mining, fishing, tourism or transport.`;
+                    } else {
+                        hintDiv.innerHTML = `💡 Focus on Kenya's resources, wildlife, or ways of travel!`;
+                    }
+                } else {
+                    timerDisplay.classList.remove('timer-warning');
+                    hintDiv.innerHTML = `💡 Read carefully! 40 seconds. Type your answer.`;
+                }
+            }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if (!canAnswer) return;
+        canAnswer = false;
+        const correctAns = currentQuestions[currentQIndex].correct;
+        speakMessage(`Time is up! The correct answer is ${correctAns}.`, 0.8);
+        feedbackDiv.innerHTML = `⏰ TIME'S UP! Correct: "${correctAns}". Next question...`;
+        feedbackDiv.classList.add('wrong-feedback');
+        setTimeout(() => nextQuestion(), 1600);
+    }
+
+    function checkAnswer() {
+        if (!canAnswer || waitingNext) {
+            feedbackDiv.innerHTML = "⏳ Please wait...";
+            return;
+        }
+        const userAns = answerInput.value.trim();
+        if (userAns === "") {
+            feedbackDiv.innerHTML = "📝 Type your answer before submitting!";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        const correctFlag = isAnswerCorrect(currentQ.correct, userAns);
+        stopTimer();
+        canAnswer = false;
+        if (correctFlag) {
+            score++;
+            feedbackDiv.innerHTML = `✅ CORRECT! "${userAns}" is right! +1 point 🎉`;
+            feedbackDiv.classList.add('correct-feedback');
+            speakMessage("Correct! Excellent work.", 1.2);
+        } else {
+            feedbackDiv.innerHTML = `❌ INCORRECT! "${userAns}" is wrong. Correct: ${currentQ.correct}. Keep trying!`;
+            feedbackDiv.classList.add('wrong-feedback');
+            speakMessage(`Incorrect. The correct answer is ${currentQ.correct}.`, 0.9);
+        }
+        answeredCount++;
+        updateUI();
+        setTimeout(() => nextQuestion(), 1500);
+    }
+
+    function nextQuestion() {
+        waitingNext = false;
+        currentQIndex++;
+        if (currentQIndex >= currentQuestions.length) {
+            const percent = (score / QUESTIONS_PER_LEVEL) * 100;
+            if (percent >= PASS_PERCENT) {
+                if (currentLevel + 1 < LEVELS) {
+                    showModal(`🎉 Level ${currentLevel+1} complete! ${Math.floor(percent)}% (${score}/${QUESTIONS_PER_LEVEL}). Proceed to Level ${currentLevel+2}.`, true);
+                } else {
+                    showModal(`🏆 FANTASTIC! You mastered Mining, Fishing, Wildlife & Transport in Kenya! Final Score: ${score}/${QUESTIONS_PER_LEVEL}. You're a Social Studies expert!`, false);
+                }
+            } else {
+                showModal(`😓 Level ${currentLevel+1} failed. ${Math.floor(percent)}% (need 80%). Restarting level...`, false);
+                resetCurrentLevel();
+            }
+            return;
+        }
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetCurrentLevel() {
+        stopTimer();
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+        loadQuestionsForLevel(currentLevel);
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetQInterface() {
+        answerInput.value = "";
+        feedbackDiv.classList.remove('correct-feedback', 'wrong-feedback');
+        feedbackDiv.innerHTML = "✨ New question! Type your answer carefully.";
+        hintDiv.innerHTML = "💡 Hint will appear when 10 seconds remain.";
+        timerDisplay.classList.remove('timer-warning');
+        canAnswer = true;
+        waitingNext = false;
+        if (timerInterval) stopTimer();
+        startTimer();
+    }
+
+    function loadCurrentQuestion() {
+        if (currentQuestions[currentQIndex]) {
+            questionText.innerText = currentQuestions[currentQIndex].text;
+            updateUI();
+            startTimer();
+            canAnswer = true;
+        }
+    }
+
+    function loadQuestionsForLevel(level) {
+        currentQuestions = [...questionBank[level]];
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+    }
+
+    function showModal(message, goNext) {
+        stopTimer();
+        canAnswer = false;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `<div class="modal-card"><p>${message}</p><button id="modalBtn">${goNext ? '➡️ NEXT LEVEL ⬅️' : '🔄 RESTART LEVEL'}</button></div>`;
+        document.body.appendChild(overlay);
+        document.getElementById('modalBtn').addEventListener('click', () => {
+            overlay.remove();
+            if (goNext) {
+                currentLevel++;
+                loadQuestionsForLevel(currentLevel);
+                resetQInterface();
+                loadCurrentQuestion();
+            } else {
+                resetCurrentLevel();
+            }
+        });
+    }
+
+    function init() {
+        loadQuestionsForLevel(0);
+        resetQInterface();
+        loadCurrentQuestion();
+        speakBtn.addEventListener('click', () => {
+            if (currentQuestions[currentQIndex])
+                speakMessage(currentQuestions[currentQIndex].text, 1.0);
+        });
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    }
+    init();
+</script>
+</body>
+</html>

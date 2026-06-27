@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Health Quest | CBC Grade 5 English – Visiting a Doctor & Hand Hygiene</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0f766e 0%, #0f3b3f 30%, #064e3b 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Nunito', system-ui, sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background bubbles */
+        body::before {
+            content: "🩺";
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 70px;
+            opacity: 0.08;
+            pointer-events: none;
+            animation: floatHealth 25s infinite;
+        }
+        body::after {
+            content: "🧼";
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            font-size: 85px;
+            opacity: 0.08;
+            pointer-events: none;
+            animation: floatHealth 20s infinite reverse;
+        }
+
+        @keyframes floatHealth {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -15px) rotate(10deg); }
+            50% { transform: translate(-15px, 25px) rotate(-5deg); }
+            75% { transform: translate(15px, 10px) rotate(8deg); }
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            background: #f0fdf4;
+            background-image: radial-gradient(circle at 10% 20%, rgba(80, 200, 120, 0.08) 2%, transparent 2.5%);
+            background-size: 32px 32px;
+            border-radius: 3rem;
+            box-shadow: 0 30px 45px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.8);
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 2px solid #34d399;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header */
+        .game-header {
+            background: linear-gradient(98deg, #059669, #10b981, #14b8a6);
+            padding: 1.2rem 2rem;
+            color: #fff5e0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #fbbf24;
+        }
+
+        .level-badge {
+            background: #fbbf24;
+            color: #065f46;
+            font-weight: 800;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-size: 1.3rem;
+            box-shadow: inset 0 -1px 0 #b45309, 0 4px 8px rgba(0,0,0,0.2);
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .score-timer {
+            display: flex;
+            gap: 25px;
+            background: #115e59;
+            padding: 6px 28px;
+            border-radius: 60px;
+        }
+
+        .score, .timer {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+        }
+
+        .score span, .timer span {
+            color: #fef08a;
+            margin-right: 8px;
+        }
+
+        /* Progress */
+        .progress-area {
+            background: #dcfce7;
+            padding: 12px 25px;
+        }
+
+        .progress-bar-bg {
+            background: #86efac;
+            border-radius: 40px;
+            height: 16px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            background: linear-gradient(90deg, #059669, #10b981);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 40px;
+        }
+
+        .q-counter {
+            text-align: right;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #065f46;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin: 15px 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-align: center;
+            flex: 1;
+            min-width: 100px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid #bbf7d0;
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #059669;
+            display: block;
+            font-family: monospace;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #065f46;
+            text-transform: uppercase;
+        }
+
+        /* Question Card */
+        .question-card {
+            padding: 1.8rem 2rem 2rem;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 8px 0 #bbf7d0;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+            color: #064e3b;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* Voice Button */
+        .voice-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 60px;
+            padding: 10px 24px;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 0 #065f46;
+        }
+
+        .voice-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #065f46;
+        }
+
+        .voice-btn.speaking {
+            animation: pulseHealth 0.8s infinite;
+            background: linear-gradient(135deg, #059669, #14b8a6);
+        }
+
+        @keyframes pulseHealth {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        /* Skill Tag */
+        .skill-tag {
+            display: inline-block;
+            background: #ecfdf5;
+            color: #059669;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin: 10px 0 15px;
+            border: 2px solid #a7f3d0;
+        }
+
+        /* Answer Area */
+        .answer-area {
+            margin: 20px 0;
+        }
+
+        .answer-label {
+            font-weight: 800;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #065f46;
+        }
+
+        #userAnswer {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            border: 3px solid #bbf7d0;
+            border-radius: 60px;
+            background: #ffffff;
+            font-weight: 500;
+            transition: 0.2s;
+            outline: none;
+            font-family: 'Nunito', monospace;
+        }
+
+        #userAnswer:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 4px rgba(251,191,36,0.3);
+            transform: translateY(-2px);
+        }
+
+        .hint-message {
+            background: #ecfdf5;
+            padding: 12px 20px;
+            border-radius: 32px;
+            font-size: 0.95rem;
+            margin-top: 16px;
+            color: #065f46;
+            font-style: italic;
+            border-left: 8px solid #fbbf24;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 28px;
+            justify-content: space-between;
+        }
+
+        button {
+            background: #059669;
+            border: none;
+            color: white;
+            font-weight: 800;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.1s;
+            font-family: inherit;
+            box-shadow: 0 4px 0 #065f46;
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #065f46;
+        }
+
+        .submit-btn {
+            background: #fbbf24;
+            color: #064e3b;
+            box-shadow: 0 4px 0 #b45309;
+            flex: 2;
+        }
+
+        .next-btn {
+            background: #14b8a6;
+            flex: 1;
+        }
+
+        .feedback {
+            margin: 22px 0 0;
+            background: #e6f7f5;
+            border-radius: 50px;
+            padding: 14px 24px;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1rem;
+            border-left: 6px solid #fbbf24;
+        }
+
+        .health-tip {
+            background: #e8f5e9;
+            border-left: 4px solid #059669;
+            padding: 12px 16px;
+            border-radius: 0 12px 12px 0;
+            margin: 15px 20px;
+            font-size: 0.95rem;
+            color: #1b5e20;
+            font-weight: 500;
+        }
+        .health-tip::before {
+            content: "💡 Health Tip: ";
+            font-weight: 700;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: linear-gradient(135deg, #fff9ef, #f0fdf4);
+            max-width: 420px;
+            width: 100%;
+            padding: 2rem 1.8rem;
+            border-radius: 2.5rem;
+            text-align: center;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.5);
+            border: 4px solid #fbbf24;
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.85) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-card h2 {
+            font-family: 'Fredoka One', cursive;
+            color: #065f46;
+            margin-bottom: 12px;
+            font-size: 1.8rem;
+        }
+
+        .modal-card p {
+            color: #064e3b;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .modal-card button {
+            background: linear-gradient(135deg, #059669, #10b981);
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            border: none;
+            box-shadow: 0 4px 0 #065f46;
+        }
+
+        .stars-display {
+            font-size: 2.5rem;
+            margin: 15px 0;
+            letter-spacing: 8px;
+        }
+
+        .star-on {
+            color: #fbbf24;
+            text-shadow: 0 0 5px #f59e0b;
+        }
+
+        .star-off {
+            color: #cbd5e1;
+        }
+
+        /* Timer warning */
+        .timer.warning {
+            color: #fef08a;
+            animation: pulseWarning 0.8s infinite;
+        }
+
+        @keyframes pulseWarning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            animation: fallConfetti 4s linear forwards;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        @keyframes fallConfetti {
+            0% { transform: translateY(-120px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Intro Screen */
+        .intro-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .intro-screen h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #059669, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .feature-item {
+            background: rgba(5, 150, 105, 0.15);
+            backdrop-filter: blur(4px);
+            padding: 12px;
+            border-radius: 60px;
+            font-weight: 700;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .start-adventure {
+            background: linear-gradient(135deg, #fbbf24, #059669);
+            padding: 18px 45px;
+            font-size: 1.6rem;
+            margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            body { padding: 12px; }
+            .game-header { flex-direction: column; align-items: center; text-align: center; }
+            .question-text { font-size: 1.2rem; padding: 1.2rem; }
+            .action-buttons { flex-direction: column; }
+            .action-buttons button { width: 100%; }
+            .stats-grid { flex-direction: column; align-items: stretch; }
+            .stat-box { min-width: auto; }
+            .voice-btn { width: 100%; justify-content: center; }
+            .score-timer { justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .question-text { font-size: 1rem; }
+            #userAnswer { font-size: 1rem; padding: 14px 18px; }
+            .level-badge { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <!-- Intro Screen -->
+    <div id="introScreen" class="intro-screen" style="padding: 2.5rem;">
+        <div style="font-size: 4rem;">🩺🧼💊🌡️</div>
+        <h2>Visiting a Doctor & Hand Hygiene</h2>
+        <p style="color: #064e3b; font-weight: 600; margin: 15px 0;">CBC Grade 5 English — Listening, Speaking, Reading, Adverbs, Apostrophe, Health Vocabulary</p>
+        <div class="features-grid">
+            <div class="feature-item">🔊 Voice Output</div>
+            <div class="feature-item">⏱️ 40s Timer</div>
+            <div class="feature-item">💡 Smart Hints</div>
+            <div class="feature-item">🏆 5 Levels</div>
+            <div class="feature-item">🩺 Doctor Visit</div>
+            <div class="feature-item">🧼 Hand Hygiene</div>
+        </div>
+        <button id="startGameBtn" class="start-adventure">🚀 Begin Health Journey 🚀</button>
+        <p style="margin-top: 20px; font-size: 0.85rem; color: #065f46;">★ 30 questions per level ★ Pass 80% to advance ★ Type your answers ★</p>
+    </div>
+
+    <!-- Main Game UI (hidden initially) -->
+    <div id="gameUI" style="display: none;">
+        <div class="game-header">
+            <div class="level-badge" id="levelDisplay">LEVEL 1</div>
+            <div class="score-timer">
+                <div class="score"><span>🩺 SCORE</span> <span id="scoreValue">0</span></div>
+                <div class="timer"><span>⏱️</span> <span id="timerValue">40</span>s</div>
+            </div>
+        </div>
+        <div class="progress-area">
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="q-counter" id="qCounter">Question 1 / 30</div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box"><span class="stat-val" id="correctStat">0</span><span class="stat-label">Correct</span></div>
+            <div class="stat-box"><span class="stat-val" id="accStat">0%</span><span class="stat-label">Accuracy</span></div>
+            <div class="stat-box"><span class="stat-val" id="pointsStat">0</span><span class="stat-label">Points</span></div>
+        </div>
+        <div class="question-card">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION ALOUD</button>
+            <div class="skill-tag" id="skillTag">Health English</div>
+            <div class="question-text" id="questionText">Wash your hands... health first!</div>
+            <div class="answer-area">
+                <label class="answer-label">✍️ YOUR ANSWER (type the correct word/phrase):</label>
+                <input type="text" id="userAnswer" placeholder="Type your answer here..." autocomplete="off">
+                <div class="hint-message" id="hintArea">💡 Hint will appear when time is low (≤12s). Stay healthy!</div>
+            </div>
+            <div class="action-buttons">
+                <button class="submit-btn" id="submitBtn">✔ SUBMIT ANSWER</button>
+                <button class="next-btn" id="nextBtn">➡ NEXT QUESTION</button>
+            </div>
+            <div class="feedback" id="feedbackMsg"></div>
+        </div>
+        <div class="health-tip" id="healthTip">Wash hands with soap for 20 seconds!</div>
+    </div>
+</div>
+
+<script>
+    // ======================== MERGED HEALTH GAME ========================
+    // 5 Levels × 30 questions covering: Adverbs, Apostrophe, Communicable Diseases, 
+    // Visiting Doctor, Hand Hygiene, Intensive Reading, Listening/Speaking
+    
+    const healthTips = [
+        "Wash your hands with soap for 20 seconds to remove germs!",
+        "Cover your mouth with your elbow when you cough or sneeze!",
+        "Get vaccinated to protect yourself and your community!",
+        "Drink clean boiled water to prevent waterborne diseases!",
+        "Sleep under a mosquito net to prevent malaria!",
+        "See a doctor early when you feel unwell!",
+        "Keep your environment clean to reduce disease risk!",
+        "Don't touch your face with unwashed hands!",
+        "Use tissues and dispose of them properly!",
+        "Stay home when you're sick to protect others!"
+    ];
+
+    function updateHealthTip() {
+        const tipEl = document.getElementById('healthTip');
+        if (tipEl) {
+            const tip = healthTips[Math.floor(Math.random() * healthTips.length)];
+            tipEl.innerHTML = `💡 ${tip}`;
+        }
+    }
+
+    function generateBankForLevel(level) {
+        const bank = [];
+        const strands = ['adverbs', 'apostrophe', 'diseases', 'doctor', 'hygiene'];
+        
+        for (let i = 0; i < 30; i++) {
+            let categoryIndex = (i + level * 3) % 5;
+            let qText = "", correctAnswer = "", hintText = "", skillLabel = "";
+            
+            // Adverbs (manner, frequency, time, place)
+            if (categoryIndex === 0) {
+                const advList = [
+                    { q: "You should wash your hands ______ (careful/carefully).", a: "carefully", h: "adverb of manner ending in -ly", skill: "Grammar: Adverbs" },
+                    { q: "She washes her hands ______ (regular/regularly) to prevent disease.", a: "regularly", h: "adverb of frequency", skill: "Grammar: Adverbs" },
+                    { q: "The germs spread ______ (quick/quickly) through touch.", a: "quickly", h: "describes how germs spread", skill: "Grammar: Adverbs" },
+                    { q: "He washed his hands ______ (thorough/thoroughly).", a: "thoroughly", h: "manner adverb", skill: "Grammar: Adverbs" },
+                    { q: "Cough ______ (into your elbow / always).", a: "into your elbow", h: "adverb phrase of manner", skill: "Speaking: Adverbs" },
+                    { q: "When listening to a nurse, listen ______ (attentively/loudly).", a: "attentively", h: "adverb of manner", skill: "Listening" }
+                ];
+                const pick = advList[i % advList.length];
+                qText = pick.q; correctAnswer = pick.a; hintText = pick.h; skillLabel = pick.skill;
+            }
+            // Apostrophe (possessive forms)
+            else if (categoryIndex === 1) {
+                const apostList = [
+                    { q: "Complete: 'The _____ stethoscope was on the table.' (doctor)", a: "doctor's", h: "singular possessive showing ownership", skill: "Grammar: Apostrophe" },
+                    { q: "Apostrophe: 'The children _____ toys were sanitized.'", a: "children's", h: "plural possessive for irregular plural", skill: "Grammar: Apostrophe" },
+                    { q: "Apostrophe: 'The _____ advice was helpful.' (nurse)", a: "nurse's", h: "singular possessive", skill: "Grammar: Apostrophe" },
+                    { q: "The patients _____ records were updated. (patients)", a: "patients'", h: "plural possessive ending in s", skill: "Grammar: Apostrophe" },
+                    { q: "The _____ clinic is open today. (community)", a: "community's", h: "singular possessive", skill: "Grammar: Apostrophe" }
+                ];
+                const pick = apostList[i % apostList.length];
+                qText = pick.q; correctAnswer = pick.a; hintText = pick.h; skillLabel = pick.skill;
+            }
+            // Communicable Diseases
+            else if (categoryIndex === 2) {
+                const diseaseList = [
+                    { q: "COVID-19 is a ______ (communicable/non-communicable) disease.", a: "communicable", h: "spreads person to person", skill: "Health Vocabulary" },
+                    { q: "Flu spreads through ______ (droplets/water) from coughs and sneezes.", a: "droplets", h: "tiny liquid particles", skill: "Health Science" },
+                    { q: "A common communicable disease is the common ______ (cold/fever).", a: "cold", h: "runny nose and sneezing", skill: "Health" },
+                    { q: "Chickenpox causes ______ (rashes/headaches) all over the body.", a: "rashes", h: "red itchy spots", skill: "Health" },
+                    { q: "Tuberculosis (TB) affects the ______ (lungs/stomach).", a: "lungs", h: "breathing organs", skill: "Health" },
+                    { q: "Malaria is spread by infected ______ (mosquitoes/ticks).", a: "mosquitoes", h: "insect that bites at night", skill: "Health" }
+                ];
+                const pick = diseaseList[i % diseaseList.length];
+                qText = pick.q; correctAnswer = pick.a; hintText = pick.h; skillLabel = pick.skill;
+            }
+            // Visiting Doctor (Listening & Speaking scenarios)
+            else if (categoryIndex === 3) {
+                const doctorList = [
+                    { q: "What do you say when the doctor asks how you feel?", a: "i feel sick", h: "honest response about health", skill: "Speaking: Doctor Visit" },
+                    { q: "The doctor said I have a fever. What symptom is mentioned?", a: "fever", h: "high body temperature", skill: "Listening" },
+                    { q: "Complete: 'If you have a fever, you should _____.'", a: "rest", h: "appropriate action for fever", skill: "Speaking" },
+                    { q: "What should you tell the doctor about your symptoms?", a: "describe them clearly", h: "be honest and specific", skill: "Speaking" },
+                    { q: "Listen: 'The nurse checked my temperature carefully.' What adverb describes how?", a: "carefully", h: "manner adverb", skill: "Listening" }
+                ];
+                const pick = doctorList[i % doctorList.length];
+                qText = pick.q; correctAnswer = pick.a; hintText = pick.h; skillLabel = pick.skill;
+            }
+            // Hand Hygiene & Prevention
+            else {
+                const hygieneList = [
+                    { q: "Always wash your hands with soap and ______ (water/sanitizer).", a: "water", h: "clean liquid with soap", skill: "Hygiene" },
+                    { q: "______ (Hand washing/Vaccination) is the first defense against germs.", a: "hand washing", h: "cleaning with soap", skill: "Prevention" },
+                    { q: "You should cough or sneeze into your ______ (elbow/hand).", a: "elbow", h: "inner arm to block droplets", skill: "Etiquette" },
+                    { q: "Avoid touching your ______ (face/feet) with unwashed hands.", a: "face", h: "eyes, nose, mouth entry points", skill: "Prevention" },
+                    { q: "Wash your hands ______ (before/after) using the toilet.", a: "after", h: "adverb of time", skill: "Hygiene" },
+                    { q: "Vaccines help prevent ______ (measles/accidents).", a: "measles", h: "contagious viral disease", skill: "Health" }
+                ];
+                const pick = hygieneList[i % hygieneList.length];
+                qText = pick.q; correctAnswer = pick.a; hintText = pick.h; skillLabel = pick.skill;
+            }
+            
+            bank.push({ text: qText, answer: correctAnswer.toLowerCase(), hint: hintText, skill: skillLabel });
+        }
+        return bank;
+    }
+
+    // ---------- Game State ----------
+    let currentLevel = 1;
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let levelScore = 0;      // points (10 per correct)
+    let correctCount = 0;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let canAnswer = true;
+    let awaitingNext = false;
+    let currentCorrectAnswer = "";
+    let currentHintText = "";
+    let currentSkill = "";
+    
+    // DOM elements
+    const introScreen = document.getElementById('introScreen');
+    const gameUI = document.getElementById('gameUI');
+    const startBtn = document.getElementById('startGameBtn');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreSpan = document.getElementById('scoreValue');
+    const timerSpan = document.getElementById('timerValue');
+    const progressFill = document.getElementById('progressFill');
+    const qCounterSpan = document.getElementById('qCounter');
+    const questionTextDiv = document.getElementById('questionText');
+    const userAnswerInput = document.getElementById('userAnswer');
+    const hintArea = document.getElementById('hintArea');
+    const submitBtn = document.getElementById('submitBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const speakBtn = document.getElementById('speakBtn');
+    const skillTag = document.getElementById('skillTag');
+    const correctStat = document.getElementById('correctStat');
+    const accStat = document.getElementById('accStat');
+    const pointsStat = document.getElementById('pointsStat');
+
+    let speechSynth = window.speechSynthesis;
+    let currentUtterance = null;
+
+    function speakText(text) {
+        if (!speechSynth) return;
+        if (currentUtterance) speechSynth.cancel();
+        currentUtterance = new SpeechSynthesisUtterance(text);
+        currentUtterance.lang = 'en-US';
+        currentUtterance.rate = 0.9;
+        speakBtn.classList.add('speaking');
+        currentUtterance.onend = currentUtterance.onerror = () => speakBtn.classList.remove('speaking');
+        speechSynth.speak(currentUtterance);
+    }
+
+    function updateStatsUI() {
+        const totalAnswered = currentIndex;
+        const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+        correctStat.innerText = correctCount;
+        accStat.innerText = `${accuracy}%`;
+        pointsStat.innerText = levelScore;
+        scoreSpan.innerText = levelScore;
+    }
+
+    function updateProgressUI() {
+        const total = currentQuestions.length;
+        const percent = (currentIndex / total) * 100;
+        progressFill.style.width = `${percent}%`;
+        qCounterSpan.innerText = `Question ${Math.min(currentIndex + 1, total)} / ${total}`;
+        updateStatsUI();
+    }
+
+    function updateTimerUI() {
+        timerSpan.innerText = timeLeft;
+        if (timeLeft <= 10) timerSpan.classList.add('warning');
+        else timerSpan.classList.remove('warning');
+        
+        if (timeLeft <= 12 && canAnswer && !awaitingNext && currentHintText) {
+            hintArea.innerHTML = `💡⏰ HINT: ${currentHintText}`;
+        } else if (timeLeft > 12 && canAnswer && !awaitingNext) {
+            hintArea.innerHTML = `💡 Hint appears when ≤12s remain. Stay healthy!`;
+        }
+    }
+
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timerInterval = setInterval(() => {
+            if (!canAnswer || awaitingNext) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (canAnswer && !awaitingNext) {
+                    canAnswer = false;
+                    awaitingNext = true;
+                    feedbackMsg.innerHTML = `⏰ TIME'S UP! Correct answer: "${currentCorrectAnswer.toUpperCase()}". Press NEXT.`;
+                    userAnswerInput.disabled = true;
+                    submitBtn.disabled = true;
+                }
+            } else {
+                timeLeft--;
+                updateTimerUI();
+            }
+        }, 1000);
+    }
+
+    function levenshtein(a, b) {
+        const m = [];
+        for(let i=0;i<=b.length;i++) m[i]=[i];
+        for(let j=0;j<=a.length;j++) m[0][j]=j;
+        for(let i=1;i<=b.length;i++) for(let j=1;j<=a.length;j++)
+            m[i][j] = b[i-1]===a[j-1] ? m[i-1][j-1] : Math.min(m[i-1][j-1]+1,m[i][j-1]+1,m[i-1][j]+1);
+        return m[b.length][a.length];
+    }
+
+    function evaluateAnswer() {
+        if (!canAnswer || awaitingNext) {
+            feedbackMsg.innerHTML = "❌ Already answered or time expired. Press NEXT to continue.";
+            return;
+        }
+        let userAns = userAnswerInput.value.trim().toLowerCase().replace(/[^\w\s]/g, '');
+        let correct = currentCorrectAnswer;
+        let isCorrect = false;
+        
+        // Flexible matching
+        if (userAns === correct) isCorrect = true;
+        else if (correct === "carefully" && (userAns === "with care")) isCorrect = false;
+        else if (correct === "regularly" && (userAns === "often" || userAns === "frequently")) isCorrect = true;
+        else if (correct === "into your elbow" && (userAns === "elbow" || userAns === "sleeve")) isCorrect = true;
+        else if (correct === "quickly" && (userAns === "fast" || userAns === "rapidly")) isCorrect = true;
+        else if (correct === "thoroughly" && (userAns === "completely" || userAns === "well")) isCorrect = true;
+        else if (correct === "doctor's" && (userAns === "doctor")) isCorrect = true;
+        else if (correct === "children's" && (userAns === "children")) isCorrect = true;
+        else if (correct === "nurse's" && (userAns === "nurse")) isCorrect = true;
+        else if (correct === "patients'" && (userAns === "patients")) isCorrect = true;
+        else if (correct === "communicable" && (userAns === "infectious" || userAns === "contagious")) isCorrect = true;
+        else if (correct === "droplets" && (userAns === "drops" || userAns === "spray")) isCorrect = true;
+        else if (correct === "cold" && (userAns === "common cold")) isCorrect = true;
+        else if (correct === "rashes" && (userAns === "spots" || userAns === "skin rash")) isCorrect = true;
+        else if (correct === "lungs" && (userAns === "chest")) isCorrect = true;
+        else if (correct === "mosquitoes" && (userAns === "mosquitos" || userAns === "mosquito")) isCorrect = true;
+        else if (correct === "i feel sick" && (userAns === "sick" || userAns === "not well")) isCorrect = true;
+        else if (correct === "fever" && (userAns === "high temperature")) isCorrect = true;
+        else if (correct === "rest" && (userAns === "sleep" || userAns === "stay home")) isCorrect = true;
+        else if (correct === "hand washing" && (userAns === "hand hygiene" || userAns === "washing hands")) isCorrect = true;
+        else if (correct === "elbow" && (userAns === "inner elbow")) isCorrect = true;
+        else if (correct === "face" && (userAns === "eyes" || userAns === "nose")) isCorrect = true;
+        else if (correct === "after" && (userAns === "afterwards")) isCorrect = true;
+        else if (correct === "measles" && (userAns === "measles virus")) isCorrect = true;
+        else if (userAns.includes(correct) && correct.length > 3) isCorrect = true;
+        
+        if (isCorrect) {
+            levelScore += 10;
+            correctCount++;
+            feedbackMsg.innerHTML = `✅ CORRECT! +10 points. "${correct.toUpperCase()}" is right! Great health knowledge!`;
+            speakText("Correct! Excellent answer!");
+            triggerConfetti();
+        } else {
+            feedbackMsg.innerHTML = `❌ OOPS! Correct answer: "${correct.toUpperCase()}". You typed "${userAns || '(empty)'}". Keep learning about health!`;
+            speakText(`The correct answer is ${correct}. Stay healthy!`);
+        }
+        canAnswer = false;
+        awaitingNext = true;
+        stopTimer();
+        userAnswerInput.disabled = true;
+        submitBtn.disabled = true;
+        updateProgressUI();
+    }
+    
+    function triggerConfetti() {
+        const colors = ['#fbbf24', '#059669', '#10b981', '#f59e0b', '#14b8a6'];
+        for (let i = 0; i < 50; i++) {
+            const conf = document.createElement('div');
+            conf.className = 'confetti';
+            conf.style.left = Math.random() * 100 + '%';
+            conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            conf.style.animationDuration = (3 + Math.random() * 3) + 's';
+            conf.style.width = (8 + Math.random() * 8) + 'px';
+            conf.style.height = conf.style.width;
+            document.body.appendChild(conf);
+            setTimeout(() => conf.remove(), 4000);
+        }
+    }
+    
+    function loadQuestion() {
+        stopTimer();
+        canAnswer = true;
+        awaitingNext = false;
+        userAnswerInput.disabled = false;
+        submitBtn.disabled = false;
+        userAnswerInput.value = "";
+        feedbackMsg.innerHTML = "🩺🧼 Type your answer! Stay healthy and wash your hands! 🧼🩺";
+        
+        if (currentIndex < currentQuestions.length) {
+            const q = currentQuestions[currentIndex];
+            questionTextDiv.innerText = q.text;
+            currentCorrectAnswer = q.answer;
+            currentHintText = q.hint;
+            skillTag.innerText = q.skill || "Health English";
+            timeLeft = 40;
+            updateTimerUI();
+            startTimer();
+            updateProgressUI();
+            setTimeout(() => { if (!awaitingNext && canAnswer) speakText(q.text); }, 300);
+        } else {
+            finishLevel();
+        }
+    }
+    
+    function nextQuestion() {
+        if (!awaitingNext && canAnswer) {
+            feedbackMsg.innerHTML = "📢 Please submit your answer first or let the timer finish.";
+            return;
+        }
+        currentIndex++;
+        if (currentIndex < currentQuestions.length) {
+            loadQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+    
+    function finishLevel() {
+        stopTimer();
+        const total = currentQuestions.length;
+        const accuracy = (correctCount / total) * 100;
+        const passed = accuracy >= 80;
+        
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal-overlay';
+        let starsHtml = '';
+        const starCount = Math.min(5, Math.floor(accuracy / 20));
+        for (let i = 0; i < 5; i++) {
+            starsHtml += `<span class="${i < starCount ? 'star-on' : 'star-off'}">★</span>`;
+        }
+        
+        if (passed) {
+            if (currentLevel === 5) {
+                modalDiv.innerHTML = `
+                    <div class="modal-card">
+                        <h2>🏆 HEALTH HERO! 🏆</h2>
+                        <div class="stars-display">${starsHtml}</div>
+                        <p>You conquered all levels with ${accuracy.toFixed(0)}%! You've mastered adverbs, apostrophes, and health habits.</p>
+                        <button id="restartFullBtn">🧼 PLAY AGAIN 🧼</button>
+                    </div>
+                `;
+                document.body.appendChild(modalDiv);
+                document.getElementById('restartFullBtn').addEventListener('click', () => {
+                    modalDiv.remove();
+                    resetFullGame();
+                });
+                triggerConfetti();
+                triggerConfetti();
+            } else {
+                modalDiv.innerHTML = `
+                    <div class="modal-card">
+                        <h2>🎉 LEVEL ${currentLevel} COMPLETE! 🎉</h2>
+                        <div class="stars-display">${starsHtml}</div>
+                        <p>Score: ${accuracy.toFixed(0)}% (≥80%). Ready for Level ${currentLevel+1}?</p>
+                        <button id="nextLevelBtn">NEXT LEVEL ➡</button>
+                    </div>
+                `;
+                document.body.appendChild(modalDiv);
+                document.getElementById('nextLevelBtn').addEventListener('click', () => {
+                    modalDiv.remove();
+                    currentLevel++;
+                    initLevel();
+                });
+                triggerConfetti();
+            }
+        } else {
+            modalDiv.innerHTML = `
+                <div class="modal-card">
+                    <h2>⚠️ NEED MORE PRACTICE</h2>
+                    <div class="stars-display">${starsHtml}</div>
+                    <p>You scored ${accuracy.toFixed(0)}% (need 80%). Restart Level ${currentLevel} to master health English.</p>
+                    <button id="retryLevelBtn">🔄 TRY AGAIN</button>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+            document.getElementById('retryLevelBtn').addEventListener('click', () => {
+                modalDiv.remove();
+                initLevel();
+            });
+        }
+    }
+    
+    function initLevel() {
+        currentQuestions = generateBankForLevel(currentLevel);
+        currentIndex = 0;
+        levelScore = 0;
+        correctCount = 0;
+        canAnswer = true;
+        awaitingNext = false;
+        timeLeft = 40;
+        levelDisplay.innerText = `LEVEL ${currentLevel}`;
+        updateProgressUI();
+        loadQuestion();
+        updateHealthTip();
+    }
+    
+    function resetFullGame() {
+        currentLevel = 1;
+        initLevel();
+    }
+    
+    // Event listeners
+    startBtn.addEventListener('click', () => {
+        introScreen.style.display = 'none';
+        gameUI.style.display = 'block';
+        initLevel();
+    });
+    
+    submitBtn.addEventListener('click', evaluateAnswer);
+    nextBtn.addEventListener('click', nextQuestion);
+    speakBtn.addEventListener('click', () => {
+        if (questionTextDiv.innerText) speakText(questionTextDiv.innerText);
+    });
+    userAnswerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') evaluateAnswer();
+    });
+    
+    // Set initial health tip
+    updateHealthTip();
+</script>
+</body>
+</html>

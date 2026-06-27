@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Geometry Quest: Grade 3 CBC Maths</title>
+    <style>
+        :root {
+            --primary: #6c5ce7; --secondary: #a29bfe; --accent: #00cec9;
+            --success: #00b894; --warning: #fdcb6e; --danger: #ff7675;
+            --light: #f8f9fa; --dark: #2d3436; --radius: 18px;
+            --transition: all 0.25s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body {
+            background: linear-gradient(135deg, #2c3e50, #4a6fa5, #6c5ce7);
+            color: var(--light); min-height: 100vh; padding: 10px; overflow-x: hidden;
+        }
+        .container { max-width: 850px; margin: 0 auto; padding: 10px; }
+        
+        header { text-align: center; padding: 15px; background: rgba(255,255,255,0.15); border-radius: var(--radius); margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); backdrop-filter: blur(10px); }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        header p { font-size: 1.1rem; opacity: 0.95; }
+        
+        .screen { background: rgba(30, 39, 65, 0.95); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 2px solid rgba(0, 206, 201, 0.4); position: relative; overflow: hidden; }
+        .screen::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--warning), var(--primary)); animation: shimmer 3s infinite linear; }
+        @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+        
+        .stats-bar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .stat { background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 12px; font-size: 0.95rem; text-align: center; min-width: 70px; }
+        .stat span { display: block; font-size: 1.3rem; font-weight: 700; color: var(--warning); }
+        
+        .progress-container { background: rgba(0,0,0,0.3); height: 18px; border-radius: 10px; overflow: hidden; margin: 10px 0; position: relative; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--success), var(--accent)); transition: width 0.4s ease; }
+        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.75rem; font-weight: 700; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        
+        .timer-wrap { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; }
+        .timer { font-size: 2.8rem; font-weight: 800; background: linear-gradient(45deg, var(--danger), var(--warning)); -webkit-background-clip: text; background-clip: text; color: transparent; min-width: 70px; text-align: center; }
+        .timer.pulse { animation: pulse 0.6s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+        
+        .voice-btn { background: rgba(255,255,255,0.2); border: 2px solid var(--accent); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.4rem; color: white; transition: var(--transition); }
+        .voice-btn:hover { background: var(--accent); transform: scale(1.1); }
+        .voice-btn.speaking { animation: pulse 0.6s infinite; background: var(--warning); border-color: var(--warning); }
+        
+        .question-box { background: rgba(40, 55, 85, 0.9); border-radius: 16px; padding: 18px; margin: 15px 0; min-height: 90px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.25rem; line-height: 1.4; position: relative; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .hint-box { background: rgba(0, 206, 201, 0.15); border-left: 4px solid var(--accent); padding: 12px; margin: 10px 0; border-radius: 0 12px 12px 0; font-style: italic; display: none; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        
+        .input-area { position: relative; margin: 15px 0; }
+        .answer-input { width: 100%; padding: 15px 20px; border: 3px solid var(--secondary); border-radius: 14px; background: rgba(20, 30, 50, 0.9); color: white; font-size: 1.3rem; text-align: center; transition: var(--transition); }
+        .answer-input:focus { outline: none; border-color: var(--warning); box-shadow: 0 0 0 4px rgba(253, 203, 110, 0.3); }
+        .answer-input::placeholder { color: rgba(255,255,255,0.5); font-style: italic; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 8px 0; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background: linear-gradient(45deg, var(--success), #00a884); color: white; }
+        .btn-secondary { background: linear-gradient(45deg, var(--accent), #00b4d8); color: white; }
+        .btn-warning { background: linear-gradient(45deg, var(--warning), #e67e22); color: var(--dark); }
+        .btn-muted { background: rgba(255,255,255,0.15); color: white; }
+        
+        .feedback { text-align: center; padding: 12px; margin: 10px 0; border-radius: 12px; font-weight: 600; display: none; }
+        .feedback.correct { background: rgba(0, 184, 148, 0.25); color: #a8e6cf; border: 1px solid var(--success); animation: bounce 0.4s; }
+        .feedback.incorrect { background: rgba(255, 118, 117, 0.25); color: #fab1a0; border: 1px solid var(--danger); animation: shake 0.4s; }
+        .feedback.timeout { background: rgba(253, 203, 110, 0.25); color: #ffeaa7; border: 1px solid var(--warning); }
+        
+        @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-12px)} }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+        
+        .center-text { text-align: center; padding: 20px 0; }
+        .title { font-size: 2rem; margin-bottom: 10px; color: var(--warning); text-shadow: 0 0 10px rgba(253, 203, 110, 0.5); }
+        .desc { font-size: 1.15rem; opacity: 0.9; margin-bottom: 20px; }
+        .big-score { font-size: 4.5rem; font-weight: 800; margin: 20px 0; background: linear-gradient(to right, var(--warning), var(--danger)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .instructions { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 14px; margin: 15px 0; text-align: left; line-height: 1.6; }
+        .instructions ul { padding-left: 20px; }
+        .instructions li { margin: 6px 0; }
+        
+        .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 15px 0; }
+        .tag { background: rgba(0, 206, 201, 0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--accent); }
+        
+        .hidden { display: none !important; }
+        .level-up { animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes popIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+        
+        .confetti { position: fixed; width: 10px; height: 10px; background: var(--warning); border-radius: 50%; z-index: 999; opacity: 0; animation: fall 4s linear forwards; }
+        @keyframes fall { 0%{transform:translateY(-10vh) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+        
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.5rem; }
+            .question-box { font-size: 1.1rem; padding: 14px; min-height: 80px; }
+            .timer { font-size: 2.2rem; }
+            .btn { padding: 12px; font-size: 1.1rem; }
+            .answer-input { font-size: 1.2rem; padding: 12px; }
+            .stats-bar { justify-content: space-around; }
+            .title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📐 Geometry Quest 📐</h1>
+            <p>Grade 3 CBC Maths Challenge</p>
+        </header>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen center-text">
+            <h2 class="title">🌟 Welcome, Maths Explorer! 🌟</h2>
+            <p class="desc">Test your knowledge of shapes, positions, and directions!</p>
+            <div class="instructions">
+                <p><strong>How to Play:</strong></p>
+                <ul>
+                    <li>🔊 Tap the speaker to hear questions out loud</li>
+                    <li>⏱️ 40 seconds per question</li>
+                    <li>✍️ Type your answer (no multiple choice!)</li>
+                    <li>💡 Hints appear when time runs low</li>
+                    <li>🎯 Score 80%+ to unlock the next level</li>
+                    <li>🏆 5 exciting levels • 150 unique questions</li>
+                </ul>
+            </div>
+            <div class="topic-tags">
+                <span class="tag">Position</span><span class="tag">Direction</span>
+                <span class="tag">2D Shapes</span><span class="tag">3D Shapes</span>
+                <span class="tag">Symmetry</span><span class="tag">Patterns</span>
+            </div>
+            <button id="start-btn" class="btn btn-primary">🚀 Start Adventure</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="stats-bar">
+                <div class="stat">Level <span id="lvl">1</span>/5</div>
+                <div class="stat">Q <span id="qnum">1</span>/30</div>
+                <div class="stat">Score <span id="score">0</span></div>
+            </div>
+            <div class="progress-container" style="position:relative;">
+                <div class="progress-fill" id="progress"></div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            <div class="timer-wrap">
+                <div class="timer" id="timer">40</div>
+                <button id="speak-btn" class="voice-btn">🔊</button>
+            </div>
+            <div class="question-box" id="question">Loading...</div>
+            <div class="hint-box" id="hint"></div>
+            <div class="input-area">
+                <input type="text" id="answer" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button id="submit-btn" class="btn btn-primary">✅ Check Answer</button>
+            <button id="next-btn" class="btn btn-secondary hidden">➡️ Next Question</button>
+        </div>
+
+        <!-- Level Complete Screen -->
+        <div id="level-screen" class="screen hidden center-text">
+            <h2 class="title">🎉 Level Complete! 🎉</h2>
+            <p class="desc" id="lvl-msg">Great work!</p>
+            <div class="big-score" id="lvl-score">0</div>
+            <div class="stats-bar">
+                <div class="stat">Correct <span id="lvl-correct">0</span>/30</div>
+                <div class="stat">Accuracy <span id="lvl-percent">0</span>%</div>
+                <div class="stat">Status <span id="lvl-status">Pass</span></div>
+            </div>
+            <button id="next-lvl-btn" class="btn btn-primary hidden">🌟 Next Level</button>
+            <button id="retry-btn" class="btn btn-warning hidden">🔄 Try Again</button>
+            <button id="home-btn" class="btn btn-muted">🏠 Main Menu</button>
+        </div>
+
+        <!-- Final Screen -->
+        <div id="final-screen" class="screen hidden center-text">
+            <h2 class="title">🏆 CHAMPION! 🏆</h2>
+            <p class="desc">You conquered all 5 geometry levels!</p>
+            <div class="big-score" id="final-score">0</div>
+            <div class="stats-bar">
+                <div class="stat">Total <span id="final-correct">0</span>/150</div>
+                <div class="stat">Overall <span id="final-percent">0</span>%</div>
+                <div class="stat">Rank 🌟🌟🌟</div>
+            </div>
+            <button id="restart-btn" class="btn btn-primary">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const state = {
+            lvl: 1, qIdx: 0, score: 0, correct: 0, timeLeft: 40,
+            timer: null, voiceEnabled: 'speechSynthesis' in window,
+            questions: [], current: null, active: false
+        };
+
+        // DOM Elements
+        const $ = id => document.getElementById(id);
+        const els = {
+            start: $('start-screen'), game: $('game-screen'), level: $('level-screen'), final: $('final-screen'),
+            lvl: $('lvl'), qnum: $('qnum'), score: $('score'), timer: $('timer'), progress: $('progress'),
+            progressText: $('progress-text'), question: $('question'), hint: $('hint'),
+            answer: $('answer'), feedback: $('feedback'), submit: $('submit-btn'), next: $('next-btn'),
+            speak: $('speak-btn'), startBtn: $('start-btn'), nextLvl: $('next-lvl-btn'), retry: $('retry-btn'),
+            homeBtn: $('home-btn'), restartBtn: $('restart-btn'),
+            lvlScore: $('lvl-score'), lvlCorrect: $('lvl-correct'), lvlPercent: $('lvl-percent'), lvlStatus: $('lvl-status'),
+            finalScore: $('final-score'), finalCorrect: $('final-correct'), finalPercent: $('final-percent')
+        };
+
+        // 150 Unique Questions (5 Levels x 30)
+        const qb = {
+            1: [
+                {q:"What shape has 3 straight sides?",a:["triangle"],h:"Think of a slice of pizza"},
+                {q:"If a book is on top of a table, where is it?",a:["above","on top","over"],h:"Not under or beside"},
+                {q:"How many sides does a square have?",a:["4","four"],h:"Count all the edges"},
+                {q:"What do you call the space inside a room?",a:["inside","interior"],h:"Opposite of outside"},
+                {q:"Which direction does the sun rise?",a:["east"],h:"Morning light comes from here"},
+                {q:"If you stand with arms out, your right hand points to which side?",a:["right"],h:"The side you write with"},
+                {q:"What shape is a coin face?",a:["circle","round"],h:"No corners at all"},
+                {q:"Where is a cat hiding if it's under the bed?",a:["below","under","beneath"],h:"Lower than the bed"},
+                {q:"How many corners does a rectangle have?",a:["4","four"],h:"Same as a square"},
+                {q:"What direction is directly behind north?",a:["south"],h:"Opposite on a compass"},
+                {q:"If a ball rolls straight ahead, which way is it going?",a:["forward","straight"],h:"Away from you"},
+                {q:"What shape is a standard door?",a:["rectangle"],h:"Longer than it is wide"},
+                {q:"How many sides does a circle have?",a:["zero","0","none","no sides"],h:"It's perfectly round"},
+                {q:"Where do you sit when you're between two friends?",a:["between","middle","center"],h:"Not at the end"},
+                {q:"What shape has 4 equal sides?",a:["square"],h:"All edges match"},
+                {q:"If you face north, which direction is your left?",a:["west"],h:"Sunset side"},
+                {q:"Where is the sky relative to the ground?",a:["above","over","high"],h:"Look up"},
+                {q:"How many corners does a triangle have?",a:["3","three"],h:"One at each point"},
+                {q:"What do we call turning around completely?",a:["about face","half turn","180 degrees"],h:"Facing the opposite way"},
+                {q:"If keys are in your pocket, are they inside or outside?",a:["inside"],h:"Held within"},
+                {q:"What shape is a slice of watermelon usually?",a:["triangle"],h:"Pointed with a curved edge"},
+                {q:"How many sides does a hexagon have?",a:["6","six"],h:"More than a square, less than 8"},
+                {q:"What direction is opposite to left?",a:["right"],h:"The other hand side"},
+                {q:"Where is a tree if it's behind the house?",a:["back","behind"],h:"Not visible from front"},
+                {q:"What shape is a stop sign in Kenya?",a:["octagon"],h:"8 sides"},
+                {q:"If you walk backwards, which direction are you going?",a:["backward","backwards","backward"],h:"Opposite of forward"},
+                {q:"How many corners does a square have?",a:["4","four"],h:"Same as sides"},
+                {q:"What position is a ceiling fan?",a:["above","overhead","on ceiling"],h:"Look up"},
+                {q:"What shape has 5 sides?",a:["pentagon"],h:"Think of a house drawing"},
+                {q:"If a ball is near you, is it close or far?",a:["close","near"],h:"Not at a distance"}
+            ],
+            2: [
+                {q:"What do we call the point where two sides of a shape meet?",a:["corner","vertex","vertices"],h:"Sharp point"},
+                {q:"If you turn 90 degrees right from north, what direction do you face?",a:["east"],h:"Quarter turn right"},
+                {q:"How many faces does a cube have?",a:["6","six"],h:"Top, bottom, front, back, left, right"},
+                {q:"What direction does the compass arrow point to by default?",a:["north"],h:"N on the compass"},
+                {q:"What is the flat side of a 3D shape called?",a:["face"],h:"Like a wall"},
+                {q:"If you spin clockwise, which way do you turn?",a:["right"],h:"Like clock hands"},
+                {q:"How many edges does a triangle have?",a:["3","three"],h:"Lines forming the shape"},
+                {q:"What direction is left when facing south?",a:["east"],h:"Sunrise side"},
+                {q:"How many vertices does a rectangle have?",a:["4","four"],h:"Corners"},
+                {q:"What turn is half of a full circle?",a:["half turn","180","180 degrees"],h:"Facing opposite"},
+                {q:"How many straight lines make a square?",a:["4","four"],h:"Edges"},
+                {q:"If you face west and turn left, which direction do you face?",a:["south"],h:"Clockwise from north"},
+                {q:"What is a line that cuts a shape into two identical halves?",a:["line of symmetry","axis"],h:"Mirror fold line"},
+                {q:"How many sides does a pentagon have?",a:["5","five"],h:"Five-sided polygon"},
+                {q:"What direction is between north and east?",a:["northeast"],h:"Halfway between N and E"},
+                {q:"How many flat faces does a rectangular prism have?",a:["6","six"],h:"Box shape"},
+                {q:"What do you call moving in a circle?",a:["rotating","spinning","circling"],h:"Going round and round"},
+                {q:"How many corners does an octagon have?",a:["8","eight"],h:"Same as sides"},
+                {q:"If you walk forward then backward to your start, how far did you go?",a:["zero","0","same place"],h:"Back where you began"},
+                {q:"What shape has all sides equal and 4 right angles?",a:["square"],h:"Perfect box shape face"},
+                {q:"What direction is opposite to west?",a:["east"],h:"Sunrise"},
+                {q:"How many curved surfaces does a sphere have?",a:["1","one","curved only"],h:"No flat sides"},
+                {q:"What turn is a quarter circle?",a:["90 degrees","quarter turn","right angle"],h:"One-fourth"},
+                {q:"How many edges meet at a corner of a cube?",a:["3","three"],h:"From top, front, side"},
+                {q:"What direction do you face if you turn 180 from north?",a:["south"],h:"Half turn"},
+                {q:"What shape has 4 sides with opposite sides equal?",a:["rectangle","parallelogram"],h:"Like a door"},
+                {q:"How many lines of symmetry does a square have?",a:["4","four"],h:"Vertical, horizontal, two diagonals"},
+                {q:"What is the opposite of anticlockwise?",a:["clockwise"],h:"Clock direction"},
+                {q:"How many flat faces does a cylinder have?",a:["2","two"],h:"Top and bottom circles"},
+                {q:"If you move right then left equally, where are you?",a:["same place","start","original"],h:"Cancelled movement"}
+            ],
+            3: [
+                {q:"What 3D shape is a ball?",a:["sphere","round"],h:"Perfectly round object"},
+                {q:"Where is the pencil if it's on the left of the book?",a:["left side","beside book"],h:"Opposite of right"},
+                {q:"What 3D shape has a circular base and comes to a point?",a:["cone"],h:"Like an ice cream holder"},
+                {q:"If a chair is in front of a desk, where is the desk?",a:["behind","back"],h:"Opposite position"},
+                {q:"How many faces does a triangular pyramid have?",a:["4","four"],h:"Base plus three sides"},
+                {q:"What direction is directly to your right when facing north?",a:["east"],h:"90 degrees turn"},
+                {q:"What 3D shape looks like a box?",a:["cuboid","cube","rectangular prism"],h:"6 rectangular faces"},
+                {q:"If a bird flies over a tree, where is it relative to the tree?",a:["above","over","higher"],h:"Not touching leaves"},
+                {q:"How many vertices does a cube have?",a:["8","eight"],h:"Corners of a dice"},
+                {q:"What direction is southwest opposite to?",a:["northeast"],h:"Diagonal opposite"},
+                {q:"What 3D shape rolls smoothly in any direction?",a:["sphere","ball"],h:"No edges or points"},
+                {q:"If you stand near a wall, are you close or far?",a:["close","near"],h:"Not distant"},
+                {q:"How many edges does a cuboid have?",a:["12","twelve"],h:"Lines where faces meet"},
+                {q:"What position is a mat if it's under your feet?",a:["below","under","beneath"],h:"Ground level"},
+                {q:"What 3D shape has two identical circular faces?",a:["cylinder"],h:"Like a tin can"},
+                {q:"If you walk east then west the same distance, where do you end up?",a:["start","original spot","same place"],h:"Movements cancel"},
+                {q:"How many faces does a cone have?",a:["2","one flat one curved","two"],h:"Base + side surface"},
+                {q:"What direction is between south and west?",a:["southwest"],h:"Lower left on compass"},
+                {q:"What 3D shape is a dice?",a:["cube"],h:"Equal sides"},
+                {q:"If a bag is beside your foot, where is it?",a:["next to","by","alongside"],h:"Not on or under"},
+                {q:"How many straight edges does a sphere have?",a:["zero","0","none"],h:"Smooth all over"},
+                {q:"What turn is three-quarters of a circle?",a:["270 degrees","three quarter turn"],h:"Almost full"},
+                {q:"What direction is behind you if you face east?",a:["west"],h:"Sunset side"},
+                {q:"How many corners does a triangular prism have?",a:["6","six"],h:"Two triangles = 6 points"},
+                {q:"If you move forward then backward, what is your net movement?",a:["zero","none","stayed put"],h:"Cancelled out"},
+                {q:"What 3D shape is a traffic cone?",a:["cone"],h:"Pointy top"},
+                {q:"How many flat faces does a sphere have?",a:["zero","0","none"],h:"Only curved surface"},
+                {q:"What direction do you face after turning right from south?",a:["west"],h:"Quarter turn"},
+                {q:"Where is a key if it's inside your pocket?",a:["inside","within"],h:"Contained"},
+                {q:"How many vertices does a triangular pyramid have?",a:["4","four"],h:"4 corners"}
+            ],
+            4: [
+                {q:"What comes next: circle, square, triangle, circle, square, ...?",a:["triangle"],h:"Repeating 3 shapes"},
+                {q:"How many lines of symmetry does a rectangle have?",a:["2","two"],h:"Vertical and horizontal"},
+                {q:"If you face north and turn 270 right, what direction?",a:["west"],h:"Three quarter turns"},
+                {q:"What pattern: red, blue, red, blue, red, ...?",a:["blue"],h:"Alternating colors"},
+                {q:"What shape completes: square, circle, square, circle, ...?",a:["square"],h:"ABAB pattern"},
+                {q:"How many lines of symmetry does a circle have?",a:["infinite","many","unlimited"],h:"Any diameter works"},
+                {q:"What direction is 45 degrees from north?",a:["northeast"],h:"Halfway to east"},
+                {q:"What comes next in 2, 4, 6, 8, ...?",a:["10"],h:"Adding 2"},
+                {q:"If a shape looks the same when folded, it has...",a:["symmetry","line of symmetry"],h:"Mirror halves"},
+                {q:"What turn faces you opposite after facing south?",a:["half turn","180","180 degrees"],h:"Two right turns"},
+                {q:"What pattern: up, down, up, down, up, ...?",a:["down"],h:"Alternating positions"},
+                {q:"How many lines of symmetry does an equilateral triangle have?",a:["3","three"],h:"Through each vertex"},
+                {q:"What direction is 315 degrees clockwise from north?",a:["northwest"],h:"Between N and W"},
+                {q:"Complete: 5, 10, 15, 20, ...?",a:["25"],h:"Counting by fives"},
+                {q:"What shape has no lines of symmetry?",a:["scalene triangle","parallelogram"],h:"Uneven sides"},
+                {q:"If you turn 360 degrees, which direction do you face?",a:["same","original","starting"],h:"Full circle"},
+                {q:"What comes next: star, heart, moon, star, heart, ...?",a:["moon"],h:"ABC pattern"},
+                {q:"How many lines of symmetry does a square have?",a:["4","four"],h:"4 mirror folds"},
+                {q:"What direction is 135 degrees from north?",a:["southeast"],h:"Between south and east"},
+                {q:"Complete pattern: A, B, B, A, B, B, A, ...?",a:["B"],h:"ABB repeating"},
+                {q:"If you face east and turn left twice, where do you face?",a:["west"],h:"Two quarter turns left"},
+                {q:"What number completes: 3, 6, 9, 12, ...?",a:["15"],h:"Multiples of 3"},
+                {q:"What symmetry does a letter 'A' have?",a:["vertical","line of symmetry"],h:"Left matches right"},
+                {q:"What turn is 90 degrees left?",a:["quarter left","270 right","left"],h:"One-fourth circle"},
+                {q:"Complete: big, small, big, small, ...?",a:["big"],h:"Size pattern"},
+                {q:"How many directions are on a standard compass?",a:["4","8"],h:"Cardinal + intercardinal"},
+                {q:"What shape has rotational symmetry of order 4?",a:["square"],h:"Matches 4 times when spun"},
+                {q:"Complete: 10, 20, 30, ...?",a:["40"],h:"Count by tens"},
+                {q:"If you face south and turn 90 anticlockwise, direction?",a:["east"],h:"Left from south"},
+                {q:"What symmetry does a butterfly usually have?",a:["vertical","bilateral","mirror"],h:"Left matches right"}
+            ],
+            5: [
+                {q:"A shape with 4 equal sides and 4 right angles folded in half. How many lines of symmetry?",a:["4","four"],h:"Square properties"},
+                {q:"If you walk 5m east, then 5m west, how far from start?",a:["zero","0","same spot"],h:"Opposite directions cancel"},
+                {q:"What 3D shape has 6 square faces?",a:["cube"],h:"Like a dice"},
+                {q:"Facing north, turn right 180, then left 90. Which direction?",a:["west"],h:"East then South then West"},
+                {q:"Pattern: triangle, circle, triangle, circle. What is the 7th shape?",a:["triangle"],h:"Odd positions"},
+                {q:"How many edges does a cylinder have?",a:["0","2 circular","none straight"],h:"Curved edges only"},
+                {q:"If a book is on a shelf, and shelf is on wall, book is ... the wall.",a:["in front of","before"],h:"Not touching directly"},
+                {q:"What shape has 3 faces, 2 curved, 1 flat?",a:["cone"],h:"Pointy top, circular base"},
+                {q:"Start at center, go 2 steps up, 2 right, 2 down, 2 left. Where?",a:["start","center","original"],h:"Square path"},
+                {q:"How many lines of symmetry in a regular pentagon?",a:["5","five"],h:"One through each point"},
+                {q:"What comes next: +, -, ×, ÷, +, -, ...?",a:["×","multiply"],h:"Operation cycle"},
+                {q:"If you face south and walk backward, which direction?",a:["north"],h:"Backwards reverses"},
+                {q:"What 3D object rolls but doesn't slide easily?",a:["sphere","ball"],h:"Perfectly round"},
+                {q:"Pattern: 1, 4, 9, 16, ... next?",a:["25"],h:"Square numbers"},
+                {q:"How many vertices does a square pyramid have?",a:["5","five"],h:"4 base + 1 top"},
+                {q:"Turn 90 clockwise from west, then 90 anticlockwise. Facing?",a:["west"],h:"Cancelled turns"},
+                {q:"What shape has opposite sides parallel and equal?",a:["rectangle","parallelogram"],h:"4 sides"},
+                {q:"If a tree is left of a house, house is ... the tree.",a:["right of","beside"],h:"Reverse position"},
+                {q:"How many faces on a triangular prism?",a:["5","five"],h:"2 triangles + 3 rectangles"},
+                {q:"Complete: sun, cloud, rain, sun, cloud, ...?",a:["rain"],h:"Weather cycle"},
+                {q:"What direction is 225 degrees clockwise from north?",a:["southwest"],h:"Between south and west"},
+                {q:"Shape with 4 sides, only 1 pair parallel?",a:["trapezium","trapezoid"],h:"Uneven quadrilateral"},
+                {q:"If you move north 3, south 1, east 2, west 2. Final position?",a:["2 north","north"],h:"East/West cancel"},
+                {q:"How many lines of symmetry in a scalene triangle?",a:["zero","0","none"],h:"All sides different"},
+                {q:"Pattern: red, red, blue, red, red, blue, next?",a:["red"],h:"RRB cycle"},
+                {q:"What 3D shape has 1 square base and 4 triangles?",a:["square pyramid","pyramid"],h:"Egyptian style"},
+                {q:"Turn 180 from east, then 90 left. Facing?",a:["south"],h:"West, then left is south"},
+                {q:"How many edges in a cube?",a:["12","twelve"],h:"Box lines"},
+                {q:"If you stand facing the board, your left hand points to which wall?",a:["left wall","left side"],h:"Relative direction"},
+                {q:"What shape has infinite lines of symmetry?",a:["circle"],h:"Round shape"}
+            ]
+        };
+
+        // Initialize Game
+        function init() {
+            els.startBtn.addEventListener('click', startGame);
+            els.speak.addEventListener('click', speak);
+            els.submit.addEventListener('click', checkAnswer);
+            els.next.addEventListener('click', nextQ);
+            els.nextLvl.addEventListener('click', startNextLevel);
+            els.retry.addEventListener('click', retryLevel);
+            els.homeBtn.addEventListener('click', showHome);
+            els.restartBtn.addEventListener('click', showHome);
+            els.answer.addEventListener('keypress', e => e.key === 'Enter' && checkAnswer());
+            
+            if(!state.voiceEnabled) els.speak.style.display = 'none';
+            console.log("Geometry Quest Initialized!");
+        }
+
+        function startGame() {
+            console.log("Starting Game...");
+            state.lvl = 1; 
+            state.qIdx = 0; 
+            state.score = 0; 
+            state.correct = 0; 
+            state.active = true;
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            els.game.classList.add('level-up');
+            loadLevel();
+        }
+
+        function loadLevel() {
+            // Create a shuffled copy of questions to prevent repetition within a level
+            state.questions = shuffle([...qb[state.lvl]]);
+            state.qIdx = 0; 
+            state.score = 0; 
+            state.correct = 0;
+            updateUI(); 
+            loadQ();
+        }
+
+        function loadQ() {
+            if(state.qIdx >= 30) { 
+                completeLevel(); 
+                return; 
+            }
+            state.current = state.questions[state.qIdx];
+            els.question.textContent = state.current.q;
+            els.answer.value = ''; 
+            els.answer.disabled = false; 
+            els.answer.focus();
+            els.hint.style.display = 'none'; 
+            els.hint.textContent = '';
+            els.feedback.style.display = 'none'; 
+            els.feedback.className = 'feedback';
+            els.submit.style.display = 'block'; 
+            els.next.classList.add('hidden');
+            resetTimer();
+            if(state.voiceEnabled) setTimeout(speak, 300);
+            updateUI();
+        }
+
+        function updateUI() {
+            els.lvl.textContent = state.lvl;
+            els.qnum.textContent = state.qIdx + 1;
+            els.score.textContent = state.score;
+            const pct = ((state.qIdx) / 30) * 100;
+            els.progress.style.width = pct + '%';
+            els.progressText.textContent = Math.round(pct) + '%';
+        }
+
+        function startTimer() {
+            state.timeLeft = 40;
+            els.timer.textContent = 40;
+            els.timer.classList.remove('pulse');
+            state.timer = setInterval(() => {
+                state.timeLeft--;
+                els.timer.textContent = state.timeLeft;
+                if(state.timeLeft <= 10) els.timer.classList.add('pulse');
+                
+                if(state.timeLeft === 30 && state.current.h) showHint("💡 Think about the main property...");
+                if(state.timeLeft === 20 && state.current.h) showHint(`💡 Hint: ${state.current.h}`);
+                if(state.timeLeft === 10 && state.current.h) showHint(`💡 Quick! ${state.current.h}`);
+                
+                if(state.timeLeft <= 0) timeUp();
+            }, 1000);
+        }
+
+        function resetTimer() { 
+            clearInterval(state.timer); 
+            startTimer(); 
+        }
+
+        function showHint(txt) { 
+            els.hint.textContent = txt; 
+            els.hint.style.display = 'block'; 
+        }
+
+        function timeUp() {
+            clearInterval(state.timer);
+            els.answer.disabled = true;
+            els.submit.style.display = 'none'; 
+            els.next.classList.remove('hidden');
+            showFeedback("⏰ Time is up! The answer was: " + state.current.a[0].toUpperCase(), "timeout");
+            if(state.voiceEnabled) {
+                const u = new SpeechSynthesisUtterance("Time is up!");
+                u.lang = 'en-US'; speechSynthesis.speak(u);
+            }
+        }
+
+        function speak() {
+            if(!state.current) return;
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(state.current.q);
+            u.lang = 'en-US'; u.rate = 0.9;
+            els.speak.classList.add('speaking');
+            u.onend = () => els.speak.classList.remove('speaking');
+            speechSynthesis.speak(u);
+        }
+
+        function checkAnswer() {
+            if(!state.active || state.timeLeft <= 0) return;
+            clearInterval(state.timer);
+            const ans = els.answer.value.trim().toLowerCase();
+            const valid = state.current.a.some(a => 
+                ans === a || ans.includes(a) || a.includes(ans) ||
+                (a === "zero" && (ans === "0" || ans === "none")) ||
+                (a === "0" && (ans === "zero" || ans === "none"))
+            );
+            els.answer.disabled = true; 
+            els.submit.style.display = 'none'; 
+            els.next.classList.remove('hidden');
+            
+            if(valid) {
+                state.score += 10; 
+                state.correct++;
+                showFeedback("✅ Correct! Well done!", "correct");
+                playSound(true);
+            } else {
+                showFeedback(`❌ Not quite. Answer: ${state.current.a[0].toUpperCase()}`, "incorrect");
+                playSound(false);
+            }
+            updateUI();
+        }
+
+        function showFeedback(msg, type) {
+            els.feedback.textContent = msg; 
+            els.feedback.className = `feedback ${type}`; 
+            els.feedback.style.display = 'block';
+        }
+
+        function playSound(isCorrect) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator(); 
+                const gain = ctx.createGain();
+                osc.connect(gain); 
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = isCorrect ? 523.25 : 300;
+                gain.gain.value = 0.1;
+                osc.start(); 
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        function nextQ() { 
+            state.qIdx++; 
+            loadQ(); 
+        }
+
+        function completeLevel() {
+            state.active = false; 
+            clearInterval(state.timer);
+            const pct = Math.round((state.correct / 30) * 100);
+            els.lvlScore.textContent = state.score;
+            els.lvlCorrect.textContent = state.correct;
+            els.lvlPercent.textContent = pct;
+            
+            if(pct >= 80) {
+                els.lvlStatus.textContent = "Pass 🎉"; 
+                els.lvlStatus.style.color = "#00b894";
+                if(state.lvl < 5) els.nextLvl.classList.remove('hidden');
+                else showFinal();
+            } else {
+                els.lvlStatus.textContent = "Retry 📚"; 
+                els.lvlStatus.style.color = "#fdcb6e";
+                els.retry.classList.remove('hidden');
+            }
+            hideAll(); 
+            els.level.classList.remove('hidden');
+        }
+
+        function startNextLevel() { 
+            state.lvl++; 
+            state.active = true; 
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            loadLevel(); 
+        }
+
+        function retryLevel() { 
+            state.active = true; 
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            loadLevel(); 
+        }
+
+        function showHome() { 
+            hideAll(); 
+            els.start.classList.remove('hidden'); 
+        }
+
+        function showFinal() {
+            const totalC = state.correct + (state.lvl-1)*24; // Approx cumulative
+            const totalS = state.score + (state.lvl-1)*300;
+            const pct = Math.round((totalC/150)*100);
+            els.finalScore.textContent = totalS;
+            els.finalCorrect.textContent = `${totalC}/150`;
+            els.finalPercent.textContent = `${pct}%`;
+            hideAll(); 
+            els.final.classList.remove('hidden');
+            if(pct >= 80) createConfetti();
+        }
+
+        // FIXED: Correctly toggles the hidden class on actual DOM elements
+        function hideAll() {
+            els.start.classList.add('hidden');
+            els.game.classList.add('hidden');
+            els.level.classList.add('hidden');
+            els.final.classList.add('hidden');
+        }
+
+        function shuffle(arr) { 
+            for(let i=arr.length-1;i>0;i--){
+                const j=Math.floor(Math.random()*(i+1));
+                [arr[i],arr[j]]=[arr[j],arr[i]];
+            } 
+            return arr; 
+        }
+
+        function createConfetti() {
+            for(let i=0;i<50;i++){
+                const c=document.createElement('div'); c.className='confetti';
+                c.style.left=Math.random()*100+'%'; c.style.background=['#fdcb6e','#00cec9','#ff7675','#a29bfe'][i%4];
+                c.style.animationDelay=Math.random()*2+'s'; document.body.appendChild(c);
+                setTimeout(()=>c.remove(),4000);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

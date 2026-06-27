@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hygiene Hero: Farm & Home Safety | CBC Grade 4 Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c7da0 0%, #1f5068 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 950px;
+            width: 100%;
+            background: #f0f7ff;
+            border-radius: 70px 70px 60px 60px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), inset 0 1px 5px rgba(255,255,245,0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #48b5d0;
+            padding: 16px 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 5px solid #1e6f8c;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .accuracy-badge {
+            background: #2c553f;
+            color: #e6f7ff;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1rem;
+            box-shadow: inset 0 -2px 0 #1a3a2b, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .timer-area {
+            background: #1e2d34;
+            color: #b9f3ff;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .question-box {
+            background: #ffffffea;
+            margin: 25px 30px 15px 30px;
+            padding: 25px 20px;
+            border-radius: 55px;
+            box-shadow: inset 0 0 0 3px white, 0 12px 20px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: #1f6e7a;
+            margin: 0 0 15px 0;
+            line-height: 1.3;
+        }
+
+        .progress-info {
+            font-size: 1rem;
+            background: #d9eef5;
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 60px;
+            color: #145c6e;
+            font-weight: bold;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 10px 30px 25px 30px;
+        }
+
+        .option-card {
+            background: #f0feff;
+            border-radius: 50px;
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #175d6b;
+            cursor: pointer;
+            transition: all 0.12s linear;
+            border: 2px solid #7fc1d0;
+            box-shadow: 0 5px 0 #5196a8;
+        }
+
+        .option-card:hover {
+            background: #c8f0f7;
+            transform: scale(0.97);
+            border-color: #3d9bb0;
+        }
+
+        .option-card:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 0 #5196a8;
+        }
+
+        .feedback-area {
+            background: #e1f3f8;
+            margin: 5px 30px 20px 30px;
+            padding: 12px 20px;
+            border-radius: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .feedback-message {
+            font-size: 1rem;
+            font-weight: bold;
+            padding-left: 10px;
+            color: #1a756b;
+        }
+
+        .next-btn {
+            background: #45b7d1;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 8px 32px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 4px 0 #257a91;
+        }
+
+        .next-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #257a91;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(6px);
+        }
+
+        .modal-card {
+            background: #fefef5;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 70px;
+            padding: 25px 20px 35px;
+            text-align: center;
+            box-shadow: 0 20px 35px black;
+            border: 5px solid #6bc2db;
+        }
+
+        .modal-card h2 {
+            font-size: 2rem;
+            margin: 0;
+            color: #287c8f;
+        }
+
+        .modal-card button {
+            background: #35a1bd;
+            border: none;
+            font-size: 1.2rem;
+            padding: 10px 28px;
+            margin-top: 18px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 8px;
+        }
+
+        .shake {
+            animation: shakeAnim 0.25s ease-in-out 0s 2;
+        }
+
+        @keyframes shakeAnim {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.2rem; }
+            .option-card { font-size: 0.85rem; padding: 10px; }
+            .timer-area { font-size: 1.3rem; }
+        }
+
+        .icon-em {
+            display: inline-block;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🧼 LEVEL 1</div>
+        <div class="score-badge" id="scoreDisplay">✨ SCORE: 0</div>
+        <div class="accuracy-badge" id="requiredInfo">🧴 NEED 80%</div>
+        <div class="timer-area" id="timerDisplay">⏱️ 00:00</div>
+    </div>
+
+    <div class="question-box">
+        <div class="question-text" id="questionText">Keeping clean keeps germs away...</div>
+        <div class="progress-info" id="progressInfo">Q1 / 30</div>
+    </div>
+
+    <div class="options-grid" id="optionsContainer"></div>
+
+    <div class="feedback-area">
+        <div class="feedback-message" id="feedbackMsg">🧽 Choose the best hygiene practice to become a Hygiene Hero!</div>
+        <button class="next-btn" id="nextButton">🧴 NEXT</button>
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC GAME: Hygiene Practices in Agriculture
+    // TOPICS:
+    // 1. Personal Hygiene (washing hands, bathing, clean clothes, oral care)
+    // 2. Domestic Hygiene (kitchen, toilet, house, waste, pests)
+    // 3. Cleaning Personal Protective Equipment (PPE: gloves, boots, aprons, masks, goggles)
+    // 5 levels × 30 questions = 150 unique, engaging, curriculum-based
+    // Need 80% to advance. Timer gets more challenging each level.
+    // --------------------------------------------------------------
+
+    const questionBank = [];
+
+    let qid = 1;
+
+    // Generate 150 questions (30 per level)
+    for (let level = 1; level <= 5; level++) {
+        for (let i = 0; i < 30; i++) {
+            // Rotate through the 3 main topics
+            let topicIndex = (i + level) % 3;
+            let questionText = "";
+            let correctAnswer = "";
+            let options = [];
+
+            // ----- PERSONAL HYGIENE (Topic 0) -----
+            if (topicIndex === 0) {
+                let sub = (i + level) % 6;
+                if (sub === 0) {
+                    questionText = "Why should you always wash your hands with soap before handling food on a farm?";
+                    correctAnswer = "To remove germs and prevent contamination";
+                    options = ["To make hands smell nice", "To remove germs and prevent contamination", "To cool down hands", "To make hands soft"];
+                } else if (sub === 1) {
+                    questionText = "How often should a farmer bathe after working with animals or soil?";
+                    correctAnswer = "Every day, especially after dirty work";
+                    options = ["Once a week", "Every day, especially after dirty work", "Only on weekends", "Only when smelling bad"];
+                } else if (sub === 2) {
+                    questionText = "Which is the correct way to wash your hands thoroughly?";
+                    correctAnswer = "Wet, soap, scrub 20 seconds, rinse, dry";
+                    options = ["Just rinse quickly", "Wet, soap, scrub 20 seconds, rinse, dry", "Only use sanitizer", "Wipe on clothes"];
+                } else if (sub === 3) {
+                    questionText = "Why should farm workers wear clean clothes every day?";
+                    correctAnswer = "Dirty clothes can carry germs and pests to crops";
+                    options = ["To look fashionable", "Dirty clothes can carry germs and pests to crops", "To stay warm", "To scare animals"];
+                } else if (sub === 4) {
+                    questionText = "What personal habit helps prevent the spread of diseases on a farm?";
+                    correctAnswer = "Covering mouth when coughing or sneezing";
+                    options = ["Spitting on the ground", "Covering mouth when coughing or sneezing", "Sharing towels", "Not washing after toilet"];
+                } else {
+                    questionText = "When should you wash your hands during farm work?";
+                    correctAnswer = "Before eating, after using toilet, after touching animals";
+                    options = ["Only at bedtime", "Before eating, after using toilet, after touching animals", "Once in the morning", "After harvesting only"];
+                }
+            }
+            // ----- DOMESTIC HYGIENE (Topic 1) -----
+            else if (topicIndex === 1) {
+                let sub = (i + level*2) % 6;
+                if (sub === 0) {
+                    questionText = "What is the best way to keep the kitchen floor clean after preparing farm produce?";
+                    correctAnswer = "Sweep then mop with disinfectant";
+                    options = ["Leave it until evening", "Sweep then mop with disinfectant", "Just spray water", "Use bare hands to pick dirt"];
+                } else if (sub === 1) {
+                    questionText = "Why should we keep the toilet area clean on a farm?";
+                    correctAnswer = "To prevent flies from spreading germs to food";
+                    options = ["To make it smell good only", "To prevent flies from spreading germs to food", "To save water", "To store tools"];
+                } else if (sub === 2) {
+                    questionText = "How should you properly dispose of leftover animal waste near the house?";
+                    correctAnswer = "Compost it away from living areas or use as manure safely";
+                    options = ["Throw it in the river", "Compost it away from living areas or use as manure safely", "Leave it in the kitchen", "Burn it inside the house"];
+                } else if (sub === 3) {
+                    questionText = "What domestic hygiene practice reduces pests like rats and cockroaches?";
+                    correctAnswer = "Seal leftover food and take out garbage daily";
+                    options = ["Leave food uncovered", "Seal leftover food and take out garbage daily", "Spray water everywhere", "Keep windows closed all day"];
+                } else if (sub === 4) {
+                    questionText = "Why is it important to clean surfaces where raw eggs or meat are prepared?";
+                    correctAnswer = "To kill harmful bacteria like Salmonella";
+                    options = ["To make the table shiny", "To kill harmful bacteria like Salmonella", "To remove color", "To attract more animals"];
+                } else {
+                    questionText = "What should you do with stagnant water containers around the farm home?";
+                    correctAnswer = "Empty them to prevent mosquitoes from breeding";
+                    options = ["Add more water", "Empty them to prevent mosquitoes from breeding", "Cover with leaves", "Ignore them"];
+                }
+            }
+            // ----- CLEANING PERSONAL PROTECTIVE EQUIPMENT (Topic 2) -----
+            else {
+                let sub = (i + level*3) % 6;
+                if (sub === 0) {
+                    questionText = "After spraying crops, how should you clean rubber gloves?";
+                    correctAnswer = "Wash with soap and water, then dry in shade";
+                    options = ["Leave them dirty for next time", "Wash with soap and water, then dry in shade", "Soak in fuel", "Burn them"];
+                } else if (sub === 1) {
+                    questionText = "Why is it important to clean your farm boots after working in the animal shed?";
+                    correctAnswer = "To avoid spreading diseases to other areas";
+                    options = ["To make them heavy", "To avoid spreading diseases to other areas", "To change their color", "To make them squeaky"];
+                } else if (sub === 2) {
+                    questionText = "What is the correct way to clean a reusable face mask used during harvesting dusty crops?";
+                    correctAnswer = "Wash with mild soap, rinse well, and air dry";
+                    options = ["Keep in pocket", "Wash with mild soap, rinse well, and air dry", "Boil for an hour", "Spray perfume only"];
+                } else if (sub === 3) {
+                    questionText = "How should you clean safety goggles used when mixing farm chemicals?";
+                    correctAnswer = "Rinse with clean water and wipe with a soft cloth";
+                    options = ["Scrub with steel wool", "Rinse with clean water and wipe with a soft cloth", "Leave in mud", "Wash with cooking oil"];
+                } else if (sub === 4) {
+                    questionText = "Why must you clean your apron after handling manure or fertilizers?";
+                    correctAnswer = "To remove harmful germs and chemicals that can cause illness";
+                    options = ["To keep it white", "To remove harmful germs and chemicals that can cause illness", "To make it heavier", "To save time next day"];
+                } else {
+                    questionText = "What is the FIRST step before cleaning any farm PPE?";
+                    correctAnswer = "Remove any solid dirt and rinse with water";
+                    options = ["Apply oil", "Remove any solid dirt and rinse with water", "Soak in hot water overnight", "Use bleach directly"];
+                }
+            }
+
+            // Build final options array with correct and shuffle
+            let allOptions = [correctAnswer, ...options.filter(opt => opt !== correctAnswer)];
+            allOptions = [...new Set(allOptions)];
+            while (allOptions.length < 4) {
+                allOptions.push("Stay clean & safe!");
+            }
+            // Shuffle answer positions
+            for (let s = allOptions.length - 1; s > 0; s--) {
+                const rand = Math.floor(Math.random() * (s + 1));
+                [allOptions[s], allOptions[rand]] = [allOptions[rand], allOptions[s]];
+            }
+            questionBank.push({
+                id: qid++,
+                level: level,
+                text: questionText,
+                options: allOptions.slice(0,4),
+                correct: correctAnswer
+            });
+        }
+    }
+
+    console.log("Hygiene Hero game loaded: ", questionBank.length, " questions");
+
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentLevelQuestions = [];
+    let currentQIndex = 0;
+    let levelScore = 0;
+    let answered = false;
+    let timerInterval = null;
+    let timeLeft = 0;
+    let levelActive = true;
+    let waitingForNext = false;
+
+    // DOM elements
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const requiredInfo = document.getElementById('requiredInfo');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionTextEl = document.getElementById('questionText');
+    const progressInfo = document.getElementById('progressInfo');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const nextButton = document.getElementById('nextButton');
+
+    function formatTime(sec) {
+        let mins = Math.floor(sec / 60);
+        let remainSec = sec % 60;
+        return `${mins.toString().padStart(2, '0')}:${remainSec.toString().padStart(2, '0')}`;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        // Timer difficulty: Level1: 105s, Level2: 92s, Level3: 79s, Level4: 68s, Level5: 58s (VERY CHALLENGING)
+        let baseSeconds = 110 - (currentLevel * 10);
+        if (baseSeconds < 52) baseSeconds = 52;
+        timeLeft = baseSeconds;
+        timerDisplay.innerText = `⏱️ ${formatTime(timeLeft)}`;
+        timerInterval = setInterval(() => {
+            if (!levelActive || waitingForNext) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (levelActive) {
+                    levelActive = false;
+                    handleLevelFail("⏰ TIME'S UP! Hygiene habits need quick thinking! Level failed.");
+                }
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${formatTime(timeLeft)}`;
+                if (timeLeft <= 10) timerDisplay.style.color = "#ff7777";
+                else timerDisplay.style.color = "#b9f3ff";
+            }
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        if (!levelActive) return;
+        if (currentQIndex >= currentLevelQuestions.length) {
+            finishLevel();
+            return;
+        }
+        answered = false;
+        waitingForNext = false;
+        nextButton.disabled = true;
+        const q = currentLevelQuestions[currentQIndex];
+        questionTextEl.innerText = q.text;
+        progressInfo.innerText = `🧴 Q${currentQIndex+1} / ${currentLevelQuestions.length}`;
+        optionsContainer.innerHTML = "";
+        q.options.forEach(opt => {
+            const optDiv = document.createElement('div');
+            optDiv.className = 'option-card';
+            optDiv.innerText = opt;
+            optDiv.addEventListener('click', () => {
+                if (answered || !levelActive) return;
+                handleAnswer(opt, q.correct);
+            });
+            optionsContainer.appendChild(optDiv);
+        });
+        feedbackMsg.innerHTML = "🧼 Choose wisely and stay hygienic!";
+        nextButton.disabled = true;
+    }
+
+    function handleAnswer(selected, correct) {
+        if (answered) return;
+        answered = true;
+        const isCorrect = (selected === correct);
+        if (isCorrect) {
+            levelScore++;
+            feedbackMsg.innerHTML = "✅ HYGIENE HERO! +1 point! ✅";
+            const container = document.querySelector('.game-container');
+            container.classList.add('shake');
+            setTimeout(() => container.classList.remove('shake'), 250);
+        } else {
+            feedbackMsg.innerHTML = `❌ OOPS! Correct answer: "${correct}". Keep learning hygiene practices! ❌`;
+        }
+        const allOptions = document.querySelectorAll('.option-card');
+        allOptions.forEach(opt => {
+            opt.style.pointerEvents = 'none';
+            if (opt.innerText === correct) {
+                opt.style.backgroundColor = "#b5e6c1";
+                opt.style.border = "2px solid #2e8b57";
+            } else if (opt.innerText === selected && !isCorrect) {
+                opt.style.backgroundColor = "#f5acb8";
+            }
+        });
+        scoreDisplay.innerText = `✨ SCORE: ${levelScore}`;
+        nextButton.disabled = false;
+        waitingForNext = true;
+    }
+
+    function nextQuestion() {
+        if (!levelActive) return;
+        if (!answered && currentQIndex < currentLevelQuestions.length) {
+            feedbackMsg.innerHTML = "⚠️ Please answer the current question before moving! ⚠️";
+            return;
+        }
+        if (currentQIndex + 1 <= currentLevelQuestions.length) {
+            currentQIndex++;
+            if (currentQIndex < currentLevelQuestions.length) {
+                loadQuestion();
+            } else {
+                finishLevel();
+            }
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (!levelActive) return;
+        stopTimer();
+        levelActive = false;
+        let total = currentLevelQuestions.length;
+        let percent = (levelScore / total) * 100;
+        let required = 80;
+        if (percent >= required) {
+            if (currentLevel === 5) {
+                showGameWinModal(`🏆 HYGIENE CHAMPION! 🏆\nYou completed ALL 5 levels! Final score: ${levelScore}/${total} (${Math.floor(percent)}%)\nYou are a true Hygiene Hero on the farm!`);
+            } else {
+                showLevelUpModal(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉\nScore: ${levelScore}/${total} (${Math.floor(percent)}%)\nMove to Level ${currentLevel+1} and master more hygiene skills!`);
+            }
+        } else {
+            handleLevelFail(`🧴 LEVEL FAILED. You scored ${levelScore}/${total} (${Math.floor(percent)}%). Need 80% to advance. Keep practicing cleanliness!`);
+        }
+    }
+
+    function handleLevelFail(message) {
+        stopTimer();
+        levelActive = false;
+        showFailModal(message);
+    }
+
+    function advanceToNextLevel() {
+        currentLevel++;
+        if (currentLevel > 5) {
+            showGameWinModal("🌟 SUPREME HYGIENE MASTER! 🌟 You've mastered personal, domestic & PPE hygiene!");
+            return;
+        }
+        initLevel();
+    }
+
+    function retryCurrentLevel() {
+        initLevel();
+    }
+
+    function initLevel() {
+        currentLevelQuestions = questionBank.filter(q => q.level === currentLevel);
+        if (currentLevelQuestions.length !== 30) console.warn("Level question mismatch");
+        // shuffle for replayability and challenge
+        for (let i = currentLevelQuestions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [currentLevelQuestions[i], currentLevelQuestions[j]] = [currentLevelQuestions[j], currentLevelQuestions[i]];
+        }
+        currentQIndex = 0;
+        levelScore = 0;
+        answered = false;
+        waitingForNext = false;
+        levelActive = true;
+        scoreDisplay.innerText = `✨ SCORE: 0`;
+        levelDisplay.innerText = `🧼 LEVEL ${currentLevel}`;
+        requiredInfo.innerText = `🧴 NEED 80% (${Math.ceil(30*0.8)}/30)`;
+        if (timerInterval) stopTimer();
+        startLevelTimer();
+        loadQuestion();
+    }
+
+    // ----- MODAL UI -----
+    function showLevelUpModal(msg) {
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal';
+        modalDiv.innerHTML = `
+            <div class="modal-card">
+                <h2>✨ LEVEL UP! ✨</h2>
+                <p style="font-size:1.2rem; margin:15px 0;">${msg}</p>
+                <button id="nextLevelBtn">🧽 CONTINUE 🧽</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        document.getElementById('nextLevelBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            advanceToNextLevel();
+        });
+    }
+
+    function showFailModal(msg) {
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal';
+        modalDiv.innerHTML = `
+            <div class="modal-card" style="border-color:#6da5b8;">
+                <h2>⚠️ LEVEL FAILED ⚠️</h2>
+                <p style="font-size:1.1rem;">${msg}</p>
+                <button id="retryBtn">🧼 TRY LEVEL AGAIN</button>
+                <button id="resetGameBtn" style="background:#348c7c;">🧴 RESTART GAME</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        document.getElementById('retryBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            retryCurrentLevel();
+        });
+        document.getElementById('resetGameBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            fullGameReset();
+        });
+    }
+
+    function showGameWinModal(msg) {
+        stopTimer();
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal';
+        modalDiv.innerHTML = `
+            <div class="modal-card" style="background:#eefaff;">
+                <h2>🏅 HYGIENE HERO! 🏅</h2>
+                <p style="font-size:1.3rem;">${msg}</p>
+                <button id="playAgainBtn">🧴 PLAY AGAIN 🧴</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        document.getElementById('playAgainBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            fullGameReset();
+        });
+    }
+
+    function fullGameReset() {
+        stopTimer();
+        currentLevel = 1;
+        initLevel();
+    }
+
+    nextButton.addEventListener('click', () => {
+        if (!levelActive) return;
+        if (answered || currentQIndex >= currentLevelQuestions.length) {
+            nextQuestion();
+        } else {
+            feedbackMsg.innerHTML = "❗ Choose an answer to keep the farm clean and safe! ❗";
+        }
+    });
+
+    fullGameReset();
+</script>
+</body>
+</html>

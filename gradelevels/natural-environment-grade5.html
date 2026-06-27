@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 5 Social Studies - Map & Kenya Challenge (Voice Feedback)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* slight polish, but text input remains selectable */
+        }
+
+        body {
+            background: linear-gradient(145deg, #1e5a3a 0%, #0b3b2a 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* main game card */
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: #fef9e6;
+            border-radius: 80px 60px 80px 60px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.6);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header with level, score, timer */
+        .game-header {
+            background: #ffc857;
+            padding: 1rem 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 6px solid #e09d32;
+            color: #2d3e2b;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2c2b28;
+            padding: 6px 16px;
+            border-radius: 50px;
+            color: #ffeaac;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -1px 0 #5e5b56, 0 3px 0 #0f0e0c;
+        }
+
+        .timer-box {
+            background: #1e2f2a;
+            color: #fdd67a;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer-warning {
+            background: #c73d23;
+            color: white;
+            animation: pulse 0.7s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            100% { opacity: 0.7; transform: scale(1.02);}
+        }
+
+        /* question area */
+        .question-area {
+            padding: 30px 25px 20px 25px;
+            background: #fffff2;
+        }
+
+        .question-text {
+            font-size: 1.7rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            color: #1c4d2d;
+            background: #eef4e3;
+            padding: 20px;
+            border-radius: 50px;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        /* voice & hint row */
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #4f7a5b;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 4px 0 #2a4538;
+        }
+
+        .voice-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #2a4538;
+        }
+
+        .hint-area {
+            background: #ffefcf;
+            padding: 12px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            flex: 1;
+            text-align: center;
+            color: #ac6d2b;
+            font-weight: 500;
+            border-left: 6px solid #ffb347;
+        }
+
+        /* answer input */
+        .answer-input-area {
+            margin: 15px 0 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 1.2rem;
+            border-radius: 100px;
+            border: 2px solid #cbae76;
+            background: white;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #ff9f2e;
+            box-shadow: 0 0 0 3px rgba(255,159,46,0.3);
+        }
+
+        .submit-btn {
+            background: #e68a2e;
+            width: 100%;
+            margin-top: 15px;
+            padding: 16px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 6px 0 #a1521a;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #a1521a;
+        }
+
+        /* feedback */
+        .feedback {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: #e9e2cc;
+            padding: 12px;
+            border-radius: 50px;
+        }
+
+        /* progression / level complete modal style inline */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: #fff3cf;
+            max-width: 90%;
+            width: 400px;
+            padding: 25px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .modal-card button {
+            background: #2f6b47;
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* responsive */
+        @media (max-width: 550px) {
+            .question-text {
+                font-size: 1.2rem;
+            }
+            .game-header {
+                justify-content: center;
+            }
+            .voice-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+
+        .correct-feedback {
+            background: #b2d8a8;
+            color: #1d591d;
+        }
+
+        .wrong-feedback {
+            background: #f4cccc;
+            color: #a12;
+        }
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🌍 Level 1</div>
+        <div class="score-badge" id="scoreDisplay">⭐ Score: 0 / 0</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Loading adventure...</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-area" id="hintMessage">💡 Hint will appear when time runs low!</div>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✅ CHECK ANSWER</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">✨ Answer each question. 80% needed to unlock next level!</div>
+    </div>
+</div>
+
+<script>
+    // ---------- VOICE FEEDBACK HELPER ----------
+    function speakFeedback(message, isUrgent = false) {
+        if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech to avoid overlapping
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.95;
+            // Slightly higher pitch for correct, lower for incorrect? optional.
+            if (message.toLowerCase().includes('correct')) {
+                utterance.pitch = 1.2;
+            } else if (message.toLowerCase().includes('incorrect')) {
+                utterance.pitch = 0.8;
+            } else {
+                utterance.pitch = 1.0;
+            }
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    // ---------- QUESTION BANK (5 LEVELS x 30 QUESTIONS) ----------
+    // Topics: Elements of a map; Location, position and size of Kenya; Main physical features in Kenya; Weather and climate in Kenya on natural environment.
+    // Each question expects a single correct answer (case-insensitive, trimmed, accept variations)
+    
+    const LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+    const PASS_PERCENT = 80;   // need at least 80% correct
+    const BASE_TIME_SEC = 40;   // 40 seconds timer
+
+    // Helper to normalize answers (trim, lower, remove extra spaces, common synonyms)
+    function normalizeAnswer(ans) {
+        let normalized = ans.trim().toLowerCase();
+        // Remove punctuation like . , ? !
+        normalized = normalized.replace(/[.,?!;:]/g, '');
+        // handle plurals and common variations for physical features, etc.
+        return normalized;
+    }
+
+    // check if answer matches (flexible)
+    function isAnswerCorrect(correct, user) {
+        const normUser = normalizeAnswer(user);
+        const normCorrect = normalizeAnswer(correct);
+        if (normUser === normCorrect) return true;
+        // additional slight variations: allow "mt. kenya" vs "mount kenya"
+        if (normCorrect.includes("mount") && normUser.replace("mount", "mt.") === normCorrect) return true;
+        if (normCorrect.includes("mt.") && normUser.replace("mt.", "mount") === normCorrect) return true;
+        // lake victoria variations
+        if (normCorrect === "lake victoria" && (normUser === "victoria" || normUser === "lake victoria")) return true;
+        if (normCorrect === "indian ocean" && normUser === "indian ocean") return true;
+        if (normCorrect === "rift valley" && (normUser === "great rift valley" || normUser === "rift valley")) return true;
+        // true/false handling
+        if (normCorrect === "true" && normUser === "true") return true;
+        if (normCorrect === "false" && normUser === "false") return true;
+        return false;
+    }
+
+    // Build question set: each level has 30 unique questions covering the 4 topics.
+    const questionBank = [];
+
+    // Helper to add a set of questions
+    function addQuestions(level, qList) {
+        if (!questionBank[level]) questionBank[level] = [];
+        questionBank[level].push(...qList);
+    }
+
+    // Level 1 (Elements of a map + basic location Kenya)
+    const l1 = [
+        { text: "What is the name of the direction-finding symbol on a map that shows North, South, East and West?", correct: "compass rose" },
+        { text: "Which imaginary line divides the Earth into Northern and Southern hemispheres and is often shown on maps?", correct: "equator" },
+        { text: "What do we call the list on a map that explains the meaning of symbols used?", correct: "legend" },
+        { text: "Name the line on a map that runs from North to South and measures distance east or west of the Prime Meridian.", correct: "longitude" },
+        { text: "What is the name of the horizontal lines on a map that measure distance north or south of the equator?", correct: "latitude" },
+        { text: "Kenya is located in which continent?", correct: "Africa" },
+        { text: "The capital city of Kenya is?", correct: "Nairobi" },
+        { text: "Which ocean lies to the southeast of Kenya?", correct: "Indian Ocean" },
+        { text: "Name the country that borders Kenya to the west.", correct: "Uganda" },
+        { text: "Which country borders Kenya to the north-west?", correct: "South Sudan" },
+        { text: "Name the country that lies to the north of Kenya.", correct: "Ethiopia" },
+        { text: "Which country borders Kenya to the south?", correct: "Tanzania" },
+        { text: "The Tropic of ______ passes through Kenya.", correct: "Capricorn" },
+        { text: "What is the title of a map that shows mountains, rivers, and lakes?", correct: "physical map" },
+        { text: "A map that shows countries, cities and boundaries is called a _______ map.", correct: "political map" },
+        { text: "The ratio of distance on a map to actual ground distance is called?", correct: "scale" },
+        { text: "Name the highest mountain in Kenya.", correct: "Mount Kenya" },
+        { text: "What is the main element that shows what colors on a map represent?", correct: "key" },
+        { text: "The direction halfway between North and East is called?", correct: "Northeast" },
+        { text: "The border between Kenya and Tanzania includes famous gate called Namanga, what natural lake do they share?", correct: "Lake Victoria" },
+        { text: "What is the name of the longest river in Kenya?", correct: "Tana River" },
+        { text: "A map that shows rainfall or temperature distribution is a _____ map.", correct: "climate map" },
+        { text: "The grid of lines on a map helps to locate places using ________.", correct: "coordinates" },
+        { text: "What is the name of the feature that marks the edge of a map and often contains scale and legend?", correct: "border" },
+        { text: "Kenya gained independence in which year?", correct: "1963" },
+        { text: "The coastal city of Mombasa lies on which ocean?", correct: "Indian Ocean" },
+        { text: "What is the name of the large desert in northern Kenya?", correct: "Chalbi Desert" },
+        { text: "The line of longitude 0° that passes through Greenwich is known as?", correct: "Prime Meridian" },
+        { text: "Name the symbol used to show capital city on a map often a star inside a circle.", correct: "star" },
+        { text: "East Africa's largest freshwater lake shared by Kenya, Uganda and Tanzania is?", correct: "Lake Victoria" }
+    ];
+    addQuestions(0, l1.slice(0,30));
+
+    // Level 2 (Location, position, size of Kenya + physical features)
+    const l2 = [
+        { text: "What is the total area of Kenya in square kilometers approximately?", correct: "580367" },
+        { text: "Kenya lies on the equator, which means it has a _____ climate.", correct: "tropical" },
+        { text: "Name the highest peak of Mount Kenya.", correct: "Batian" },
+        { text: "The major physical feature that runs from north to south through Kenya is the _____ Valley.", correct: "Rift Valley" },
+        { text: "Which lake is known as the 'Jade Sea' because of its color?", correct: "Lake Turkana" },
+        { text: "Which park in Kenya is famous for the wildebeest migration?", correct: "Maasai Mara" },
+        { text: "The coastal region of Kenya has what type of physical feature (sandy, oceanfront)?", correct: "beaches" },
+        { text: "What is the name of the mountain range in western Kenya near Kitale?", correct: "Mount Elgon" },
+        { text: "Name the largest city and port in Kenya's coast.", correct: "Mombasa" },
+        { text: "Which river flows into the Indian Ocean at Kipini?", correct: "Tana River" },
+        { text: "The second largest city in Kenya known as the 'home of champions' is?", correct: "Eldoret" },
+        { text: "What is the name of the hill in central Kenya famous for being the Mau Mau caves?", correct: "Aberdare Range" },
+        { text: "The physical feature formed by volcanic activity, with a crater, found in central Kenya is?", correct: "Mount Longonot" },
+        { text: "Name the large swampy area at the mouth of River Tana?", correct: "Tana Delta" },
+        { text: "The island of Lamu is located in which ocean?", correct: "Indian Ocean" },
+        { text: "What is the latitude of the equator?", correct: "0 degrees" },
+        { text: "Kenya is positioned between latitudes 5°N and 5°S, making it a ______ country.", correct: "equatorial" },
+        { text: "Name the highest point in the Rift Valley escarpment?", correct: "Mau Escarpment" },
+        { text: "Which lake is known for being the world's largest permanent desert lake?", correct: "Lake Turkana" },
+        { text: "Which physical feature borders Kenya to the east?", correct: "Indian Ocean" },
+        { text: "The major plateau that covers much of central Kenya is called?", correct: "Laikipia Plateau" },
+        { text: "What is the name of the forest that is a water tower for Nairobi?", correct: "Kibwezi Forest" },
+        { text: "Which mountain in Kenya is an important water catchment for the Sondu River?", correct: "Mau Forest" },
+        { text: "The lowest point in Kenya is sea level along the coast. True or false? (Answer true/false)", correct: "true" },
+        { text: "Name a prominent hill in western Kenya, a granitic rock formation.", correct: "Kakamega" },
+        { text: "Which national park is home to the Big Five and lies at the foot of Mount Kilimanjaro?", correct: "Amboseli" },
+        { text: "Which river starts from the Aberdares and flows through Nairobi?", correct: "Nairobi River" },
+        { text: "The administrative capital of Kenya is?", correct: "Nairobi" },
+        { text: "The geographical center of Kenya is near the town of?", correct: "Nanyuki" },
+        { text: "The size of Kenya compared to Texas is (larger/smaller)? approximate Answer: smaller", correct: "smaller" }
+    ];
+    addQuestions(1, l2.slice(0,30));
+
+    // Level 3 (Main physical features in Kenya deeper)
+    const l3 = [
+        { text: "Name the longest river entirely in Kenya?", correct: "Tana River" },
+        { text: "Which is the second longest river in Kenya?", correct: "Athi River" },
+        { text: "Lake Nakuru is famous for what pink birds?", correct: "flamingos" },
+        { text: "Which island in Lake Victoria belongs to Kenya?", correct: "Rusinga Island" },
+        { text: "What is the main physical feature at the coast characterized by mangroves?", correct: "creeks" },
+        { text: "Name the mountain in the northern region of Kenya that stands at 2,349m.", correct: "Mount Kulal" },
+        { text: "Which desert in northern Kenya is known for volcanic formations?", correct: "Chalbi Desert" },
+        { text: "The Nyika Plateau is located in which part of Kenya?", correct: "eastern" },
+        { text: "Which major waterfall is found on the Ewaso Nyiro River?", correct: "Loroghi" },
+        { text: "The 'Cradle of Mankind' is a site found near Lake Turkana called?", correct: "Koobi Fora" },
+        { text: "Name the physical feature that separates Lake Victoria from the Rift Valley.", correct: "Kano Plains" },
+        { text: "Mount Kenya is an extinct ______ (type of volcano).", correct: "volcano" },
+        { text: "The Kerio Valley lies between which two escarpments?", correct: "Elgeyo" },
+        { text: "What is the name of the hot springs found near Lake Bogoria?", correct: "geysers" },
+        { text: "Which forest is known as Kenya's only tropical rainforest?", correct: "Kakamega Forest" },
+        { text: "The Chyulu Hills are volcanic in origin and located in which county?", correct: "Makueni" },
+        { text: "Name the lake that has a high concentration of flamingos and is shallow alkaline.", correct: "Lake Bogoria" },
+        { text: "Which physical feature is known for the 'Hell's Gate' national park?", correct: "Hell's Gate Gorge" },
+        { text: "The Mzima Springs are found in which park?", correct: "Tsavo" },
+        { text: "Which lake is shared between Kenya and Ethiopia and is known for crocodiles?", correct: "Lake Turkana" },
+        { text: "Name the physical feature at the southern tip of Kenya near Tanzanian border.", correct: "Mlima Kilimanjaro" },
+        { text: "The Tugen Hills are famous for fossils of early humans. True or false?", correct: "true" },
+        { text: "Which River drains the slopes of Mount Elgon?", correct: "Nzoia River" },
+        { text: "The Ndere Island is a national park located in which lake?", correct: "Lake Victoria" },
+        { text: "What landform is a flat-topped high area? (hint: example in Laikipia).", correct: "plateau" },
+        { text: "Which waterfall along the Athi River provides hydroelectric power?", correct: "Seven Forks" },
+        { text: "The 'White Highlands' area is around which mountain?", correct: "Mount Kenya" },
+        { text: "Name the large lava flow area in the south of Kenya.", correct: "Shetani Lava" },
+        { text: "Which physical feature means 'place of fire' in Maasai language?", correct: "Ol Doinyo Lengai" },
+        { text: "The Losiolo Escarpment is part of which valley system?", correct: "Great Rift Valley" }
+    ];
+    addQuestions(2, l3.slice(0,30));
+
+    // Level 4 (Weather and climate in Kenya on natural environment)
+    const l4 = [
+        { text: "What are the two main rainy seasons in Kenya?", correct: "long rains and short rains" },
+        { text: "Which month does the long rainy season typically start?", correct: "March" },
+        { text: "The coastal climate is described as?", correct: "tropical humid" },
+        { text: "Which part of Kenya receives the highest annual rainfall?", correct: "Lake Victoria Basin" },
+        { text: "The northern region of Kenya receives less than 200mm of rain. What climate type is that?", correct: "arid" },
+        { text: "Name the wind that brings cooler temperatures to the coast from the ocean.", correct: "monsoon" },
+        { text: "Which season is dry and hot in January and February in most of Kenya?", correct: "dry season" },
+        { text: "What is the effect of altitude on temperature in Kenya?", correct: "cooler" },
+        { text: "The climate of the highlands around Mount Kenya is called?", correct: "temperate" },
+        { text: "Which weather phenomenon causes drought in Kenya?", correct: "El Niño" },
+        { text: "The La Niña event leads to _____ rainfall.", correct: "below normal" },
+        { text: "The natural environment in arid areas mainly consists of what type of vegetation?", correct: "savanna" },
+        { text: "Mangroves are found along the coast due to what type of climate?", correct: "salty water" },
+        { text: "What is the average temperature in Nairobi (degrees Celsius)?", correct: "19" },
+        { text: "Which forest ecosystem helps regulate rainfall patterns?", correct: "rainforest" },
+        { text: "The 'Nyika' plateau experiences what type of climate?", correct: "semi-arid" },
+        { text: "Which county experiences very cold nights due to desert climate?", correct: "Marsabit" },
+        { text: "What weather instrument measures rainfall?", correct: "rain gauge" },
+        { text: "Which direction do trade winds blow toward the equator from the northeast?", correct: "southwest" },
+        { text: "Global warming is causing ______ seasons in Kenya.", correct: "unpredictable" },
+        { text: "What is the name of the climate zone found along the coastal strip?", correct: "coastal tropical" },
+        { text: "Which lake influences the local climate of Kisumu region?", correct: "Lake Victoria" },
+        { text: "Why is the highland climate cooler than lowland?", correct: "altitude" },
+        { text: "What is the main natural hazard caused by heavy rainfall in Kenya?", correct: "flooding" },
+        { text: "The hot, dry wind that blows from the northeast across Kenya is called?", correct: "Kaskazi" },
+        { text: "The southwest monsoon brings what kind of weather?", correct: "rain" },
+        { text: "Which month is usually the coldest in central Kenya (July or January)?", correct: "July" },
+        { text: "What type of clouds bring thunderstorms in Kenya?", correct: "cumulonimbus" },
+        { text: "Deforestation affects climate by reducing _______", correct: "rainfall" },
+        { text: "What is the main climate adaptation for pastoralists in northern Kenya?", correct: "nomadic" }
+    ];
+    addQuestions(3, l4.slice(0,30));
+
+    // Level 5 (mixed advanced + more Environment & map elements)
+    const l5 = [
+        { text: "What is the name of the map scale that shows a line divided into units?", correct: "linear scale" },
+        { text: "Which contour lines show steep slope when they are closely spaced?", correct: "contour lines" },
+        { text: "What is the reference longitude for time zones passing through Kenya? (longitude)", correct: "45°E" },
+        { text: "Which county is known as the 'county of champions' due to athletic climate?", correct: "Eldoret" },
+        { text: "What is the main economic activity affected by climate variability in Kenya?", correct: "agriculture" },
+        { text: "Which physical feature is a natural habitat for hippos in the Mara River?", correct: "riverine forest" },
+        { text: "What is the world's largest volcanic lake on the border of Kenya?", correct: "Lake Turkana" },
+        { text: "The 'Elephant watch camp' is located in which ecosystem?", correct: "savannah" },
+        { text: "Which element of a map tells the map's subject or area?", correct: "title" },
+        { text: "Name the weather phenomenon that causes coral bleaching at the coast.", correct: "El Niño" },
+        { text: "The dry lake beds in the Rift Valley produce soda ash used for?", correct: "soap" },
+        { text: "Which gazetted forest is a UNESCO site near Mount Kenya?", correct: "Mount Kenya Forest" },
+        { text: "What is the effect of climate change on Mount Kenya's glacier?", correct: "melting" },
+        { text: "Which physical feature creates rain shadow effect in Turkana?", correct: "Mount Elgon" },
+        { text: "The seasonal river that flows only during rains in Northern Kenya is called?", correct: "lagga" },
+        { text: "What is the type of agriculture adapted to low rainfall areas?", correct: "irrigation" },
+        { text: "The Inter-Tropical Convergence Zone (ITCZ) influences Kenya's ____ patterns.", correct: "rainfall" },
+        { text: "Which lake is known for its soda ash and flamingo population?", correct: "Lake Nakuru" },
+        { text: "What symbol on a map represents a bridge?", correct: "arch" },
+        { text: "Large numbers of elephants roam the Tsavo ecosystem that is mainly _______ climate.", correct: "semi-arid" },
+        { text: "What is the main cause of landslides in the hilly areas during heavy rain?", correct: "deforestation" },
+        { text: "Which Kenyan mountain has three peaks: Batian, Nelion, Lenana?", correct: "Mount Kenya" },
+        { text: "The element of a map that uses colours to show elevation is called?", correct: "shading" },
+        { text: "What is the name of the largest mangrove forest in Kenya?", correct: "Tana Delta" },
+        { text: "The natural environment's ability to recover from drought is called?", correct: "resilience" },
+        { text: "Which river forms part of the border between Kenya and Tanzania at the coast?", correct: "Umba River" },
+        { text: "Hot dry climate leads to soil erosion by _______", correct: "wind" },
+        { text: "What is the name of the weather satellite that helps predict climate in East Africa?", correct: "Meteosat" },
+        { text: "The presence of acacia trees indicates what type of vegetation zone?", correct: "savanna" },
+        { text: "Climate change may cause rising sea level affecting Kenyan ______ cities.", correct: "coastal" }
+    ];
+    addQuestions(4, l5.slice(0,30));
+
+    // game state
+    let currentLevel = 0;
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let score = 0;
+    let answeredInLevel = 0;
+    let timerInterval = null;
+    let timeLeft = BASE_TIME_SEC;
+    let canAnswer = true;
+    let waitingForNext = false;
+
+    const gameContainer = document.getElementById('gameRoot');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionText = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintMessageDiv = document.getElementById('hintMessage');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    function updateUI() {
+        levelDisplay.innerText = `🌍 Level ${currentLevel+1}`;
+        scoreDisplay.innerText = `⭐ Score: ${score} / ${answeredInLevel}`;
+        if(currentQuestions.length > 0 && currentQIndex < currentQuestions.length) {
+            questionText.innerText = currentQuestions[currentQIndex].text;
+        }
+    }
+
+    function stopTimer() {
+        if(timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startTimer() {
+        stopTimer();
+        timeLeft = BASE_TIME_SEC;
+        timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+        timerDisplay.classList.remove('timer-warning');
+        timerInterval = setInterval(() => {
+            if(!canAnswer) return;
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+                if(timeLeft <= 10) {
+                    timerDisplay.classList.add('timer-warning');
+                    const currentQ = currentQuestions[currentQIndex];
+                    if(currentQ && currentQ.correct){
+                        hintMessageDiv.innerHTML = `⏰ Hint: answer starts with "${currentQ.correct.substring(0,3)}..." or contains key word.`;
+                    } else {
+                        hintMessageDiv.innerHTML = `💡 Hurry! Think about map elements or Kenyan features!`;
+                    }
+                } else {
+                    timerDisplay.classList.remove('timer-warning');
+                    if(timeLeft > 15) hintMessageDiv.innerHTML = `💡 Keep calm! Type carefully. ⏳`;
+                }
+            }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if(!canAnswer) return;
+        canAnswer = false;
+        // VOICE: time is up
+        speakFeedback("Time is up! Moving to next question.", true);
+        const correctAns = currentQuestions[currentQIndex].correct;
+        feedbackMsg.innerHTML = `⏰ TIME'S UP! Correct answer: "${correctAns}". Moving to next question.`;
+        feedbackMsg.classList.add('wrong-feedback');
+        setTimeout(() => {
+            nextQuestion();
+        }, 1500);
+    }
+
+    function checkAnswer() {
+        if(!canAnswer || waitingForNext) {
+            feedbackMsg.innerHTML = "⚠️ Please wait, loading next question!";
+            return;
+        }
+        const userAnswer = answerInput.value.trim();
+        if(userAnswer === "") {
+            feedbackMsg.innerHTML = "📝 Type your answer before checking!";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        const isCorrect = isAnswerCorrect(currentQ.correct, userAnswer);
+        stopTimer();
+        canAnswer = false;
+        if(isCorrect) {
+            score++;
+            feedbackMsg.innerHTML = `✅ CORRECT! "${userAnswer}" is right! +1 point! 🎉`;
+            feedbackMsg.classList.add('correct-feedback');
+            speakFeedback("Correct! Great job!");
+        } else {
+            feedbackMsg.innerHTML = `❌ OOPS! "${userAnswer}" is incorrect. Correct: "${currentQ.correct}". Keep going!`;
+            feedbackMsg.classList.add('wrong-feedback');
+            speakFeedback(`Incorrect. The correct answer is ${currentQ.correct}`);
+        }
+        answeredInLevel++;
+        updateUI();
+        setTimeout(() => {
+            nextQuestion();
+        }, 1500);
+    }
+
+    function nextQuestion() {
+        waitingForNext = false;
+        currentQIndex++;
+        if(currentQIndex >= currentQuestions.length) {
+            let percent = (score / QUESTIONS_PER_LEVEL) * 100;
+            if(percent >= PASS_PERCENT) {
+                if(currentLevel + 1 < LEVELS) {
+                    showModal(`🎉 Level ${currentLevel+1} complete! Score: ${score}/${QUESTIONS_PER_LEVEL} (${Math.floor(percent)}%). You may proceed to Level ${currentLevel+2}.`, true);
+                } else {
+                    showModal(`🏆 CONGRATULATIONS! You finished all 5 levels! Score: ${score}/${QUESTIONS_PER_LEVEL}. You are a Social Studies champion!`, false);
+                }
+            } else {
+                showModal(`😓 Level ${currentLevel+1} failed. You need at least 80% (${Math.floor(percent)}%). Restarting level...`, false);
+                resetCurrentLevel();
+            }
+            return;
+        }
+        resetQuestionUI();
+        loadQuestion();
+    }
+
+    function resetCurrentLevel() {
+        stopTimer();
+        score = 0;
+        answeredInLevel = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingForNext = false;
+        loadQuestionsForLevel(currentLevel);
+        resetQuestionUI();
+        loadQuestion();
+    }
+
+    function resetQuestionUI() {
+        answerInput.value = "";
+        feedbackMsg.classList.remove('correct-feedback','wrong-feedback');
+        feedbackMsg.innerHTML = "✨ New question! Type your answer, 40 seconds timer.";
+        hintMessageDiv.innerHTML = "💡 Hint appears when 10 seconds remain.";
+        timerDisplay.classList.remove('timer-warning');
+        canAnswer = true;
+        waitingForNext = false;
+        if(timerInterval) stopTimer();
+        startTimer();
+    }
+
+    function loadQuestion() {
+        if(currentQIndex < currentQuestions.length) {
+            questionText.innerText = currentQuestions[currentQIndex].text;
+            updateUI();
+            startTimer();
+            canAnswer = true;
+        }
+    }
+
+    function loadQuestionsForLevel(levelIdx) {
+        currentQuestions = [...questionBank[levelIdx]];
+        score = 0;
+        answeredInLevel = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingForNext = false;
+    }
+
+    function showModal(message, goToNext) {
+        stopTimer();
+        canAnswer = false;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal-card">
+                <p>${message}</p>
+                <button id="modalBtn">${goToNext ? 'NEXT LEVEL ➡️' : 'RESTART LEVEL 🔄'}</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        const modalBtn = document.getElementById('modalBtn');
+        modalBtn.addEventListener('click', () => {
+            overlay.remove();
+            if(goToNext) {
+                currentLevel++;
+                loadQuestionsForLevel(currentLevel);
+                resetQuestionUI();
+                loadQuestion();
+            } else {
+                resetCurrentLevel();
+            }
+        });
+    }
+
+    function initGame() {
+        currentLevel = 0;
+        loadQuestionsForLevel(0);
+        resetQuestionUI();
+        loadQuestion();
+        speakBtn.addEventListener('click', () => {
+            if(currentQuestions[currentQIndex]) speakText(currentQuestions[currentQIndex].text);
+        });
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') checkAnswer();
+        });
+    }
+
+    initGame();
+</script>
+</body>
+</html>

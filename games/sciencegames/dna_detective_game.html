@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DNA Detective - Genetics Adventure</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .game-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+
+      .game-area {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        border: 2px solid #e9ecef;
+      }
+
+      .dna-strand {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+        min-height: 150px;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        border-radius: 10px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .base-pair {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 10px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .base-pair:hover {
+        transform: scale(1.1);
+      }
+
+      .base {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        margin: 5px;
+        border: 3px solid white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .base.A {
+        background: #e74c3c;
+      }
+      .base.T {
+        background: #3498db;
+      }
+      .base.G {
+        background: #2ecc71;
+      }
+      .base.C {
+        background: #f39c12;
+      }
+
+      .sequence-input {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .base-selector {
+        width: 50px;
+        height: 50px;
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .base-selector:hover {
+        transform: scale(1.1);
+      }
+
+      .challenge-area {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 2px solid #3498db;
+      }
+
+      .challenge-text {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .score-board {
+        display: flex;
+        justify-content: space-around;
+        background: #34495e;
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .score-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+      }
+
+      .btn-primary {
+        background: #3498db;
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .btn-success {
+        background: #27ae60;
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .info-panel {
+        background: #ecf0f1;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+      }
+
+      .info-title {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+      }
+
+      .info-text {
+        color: #34495e;
+        line-height: 1.6;
+      }
+
+      .feedback {
+        padding: 15px;
+        border-radius: 10px;
+        margin: 15px 0;
+        text-align: center;
+        font-weight: bold;
+        display: none;
+      }
+
+      .feedback.correct {
+        background: #d5f4e6;
+        color: #27ae60;
+        border: 2px solid #27ae60;
+      }
+
+      .feedback.incorrect {
+        background: #fadbd8;
+        color: #e74c3c;
+        border: 2px solid #e74c3c;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .pulsing {
+        animation: pulse 1s infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="header">
+        <h1 class="title">🧬 DNA Detective</h1>
+        <p class="subtitle">Solve genetic mysteries and build DNA sequences!</p>
+      </div>
+
+      <div class="score-board">
+        <div class="score-item">
+          <div class="score-value" id="score">0</div>
+          <div class="score-label">Score</div>
+        </div>
+        <div class="score-item">
+          <div class="score-value" id="level">1</div>
+          <div class="score-label">Level</div>
+        </div>
+        <div class="score-item">
+          <div class="score-value" id="sequences">0</div>
+          <div class="score-label">Sequences Built</div>
+        </div>
+      </div>
+
+      <div class="challenge-area">
+        <div class="challenge-text" id="challengeText">
+          Build the complementary DNA strand for: ATCG
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="dna-strand" id="dnaStrand">
+          <!-- DNA visualization will be generated here -->
+        </div>
+
+        <div class="sequence-input">
+          <button
+            class="base-selector"
+            style="background: #e74c3c"
+            onclick="addBase('A')"
+          >
+            A
+          </button>
+          <button
+            class="base-selector"
+            style="background: #3498db"
+            onclick="addBase('T')"
+          >
+            T
+          </button>
+          <button
+            class="base-selector"
+            style="background: #2ecc71"
+            onclick="addBase('G')"
+          >
+            G
+          </button>
+          <button
+            class="base-selector"
+            style="background: #f39c12"
+            onclick="addBase('C')"
+          >
+            C
+          </button>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" onclick="clearSequence()">
+          Clear
+        </button>
+        <button class="btn btn-primary" onclick="checkSequence()">
+          Check Answer
+        </button>
+        <button class="btn btn-success" onclick="nextChallenge()">
+          Next Challenge
+        </button>
+      </div>
+
+      <div class="info-panel">
+        <h3 class="info-title">🔬 DNA Base Pairing Rules:</h3>
+        <div class="info-text">
+          <strong>A (Adenine)</strong> pairs with <strong>T (Thymine)</strong
+          ><br />
+          <strong>G (Guanine)</strong> pairs with <strong>C (Cytosine)</strong
+          ><br />
+          Remember: A-T and G-C are complementary base pairs!
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Global functions for onclick events
+      function addBase(base) {
+        if (window.dnaGame) {
+          window.dnaGame.addBase(base);
+        }
+      }
+
+      function clearSequence() {
+        if (window.dnaGame) {
+          window.dnaGame.clearSequence();
+        }
+      }
+
+      function checkSequence() {
+        if (window.dnaGame) {
+          window.dnaGame.checkSequence();
+        }
+      }
+
+      function nextChallenge() {
+        if (window.dnaGame) {
+          window.dnaGame.nextChallenge();
+        }
+      }
+
+      class DNADetective {
+        constructor() {
+          this.score = 0;
+          this.level = 1;
+          this.sequencesBuilt = 0;
+          this.currentChallenge = "";
+          this.playerSequence = "";
+          this.correctAnswer = "";
+
+          this.challenges = [
+            "ATCG",
+            "GCTA",
+            "AATTGGCC",
+            "TACGAT",
+            "GGCCAATT",
+            "ATGCATGC",
+            "CGTACGTA",
+            "TTAACCGG",
+          ];
+
+          this.init();
+        }
+
+        init() {
+          this.generateChallenge();
+          this.updateDisplay();
+        }
+
+        generateChallenge() {
+          const challengeIndex = (this.level - 1) % this.challenges.length;
+          this.currentChallenge = this.challenges[challengeIndex];
+          this.correctAnswer = this.getComplementaryStrand(
+            this.currentChallenge,
+          );
+          this.playerSequence = "";
+
+          document.getElementById("challengeText").textContent =
+            `Build the complementary DNA strand for: ${this.currentChallenge}`;
+
+          this.visualizeDNA();
+        }
+
+        getComplementaryStrand(sequence) {
+          const pairs = { A: "T", T: "A", G: "C", C: "G" };
+          return sequence
+            .split("")
+            .map((base) => pairs[base])
+            .join("");
+        }
+
+        visualizeDNA() {
+          const strand = document.getElementById("dnaStrand");
+          strand.innerHTML = "";
+
+          // Show original strand
+          const originalStrand = document.createElement("div");
+          originalStrand.style.display = "flex";
+          originalStrand.style.marginBottom = "20px";
+
+          for (let i = 0; i < this.currentChallenge.length; i++) {
+            const base = this.currentChallenge[i];
+            const baseElement = document.createElement("div");
+            baseElement.className = `base ${base}`;
+            baseElement.textContent = base;
+            originalStrand.appendChild(baseElement);
+          }
+
+          // Show player's complementary strand
+          const playerStrand = document.createElement("div");
+          playerStrand.style.display = "flex";
+          playerStrand.id = "playerStrand";
+
+          for (let i = 0; i < this.currentChallenge.length; i++) {
+            const baseElement = document.createElement("div");
+            baseElement.className = "base";
+            baseElement.style.background = "#bdc3c7";
+            baseElement.textContent = this.playerSequence[i] || "?";
+            baseElement.id = `playerBase${i}`;
+            playerStrand.appendChild(baseElement);
+          }
+
+          strand.appendChild(originalStrand);
+          strand.appendChild(playerStrand);
+        }
+
+        addBase(base) {
+          if (this.playerSequence.length < this.currentChallenge.length) {
+            this.playerSequence += base;
+            this.updatePlayerStrand();
+          }
+        }
+
+        updatePlayerStrand() {
+          const colors = {
+            A: "#e74c3c",
+            T: "#3498db",
+            G: "#2ecc71",
+            C: "#f39c12",
+          };
+
+          for (let i = 0; i < this.currentChallenge.length; i++) {
+            const baseElement = document.getElementById(`playerBase${i}`);
+            if (i < this.playerSequence.length) {
+              const base = this.playerSequence[i];
+              baseElement.textContent = base;
+              baseElement.style.background = colors[base];
+              baseElement.className = `base ${base}`;
+            }
+          }
+        }
+
+        clearSequence() {
+          this.playerSequence = "";
+          this.visualizeDNA();
+          this.hideFeedback();
+        }
+
+        checkSequence() {
+          if (this.playerSequence.length !== this.currentChallenge.length) {
+            this.showFeedback("Please complete the sequence!", false);
+            return;
+          }
+
+          if (this.playerSequence === this.correctAnswer) {
+            this.score += this.level * 10;
+            this.sequencesBuilt++;
+            this.showFeedback(
+              `Correct! The complementary strand is ${this.correctAnswer}`,
+              true,
+            );
+
+            // Add pulsing animation to correct bases
+            const playerBases = document.querySelectorAll('[id^="playerBase"]');
+            playerBases.forEach((base) => base.classList.add("pulsing"));
+          } else {
+            this.showFeedback(
+              `Incorrect! The correct answer is ${this.correctAnswer}`,
+              false,
+            );
+          }
+
+          this.updateDisplay();
+        }
+
+        nextChallenge() {
+          this.level++;
+          this.generateChallenge();
+          this.hideFeedback();
+          this.updateDisplay();
+        }
+
+        showFeedback(message, isCorrect) {
+          const feedback = document.getElementById("feedback");
+          feedback.textContent = message;
+          feedback.className = `feedback ${isCorrect ? "correct" : "incorrect"}`;
+          feedback.style.display = "block";
+        }
+
+        hideFeedback() {
+          document.getElementById("feedback").style.display = "none";
+          // Remove pulsing animation
+          document
+            .querySelectorAll(".pulsing")
+            .forEach((el) => el.classList.remove("pulsing"));
+        }
+
+        updateDisplay() {
+          document.getElementById("score").textContent = this.score;
+          document.getElementById("level").textContent = this.level;
+          document.getElementById("sequences").textContent =
+            this.sequencesBuilt;
+        }
+      }
+
+      // Initialize game when page loads
+      window.addEventListener("load", () => {
+        window.dnaGame = new DNADetective();
+      });
+    </script>
+  </body>
+</html>

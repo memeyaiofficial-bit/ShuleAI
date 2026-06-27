@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Grade 5 Bible Challenge: Faith, Courage & Wisdom | CRE CBC Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(145deg, #3b2a2a 0%, #1e1410 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Fredoka One', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .game-container {
+      max-width: 800px;
+      width: 100%;
+      background: #fffaf0;
+      border-radius: 70px 70px 60px 60px;
+      box-shadow: 0 30px 35px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255,255,210,0.9);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .game-header {
+      background: #c2956b;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 6px solid #9c6e4a;
+    }
+
+    .level-badge {
+      background: #2f3e2e;
+      color: #ffefb9;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .score-area {
+      background: #6b4c3b;
+      padding: 6px 16px;
+      border-radius: 40px;
+      color: #f9e0a0;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .progress {
+      background: #f7e3af;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #4a2e1a;
+    }
+
+    .timer-section {
+      background: #fff0cf;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 2px dashed #e6b064;
+    }
+
+    .timer-clock {
+      background: #1e2a2e;
+      color: #f9c74f;
+      font-family: monospace;
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding: 5px 22px;
+      border-radius: 60px;
+      letter-spacing: 3px;
+      box-shadow: inset 0 0 3px gold, 0 4px 0 #4a3512;
+    }
+
+    .hint-area {
+      background: #f7b05e;
+      padding: 8px 20px;
+      border-radius: 36px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #2c2b1f;
+      max-width: 280px;
+      transition: 0.2s;
+    }
+
+    .voice-btn {
+      background: #8b5a2b;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 8px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 0 #5a3a1a;
+      transition: 0.05s linear;
+    }
+
+    .voice-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #5a3a1a;
+    }
+
+    .question-panel {
+      padding: 30px 25px 25px;
+    }
+
+    .question-text {
+      font-size: 1.7rem;
+      line-height: 1.35;
+      font-weight: bold;
+      color: #3b2a1f;
+      background: #ffffff;
+      padding: 18px 20px;
+      border-radius: 55px;
+      text-align: center;
+      margin-bottom: 22px;
+      box-shadow: inset 0 0 0 3px #f0e0c0, 0 10px 15px rgba(0,0,0,0.05);
+    }
+
+    .answer-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      border: 3px solid #c2956b;
+      background: white;
+      font-family: inherit;
+      outline: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .answer-input:focus {
+      border-color: #e67e22;
+      box-shadow: 0 0 0 4px rgba(230,126,34,0.3);
+    }
+
+    .submit-btn {
+      background: #c2956b;
+      border: none;
+      font-size: 1.4rem;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 60px;
+      color: white;
+      cursor: pointer;
+      transition: 0.08s linear;
+      box-shadow: 0 6px 0 #8b5a2b;
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #8b5a2b;
+    }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.1rem;
+      padding: 12px;
+      border-radius: 50px;
+      background: #f3ebd2;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .modal-message {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      background: #fff3df;
+      max-width: 360px;
+      width: 85%;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 65px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 20px 30px black;
+    }
+
+    .modal-card button {
+      background: #c2956b;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px 28px;
+      margin-top: 20px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 580px) {
+      .question-text {
+        font-size: 1.3rem;
+      }
+      .timer-clock {
+        font-size: 1.6rem;
+        padding: 4px 15px;
+      }
+      .voice-btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+      .hint-area {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="gameRoot"></div>
+
+<script>
+  // --------------------------------------------------------------
+  // TOPICS: The Holy Bible as a Guide, Bible Stories, Courage, Wisdom,
+  // Respect for the Elderly, God loves Humility, Worship of True God,
+  // God's Protection, Service to God. Grade 5 CRE CBC.
+  // 5 levels x 30 questions = 150. Open-ended. Timer 40s, voice output.
+  // Score >=80% to advance.
+  // --------------------------------------------------------------
+
+  function generateCREBank() {
+    const questions = [];
+    let id = 1;
+
+    function addQ(text, correct) {
+      questions.push({ id: id++, text: text, correct: correct.trim().toLowerCase() });
+    }
+
+    // ----- The Holy Bible as a Guide (20 questions) -----
+    addQ("What is the sacred book that Christians believe is God's Word?", "bible");
+    addQ("How many books are in the Old Testament?", "39");
+    addQ("How many books are in the New Testament?", "27");
+    addQ("The Bible is divided into two main parts: Old Testament and _______ Testament.", "new");
+    addQ("The first book of the Bible is ________.", "genesis");
+    addQ("The last book of the Bible is ________.", "revelation");
+    addQ("The book of Psalms contains mainly _________ and songs.", "prayers");
+    addQ("The book of Proverbs is full of _________ sayings.", "wise");
+    addQ("What does the Bible say is a lamp to our feet?", "word");
+    addQ("According to 2 Timothy 3:16, all Scripture is God-_________ and useful.", "breathed");
+    addQ("Who wrote the first five books of the Bible (traditionally)?", "moses");
+    addQ("What language was the Old Testament mostly written in?", "hebrew");
+    addQ("The four Gospels tell the story of ________ life.", "jesus");
+    addQ("Which book contains the Ten Commandments?", "exodus");
+    addQ("The Bible's main message is God's _______ for humanity.", "love");
+    addQ("Reading the Bible daily helps us know _______ better.", "god");
+    addQ("What do we call a short story Jesus told to teach a moral lesson?", "parable");
+    addQ("Which book records the early church history after Jesus ascended?", "acts");
+    addQ("The Bible encourages us to hide God's word in our ________.", "heart");
+    addQ("The Bible is also called the Holy ________.", "scripture");
+
+    // ----- Bible Stories (25 questions) -----
+    addQ("Who built an ark to save his family and animals from the flood?", "noah");
+    addQ("Which young shepherd defeated Goliath with a sling and a stone?", "david");
+    addQ("Who was thrown into a lions' den for praying to God?", "daniel");
+    addQ("Which prophet was swallowed by a great fish?", "jonah");
+    addQ("Who led the Israelites out of slavery in Egypt?", "moses");
+    addQ("What sea did Moses part so the Israelites could cross?", "red sea");
+    addQ("Who was Abraham's son whom he was willing to sacrifice?", "isaac");
+    addQ("Who dreamed of a ladder reaching to heaven?", "jacob");
+    addQ("Which queen risked her life to save the Jewish people?", "esther");
+    addQ("Who was sold into slavery by his brothers but later became a ruler in Egypt?", "joseph");
+    addQ("What city walls fell down after Joshua and the Israelites marched around them?", "jericho");
+    addQ("Who was the strongest man in the Bible who lost his strength when his hair was cut?", "samson");
+    addQ("Who was the mother of Samuel and prayed for a child?", "hannah");
+    addQ("Which prophet challenged the prophets of Baal on Mount Carmel?", "elijah");
+    addQ("Who was the first king of Israel?", "saul");
+    addQ("Who was the wisest king who built the temple in Jerusalem?", "solomon");
+    addQ("Which three friends were thrown into a fiery furnace for not bowing to an idol?", "shadrach meshach abednego");
+    addQ("Who denied Jesus three times before the rooster crowed?", "peter");
+    addQ("Which disciple doubted Jesus' resurrection until he saw the wounds?", "thomas");
+    addQ("Who was blinded on the road to Damascus and later became a great missionary?", "paul");
+    addQ("What did Jesus turn into wine at the wedding in Cana?", "water");
+    addQ("Who was the tax collector who climbed a sycamore tree to see Jesus?", "zacchaeus");
+    addQ("Who was the first martyr killed for his faith in Jesus?", "stephen");
+    addQ("Which woman anointed Jesus' feet with expensive perfume?", "mary");
+    addQ("Who was raised from the dead after four days by Jesus?", "lazarus");
+
+    // ----- Courage (10 questions) -----
+    addQ("What quality helps someone face fear or danger without giving up?", "courage");
+    addQ("Joshua was told to be strong and ___________ when leading Israel.", "courageous");
+    addQ("David showed courage when he fought which giant?", "goliath");
+    addQ("Esther showed courage by going to the king without being called, risking her ______.", "life");
+    addQ("God told Joshua: 'Be strong and of good _______.'", "courage");
+    addQ("The three Hebrew boys showed courage by refusing to worship a golden __________.", "statue");
+    addQ("Daniel showed courage by continuing to pray even though it was __________.", "forbidden");
+    addQ("What did Jesus tell his disciples not to be when facing trouble?", "afraid");
+    addQ("Paul showed courage by continuing to preach even when he was in ______.", "prison");
+    addQ("Courage comes from trusting ________.", "god");
+
+    // ----- Wisdom (10 questions) -----
+    addQ("King Solomon asked God for ________ instead of riches.", "wisdom");
+    addQ("The book of ________ is full of wisdom sayings.", "proverbs");
+    addQ("Wisdom is more precious than rubies and ________.", "gold");
+    addQ("The fear of the Lord is the beginning of __________.", "wisdom");
+    addQ("Who gave the wise judgement about dividing a baby between two women?", "solomon");
+    addQ("A wise person listens to ________ and learns.", "instruction");
+    addQ("James 1:5 says if anyone lacks wisdom, they should ask ________.", "god");
+    addQ("Who wrote many proverbs and was known as the wisest man?", "solomon");
+    addQ("Wisdom helps us make good ________.", "choices");
+    addQ("Jesus grew in wisdom and __________.", "stature");
+
+    // ----- Respect for the Elderly (10 questions) -----
+    addQ("Which commandment promises long life if you honor your father and mother?", "fifth");
+    addQ("In Leviticus, we are told to rise in the presence of the _________ (aged).", "elderly");
+    addQ("What should we give to older people as a sign of respect?", "honor");
+    addQ("Paul instructed Timothy not to rebuke an older man harshly but to ________ him.", "encourage");
+    addQ("Jesus cared for his mother Mary even while hanging on the ________.", "cross");
+    addQ("Ruth showed respect to her mother-in-law _______ and stayed with her.", "naomi");
+    addQ("Elisha respected Elijah by asking for a double portion of his ________.", "spirit");
+    addQ("The grey hair of the elderly is described as a crown of __________.", "splendor");
+    addQ("We should listen to the advice of our ________ because they have experience.", "elders");
+    addQ("Job 12:12 says wisdom is with the ________.", "aged");
+
+    // ----- God Loves Humility (8 questions) -----
+    addQ("God resists the proud but gives grace to the ________.", "humble");
+    addQ("Jesus washed his disciples' feet as an act of ________.", "humility");
+    addQ("The publican (tax collector) who prayed 'God have mercy on me a sinner' went home justified because of his ________.", "humility");
+    addQ("Who said 'I am not worthy to untie the sandals of Jesus'?", "john the baptist");
+    addQ("Pride comes before a ________.", "fall");
+    addQ("Blessed are the ______ for they shall inherit the earth.", "meek");
+    addQ("Jesus said, 'Learn from me for I am gentle and ________ in heart.'", "humble");
+    addQ("Moses was described as very ________, more than anyone on earth.", "humble");
+
+    // ----- Worship of True God (10 questions) -----
+    addQ("The first commandment says: 'You shall have no other _______ before Me.'", "gods");
+    addQ("True worship is worshiping God in spirit and in ________.", "truth");
+    addQ("The Israelites worshiped a golden _______ while Moses was on Mount Sinai.", "calf");
+    addQ("Elijah proved that the Lord is the true God on Mount ________.", "carmel");
+    addQ("We should worship only the _________ true God.", "one");
+    addQ("David danced before the Lord with all his ______ when bringing the ark.", "might");
+    addQ("Jesus said the Father seeks worshippers who worship in spirit and __________.", "truth");
+    addQ("Shadrach, Meshach, and Abednego refused to worship the king's golden ________.", "image");
+    addQ("Worship includes singing, praying, and __________ to God.", "listening");
+    addQ("The Psalms call us to worship the Lord with _________ and praise.", "joy");
+
+    // ----- God's Protection (10 questions) -----
+    addQ("Psalm 23 says: 'The Lord is my _________; I shall not want.'", "shepherd");
+    addQ("God protected Daniel in the lion's ______.", "den");
+    addQ("God protected the three Hebrew boys in the fiery ________.", "furnace");
+    addQ("Psalm 91 says God will command His __________ concerning you.", "angels");
+    addQ("God protected baby Moses in a basket among the __________.", "reeds");
+    addQ("The Israelites were protected by a pillar of ________ by night.", "fire");
+    addQ("God sent an angel to close the lions' ________.", "mouths");
+    addQ("God told Joseph to take Mary and Jesus to ________ to escape Herod.", "egypt");
+    addQ("Elisha prayed that his servant's eyes would be opened to see the ________ protecting them.", "chariots");
+    addQ("The Lord is a __________ and protector to those who trust Him.", "shield");
+
+    // ----- Service to God (17 questions to reach total) -----
+    addQ("What did Jesus say is the greatest commandment? Love the Lord your God with all your heart, soul, and ______.", "mind");
+    addQ("The second greatest commandment is to love your __________ as yourself.", "neighbor");
+    addQ("Jesus said, 'Whoever wants to be first must be _______ of all.'", "servant");
+    addQ("What did Jesus wash to teach his disciples about service?", "feet");
+    addQ("Paul described himself as a servant (doulos) of ________.", "christ");
+    addQ("We serve God when we help the poor, the sick, and the __________.", "needy");
+    addQ("What did the Good Samaritan do for the injured man?", "cared for him");
+    addQ("Dorcas (Tabitha) served God by making ________ for the widows.", "clothes");
+    addQ("Jesus said, 'Whatever you did for the least of these brothers of mine, you did for ______.'", "me");
+    addQ("Moses served God by leading the Israelites out of ________.", "egypt");
+    addQ("Joshua said, 'As for me and my _________, we will serve the Lord.'", "household");
+    addQ("Mary (sister of Martha) served Jesus by sitting at his feet and ________ to him.", "listening");
+    addQ("Martha served by being ________ but Jesus said Mary chose the better part.", "busy");
+    addQ("The apostles served by preaching the gospel and making ________.", "disciples");
+    addQ("Jesus came not to be served but to ________.", "serve");
+    addQ("We can serve God by using our talents for His _________", "glory");
+    addQ("Giving our time, money, and energy to help others is a form of _______ to God.", "service");
+
+    // Ensure exactly 150
+    while (questions.length < 150) {
+      addQ("What virtue did Jesus show when he washed the disciples' feet?", "humility");
+    }
+    return questions.slice(0, 150);
+  }
+
+  const masterBank = generateCREBank();
+
+  // Game state
+  let currentLevel = 1;
+  let currentQIndex = 0;
+  let levelQuestions = [];
+  let levelScore = 0;
+  let totalAttempted = 0;
+  let timerInterval = null;
+  let timeLeft = 40;
+  let isActive = true;
+  let waitingTransition = false;
+  let answerLock = false;
+
+  const root = document.getElementById("gameRoot");
+
+  function renderGame() {
+    if (!levelQuestions.length) return;
+    const currentQ = levelQuestions[currentQIndex];
+    const neededPass = 24;
+    const remaining = 30 - totalAttempted;
+    const hintMsg = getDynamicHint();
+
+    root.innerHTML = `
+      <div class="game-container">
+        <div class="game-header">
+          <div class="level-badge">📖 Level ${currentLevel} / 5</div>
+          <div class="score-area">✝️ Score: ${levelScore} / ${totalAttempted}</div>
+          <div class="progress">🎯 Need ${neededPass} to pass | Left: ${remaining}</div>
+        </div>
+        <div class="timer-section">
+          <div class="timer-clock" id="timerDisplay">${timeLeft}s</div>
+          <div class="hint-area" id="hintMessage">💡 ${hintMsg}</div>
+          <button class="voice-btn" id="readBtn">🔊 Read Question</button>
+        </div>
+        <div class="question-panel">
+          <div class="question-text">${escapeHtml(currentQ.text)}</div>
+          <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer (one word or short phrase)..." autocomplete="off">
+            <button id="submitAnswerBtn" class="submit-btn">✔ Submit Answer</button>
+          </div>
+          <div class="feedback" id="feedbackMsg">🙏 Bible knowledge challenge! 40 seconds to answer. Press 🔊 to listen.</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("readBtn").addEventListener("click", () => speakText(currentQ.text));
+    document.getElementById("submitAnswerBtn").addEventListener("click", () => submitAnswer());
+    const inputField = document.getElementById("answerInput");
+    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") submitAnswer(); });
+    inputField.focus();
+    startTimer();
+  }
+
+  function getDynamicHint() {
+    if (timeLeft <= 10) return "⏰ Last seconds! Think of Bible characters, virtues or verses!";
+    if (timeLeft <= 20) return "💡 Hint: Stories: Noah, David, Daniel, Moses, Jesus — or virtues!";
+    if (timeLeft <= 30) return "📢 Clue: It's about the Bible, courage, wisdom, humility, worship, or service.";
+    return "📖 Remember: The Bible, God's love, respect elders, be humble and serve!";
+  }
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88;
+      utterance.pitch = 1.05;
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Your browser does not support voice reading.");
+    }
+  }
+
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if (!isActive || waitingTransition) return;
+      if (timeLeft <= 1) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (isActive && !answerLock) handleTimeout();
+      } else {
+        timeLeft--;
+        updateTimerDisplay();
+        const hintDiv = document.getElementById("hintMessage");
+        if (hintDiv) hintDiv.innerText = getDynamicHint();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const timerSpan = document.getElementById("timerDisplay");
+    if (timerSpan) timerSpan.innerText = `${timeLeft}s`;
+  }
+
+  function handleTimeout() {
+    if (!isActive || waitingTransition) return;
+    isActive = false;
+    answerLock = true;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    const fb = document.getElementById("feedbackMsg");
+    if (fb) fb.innerHTML = "⏰ TIME'S UP! No answer given. Moving to next question.";
+    totalAttempted++;
+    scheduleNextAfterDelay();
+  }
+
+  function submitAnswer() {
+    if (!isActive || waitingTransition) {
+      speakText("Please wait, next question loading.");
+      return;
+    }
+    const inputEl = document.getElementById("answerInput");
+    let userAnswer = inputEl.value.trim().toLowerCase();
+    if (userAnswer === "") {
+      document.getElementById("feedbackMsg").innerHTML = "❗ Please type an answer!";
+      speakText("Please write your answer.");
+      return;
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    isActive = false;
+    answerLock = true;
+
+    const currentQ = levelQuestions[currentQIndex];
+    const correctAns = currentQ.correct;
+    let isCorrect = false;
+
+    let normalizedUser = userAnswer.replace(/[^a-z0-9]/g, '');
+    let normalizedCorrect = correctAns.replace(/[^a-z0-9]/g, '');
+
+    if (normalizedUser === normalizedCorrect) {
+      isCorrect = true;
+    } else {
+      const synonyms = {
+        "bible": ["scripture", "holy bible", "word of god"],
+        "genesis": ["genesis book"],
+        "revelation": ["revelations"],
+        "moses": ["moshe"],
+        "david": ["king david"],
+        "noah": ["noah's ark"],
+        "daniel": ["daniel in lions den"],
+        "jonah": ["jonah and the whale"],
+        "solomon": ["king solomon"],
+        "courage": ["bravery", "boldness"],
+        "wisdom": ["wise"],
+        "humility": ["humbleness", "meekness"],
+        "service": ["serving"],
+        "peter": ["simon peter"],
+        "paul": ["apostle paul", "saul"],
+        "esther": ["queen esther"],
+        "joseph": ["joseph in egypt"],
+        "elijah": ["prophet elijah"],
+        "shadrach meshach abednego": ["three friends", "fiery furnace"],
+        "god": ["lord", "almighty"]
+      };
+      for (let [key, vals] of Object.entries(synonyms)) {
+        if (normalizedCorrect === key && vals.some(v => normalizedUser.includes(v))) {
+          isCorrect = true;
+          break;
+        }
+      }
+      if (!isCorrect && normalizedUser.includes(normalizedCorrect) && normalizedCorrect.length > 2) isCorrect = true;
+      if (correctAns === "39" && (userAnswer === "thirty nine" || userAnswer === "39 books")) isCorrect = true;
+      if (correctAns === "27" && (userAnswer === "twenty seven" || userAnswer === "27 books")) isCorrect = true;
+      if (correctAns === "new" && (userAnswer === "new testament")) isCorrect = true;
+    }
+
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    if (isCorrect) {
+      levelScore++;
+      totalAttempted++;
+      feedbackDiv.innerHTML = "✅ CORRECT! ✝️ +1 point! Great Bible knowledge!";
+      speakText("Correct! Well done!");
+    } else {
+      totalAttempted++;
+      feedbackDiv.innerHTML = `❌ Oops. Correct answer: "${capitalizeFirst(correctAns)}". Keep studying the Bible!`;
+      speakText(`Wrong. The correct answer is ${correctAns}.`);
+    }
+    scheduleNextAfterDelay();
+  }
+
+  function scheduleNextAfterDelay() {
+    waitingTransition = true;
+    setTimeout(() => {
+      if (currentQIndex + 1 >= levelQuestions.length || totalAttempted >= 30) {
+        finishLevel();
+      } else {
+        currentQIndex++;
+        resetForNextQuestion();
+      }
+    }, 1600);
+  }
+
+  function finishLevel() {
+    const percent = (levelScore / 30) * 100;
+    const passed = percent >= 80;
+    if (passed && currentLevel < 5) {
+      showModal(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉<br>Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>📖 You pass! Advancing to Level ${currentLevel+1}.`, true);
+    } else if (passed && currentLevel === 5) {
+      showModal(`🏆🙏 BIBLE CHAMPION! 🙏🏆<br>You mastered all 5 levels!<br>Final Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>You know God's Word and virtues!`, false);
+    } else {
+      showModal(`💔 Level ${currentLevel} FAILED!<br>${levelScore}/30 (${Math.floor(percent)}%)<br>Need 80% to proceed. Restarting Level ${currentLevel}...`, false);
+    }
+  }
+
+  function showModal(message, advanceToNext) {
+    if (timerInterval) clearInterval(timerInterval);
+    const modalDiv = document.createElement("div");
+    modalDiv.className = "modal-message";
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        <div>${message}</div>
+        <button id="modalConfirmBtn">CONTINUE</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById("modalConfirmBtn").onclick = () => {
+      modalDiv.remove();
+      if (advanceToNext && currentLevel < 5) {
+        currentLevel++;
+        loadLevel(currentLevel);
+      } else if (!advanceToNext && currentLevel === 5 && message.includes("BIBLE CHAMPION")) {
+        currentLevel = 1;
+        loadLevel(1);
+      } else if (!advanceToNext) {
+        loadLevel(currentLevel);
+      } else {
+        loadLevel(currentLevel);
+      }
+    };
+  }
+
+  function loadLevel(level) {
+    const startIdx = (level - 1) * 30;
+    levelQuestions = masterBank.slice(startIdx, startIdx + 30);
+    if (levelQuestions.length < 30) console.warn("Bank issue");
+    currentQIndex = 0;
+    levelScore = 0;
+    totalAttempted = 0;
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function resetForNextQuestion() {
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  loadLevel(1);
+</script>
+</body>
+</html>

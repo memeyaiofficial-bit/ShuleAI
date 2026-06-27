@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Grade 5: Food Production - Vegetables, Animals, Grains, Nutrients & Frying</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(145deg, #b76e2e 0%, #6b3e1a 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Fredoka One', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .game-container {
+      max-width: 800px;
+      width: 100%;
+      background: #fffef7;
+      border-radius: 70px 70px 60px 60px;
+      box-shadow: 0 30px 35px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255,255,200,0.9);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .game-header {
+      background: #f4a261;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 6px solid #bc6c25;
+    }
+
+    .level-badge {
+      background: #2f3e2e;
+      color: #ffefb9;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .score-area {
+      background: #283618;
+      padding: 6px 16px;
+      border-radius: 40px;
+      color: #f9e0a0;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .progress {
+      background: #f7e3af;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #2d4a22;
+    }
+
+    .timer-section {
+      background: #fff0cf;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 2px dashed #e6b064;
+    }
+
+    .timer-clock {
+      background: #1e2a2e;
+      color: #f9c74f;
+      font-family: monospace;
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding: 5px 22px;
+      border-radius: 60px;
+      letter-spacing: 3px;
+      box-shadow: inset 0 0 3px gold, 0 4px 0 #4a3512;
+    }
+
+    .hint-area {
+      background: #f7b05e;
+      padding: 8px 20px;
+      border-radius: 36px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #2c2b1f;
+      max-width: 280px;
+      transition: 0.2s;
+    }
+
+    .voice-btn {
+      background: #3b8f6e;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 8px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 0 #235a41;
+      transition: 0.05s linear;
+    }
+
+    .voice-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #235a41;
+    }
+
+    .question-panel {
+      padding: 30px 25px 25px;
+    }
+
+    .question-text {
+      font-size: 1.7rem;
+      line-height: 1.35;
+      font-weight: bold;
+      color: #1e3a2f;
+      background: #fffaf0;
+      padding: 18px 20px;
+      border-radius: 55px;
+      text-align: center;
+      margin-bottom: 22px;
+      box-shadow: inset 0 0 0 3px white, 0 10px 15px rgba(0,0,0,0.1);
+    }
+
+    .answer-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      border: 3px solid #deb887;
+      background: white;
+      font-family: inherit;
+      outline: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .answer-input:focus {
+      border-color: #f39c12;
+      box-shadow: 0 0 0 4px rgba(243,156,18,0.3);
+    }
+
+    .submit-btn {
+      background: #e67e22;
+      border: none;
+      font-size: 1.4rem;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 60px;
+      color: white;
+      cursor: pointer;
+      transition: 0.08s linear;
+      box-shadow: 0 6px 0 #b45f1b;
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #b45f1b;
+    }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.1rem;
+      padding: 12px;
+      border-radius: 50px;
+      background: #f3ebd2;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .modal-message {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      background: #fff3df;
+      max-width: 360px;
+      width: 85%;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 65px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 20px 30px black;
+    }
+
+    .modal-card button {
+      background: #2c6e49;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px 28px;
+      margin-top: 20px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 580px) {
+      .question-text {
+        font-size: 1.3rem;
+      }
+      .timer-clock {
+        font-size: 1.6rem;
+        padding: 4px 15px;
+      }
+      .voice-btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+      .hint-area {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="gameRoot"></div>
+
+<script>
+  // --------------------------------------------------------------
+  // TOPICS: Growing vegetables, Uses of domestic animals, Preservation of cereals & pulses,
+  //         Food nutrients, Dry fat and deep frying (Food production processes - Agriculture)
+  // Grade 5 CBC. 5 levels x 30 questions = 150 total. Open-ended, timer 40s, voice output.
+  // Must score >=80% to proceed to next level.
+  // --------------------------------------------------------------
+
+  // Generate 150 high-quality, curriculum-aligned questions
+  function generateQuestionBank() {
+    const questions = [];
+    let id = 1;
+
+    function addQ(text, correct) {
+      questions.push({ id: id++, text: text, correct: correct.trim().toLowerCase() });
+    }
+
+    // ----- TOPIC 1: Growing Vegetables (35 questions) -----
+    addQ("What is the process of preparing land for planting vegetables called?", "tillage");
+    addQ("Name a green leafy vegetable rich in iron.", "spinach");
+    addQ("Which vegetable grows underground as a tuber?", "potato");
+    addQ("What do we call the practice of moving young vegetable seedlings from nursery to main garden?", "transplanting");
+    addQ("Name one vegetable that is a fruit botanically but used as a vegetable.", "tomato");
+    addQ("What natural fertilizer made from decayed plants is best for vegetables?", "compost");
+    addQ("Which vegetable is known for its high vitamin A content and orange color?", "carrot");
+    addQ("What is the process of removing unwanted plants that compete with vegetables?", "weeding");
+    addQ("Name a climbing vegetable that needs support like a trellis.", "beans");
+    addQ("What do we add to soil to improve vegetable growth besides water?", "manure");
+    addQ("Which vegetable is a bulb and makes people cry when cut?", "onion");
+    addQ("Growing vegetables in rows and filling gaps is called _______ planting.", "spacing");
+    addQ("Name a vegetable that belongs to the cabbage family.", "kale");
+    addQ("What is the best time of day to water vegetable gardens to reduce evaporation?", "morning");
+    addQ("Which vegetable is 96% water and helps with hydration?", "cucumber");
+    addQ("What do you call a vegetable garden planted in a small space like a container?", "container garden");
+    addQ("Name a vegetable that grows as a head of leaves like lettuce.", "cabbage");
+    addQ("What pest can destroy vegetable leaves and is controlled by neem oil?", "aphids");
+    addQ("Which vegetable is known as 'okra' and has slimy pods?", "ladyfinger");
+    addQ("What natural method uses good bugs to eat pest insects?", "biological control");
+    addQ("What is the practice of growing different vegetables together to reduce pests?", "intercropping");
+    addQ("Name a root vegetable that is purple or red and used in salads.", "beetroot");
+    addQ("What vegetable is a stem that grows above ground like celery?", "celery");
+    addQ("Which vegetable is known for its many seeds inside and is often stuffed?", "bell pepper");
+    addQ("What do you call the process of hardening off seedlings before transplanting?", "hardening");
+    addQ("Name one vegetable that can regrow from scraps in water.", "spring onion");
+    addQ("What is the main nutrient vegetables provide in our diet?", "vitamins");
+    addQ("Which vegetable is known as 'brinjal' in some countries?", "eggplant");
+    addQ("What organic mulch helps retain soil moisture for vegetables?", "straw");
+    addQ("Which fast-growing leafy vegetable is ready to harvest in 30 days?", "radish leaves");
+    addQ("Name a vegetable that grows in a pod and is a legume.", "peas");
+    addQ("What do farmers use to test soil pH for vegetable farming?", "pH meter");
+    addQ("What is the process of loosening soil around vegetable roots to aerate?", "cultivation");
+    addQ("Which vegetable is a flower head and looks like a small tree?", "broccoli");
+    addQ("Name the vegetable that is a long white root with green top.", "radish");
+    
+    // ----- TOPIC 2: Uses of domestic animals (35 questions) -----
+    addQ("Which domestic animal provides us with milk and is sacred in many cultures?", "cow");
+    addQ("What product do we get from chickens that is rich in protein?", "eggs");
+    addQ("Name an animal that gives us wool for making sweaters.", "sheep");
+    addQ("Which animal is called 'man's best friend' and helps guard livestock?", "dog");
+    addQ("What do bees produce that is used as a natural sweetener?", "honey");
+    addQ("Which domestic animal is used for carrying heavy loads in deserts?", "camel");
+    addQ("What meat comes from pigs?", "pork");
+    addQ("Name a domestic bird that is raised for both meat and eggs.", "duck");
+    addQ("Which animal provides leather for shoes and bags?", "cow");
+    addQ("What is the process of training animals to help humans called?", "domestication");
+    addQ("Which animal's droppings are used as rich fertilizer (dung)?", "cow");
+    addQ("Name a domestic animal used for plowing fields in many farms.", "ox");
+    addQ("What do we get from goats besides meat and milk?", "cashmere");
+    addQ("Which animal is known for its ability to catch mice on farms?", "cat");
+    addQ("What byproduct of cattle is used to make gelatin and candles?", "tallow");
+    addQ("Which domestic animal gives us mohair fiber?", "angora goat");
+    addQ("Name a type of poultry raised primarily for meat production.", "broiler");
+    addQ("What do you call a female chicken that lays eggs?", "hen");
+    addQ("Which animal's hide is used for making drums?", "goat");
+    addQ("What liquid from cows is fermented to make yogurt and cheese?", "milk");
+    addQ("Which animal carries riders and pulls carts in rural areas?", "horse");
+    addQ("What product from sheep is used in lotions and soaps?", "lanolin");
+    addQ("Name a small domestic animal that is raised for its soft fur (angora).", "rabbit");
+    addQ("Which animal gives us feathers used in pillows?", "duck");
+    addQ("What do you call the process of collecting honey from beehives?", "harvesting");
+    addQ("Which animal is used in some cultures for racing (dromedary)?", "camel");
+    addQ("What type of meat comes from young sheep?", "lamb");
+    addQ("Name a domestic animal that provides both milk and meat (brown).", "buffalo");
+    addQ("What do we call the thick hair from goats used for warm coats?", "pashmina");
+    addQ("Which animal helps farmers by eating snails and pests in gardens?", "duck");
+    addQ("What is a male pig called that is used for breeding?", "boar");
+    addQ("Which animal's milk has the highest fat content?", "sheep");
+    addQ("Name a domestic bird known for its loud crowing.", "rooster");
+    addQ("What do farmers use donkeys for on steep terrain?", "transport");
+    addQ("Which animal produces eggs that are green-shelled in some breeds?", "chicken");
+    
+    // ----- TOPIC 3: Preservation of cereals and pulses (30 questions) -----
+    addQ("What is the process of removing moisture from grains to prevent spoilage?", "drying");
+    addQ("Name a common cereal grain used to make bread.", "wheat");
+    addQ("Which pulse is also called 'chickpea' and used in hummus?", "garbanzo");
+    addQ("What natural method uses sunlight to preserve cereals?", "sun drying");
+    addQ("Name a fumigant tablet often used in grain storage to kill insects.", "aluminium phosphide");
+    addQ("What type of storage structure is made of clay and used for grains?", "silo");
+    addQ("Which pulse is split and called 'dal' in India?", "lentil");
+    addQ("What do farmers add to stored grains to absorb moisture?", "silica gel");
+    addQ("Name a cereal that is a staple food in many African countries.", "millet");
+    addQ("What airtight container is best for preserving cereals at home?", "metal bin");
+    addQ("Which pest is the most destructive to stored grains?", "weevil");
+    addQ("What plant leaves are traditionally used to repel insects in grain storage?", "neem leaves");
+    addQ("What is the process of storing grains in sealed bags with oxygen absorbers called?", "hermetic storage");
+    addQ("Name a cereal that is gluten-free and used for porridge.", "sorghum");
+    addQ("Which pulse is black and white and has a 'eye'?", "black-eyed pea");
+    addQ("What temperature range kills insect eggs in grains (in Celsius)?", "60 degrees");
+    addQ("What do you call the removal of husk from cereals?", "threshing");
+    addQ("Name a traditional grain storage basket made of bamboo.", "granary");
+    addQ("Which cereal is used to make popcorn?", "maize");
+    addQ("What chemical is sometimes used to treat grains for long term storage?", "insecticide");
+    addQ("What is the green gram also known as?", "mung bean");
+    addQ("Which pulse is large and kidney-shaped?", "kidney bean");
+    addQ("What practice involves rotating old grain with new to avoid spoilage?", "first in first out");
+    addQ("Name a cereal rich in protein called 'quinoa' relative?", "amaranth");
+    addQ("What do you call a large concrete tower for storing grain?", "grain elevator");
+    addQ("Which pest leaves small holes in stored cereals?", "grain borer");
+    addQ("What natural oil from plants can be mixed with grains to repel pests?", "neem oil");
+    addQ("Name a pulse that is yellow and split used for dhal.", "pigeon pea");
+    addQ("What type of storage uses low temperature to preserve grains?", "cold storage");
+    addQ("Which cereal is used to make the breakfast food 'oatmeal'?", "oats");
+    
+    // ----- TOPIC 4: Food nutrients (25 questions) -----
+    addQ("Which nutrient is the main source of energy for the body?", "carbohydrates");
+    addQ("What nutrient helps build and repair muscles?", "protein");
+    addQ("Name a vitamin that helps keep our eyes healthy.", "vitamin A");
+    addQ("Which mineral is important for strong bones and teeth?", "calcium");
+    addQ("What nutrient is essential for carrying oxygen in the blood?", "iron");
+    addQ("Which vitamin is produced by the skin when exposed to sunlight?", "vitamin D");
+    addQ("What do we call nutrients that provide energy and help absorb vitamins?", "fats");
+    addQ("Name a water-soluble vitamin found in citrus fruits.", "vitamin C");
+    addQ("Which mineral helps regulate blood pressure?", "potassium");
+    addQ("What is the main component of our body and helps all functions?", "water");
+    addQ("Which vitamin is important for blood clotting?", "vitamin K");
+    addQ("What type of carbohydrates are found in whole grains and vegetables?", "fiber");
+    addQ("Name a B vitamin that helps convert food into energy.", "B12");
+    addQ("Which mineral is needed for thyroid function?", "iodine");
+    addQ("What nutrient group includes omega-3 and omega-6?", "essential fatty acids");
+    addQ("Which vitamin deficiency causes scurvy?", "vitamin C");
+    addQ("What is the main role of proteins in the body?", "repair tissue");
+    addQ("Name a nutrient that protects cells from damage (antioxidant).", "vitamin E");
+    addQ("Which mineral is found in table salt and prevents goiter?", "iodine");
+    addQ("What do we call the energy value of food measured in units?", "calories");
+    addQ("Which nutrient is most important for digestion and preventing constipation?", "fiber");
+    addQ("What vitamin helps with nerve function and is found in eggs?", "B12");
+    addQ("Which mineral is lost through sweat and must be replaced?", "sodium");
+    addQ("What nutrient is stored in the liver for energy reserve?", "glycogen");
+    addQ("Which vitamin works with calcium to build bones?", "vitamin D");
+    
+    // ----- TOPIC 5: Dry fat and deep frying (25 questions) -----
+    addQ("What cooking method immerses food completely in hot oil?", "deep frying");
+    addQ("What is the process of cooking food in a small amount of fat called?", "shallow frying");
+    addQ("Which oil has a high smoke point and is good for deep frying?", "palm oil");
+    addQ("What happens to food when fried at the correct temperature?", "brown and crisp");
+    addQ("Name a food commonly prepared by deep frying.", "french fries");
+    addQ("What is the temperature danger zone for frying oil (in Celsius)?", "180 to 190");
+    addQ("What do you call the leftover bits after frying that can be used as toppings?", "cracklings");
+    addQ("Which frying method uses no oil but relies on hot air circulation?", "air frying");
+    addQ("What type of fat is solid at room temperature and used for frying?", "shortening");
+    addQ("What is the process of removing excess oil from fried food called?", "draining");
+    addQ("What does 'dry fat' cooking refer to?", "frying with little oil");
+    addQ("Name a vegetable fat commonly used for frying donuts.", "palm shortening");
+    addQ("What is the risk of reusing frying oil too many times?", "produces toxic compounds");
+    addQ("Which breading is often used for deep fried chicken?", "batter");
+    addQ("What do you call the crispy outer layer of fried food?", "crust");
+    addQ("What tool is used to remove food from hot oil safely?", "slotted spoon");
+    addQ("What oil is made from coconut and is stable for deep frying?", "coconut oil");
+    addQ("What happens if the oil is not hot enough before frying?", "food becomes greasy");
+    addQ("What term describes oil smoking and breaking down?", "smoke point");
+    addQ("Name a snack that is deep fried and eaten with tea.", "samosa");
+    addQ("What is the name of the frying method where food floats on oil surface?", "floating fry");
+    addQ("Which fat is derived from animals and used for traditional frying?", "lard");
+    addQ("What do you call fried dough that is sweet and coated in sugar?", "donut");
+    addQ("What should you use to filter frying oil for reuse?", "fine mesh strainer");
+    addQ("What type of fryer has a basket to lower and lift food?", "deep fat fryer");
+    
+    // Ensure exactly 150 (trim if over, but we have roughly 150). Fill remaining safely.
+    while (questions.length < 150) {
+      addQ("What is a healthy method of cooking vegetables with little oil?", "steaming");
+    }
+    return questions.slice(0, 150);
+  }
+
+  const masterBank = generateQuestionBank();
+
+  // Game state
+  let currentLevel = 1;
+  let currentQIndex = 0;
+  let levelQuestions = [];
+  let levelScore = 0;
+  let totalAttempted = 0;
+  let timerInterval = null;
+  let timeLeft = 40;
+  let isActive = true;
+  let waitingTransition = false;
+  let answerLock = false;
+
+  const root = document.getElementById("gameRoot");
+
+  function renderGame() {
+    if (!levelQuestions.length) return;
+    const currentQ = levelQuestions[currentQIndex];
+    const neededPass = 24;
+    const remaining = 30 - totalAttempted;
+    const hintMsg = getDynamicHint();
+
+    root.innerHTML = `
+      <div class="game-container">
+        <div class="game-header">
+          <div class="level-badge">🍲 Level ${currentLevel} / 5</div>
+          <div class="score-area">🏆 Score: ${levelScore} / ${totalAttempted}</div>
+          <div class="progress">🎯 Need ${neededPass} to pass | Left: ${remaining}</div>
+        </div>
+        <div class="timer-section">
+          <div class="timer-clock" id="timerDisplay">${timeLeft}s</div>
+          <div class="hint-area" id="hintMessage">💡 ${hintMsg}</div>
+          <button class="voice-btn" id="readBtn">🔊 Read Question</button>
+        </div>
+        <div class="question-panel">
+          <div class="question-text">${escapeHtml(currentQ.text)}</div>
+          <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer (one word or short phrase)..." autocomplete="off">
+            <button id="submitAnswerBtn" class="submit-btn">✔ Submit Answer</button>
+          </div>
+          <div class="feedback" id="feedbackMsg">🌽 Food production expert? 40 seconds to answer. 🔊 Listen & type!</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("readBtn").addEventListener("click", () => speakText(currentQ.text));
+    document.getElementById("submitAnswerBtn").addEventListener("click", () => submitAnswer());
+    const inputField = document.getElementById("answerInput");
+    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") submitAnswer(); });
+    inputField.focus();
+    startTimer();
+  }
+
+  function getDynamicHint() {
+    if (timeLeft <= 10) return "⏰ Last seconds! Think about food, farming or cooking!";
+    if (timeLeft <= 20) return "💡 Hint: Vegetables, animal products, grains, nutrients, or frying methods.";
+    if (timeLeft <= 30) return "📢 Clue: This is from agriculture or food processing.";
+    return "🥕 Think: Growing, preserving, cooking or nutrients!";
+  }
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88;
+      utterance.pitch = 1.05;
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Your browser does not support voice reading.");
+    }
+  }
+
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if (!isActive || waitingTransition) return;
+      if (timeLeft <= 1) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (isActive && !answerLock) handleTimeout();
+      } else {
+        timeLeft--;
+        updateTimerDisplay();
+        const hintDiv = document.getElementById("hintMessage");
+        if (hintDiv) hintDiv.innerText = getDynamicHint();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const timerSpan = document.getElementById("timerDisplay");
+    if (timerSpan) timerSpan.innerText = `${timeLeft}s`;
+  }
+
+  function handleTimeout() {
+    if (!isActive || waitingTransition) return;
+    isActive = false;
+    answerLock = true;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    const fb = document.getElementById("feedbackMsg");
+    if (fb) fb.innerHTML = "⏰ TIME'S UP! No answer recorded. Moving on...";
+    totalAttempted++;
+    scheduleNextAfterDelay();
+  }
+
+  function submitAnswer() {
+    if (!isActive || waitingTransition) {
+      speakText("Please wait, loading next question.");
+      return;
+    }
+    const inputEl = document.getElementById("answerInput");
+    let userAnswer = inputEl.value.trim().toLowerCase();
+    if (userAnswer === "") {
+      document.getElementById("feedbackMsg").innerHTML = "❗ Please type an answer!";
+      speakText("Please write your answer.");
+      return;
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    isActive = false;
+    answerLock = true;
+
+    const currentQ = levelQuestions[currentQIndex];
+    const correctAns = currentQ.correct;
+    let isCorrect = false;
+
+    let normalizedUser = userAnswer.replace(/[^a-z0-9]/g, '');
+    let normalizedCorrect = correctAns.replace(/[^a-z0-9]/g, '');
+
+    if (normalizedUser === normalizedCorrect) {
+      isCorrect = true;
+    } else {
+      // flexible synonyms
+      const synonyms = {
+        "tillage": ["tilling", "plowing"],
+        "transplanting": ["transplant"],
+        "compost": ["organic fertilizer"],
+        "weeding": ["weed removal"],
+        "vitamins": ["vitamin"],
+        "carbohydrates": ["carbs", "carbohydrate"],
+        "protein": ["proteins"],
+        "deep frying": ["deep fry", "deepfried"],
+        "shallow frying": ["shallow fry"],
+        "poaching": "poach",
+        "silo": ["granary", "bin"],
+        "weevil": ["weevils"],
+        "lentil": ["lentils"],
+        "cow": ["cattle"],
+        "hen": ["chicken"]
+      };
+      for (let [key, vals] of Object.entries(synonyms)) {
+        if (normalizedCorrect === key && (typeof vals === 'string' ? normalizedUser.includes(vals) : vals.some(v => normalizedUser.includes(v)))) {
+          isCorrect = true;
+          break;
+        }
+      }
+      if (!isCorrect && normalizedUser.includes(normalizedCorrect) && normalizedCorrect.length > 3) isCorrect = true;
+      if (correctAns === "eggs" && userAnswer.includes("egg")) isCorrect = true;
+    }
+
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    if (isCorrect) {
+      levelScore++;
+      totalAttempted++;
+      feedbackDiv.innerHTML = "✅ CORRECT! 🍎 +1 point! Great knowledge!";
+      speakText("Correct! Excellent.");
+    } else {
+      totalAttempted++;
+      feedbackDiv.innerHTML = `❌ Oops. Correct answer: "${capitalizeFirst(correctAns)}". Keep learning about food production!`;
+      speakText(`Wrong. The answer is ${correctAns}.`);
+    }
+    scheduleNextAfterDelay();
+  }
+
+  function scheduleNextAfterDelay() {
+    waitingTransition = true;
+    setTimeout(() => {
+      if (currentQIndex + 1 >= levelQuestions.length || totalAttempted >= 30) {
+        finishLevel();
+      } else {
+        currentQIndex++;
+        resetForNextQuestion();
+      }
+    }, 1600);
+  }
+
+  function finishLevel() {
+    const percent = (levelScore / 30) * 100;
+    const passed = percent >= 80;
+    if (passed && currentLevel < 5) {
+      showModal(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉<br>Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>🌾 You pass! Advancing to Level ${currentLevel+1}.`, true);
+    } else if (passed && currentLevel === 5) {
+      showModal(`🏆🍲 MASTER CHEF & FARMER! 🍲🏆<br>You finished all 5 levels!<br>Final Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>You are a Food Production Expert!`, false);
+    } else {
+      showModal(`💔 Level ${currentLevel} FAILED!<br>${levelScore}/30 (${Math.floor(percent)}%)<br>Need 80% to proceed. Restarting Level ${currentLevel}...`, false);
+    }
+  }
+
+  function showModal(message, advanceToNext) {
+    if (timerInterval) clearInterval(timerInterval);
+    const modalDiv = document.createElement("div");
+    modalDiv.className = "modal-message";
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        <div>${message}</div>
+        <button id="modalConfirmBtn">CONTINUE</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById("modalConfirmBtn").onclick = () => {
+      modalDiv.remove();
+      if (advanceToNext && currentLevel < 5) {
+        currentLevel++;
+        loadLevel(currentLevel);
+      } else if (!advanceToNext && currentLevel === 5 && message.includes("MASTER CHEF")) {
+        currentLevel = 1;
+        loadLevel(1);
+      } else if (!advanceToNext) {
+        loadLevel(currentLevel);
+      } else {
+        loadLevel(currentLevel);
+      }
+    };
+  }
+
+  function loadLevel(level) {
+    const startIdx = (level - 1) * 30;
+    levelQuestions = masterBank.slice(startIdx, startIdx + 30);
+    if (levelQuestions.length < 30) console.warn("issue");
+    currentQIndex = 0;
+    levelScore = 0;
+    totalAttempted = 0;
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function resetForNextQuestion() {
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  loadLevel(1);
+</script>
+</body>
+</html>

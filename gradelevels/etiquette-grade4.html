@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Etiquette Master | CBC Grade 4 English</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #4a6fa5, #2c3e66);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 16px;
+        }
+
+        .master-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Module Navigation */
+        .module-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .module-btn {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .module-btn.active {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-color: #ffd966;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+            color: #1a2a4a;
+        }
+
+        .module-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Game Containers */
+        .game-container {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            overflow: hidden;
+            display: none;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .game-container.active-module {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Styles */
+        .game-header {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: white;
+        }
+
+        .level-badge {
+            background: #2c3e50;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .timer-area {
+            background: #2c3e50;
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .score-panel {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .quiz-core {
+            padding: 20px;
+        }
+
+        /* Question Styles */
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        .instruction-box {
+            background: #fdebd0;
+            border-radius: 25px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            padding: 14px 20px;
+            color: white;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-btn.selected { background: linear-gradient(135deg, #4facfe, #00f2fe); border-color: #00f2fe; }
+        .option-btn.correct { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .option-btn.incorrect { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .option-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Answer Area */
+        .answer-input, textarea.answer-input {
+            width: 100%;
+            font-size: 1rem;
+            padding: 12px 15px;
+            text-align: left;
+            border: 3px solid #f39c12;
+            border-radius: 30px;
+            background: white;
+            outline: none;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .btn {
+            background: #27ae60;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-next { background: #3498db; }
+        .btn-secondary { background: #e67e22; }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message-area {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .timer-critical {
+            background: #c0392b;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .char-count { font-size: 0.75rem; color: #7f8c8d; margin-top: 5px; text-align: right; }
+        .reading-text { background: #ecf0f1; border-radius: 20px; padding: 15px; margin-bottom: 15px; font-size: 0.9rem; color: #2c3e50; max-height: 180px; overflow-y: auto; }
+        .scenario-box, .handwriting-practice { background: #fef9e6; border: 2px dashed #f39c12; border-radius: 20px; padding: 15px; margin-bottom: 15px; font-size: 0.95rem; }
+        .audio-player, .pronunciation-practice { background: #e8f4fd; border-radius: 20px; padding: 15px; margin-bottom: 15px; text-align: center; }
+        .mic-button { background: #43e97b; width: 70px; height: 70px; border-radius: 50%; font-size: 2rem; border: none; cursor: pointer; margin: 10px auto; display: block; }
+        .mic-button.listening { background: #e74c3c; animation: pulse 0.8s infinite; }
+
+        .feedback-correct { background: #d4edda; color: #155724; border: 2px solid #28a745; display: block; padding: 12px; border-radius: 20px; margin: 10px 0; text-align: center; }
+        .feedback-wrong { background: #f8d7da; color: #721c24; border: 2px solid #dc3545; display: block; padding: 12px; border-radius: 20px; margin: 10px 0; text-align: center; }
+
+        .hidden { display: none; }
+
+        /* Level Complete */
+        .level-complete { text-align: center; padding: 30px; }
+        .score-summary { background: rgba(255,255,255,0.9); border-radius: 30px; padding: 25px; margin: 20px 0; }
+        .score-value { font-size: 3rem; font-weight: bold; color: #e67e22; }
+        .stars-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; font-size: 2.5rem; }
+        .star { color: #ccc; }
+        .star.earned { color: #f1c40f; text-shadow: 0 0 10px gold; }
+        .pass-message { color: #27ae60; font-size: 1.5rem; font-weight: bold; }
+        .fail-message { color: #e74c3c; font-size: 1.5rem; font-weight: bold; }
+
+        @media (max-width: 650px) {
+            .module-btn { padding: 8px 16px; font-size: 0.8rem; }
+            .question-text { font-size: 1rem; padding: 14px; }
+            .option-btn { padding: 12px 16px; font-size: 0.9rem; }
+            .btn { padding: 10px 20px; font-size: 0.9rem; }
+            .score-value { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="master-container">
+    <div class="module-nav">
+        <button class="module-btn active" data-module="module1">🗣️ Etiquette Adventure</button>
+        <button class="module-btn" data-module="module2">✍️ Handwriting Hero</button>
+        <button class="module-btn" data-module="module3">📖 Reading Explorer</button>
+    </div>
+
+    <!-- MODULE 1: Etiquette Adventure (Polite Words, Listening, Speaking, Scenarios) -->
+    <div id="module1" class="game-container active-module">
+        <div class="game-header">
+            <div class="level-badge">🤝 LEVEL <span id="m1_levelNum">1</span>/5</div>
+            <div class="timer-area">⏱️ <span id="m1_timerDisplay">00</span>s</div>
+        </div>
+        <div class="score-panel">
+            <span>⭐ SCORE: <span id="m1_score">0</span>/30</span>
+            <span>🎯 NEED 24/30 (80%)</span>
+        </div>
+        <div class="quiz-core">
+            <div class="instruction-box">🤝 POLITE WORDS & ETIQUETTE! Listen, speak, and choose the polite response.</div>
+            <div id="m1_scenarioBox" class="scenario-box hidden"></div>
+            <div id="m1_audioBox" class="audio-player hidden"></div>
+            <div id="m1_pronounceBox" class="pronunciation-practice hidden"></div>
+            <div class="question-text" id="m1_questionText">Loading...</div>
+            <div id="m1_optionsContainer" class="options-container"></div>
+            <div class="flex-col">
+                <input type="text" id="m1_answerInput" class="answer-input hidden" placeholder="Type your answer...">
+                <button id="m1_submitBtn" class="btn">✓ SUBMIT</button>
+                <button id="m1_nextBtn" class="btn btn-next" disabled>➡️ NEXT</button>
+            </div>
+            <div id="m1_feedback" class="hidden"></div>
+        </div>
+        <div class="message-area" id="m1_gameMessage">🎭 Learn polite words through scenarios, listening, and speaking practice!</div>
+    </div>
+
+    <!-- MODULE 2: Handwriting Hero -->
+    <div id="module2" class="game-container">
+        <div class="game-header">
+            <div class="level-badge">✍️ LEVEL <span id="m2_levelNum">1</span>/5</div>
+            <div class="timer-area">⏱️ <span id="m2_timerDisplay">00</span>s</div>
+        </div>
+        <div class="score-panel">
+            <span>⭐ SCORE: <span id="m2_score">0</span>/30</span>
+            <span>🎯 NEED 24/30 (80%)</span>
+        </div>
+        <div class="quiz-core">
+            <div class="instruction-box">✍️ HANDWRITING PRACTICE! Write the polite word, phrase, or sentence neatly.</div>
+            <div class="handwriting-practice" id="m2_exampleDisplay">📝 Example:</div>
+            <div class="question-text" id="m2_questionText">Loading...</div>
+            <div class="flex-col">
+                <textarea id="m2_answerInput" class="answer-input" rows="2" placeholder="Write your answer here using neat handwriting..."></textarea>
+                <div class="char-count" id="m2_charCount">0 characters</div>
+                <button id="m2_submitBtn" class="btn">✓ CHECK</button>
+                <button id="m2_nextBtn" class="btn btn-next" disabled>➡️ NEXT</button>
+            </div>
+            <div id="m2_feedback" class="hidden"></div>
+        </div>
+        <div class="message-area" id="m2_gameMessage">✍️ Practice writing good manners phrases neatly and correctly!</div>
+    </div>
+
+    <!-- MODULE 3: Reading Explorer (Skimming, Scanning, Grammar) -->
+    <div id="module3" class="game-container">
+        <div class="game-header">
+            <div class="level-badge">📖 LEVEL <span id="m3_levelNum">1</span>/5</div>
+            <div class="timer-area">⏱️ <span id="m3_timerDisplay">00</span>s</div>
+        </div>
+        <div class="score-panel">
+            <span>⭐ SCORE: <span id="m3_score">0</span>/30</span>
+            <span>🎯 NEED 24/30 (80%)</span>
+        </div>
+        <div class="quiz-core">
+            <div class="instruction-box">🔍 SKIM & SCAN + GRAMMAR! Read quickly and answer comprehension or grammar questions.</div>
+            <div id="m3_readingBox" class="reading-text hidden"></div>
+            <div class="question-text" id="m3_questionText">Loading...</div>
+            <div class="flex-col">
+                <input type="text" id="m3_answerInput" class="answer-input" placeholder="Type your answer...">
+                <button id="m3_submitBtn" class="btn">✓ CHECK</button>
+                <button id="m3_nextBtn" class="btn btn-next" disabled>➡️ NEXT</button>
+            </div>
+            <div id="m3_feedback" class="hidden"></div>
+        </div>
+        <div class="message-area" id="m3_gameMessage">📖 Read passages quickly to find answers. Complete grammar with "enough...to" or "a lot/a lot of"!</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ========== MODULE 1: Etiquette Adventure Data ==========
+        const m1Questions = [
+            { type: "mc", q: "What do you say when someone gives you a gift?", options: ["Sorry", "Thank you", "Please", "Excuse me"], correct: 1, hint: "Express gratitude" },
+            { type: "mc", q: "You accidentally bump into someone. What do you say?", options: ["Thank you", "Please", "Sorry", "Hello"], correct: 2, hint: "Apologize" },
+            { type: "mc", q: "What word do you use when you need something politely?", options: ["Sorry", "Thank you", "Please", "Goodbye"], correct: 2, hint: "Request politely" },
+            { type: "mc", q: "You need to pass by someone. What do you say?", options: ["Sorry", "Thank you", "Please", "Excuse me"], correct: 3, hint: "Get attention politely" },
+            { type: "listening", q: "Listen: What do we say when we meet someone for the first time?", audio: "Nice to meet you", correct: "nice to meet you" },
+            { type: "scenario", q: "Someone holds the door open for you. What do you say?", correct: "thank you", hint: "Show gratitude" }
+        ];
+        while(m1Questions.length < 150) m1Questions.push({ type: "mc", q: "What is a polite greeting in the morning?", options: ["Good morning", "Good night", "Hello", "Hi"], correct: 0 });
+        let m1Levels = [[],[],[],[],[]];
+        for(let i=0;i<150;i++) m1Levels[Math.floor(i/30)].push({...m1Questions[i % m1Questions.length]});
+        
+        let m1State = { level:0, idx:0, score:0, timerSec:0, timerInt:null, active:true, locked:false, waiting:false };
+        const m1El = {};
+        function m1$(id){ return document.getElementById(id); }
+        function m1UpdateUI() { m1El.score.textContent = m1State.score; }
+        function m1StopTimer() { if(m1State.timerInt) clearInterval(m1State.timerInt); }
+        function m1StartTimer() {
+            m1StopTimer(); const times = {0:200,1:190,2:180,3:170,4:160};
+            m1State.timerSec = times[m1State.level];
+            m1El.timerDisplay.textContent = m1State.timerSec;
+            m1State.timerInt = setInterval(() => {
+                if(!m1State.active) return;
+                if(m1State.timerSec <= 1) { m1StopTimer(); m1State.active=false; m1El.gameMessage.innerHTML = `⏰ TIME'S UP! Level ${m1State.level+1} FAILED! Refresh to restart.`; m1Disable(true); }
+                else { m1State.timerSec--; m1El.timerDisplay.textContent = m1State.timerSec; if(m1State.timerSec<=30) m1El.timerDisplay.classList.add('timer-critical'); }
+            },1000);
+        }
+        function m1Disable(d){ m1El.submitBtn.disabled=d; m1El.nextBtn.disabled=!d; if(m1El.answerInput) m1El.answerInput.disabled=d; document.querySelectorAll('#m1_optionsContainer .option-btn').forEach(b=>b.disabled=d); }
+        function m1LoadQuestion(){
+            if(m1State.idx>=30) return m1FinishLevel();
+            const q = m1Levels[m1State.level][m1State.idx];
+            m1El.scenarioBox.classList.add('hidden'); m1El.audioBox.classList.add('hidden'); m1El.pronounceBox.classList.add('hidden');
+            m1El.optionsContainer.innerHTML = ''; m1El.answerInput.classList.add('hidden');
+            if(q.type === 'mc') {
+                m1El.questionText.textContent = q.q;
+                q.options.forEach((opt,idx)=>{
+                    const btn = document.createElement('button'); btn.className='option-btn'; btn.innerHTML=`<span class="option-letter">${String.fromCharCode(65+idx)}</span> ${opt}`;
+                    btn.onclick = () => { document.querySelectorAll('#m1_optionsContainer .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); m1State.selectedIdx=idx; m1El.submitBtn.disabled=false; };
+                    m1El.optionsContainer.appendChild(btn);
+                });
+                m1State.selectedIdx = null;
+            } else if(q.type === 'listening') {
+                m1El.questionText.textContent = q.q;
+                m1El.audioBox.classList.remove('hidden');
+                m1El.audioBox.innerHTML = `<div><strong>🔊 Listen carefully:</strong></div><div style="margin:10px 0">"${q.audio}"</div><button class="btn btn-secondary" id="playAudioBtn">▶ Play Audio</button>`;
+                document.getElementById('playAudioBtn')?.addEventListener('click',()=>{ const u=new SpeechSynthesisUtterance(q.audio); u.rate=0.9; window.speechSynthesis.speak(u); });
+                m1El.answerInput.classList.remove('hidden'); m1El.answerInput.value = '';
+                m1State.typedAnswer = null;
+            } else {
+                m1El.questionText.textContent = q.q;
+                m1El.answerInput.classList.remove('hidden'); m1El.answerInput.value = '';
+            }
+            m1El.submitBtn.disabled = true; m1State.locked=false; m1State.waiting=false; m1El.nextBtn.disabled=true;
+            m1El.feedback.classList.add('hidden');
+        }
+        function m1CheckAnswer(){
+            if(m1State.locked || m1State.waiting) return;
+            const q = m1Levels[m1State.level][m1State.idx];
+            let isCorrect = false;
+            if(q.type === 'mc') {
+                if(m1State.selectedIdx !== null) isCorrect = (m1State.selectedIdx === q.correct);
+            } else {
+                let user = (m1El.answerInput ? m1El.answerInput.value.trim().toLowerCase() : '').replace(/[^\w\s]/g,'');
+                let correct = q.correct.toLowerCase();
+                isCorrect = user === correct || (correct.includes(user) && user.length>3) || (user.includes(correct) && correct.length>3);
+            }
+            m1State.locked = true;
+            if(isCorrect) { m1State.score++; m1UpdateUI(); }
+            m1El.feedback.className = isCorrect ? 'feedback-correct' : 'feedback-wrong';
+            m1El.feedback.innerHTML = isCorrect ? `✅ Correct! +1 (${m1State.score}/30)` : `❌ Correct answer: ${q.type==='mc'?q.options[q.correct]:q.correct}`;
+            m1El.feedback.classList.remove('hidden');
+            m1State.waiting = true; m1El.submitBtn.disabled = true; m1El.nextBtn.disabled = false;
+        }
+        function m1NextQuestion(){ if(m1State.waiting){ m1State.idx++; if(m1State.idx<30) m1LoadQuestion(); else m1FinishLevel(); } }
+        function m1FinishLevel(){
+            m1StopTimer(); const passed = m1State.score >= 24;
+            if(passed && m1State.level+1<5){ m1El.gameMessage.innerHTML = `🎉 LEVEL ${m1State.level+1} PASSED! Moving to Level ${m1State.level+2}...`; m1State.level++; m1State.idx=0; m1State.score=0; m1UpdateUI(); m1StartTimer(); m1LoadQuestion(); }
+            else if(passed && m1State.level+1===5) m1El.gameMessage.innerHTML = `🏆 ETIQUETTE MASTER! Final Score: ${m1State.score}/30 🏆`;
+            else m1El.gameMessage.innerHTML = `❌ Level ${m1State.level+1} failed. Score: ${m1State.score}/30 (need 24). Refresh to restart.`;
+        }
+        m1El.levelNum = m1$('m1_levelNum'); m1El.timerDisplay = m1$('m1_timerDisplay'); m1El.score = m1$('m1_score');
+        m1El.scenarioBox = m1$('m1_scenarioBox'); m1El.audioBox = m1$('m1_audioBox'); m1El.pronounceBox = m1$('m1_pronounceBox');
+        m1El.questionText = m1$('m1_questionText'); m1El.optionsContainer = m1$('m1_optionsContainer'); m1El.answerInput = m1$('m1_answerInput');
+        m1El.submitBtn = m1$('m1_submitBtn'); m1El.nextBtn = m1$('m1_nextBtn'); m1El.feedback = m1$('m1_feedback'); m1El.gameMessage = m1$('m1_gameMessage');
+        m1State.level=0; m1State.idx=0; m1State.score=0; m1StartTimer(); m1LoadQuestion();
+        m1El.submitBtn.onclick = m1CheckAnswer; m1El.nextBtn.onclick = m1NextQuestion;
+
+        // ========== MODULE 2: Handwriting Hero Data ==========
+        const m2Prompts = [
+            { instruction: "Write the polite word you say when you receive a gift.", expected: "thank you", variations: ["thanks","thank you","thankyou"] },
+            { instruction: "Write the polite word you say when you need something.", expected: "please", variations: ["please"] },
+            { instruction: "Write what you say when you accidentally bump into someone.", expected: "sorry", variations: ["sorry","i am sorry","excuse me"] }
+        ];
+        while(m2Prompts.length < 150) m2Prompts.push({ instruction: "Write a polite greeting for the morning.", expected: "good morning", variations: ["good morning"] });
+        let m2Levels = [[],[],[],[],[]];
+        for(let i=0;i<150;i++) m2Levels[Math.floor(i/30)].push({...m2Prompts[i % m2Prompts.length]});
+        
+        let m2State = { level:0, idx:0, score:0, timerSec:0, timerInt:null, active:true, locked:false, waiting:false };
+        const m2El = {};
+        function m2$(id){ return document.getElementById(id); }
+        function m2UpdateUI() { m2El.score.textContent = m2State.score; m2El.charCount.textContent = `${m2El.answerInput.value.length} characters`; }
+        function m2StopTimer() { if(m2State.timerInt) clearInterval(m2State.timerInt); }
+        function m2StartTimer(){
+            m2StopTimer(); const times = {0:190,1:180,2:170,3:160,4:150};
+            m2State.timerSec = times[m2State.level];
+            m2El.timerDisplay.textContent = m2State.timerSec;
+            m2State.timerInt = setInterval(()=>{
+                if(!m2State.active) return;
+                if(m2State.timerSec<=1){ m2StopTimer(); m2State.active=false; m2El.gameMessage.innerHTML = `⏰ TIME'S UP! Level ${m2State.level+1} FAILED! Refresh to restart.`; m2Disable(true); }
+                else { m2State.timerSec--; m2El.timerDisplay.textContent = m2State.timerSec; if(m2State.timerSec<=30) m2El.timerDisplay.classList.add('timer-critical'); }
+            },1000);
+        }
+        function m2Disable(d){ m2El.answerInput.disabled=d; m2El.submitBtn.disabled=d; m2El.nextBtn.disabled=!d; }
+        function m2LoadQuestion(){
+            if(m2State.idx>=30) return m2FinishLevel();
+            const q = m2Levels[m2State.level][m2State.idx];
+            m2El.exampleDisplay.innerHTML = `📝 Example: ${q.instruction} → Write neatly: "${q.expected}"`;
+            m2El.questionText.innerHTML = `✍️ HANDWRITING TASK:<br><br>${q.instruction}`;
+            m2El.answerInput.value = ""; m2El.answerInput.disabled=false; m2El.submitBtn.disabled=false;
+            m2State.locked=false; m2State.waiting=false; m2El.nextBtn.disabled=true; m2UpdateUI();
+        }
+        function m2CheckAnswer(){
+            if(m2State.locked || m2State.waiting) return;
+            const q = m2Levels[m2State.level][m2State.idx];
+            let user = m2El.answerInput.value.trim().toLowerCase().replace(/[^\w\s]/g,'');
+            let isCorrect = user === q.expected || (q.variations && q.variations.some(v=>user===v));
+            m2State.locked = true;
+            if(isCorrect) { m2State.score++; m2UpdateUI(); }
+            m2El.feedback.className = isCorrect ? 'feedback-correct' : 'feedback-wrong';
+            m2El.feedback.innerHTML = isCorrect ? `✅ Correct! +1 (${m2State.score}/30)` : `❌ Expected: "${q.expected}". Keep practicing!`;
+            m2El.feedback.classList.remove('hidden');
+            m2State.waiting = true; m2El.submitBtn.disabled = true; m2El.nextBtn.disabled = false;
+        }
+        function m2NextQuestion(){ if(m2State.waiting){ m2State.idx++; if(m2State.idx<30) m2LoadQuestion(); else m2FinishLevel(); } }
+        function m2FinishLevel(){
+            m2StopTimer(); const passed = m2State.score >= 24;
+            if(passed && m2State.level+1<5){ m2El.gameMessage.innerHTML = `🎉 LEVEL ${m2State.level+1} PASSED! Moving to Level ${m2State.level+2}...`; m2State.level++; m2State.idx=0; m2State.score=0; m2UpdateUI(); m2StartTimer(); m2LoadQuestion(); }
+            else if(passed && m2State.level+1===5) m2El.gameMessage.innerHTML = `🏆 HANDWRITING HERO! Final Score: ${m2State.score}/30 🏆`;
+            else m2El.gameMessage.innerHTML = `❌ Level ${m2State.level+1} failed. Score: ${m2State.score}/30 (need 24). Refresh to restart.`;
+        }
+        m2El.levelNum = m2$('m2_levelNum'); m2El.timerDisplay = m2$('m2_timerDisplay'); m2El.score = m2$('m2_score');
+        m2El.exampleDisplay = m2$('m2_exampleDisplay'); m2El.questionText = m2$('m2_questionText'); m2El.answerInput = m2$('m2_answerInput');
+        m2El.charCount = m2$('m2_charCount'); m2El.submitBtn = m2$('m2_submitBtn'); m2El.nextBtn = m2$('m2_nextBtn');
+        m2El.feedback = m2$('m2_feedback'); m2El.gameMessage = m2$('m2_gameMessage');
+        m2State.level=0; m2State.idx=0; m2State.score=0; m2StartTimer(); m2LoadQuestion();
+        m2El.answerInput.addEventListener('input', m2UpdateUI);
+        m2El.submitBtn.onclick = m2CheckAnswer; m2El.nextBtn.onclick = m2NextQuestion;
+
+        // ========== MODULE 3: Reading Explorer Data ==========
+        const m3Reading = [
+            { passage: "Good manners are important. Always say 'please' and 'thank you'.", q: "What two polite words should you always say?", a: "please and thank you" },
+            { passage: "When you meet someone new, look them in the eye and smile.", q: "Where should you look when meeting someone new?", a: "eye" }
+        ];
+        const m3Grammar = [
+            { q: "She is _______ tall to reach the top shelf.", a: "enough" },
+            { q: "There are _______ people at the party.", a: "a lot of" },
+            { q: "I like her _______.", a: "a lot" }
+        ];
+        let m3All = [];
+        for(let r of m3Reading) m3All.push({ type:"reading", passage:r.passage, question:r.q, answer:r.a });
+        for(let g of m3Grammar) m3All.push({ type:"grammar", question:g.q, answer:g.a });
+        while(m3All.length < 150) m3All.push({ type:"grammar", question:"He has _______ friends at school.", answer:"a lot of" });
+        let m3Levels = [[],[],[],[],[]];
+        for(let i=0;i<150;i++) m3Levels[Math.floor(i/30)].push({...m3All[i % m3All.length]});
+        
+        let m3State = { level:0, idx:0, score:0, timerSec:0, timerInt:null, active:true, locked:false, waiting:false };
+        const m3El = {};
+        function m3$(id){ return document.getElementById(id); }
+        function m3UpdateUI() { m3El.score.textContent = m3State.score; }
+        function m3StopTimer() { if(m3State.timerInt) clearInterval(m3State.timerInt); }
+        function m3StartTimer(){
+            m3StopTimer(); const times = {0:200,1:190,2:180,3:170,4:160};
+            m3State.timerSec = times[m3State.level];
+            m3El.timerDisplay.textContent = m3State.timerSec;
+            m3State.timerInt = setInterval(()=>{
+                if(!m3State.active) return;
+                if(m3State.timerSec<=1){ m3StopTimer(); m3State.active=false; m3El.gameMessage.innerHTML = `⏰ TIME'S UP! Level ${m3State.level+1} FAILED! Refresh to restart.`; m3Disable(true); }
+                else { m3State.timerSec--; m3El.timerDisplay.textContent = m3State.timerSec; if(m3State.timerSec<=30) m3El.timerDisplay.classList.add('timer-critical'); }
+            },1000);
+        }
+        function m3Disable(d){ m3El.answerInput.disabled=d; m3El.submitBtn.disabled=d; m3El.nextBtn.disabled=!d; }
+        function m3LoadQuestion(){
+            if(m3State.idx>=30) return m3FinishLevel();
+            const q = m3Levels[m3State.level][m3State.idx];
+            if(q.type === "reading") {
+                m3El.readingBox.classList.remove('hidden');
+                m3El.readingBox.innerHTML = `<strong>📖 READ THIS (skim & scan):</strong><br><br>${q.passage}`;
+                m3El.questionText.innerHTML = `🔍 SKIM & SCAN QUESTION:<br><br>${q.question}`;
+            } else {
+                m3El.readingBox.classList.add('hidden');
+                m3El.questionText.innerHTML = `📝 GRAMMAR QUESTION:<br><br>${q.question}`;
+            }
+            m3El.answerInput.value = ""; m3El.answerInput.disabled=false; m3El.submitBtn.disabled=false;
+            m3State.locked=false; m3State.waiting=false; m3El.nextBtn.disabled=true;
+        }
+        function m3CheckAnswer(){
+            if(m3State.locked || m3State.waiting) return;
+            const q = m3Levels[m3State.level][m3State.idx];
+            let user = m3El.answerInput.value.trim().toLowerCase().replace(/[^\w\s]/g,'');
+            let correct = q.answer.toLowerCase();
+            let isCorrect = user === correct || (correct.includes(user) && user.length>3) || (user.includes(correct) && correct.length>3);
+            if(correct === "a lot of" && user === "a lot") isCorrect = false;
+            m3State.locked = true;
+            if(isCorrect) { m3State.score++; m3UpdateUI(); }
+            m3El.feedback.className = isCorrect ? 'feedback-correct' : 'feedback-wrong';
+            m3El.feedback.innerHTML = isCorrect ? `✅ Correct! +1 (${m3State.score}/30)` : `❌ Correct answer: ${q.answer}`;
+            m3El.feedback.classList.remove('hidden');
+            m3State.waiting = true; m3El.submitBtn.disabled = true; m3El.nextBtn.disabled = false;
+        }
+        function m3NextQuestion(){ if(m3State.waiting){ m3State.idx++; if(m3State.idx<30) m3LoadQuestion(); else m3FinishLevel(); } }
+        function m3FinishLevel(){
+            m3StopTimer(); const passed = m3State.score >= 24;
+            if(passed && m3State.level+1<5){ m3El.gameMessage.innerHTML = `🎉 LEVEL ${m3State.level+1} PASSED! Moving to Level ${m3State.level+2}...`; m3State.level++; m3State.idx=0; m3State.score=0; m3UpdateUI(); m3StartTimer(); m3LoadQuestion(); }
+            else if(passed && m3State.level+1===5) m3El.gameMessage.innerHTML = `🏆 READING EXPLORER! Final Score: ${m3State.score}/30 🏆`;
+            else m3El.gameMessage.innerHTML = `❌ Level ${m3State.level+1} failed. Score: ${m3State.score}/30 (need 24). Refresh to restart.`;
+        }
+        m3El.levelNum = m3$('m3_levelNum'); m3El.timerDisplay = m3$('m3_timerDisplay'); m3El.score = m3$('m3_score');
+        m3El.readingBox = m3$('m3_readingBox'); m3El.questionText = m3$('m3_questionText'); m3El.answerInput = m3$('m3_answerInput');
+        m3El.submitBtn = m3$('m3_submitBtn'); m3El.nextBtn = m3$('m3_nextBtn'); m3El.feedback = m3$('m3_feedback'); m3El.gameMessage = m3$('m3_gameMessage');
+        m3State.level=0; m3State.idx=0; m3State.score=0; m3StartTimer(); m3LoadQuestion();
+        m3El.submitBtn.onclick = m3CheckAnswer; m3El.nextBtn.onclick = m3NextQuestion;
+
+        // Module Navigation
+        document.querySelectorAll('.module-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.game-container').forEach(c => c.classList.remove('active-module'));
+                document.getElementById(btn.dataset.module).classList.add('active-module');
+            };
+        });
+    })();
+</script>
+</body>
+</html>

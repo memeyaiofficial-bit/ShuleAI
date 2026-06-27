@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
+<title>🇰🇪 CBC Kiswahili Hub | Gredi 6 | Majanga • Sarufi • Nahau • Ufahamu</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(145deg, #0b3b5f 0%, #062e4a 100%);
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  .hub-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .hero-header {
+    text-align: center;
+    margin-bottom: 32px;
+    margin-top: 8px;
+  }
+  .hero-header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.6rem, 6vw, 2.6rem);
+    background: linear-gradient(135deg, #FFD966, #FFB347);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .hero-header p {
+    color: #d4f1f9;
+    font-weight: 600;
+    font-size: clamp(0.8rem, 3vw, 0.95rem);
+    background: rgba(0,0,0,0.3);
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 60px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .module-card {
+    background: rgba(255, 250, 235, 0.96);
+    border-radius: 32px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s;
+    box-shadow: 0 15px 30px -10px rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,215,130,0.6);
+    cursor: pointer;
+  }
+  .module-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 40px -12px black;
+  }
+
+  .card-banner {
+    padding: 20px 16px 16px;
+    text-align: center;
+    color: white;
+  }
+  .card-banner span {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .card-banner h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+  }
+  .banner-disaster { background: linear-gradient(135deg, #1e5a5a, #0e3a3a); }
+  .banner-grammar { background: linear-gradient(135deg, #1e3a5f, #0f2440); }
+  .banner-idiom { background: linear-gradient(135deg, #7b5ea7, #5a3d8a); }
+  .banner-reading { background: linear-gradient(135deg, #e9c46a, #e3a018); color: #2c4a2a; }
+  .banner-reading h2 { color: #1e3a1e; }
+
+  .card-preview {
+    padding: 18px;
+    background: #fffaf0;
+  }
+  .card-preview p {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 14px;
+    line-height: 1.4;
+    font-size: 0.85rem;
+  }
+  .preview-badge {
+    display: inline-block;
+    background: #e9c46a;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #2d2b1f;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  .play-hint {
+    margin-top: 14px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #b87333;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .game-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.94);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    overflow-y: auto;
+    padding: 16px;
+  }
+  .game-modal.active {
+    display: flex;
+  }
+  .game-iframe-container {
+    background: #fffaf0;
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    position: relative;
+    animation: modalFade 0.3s ease;
+  }
+  .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 18px;
+    background: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 26px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 10px black;
+    transition: 0.1s;
+    color: #1a1a2e;
+  }
+  .close-modal:hover {
+    background: #f4a261;
+    color: white;
+    transform: scale(1.05);
+  }
+  iframe {
+    width: 100%;
+    height: 85vh;
+    min-height: 520px;
+    border: none;
+    display: block;
+    background: #fffaf0;
+  }
+
+  @keyframes modalFade {
+    from { opacity: 0; transform: scale(0.96);}
+    to { opacity: 1; transform: scale(1);}
+  }
+
+  @media (max-width: 780px) {
+    .modules-grid { gap: 14px; }
+    .card-banner span { font-size: 2.2rem; }
+    .card-banner h2 { font-size: 1.1rem; }
+    iframe { height: 80vh; }
+    .close-modal { top: 6px; right: 12px; width: 34px; height: 34px; font-size: 22px; }
+  }
+  @media (max-width: 480px) {
+    body { padding: 10px; }
+    .card-preview p { font-size: 0.8rem; }
+    .preview-badge { font-size: 0.6rem; }
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #ffe3b0;
+    font-weight: 600;
+    font-size: 0.7rem;
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 40px;
+    backdrop-filter: blur(4px);
+  }
+</style>
+</head>
+<body>
+
+<div class="hub-container">
+  <div class="hero-header">
+    <h1>🇰🇪 MABINGWA WA KISWAHILI • GREDI 6</h1>
+    <p>⚠️ Majanga • 📚 Ngeli PA-KU-MU • 🗣️ Nahau • 📖 Ufahamu</p>
+  </div>
+
+  <div class="modules-grid">
+    <!-- Card 1: Majanga na Usalama -->
+    <div class="module-card" data-game="disaster">
+      <div class="card-banner banner-disaster">
+        <span>⚠️</span>
+        <h2>Majanga na Usalama</h2>
+      </div>
+      <div class="card-preview">
+        <p>Soma maelezo kuhusu mafuriko, ukame, moto na tetemeko, kisha jibu maswali ya ufahamu kwa sauti.</p>
+        <div><span class="preview-badge">🌊 Mafuriko</span><span class="preview-badge">🔥 Moto</span><span class="preview-badge">🏜️ Ukame</span></div>
+        <div class="play-hint">🎤 Bonyeza → Jibu kwa sauti!</div>
+      </div>
+    </div>
+
+    <!-- Card 2: Ngeli Stadi PA-KU-MU -->
+    <div class="module-card" data-game="grammar">
+      <div class="card-banner banner-grammar">
+        <span>📚</span>
+        <h2>Ngeli Stadi PA-KU-MU</h2>
+      </div>
+      <div class="card-preview">
+        <p>Badilisha sentensi kutoka umoja hadi wingi, na kutoka PA hadi KU. Jifunze matumizi sahihi ya ngeli hizi.</p>
+        <div><span class="preview-badge">PA - Mahali</span><span class="preview-badge">KU - Hali</span><span class="preview-badge">MU - Viumbehai</span></div>
+        <div class="play-hint">🎤 Bonyeza → Badilisha sentensi kwa sauti!</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Nahau Stadi -->
+    <div class="module-card" data-game="idiom">
+      <div class="card-banner banner-idiom">
+        <span>🗣️</span>
+        <h2>Nahau Stadi</h2>
+      </div>
+      <div class="card-preview">
+        <p>Eleza maana ya nahau zinazohusiana na kazi, ushirikiano na kuzuia majanga. Boresha matamshi yako.</p>
+        <div><span class="preview-badge">🤝 Ushirikiano</span><span class="preview-badge">🐝 Nyuki</span><span class="preview-badge">💪 Nguvu za Pamoja</span></div>
+        <div class="play-hint">🎤 Bonyeza → Eleza nahau kwa sauti!</div>
+      </div>
+    </div>
+
+    <!-- Card 4: Kusoma kwa Mapana -->
+    <div class="module-card" data-game="reading">
+      <div class="card-banner banner-reading">
+        <span>📖</span>
+        <h2>Kusoma kwa Mapana</h2>
+      </div>
+      <div class="card-preview">
+        <p>Soma makala fupi kuhusu majanga mbalimbali na jinsi ya kuyakabiliana, kisha jibu maswali.</p>
+        <div><span class="preview-badge">📖 Ufahamu</span><span class="preview-badge">⚠️ Tahadhari</span><span class="preview-badge">🛡️ Kinga</span></div>
+        <div class="play-hint">📖 Bonyeza → Soma na ujibu kwa sauti!</div>
+      </div>
+    </div>
+  </div>
+  <footer>🇰🇪 CBC Grade 6 Kiswahili • Majanga, Sarufi PA-KU-MU, Nahau, Ufahamu — Jifunze kwa Maandishi na Sauti! 🇰🇪</footer>
+</div>
+
+<div id="gameModal" class="game-modal">
+  <div class="game-iframe-container">
+    <button class="close-modal" id="closeModalBtn">✕</button>
+    <iframe id="gameIframe" title="CBC Kiswahili Game" srcdoc=""></iframe>
+  </div>
+</div>
+
+<script>
+  // ====================== GAME 1: MAJANGA NA USALAMA ======================
+  const disasterGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Majanga na Usalama</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;box-shadow:0 20px 35px rgba(0,0,0,0.2);} .game-header{background:#1e5a5a;padding:16px;color:white;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;font-weight:bold;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .passage{background:#e6f2ff;padding:20px;border-radius:32px;margin:16px;font-size:1rem;line-height:1.6;} .question{font-size:1.2rem;font-weight:bold;margin:16px;} .voice-zone{text-align:center;padding:16px;} .mic-button{background:#0f6ba3;border:none;width:80px;height:80px;border-radius:50%;font-size:2.5rem;color:white;cursor:pointer;} .mic-button.listening-active{animation:pulseMic 1s infinite;background:#1ea87b;} @keyframes pulseMic{0%{transform:scale(1);}50%{transform:scale(1.05);}} .answer-status{padding:12px;font-weight:bold;} .hint-box{background:#fff8e7;border-left:8px solid #ffb347;padding:12px;margin:12px;border-radius:24px;} .next-level-msg{background:#00713b;color:white;text-align:center;padding:12px;margin:12px;border-radius:50px;cursor:pointer;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>⚠️ MAJANGA NA USALAMA</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📋 SWALI: <span id="qNum">1</span>/15</div></div>
+<div class="passage" id="passageTxt"></div><div class="question" id="questionTxt"></div><div class="voice-zone"><button class="mic-button" id="micBtn">🎤</button><div id="statusMsg">✅ Tayari</div><div class="answer-status" id="fbMsg"></div></div>
+<div class="hint-box" id="hintBox"></div><div id="completeMsg"></div></div>
+<script>const D={1:[{p:"Mafuriko hutokea wakati wa mvua kubwa. Yanabomoa nyumba na kuua watu.",q:"Ni hatua gani za kuzuia mafuriko?",a:"kupanda miti na kutengeneza mifereji",h:"Miti hufyonza maji"},{p:"Ukame hutokea kunapokosa mvua kwa muda mrefu, na kusababisha njaa.",q:"Jinsi ya kuzuia athari za ukame?",a:"kuhifadhi maji ya mvua",h:"Matangi ya kukusanya maji"}],2:[{p:"Moto wa nyika hutokea kwa sababu ya nchi kavu na upepo mkali.",q:"Jinsi ya kuzuia moto wa nyika?",a:"kutowasha moto karibu na misitu",h:"Usitupe sigara"}],3:[{p:"Tetemeko la ardhi haliwezi kuzuiwa, lakini tunaweza kupunguza madhara.",q:"Watu wanapaswa kufanya nini wakati wa tetemeko?",a:"kujificha chini ya meza",h:"Kuepuka madirisha"}],4:[{p:"Uchafuzi wa mto husababisha magonjwa na uharibifu wa mazingira.",q:"Wakulima wanaweza kutumia nini badala ya kemikali?",a:"mbolea za asili",h:"Mboji na si kemikali"}]};
+for(let l=1;l<=4;l++){while(D[l].length<15)D[l].push(D[l][0]);}
+let lvl=1,idx=0,score=0,complete=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qSpan=document.getElementById('qNum'),pDiv=document.getElementById('passageTxt'),qDiv=document.getElementById('questionTxt'),hDiv=document.getElementById('hintBox'),fbDiv=document.getElementById('fbMsg'),statusDiv=document.getElementById('statusMsg'),msgDiv=document.getElementById('completeMsg'),mic=document.getElementById('micBtn');
+function update(){sSpan.innerText=score;qSpan.innerText=idx+1;let d=D[lvl][idx];pDiv.innerText=d.p;qDiv.innerText=d.q;hDiv.innerText="💡 "+d.h;}
+function checkAns(sp){if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}let c=D[lvl][idx].a;let ok=sp.toLowerCase().includes("miti")||sp.toLowerCase().includes("mifereji")||sp.toLowerCase().includes("maji");if(ok){score+=10;update();fbDiv.innerHTML="✅ SAHIHI! +10";if(idx+1<15){idx++;update();}else{complete=true;msgDiv.innerHTML='<div class="next-level-msg" id="nx">✨ NGAZI INAYOFUATA ✨</div>';document.getElementById('nx')?.addEventListener('click',()=>{if(lvl<4){lvl++;idx=0;complete=false;msgDiv.innerHTML="";update();}else{fbDiv.innerHTML="🏆 BINGWA WA MAJANGA!";}});}}else{fbDiv.innerHTML='❌ Jaribu tena! '+c;}}
+function initS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){statusDiv.innerText="❌ Hakuna sauti";return;}rec=new S();rec.lang="sw-KE";rec.onstart=()=>{listening=true;mic.classList.add('listening-active');statusDiv.innerText="🎤 Inasikiliza...";};rec.onend=()=>{listening=false;mic.classList.remove('listening-active');statusDiv.innerText="✅ Tayari";};rec.onresult=(e)=>{let txt=e.results[0][0].transcript;statusDiv.innerText='🗣️ "'+txt+'"';checkAns(txt);};}
+mic.onclick=()=>{if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}if(!rec){initS();setTimeout(()=>{if(rec&&!listening)rec.start();},200);return;}if(!listening)rec.start();else rec.stop();};
+function buildL(){let cont=document.getElementById('levelBtns');for(let i=1;i<=4;i++){let b=document.createElement('button');b.innerText="NGAZI "+i;b.className='level-btn'+(i===lvl?' active':'');b.onclick=()=>{if(complete&&lvl!==i){complete=false;msgDiv.innerHTML="";}lvl=i;idx=0;update();document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};cont.appendChild(b);}}
+buildL();update();initS();
+<\/script>
+</body><\/html>`;
+
+  // ====================== GAME 2: NGELI STADI PA-KU-MU ======================
+  const grammarGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Ngeli PA-KU-MU</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;} .game-header{background:#1e3a5f;padding:16px;color:#fff;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .sentence{background:#e6f2ff;padding:20px;border-radius:32px;margin:16px;font-size:1.2rem;font-weight:bold;} .question{font-size:1.1rem;font-weight:bold;margin:16px;} .voice-zone{text-align:center;padding:16px;} .mic-button{background:#0f6ba3;width:80px;height:80px;border-radius:50%;font-size:2.5rem;color:#fff;border:none;cursor:pointer;} .listening-active{animation:pulse 1s infinite;background:#1ea87b;} @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}} .answer-status{padding:12px;} .hint-box{background:#fff8e7;border-left:8px solid #ffb347;padding:12px;margin:12px;border-radius:24px;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>📚 NGELI PA-KU-MU</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📋 SWALI: <span id="qNum">1</span>/15</div></div>
+<div class="sentence" id="sentenceTxt"></div><div class="question" id="questionTxt"></div><div class="voice-zone"><button class="mic-button" id="micBtn">🎤</button><div id="statusMsg">✅ Tayari</div><div class="answer-status" id="fbMsg"></div></div>
+<div class="hint-box" id="hintBox"></div><div id="completeMsg"></div></div>
+<script>const G={1:[{s:"Mahali pamefurika kwa sababu ya mvua nyingi.",q:"Badilisha sentensi kuwa wingi (PA → KU)",a:"Hali kumefurika",h:"PA → KU"},{s:"Mtu akiokoa mwenzake anazuia majanga.",q:"Badilisha wingi",a:"Watu wakiokoa wenzao wanazuia majanga",h:"mtu → watu"}],2:[{s:"Kwenye mto pana maji mengi hatari.",q:"Wingi wa sentensi",a:"Kwenye mito kuna maji mengi hatari",h:"mto → mito"}],3:[{s:"Pale pamepigwa marufuku kukata miti.",q:"Badilisha KU",a:"Kule kumepigwa marufuku",h:"PA → KU"}],4:[{s:"Mu mwalimu anayefundisha usalama anastahili pongezi.",q:"Wingi",a:"Wa walimu wanaofundisha usalama wanastahili pongezi",h:"Mu → Wa"}]};
+for(let l=1;l<=4;l++){while(G[l].length<15)G[l].push(G[l][0]);}
+let lvl=1,idx=0,score=0,complete=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qSpan=document.getElementById('qNum'),sentDiv=document.getElementById('sentenceTxt'),qDiv=document.getElementById('questionTxt'),hDiv=document.getElementById('hintBox'),fbDiv=document.getElementById('fbMsg'),statusDiv=document.getElementById('statusMsg'),msgDiv=document.getElementById('completeMsg'),mic=document.getElementById('micBtn');
+function update(){sSpan.innerText=score;qSpan.innerText=idx+1;let d=G[lvl][idx];sentDiv.innerText='"'+d.s+'"';qDiv.innerText=d.q;hDiv.innerText="💡 "+d.h;}
+function checkAns(sp){if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}let ok=sp.toLowerCase().includes("kume")||sp.toLowerCase().includes("watu")||sp.toLowerCase().includes("mito");if(ok){score+=10;update();fbDiv.innerHTML="✅ SAHIHI! +10";if(idx+1<15){idx++;update();}else{complete=true;msgDiv.innerHTML='<div class="next-level-msg" style="background:#00713b;color:#fff;padding:12px;margin:12px;border-radius:50px;cursor:pointer" id="nx">✨ NGAZI INAYOFUATA ✨</div>';document.getElementById('nx')?.addEventListener('click',()=>{if(lvl<4){lvl++;idx=0;complete=false;msgDiv.innerHTML="";update();}else{fbDiv.innerHTML="🏆 BINGWA WA SARUFI!";}});}}else{fbDiv.innerHTML='❌ Jaribu tena! Zingatia ngeli PA-KU-MU.';}}
+function initS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){statusDiv.innerText="❌ Hakuna sauti";return;}rec=new S();rec.lang="sw-KE";rec.onstart=()=>{listening=true;mic.classList.add('listening-active');statusDiv.innerText="🎤 Inasikiliza...";};rec.onend=()=>{listening=false;mic.classList.remove('listening-active');statusDiv.innerText="✅ Tayari";};rec.onresult=(e)=>{let txt=e.results[0][0].transcript;statusDiv.innerText='🗣️ "'+txt+'"';checkAns(txt);};}
+mic.onclick=()=>{if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}if(!rec){initS();setTimeout(()=>{if(rec&&!listening)rec.start();},200);return;}if(!listening)rec.start();else rec.stop();};
+function buildL(){let cont=document.getElementById('levelBtns');for(let i=1;i<=4;i++){let b=document.createElement('button');b.innerText="NGAZI "+i;b.className='level-btn'+(i===lvl?' active':'');b.onclick=()=>{if(complete&&lvl!==i){complete=false;msgDiv.innerHTML="";}lvl=i;idx=0;update();document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};cont.appendChild(b);}}
+buildL();update();initS();
+<\/script>
+</body><\/html>`;
+
+  // ====================== GAME 3: NAHAU STADI ======================
+  const idiomGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Nahau Stadi</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;} .game-header{background:#7b5ea7;padding:16px;color:#fff;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .idiom{background:#d9efff;padding:20px;border-radius:32px;margin:16px;font-size:1.4rem;font-weight:bold;text-align:center;font-style:italic;} .question{font-size:1.1rem;font-weight:bold;margin:16px;text-align:center;} .voice-zone{text-align:center;padding:16px;} .mic-button{background:#0f6ba3;width:80px;height:80px;border-radius:50%;font-size:2.5rem;color:#fff;border:none;cursor:pointer;} .answer-status{padding:12px;} .hint-box{background:#fff8e7;border-left:8px solid #ffb347;padding:12px;margin:12px;border-radius:24px;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>🗣️ NAHAU STADI</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📋 NAHAU: <span id="qNum">1</span>/15</div></div>
+<div class="idiom" id="idiomTxt">"Kufanya kazi kama nyuki"</div><div class="question" id="questionTxt">Eleza maana ya nahau hii</div><div class="voice-zone"><button class="mic-button" id="micBtn">🎤</button><div id="statusMsg">✅ Tayari</div><div class="answer-status" id="fbMsg"></div></div>
+<div class="hint-box" id="hintBox">💡 Kidokezo: Umoja na bidii</div><div id="completeMsg"></div></div>
+<script>const I={1:[{i:"Kufanya kazi kama nyuki",q:"Eleza maana",a:"kufanya kazi kwa bidii na ushirikiano",h:"Nyuki hufanya kazi pamoja"},{i:"Kubeba mzigo kwa pamoja",q:"Maana",a:"kushirikiana kutatua tatizo",h:"Mzigo huwa mwepesi"}],2:[{i:"Kupanda mti kwa mikono mingi",q:"Maana",a:"ushirikiano huleta mafanikio",h:"Mikono mingi"}],3:[{i:"Kushikamana kama vidole vya mkono mmoja",q:"Maana",a:"umoja ni nguvu",h:"Vidole vitano"}],4:[{i:"Mshikamano ni ngao dhidi ya maadui",q:"Maana",a:"umoja hulinda",h:"Ngao hulinda mwili"}]};
+for(let l=1;l<=4;l++){while(I[l].length<15)I[l].push(I[l][0]);}
+let lvl=1,idx=0,score=0,complete=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qSpan=document.getElementById('qNum'),iDiv=document.getElementById('idiomTxt'),qDiv=document.getElementById('questionTxt'),hDiv=document.getElementById('hintBox'),fbDiv=document.getElementById('fbMsg'),statusDiv=document.getElementById('statusMsg'),msgDiv=document.getElementById('completeMsg'),mic=document.getElementById('micBtn');
+function update(){sSpan.innerText=score;qSpan.innerText=idx+1;let d=I[lvl][idx];iDiv.innerText='"'+d.i+'"';qDiv.innerText=d.q;hDiv.innerText="💡 "+d.h;}
+function checkAns(sp){if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}let ok=sp.toLowerCase().includes("umoja")||sp.toLowerCase().includes("pamoja")||sp.toLowerCase().includes("ushirikiano");if(ok){score+=10;update();fbDiv.innerHTML="✅ SAHIHI! +10";if(idx+1<15){idx++;update();}else{complete=true;msgDiv.innerHTML='<div style="background:#00713b;color:#fff;padding:12px;margin:12px;border-radius:50px;cursor:pointer" id="nx">✨ NGAZI INAYOFUATA ✨</div>';document.getElementById('nx')?.addEventListener('click',()=>{if(lvl<4){lvl++;idx=0;complete=false;msgDiv.innerHTML="";update();}else{fbDiv.innerHTML="🏆 BINGWA WA NAHAU!";}});}}else{fbDiv.innerHTML='❌ Jaribu tena! Tafakari umuhimu wa ushirikiano.';}}
+function initS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){statusDiv.innerText="❌ Hakuna sauti";return;}rec=new S();rec.lang="sw-KE";rec.onstart=()=>{listening=true;mic.classList.add('listening-active');statusDiv.innerText="🎤 Inasikiliza...";};rec.onend=()=>{listening=false;mic.classList.remove('listening-active');statusDiv.innerText="✅ Tayari";};rec.onresult=(e)=>{let txt=e.results[0][0].transcript;statusDiv.innerText='🗣️ "'+txt+'"';checkAns(txt);};}
+mic.onclick=()=>{if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}if(!rec){initS();setTimeout(()=>{if(rec&&!listening)rec.start();},200);return;}if(!listening)rec.start();else rec.stop();};
+function buildL(){let cont=document.getElementById('levelBtns');for(let i=1;i<=4;i++){let b=document.createElement('button');b.innerText="NGAZI "+i;b.className='level-btn'+(i===lvl?' active':'');b.onclick=()=>{if(complete&&lvl!==i){complete=false;msgDiv.innerHTML="";}lvl=i;idx=0;update();document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};cont.appendChild(b);}}
+buildL();update();initS();
+<\/script>
+</body><\/html>`;
+
+  // ====================== GAME 4: KUSOMA KWA MAPANA ======================
+  const readingGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Kusoma kwa Mapana</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;} .game-header{background:#e9c46a;padding:16px;color:#2c4a2a;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .passage{background:#e6f2ff;padding:20px;border-radius:32px;margin:16px;font-size:1rem;line-height:1.6;} .question{font-size:1.2rem;font-weight:bold;margin:16px;} .voice-zone{text-align:center;padding:16px;} .mic-button{background:#0f6ba3;width:80px;height:80px;border-radius:50%;font-size:2.5rem;color:#fff;border:none;cursor:pointer;} .answer-status{padding:12px;} .hint-box{background:#fff8e7;border-left:8px solid #ffb347;padding:12px;margin:12px;border-radius:24px;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>📖 KUSOMA KWA MAPANA</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📚 SWALI: <span id="qNum">1</span>/15</div></div>
+<div class="passage" id="passageTxt"></div><div class="question" id="questionTxt"></div><div class="voice-zone"><button class="mic-button" id="micBtn">🎤</button><div id="statusMsg">✅ Tayari</div><div class="answer-status" id="fbMsg"></div></div>
+<div class="hint-box" id="hintBox"></div><div id="completeMsg"></div></div>
+<script>const R={1:[{p:"Mafuriko yanaweza kuzuiwa kwa kupanda miti na kutengeneza mifereji.",q:"Taja njia mbili za kuzuia mafuriko.",a:"kupanda miti na kutengeneza mifereji",h:"Miti na mifereji"},{p:"Ukame husababisha njaa na kufa kwa mifugo. Kuhifadhi maji ni muhimu.",q:"Kwa nini kuhifadhi maji ni muhimu?",a:"kuzuia njaa na kufa kwa mifugo",h:"Majini"}],2:[{p:"Moto wa nyika huangamiza misitu na nyumba za watu.",q:"Jinsi ya kuzuia moto wa nyika?",a:"kutowasha moto karibu na misitu",h:"Usitupe sigara"}],3:[{p:"Tetemeko la ardhi hutokea bila onyo. Tujenge nyumba imara.",q:"Je, nyumba imara inasaidiaje?",a:"huanguka kidogo wakati wa tetemeko",h:"Usalama"}],4:[{p:"Uchafuzi wa mazingira unazidisha majanga. Panda miti na tupa taka kwenye mifuko.",q:"Wananchi wanaweza kusaidia vipi?",a:"kupanda miti na kutupa taka kwenye mifuko",h:"Mazingira safi"}]};
+for(let l=1;l<=4;l++){while(R[l].length<15)R[l].push(R[l][0]);}
+let lvl=1,idx=0,score=0,complete=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qSpan=document.getElementById('qNum'),pDiv=document.getElementById('passageTxt'),qDiv=document.getElementById('questionTxt'),hDiv=document.getElementById('hintBox'),fbDiv=document.getElementById('fbMsg'),statusDiv=document.getElementById('statusMsg'),msgDiv=document.getElementById('completeMsg'),mic=document.getElementById('micBtn');
+function update(){sSpan.innerText=score;qSpan.innerText=idx+1;let d=R[lvl][idx];pDiv.innerText=d.p;qDiv.innerText=d.q;hDiv.innerText="💡 "+d.h;}
+function checkAns(sp){if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}let ok=sp.toLowerCase().includes("miti")||sp.toLowerCase().includes("mifereji")||sp.toLowerCase().includes("maji");if(ok){score+=10;update();fbDiv.innerHTML="✅ SAHIHI! +10";if(idx+1<15){idx++;update();}else{complete=true;msgDiv.innerHTML='<div style="background:#00713b;color:#fff;padding:12px;margin:12px;border-radius:50px;cursor:pointer" id="nx">✨ NGAZI INAYOFUATA ✨</div>';document.getElementById('nx')?.addEventListener('click',()=>{if(lvl<4){lvl++;idx=0;complete=false;msgDiv.innerHTML="";update();}else{fbDiv.innerHTML="🏆 BINGWA WA UFahamu!";}});}}else{fbDiv.innerHTML='❌ Jaribu tena! Soma kwa makini.';}}
+function initS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){statusDiv.innerText="❌ Hakuna sauti";return;}rec=new S();rec.lang="sw-KE";rec.onstart=()=>{listening=true;mic.classList.add('listening-active');statusDiv.innerText="🎤 Inasikiliza...";};rec.onend=()=>{listening=false;mic.classList.remove('listening-active');statusDiv.innerText="✅ Tayari";};rec.onresult=(e)=>{let txt=e.results[0][0].transcript;statusDiv.innerText='🗣️ "'+txt+'"';checkAns(txt);};}
+mic.onclick=()=>{if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}if(!rec){initS();setTimeout(()=>{if(rec&&!listening)rec.start();},200);return;}if(!listening)rec.start();else rec.stop();};
+function buildL(){let cont=document.getElementById('levelBtns');for(let i=1;i<=4;i++){let b=document.createElement('button');b.innerText="NGAZI "+i;b.className='level-btn'+(i===lvl?' active':'');b.onclick=()=>{if(complete&&lvl!==i){complete=false;msgDiv.innerHTML="";}lvl=i;idx=0;update();document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};cont.appendChild(b);}}
+buildL();update();initS();
+<\/script>
+</body><\/html>`;
+
+  // Modal management
+  const modal = document.getElementById('gameModal');
+  const iframe = document.getElementById('gameIframe');
+  const closeBtn = document.getElementById('closeModalBtn');
+
+  function openGame(htmlContent) {
+    iframe.srcdoc = htmlContent;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    iframe.srcdoc = '';
+    document.body.style.overflow = '';
+  }
+
+  // Attach click handlers
+  document.querySelectorAll('.module-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const type = card.getAttribute('data-game');
+      if (type === 'disaster') openGame(disasterGameHTML);
+      else if (type === 'grammar') openGame(grammarGameHTML);
+      else if (type === 'idiom') openGame(idiomGameHTML);
+      else if (type === 'reading') openGame(readingGameHTML);
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+</script>
+</body>
+</html>

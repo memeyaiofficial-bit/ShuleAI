@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 5 Social Studies - Fishing in Kenya Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a4b6e 0%, #053a55 100%);
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #f0f9ff;
+            border-radius: 70px 50px 70px 50px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.6);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .game-header {
+            background: #0284c7;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #0369a1;
+            color: #fef9c3;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #1e3a4d;
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: #b9e6ff;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -1px 0 #0f2a38, 0 3px 0 #0a1c26;
+            font-weight: 600;
+        }
+
+        .timer-box {
+            background: #1e3a2f;
+            color: #ffe082;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer-warning {
+            background: #c73d23;
+            color: white;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            100% { opacity: 0.7; transform: scale(1.02);}
+        }
+
+        .question-area {
+            padding: 30px 28px 25px;
+            background: #ffffff;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 20px;
+            color: #0c4a6e;
+            background: #e6f7ff;
+            padding: 22px;
+            border-radius: 55px;
+            text-align: center;
+            word-break: break-word;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #0f6b8a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 5px 0 #0a4b62;
+        }
+
+        .voice-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0a4b62;
+        }
+
+        .hint-area {
+            background: #fff7e0;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            flex: 1;
+            text-align: center;
+            color: #b45f1b;
+            font-weight: 600;
+            border-left: 6px solid #fbbf24;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .answer-input-area {
+            margin: 15px 0 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            border-radius: 100px;
+            border: 2px solid #7ab7d4;
+            background: white;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2,132,199,0.3);
+        }
+
+        .submit-btn {
+            background: #0284c7;
+            width: 100%;
+            margin-top: 18px;
+            padding: 16px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 6px 0 #0369a1;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0369a1;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            background: #eef2ff;
+            padding: 14px;
+            border-radius: 50px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: #fff7e8;
+            max-width: 90%;
+            width: 420px;
+            padding: 30px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            border: 3px solid #ffbc6e;
+        }
+
+        .modal-card button {
+            background: #0284c7;
+            margin-top: 25px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .question-text {
+                font-size: 1.2rem;
+                padding: 16px;
+            }
+            .game-header {
+                justify-content: center;
+            }
+            .voice-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+            .submit-btn {
+                font-size: 1.2rem;
+            }
+        }
+
+        .correct-feedback {
+            background: #dcfce7;
+            color: #15803d;
+            border-left: 8px solid #22c55e;
+        }
+
+        .wrong-feedback {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-left: 8px solid #ef4444;
+        }
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🎣 Level 1</div>
+        <div class="score-badge" id="scoreDisplay">⭐ Score: 0 / 0</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Welcome! Let's explore Fishing in Kenya!</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-area" id="hintMessage">💡 Hint appears when 10 seconds remain</div>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✅ CHECK ANSWER</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">✨ Answer each question. Score 80% to unlock next level!</div>
+    </div>
+</div>
+
+<script>
+    // ------------------- VOICE SYSTEM -------------------
+    function speakMessage(message, pitchVal = 1.0) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.92;
+            utterance.pitch = pitchVal;
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    // ------------------- ANSWER NORMALIZATION -------------------
+    function normalize(ans) {
+        let norm = ans.trim().toLowerCase();
+        norm = norm.replace(/[.,?!;:()]/g, '');
+        // remove extra spaces
+        norm = norm.replace(/\s+/g, ' ').trim();
+        return norm;
+    }
+
+    function isAnswerCorrect(correct, user) {
+        const normUser = normalize(user);
+        const normCorrect = normalize(correct);
+        if (normUser === normCorrect) return true;
+        
+        // Common variations for fishing in Kenya
+        const variations = {
+            "lake victoria": ["victoria", "nnalubaale", "lake vicky"],
+            "tilapia": ["nile tilapia", "tilapia fish"],
+            "nile perch": ["mputa", "sangara", "lake perch"],
+            "lake turkana": ["turkana", "jade sea", "lake rudolf"],
+            "lake baringo": ["baringo"],
+            "lake naivasha": ["naivasha"],
+            "kisumu": ["kisumu city"],
+            "mombasa": ["mom basa"],
+            "kilifi": ["kilifi creek"],
+            "omena": ["omena fish", "omena fish", "omena"],
+            "dagaa": ["omena", "sardine"],
+            "water hyacinth": ["hyacinth", "water weed"],
+            "overfishing": ["over fishing", "overfished"],
+            "aquaculture": ["fish farming"],
+            "kmfri": ["kenya marine fisheries research institute"],
+            "bmus": ["beach management unit"],
+            "fishing net": ["net", "gillnet"],
+            "longline": ["long line"],
+            "seine net": ["seine", "ring net"],
+            "fish landing site": ["landing site", "fish market"],
+            "smoking": ["smoked fish", "smoking fish"]
+        };
+        
+        for (let [key, aliases] of Object.entries(variations)) {
+            if (normCorrect === key && (aliases.includes(normUser) || normUser === key)) return true;
+            if (aliases.includes(normCorrect) && normUser === key) return true;
+        }
+        return false;
+    }
+
+    // ------------------- QUESTION BANK: FISHING IN KENYA (5 levels x 30 questions) -------------------
+    const LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+    const PASS_PERCENT = 80;
+    const BASE_TIME_SEC = 40;
+
+    const questionBank = [[], [], [], [], []];
+
+    function addToLevel(level, qArray) {
+        questionBank[level].push(...qArray);
+    }
+
+    // ========== LEVEL 1: Introduction to Fishing in Kenya ==========
+    const l1 = [
+        { text: "What is the largest freshwater lake in Kenya where fishing is done?", correct: "Lake Victoria" },
+        { text: "Name the most common fish species caught in Lake Victoria.", correct: "tilapia" },
+        { text: "What is the large, predatory fish introduced to Lake Victoria in the 1950s?", correct: "nile perch" },
+        { text: "Which lake in northern Kenya is known as the 'Jade Sea' and supports fishing?", correct: "Lake Turkana" },
+        { text: "Name the fishing port city on the shores of Lake Victoria.", correct: "Kisumu" },
+        { text: "What is the name of the small sardine-like fish found in Lake Victoria?", correct: "omena" },
+        { text: "Which type of fishing is done in the Indian Ocean along Kenya's coast?", correct: "marine fishing" },
+        { text: "Name a major fishing town along the Kenyan coast.", correct: "Mombasa" },
+        { text: "What is the simplest fishing method using a hook and line?", correct: "angling" },
+        { text: "What do fishermen use to catch fish in large quantities using a mesh net?", correct: "fishing net" },
+        { text: "Name the traditional wooden boat used for fishing on Lake Victoria.", correct: "boat" },
+        { text: "Which fish is known as 'mputa' in the Luo language?", correct: "nile perch" },
+        { text: "What is the main challenge facing fishing in Lake Victoria due to an invasive weed?", correct: "water hyacinth" },
+        { text: "Name a fish that is dried and sold as a snack in many Kenyan homes.", correct: "dagaa" },
+        { text: "Which county is the leading producer of fish from Lake Victoria?", correct: "Homa Bay" },
+        { text: "What is the name of the fish that has a red belly and is common in Lake Baringo?", correct: "tilapia" },
+        { text: "Which lake in the Rift Valley is famous for its fishing industry?", correct: "Lake Baringo" },
+        { text: "Name the government department responsible for fisheries in Kenya.", correct: "Kenya Fisheries Service" },
+        { text: "What is the method of raising fish in ponds or tanks called?", correct: "aquaculture" },
+        { text: "Name a coastal creek where fishing is done near Kilifi.", correct: "Kilifi Creek" },
+        { text: "What is the main product from fishing besides fresh fish?", correct: "fish oil" },
+        { text: "Which community around Lake Turkana is known for traditional fishing?", correct: "El Molo" },
+        { text: "Name a modern fish landing site in Mbita, Homa Bay County.", correct: "Mbita" },
+        { text: "What type of fishing uses a large net that surrounds a school of fish?", correct: "seine net" },
+        { text: "Which Kenyan lake is known for its unique fish species like the 'Nile tilapia'?", correct: "Lake Naivasha" },
+        { text: "What is the main fishing season in Lake Victoria?", correct: "rainy season" },
+        { text: "Name the small fish that is often sundried and used in stews.", correct: "omena" },
+        { text: "What is the name of the boat used for deep-sea fishing off the coast?", correct: "trawler" },
+        { text: "Which town on Lake Victoria has a major fish processing plant?", correct: "Kisumu" },
+        { text: "What is the benefit of fishing to Kenyan families?", correct: "food security" }
+    ];
+    addToLevel(0, l1.slice(0,30));
+
+    // ========== LEVEL 2: Fishing Methods and Equipment ==========
+    const l2 = [
+        { text: "What is the method of fishing using a basket trap called?", correct: "trapping" },
+        { text: "Name the fishing gear made of a single line with many baited hooks.", correct: "longline" },
+        { text: "What is the traditional fishing spear used by some communities?", correct: "harpoon" },
+        { text: "Which fishing method uses a lamp to attract fish at night?", correct: "light fishing" },
+        { text: "Name the net that is cast by hand into the water.", correct: "cast net" },
+        { text: "What is the large floating structure used for fishing in open water?", correct: "fishing raft" },
+        { text: "Which fishing gear is illegal because it catches small and young fish?", correct: "monofilament net" },
+        { text: "Name the method of catching fish using a baited hook on a rod.", correct: "rod and line" },
+        { text: "What is the circular net with weights around the edge called?", correct: "cast net" },
+        { text: "Which fishing method involves driving fish into a net using stones?", correct: "drive fishing" },
+        { text: "Name the large bag-like net dragged along the sea floor.", correct: "trawl net" },
+        { text: "What is the traditional fish trap made from reeds or wire?", correct: "fish basket" },
+        { text: "Which modern technology helps fishermen locate fish underwater?", correct: "fish finder" },
+        { text: "Name the floating marker that shows where a net is placed.", correct: "buoy" },
+        { text: "What is the hand tool used to scoop fish from the water?", correct: "scoop net" },
+        { text: "Which fishing method uses a large wall of net that hangs vertically?", correct: "gillnet" },
+        { text: "Name the small boat used by traditional fishermen on Lake Victoria.", correct: "canoe" },
+        { text: "What is the string of floats that keeps a net at the surface called?", correct: "float line" },
+        { text: "Which heavy object keeps the bottom of a net down?", correct: "sinker" },
+        { text: "Name the modern fishing vessel with engines for deep-sea fishing.", correct: "motorboat" },
+        { text: "What is the traditional method of fishing using bare hands in shallow water?", correct: "hand fishing" },
+        { text: "Which fishing gear is used to catch crabs and lobsters?", correct: "crab trap" },
+        { text: "Name the brightly colored fishing lure that mimics a small fish.", correct: "artificial lure" },
+        { text: "What is the large container used to keep caught fish alive on a boat?", correct: "live well" },
+        { text: "Which traditional fishing method uses a woven fence in a river?", correct: "fish weir" },
+        { text: "Name the net that is pulled from the shore or by two boats.", correct: "beach seine" },
+        { text: "What is the name of the long pole with a hook used for landing big fish?", correct: "gaff" },
+        { text: "Which fishing gear is a line with multiple hooks hung from a main line?", correct: "trotline" },
+        { text: "Name the floating light used to attract fish at night in Lake Victoria.", correct: "kerosene lamp" },
+        { text: "What is the modern alternative to traditional nets that reduces bycatch?", correct: "circle hook" }
+    ];
+    addToLevel(1, l2.slice(0,30));
+
+    // ========== LEVEL 3: Fish Species and Water Bodies in Kenya ==========
+    const l3 = [
+        { text: "Name the fish species that is native to Lake Turkana and can grow very large.", correct: "Nile perch" },
+        { text: "What is the small, silver fish commonly sundried in Lake Victoria region?", correct: "dagaa" },
+        { text: "Which fish is known as the 'royal fish' and is prized for its taste?", correct: "tilapia" },
+        { text: "Name the catfish species found in Kenyan rivers and lakes.", correct: "mudfish" },
+        { text: "What is the name of the lungfish found in swamps around Lake Victoria?", correct: "protopterus" },
+        { text: "Which fish has a long snout and is found in Lake Baringo?", correct: "barbus" },
+        { text: "Name the brightly colored fish found in coral reefs off Kenya's coast.", correct: "parrotfish" },
+        { text: "What is the large game fish caught in deep sea waters near Malindi?", correct: "marlin" },
+        { text: "Which fish is known as 'kingfish' along the Kenyan coast?", correct: "kingfish" },
+        { text: "Name the tuna species common in the Indian Ocean.", correct: "yellowfin tuna" },
+        { text: "What is the name of the shellfish found in mangrove creeks?", correct: "mud crab" },
+        { text: "Which lake in Kenya is known for its unique 'tilapia zillii' species?", correct: "Lake Naivasha" },
+        { text: "Name the large freshwater prawn found in River Tana.", correct: "prawn" },
+        { text: "What is the name of the eel found in Lake Victoria?", correct: "eel" },
+        { text: "Which fish is known for its ability to breathe air and survive out of water?", correct: "lungfish" },
+        { text: "Name the fish that is a major export from Lake Victoria to Europe.", correct: "nile perch" },
+        { text: "What is the small, colorful fish found in aquarium trade from Kenyan waters?", correct: "cichlid" },
+        { text: "Which fish has a spotted body and is found in rocky areas of Lake Victoria?", correct: "rock fish" },
+        { text: "Name the shark species found off Kenya's coast.", correct: "reef shark" },
+        { text: "What is the name of the ray fish found in shallow coastal waters?", correct: "stingray" },
+        { text: "Which fish is known for its fighting spirit and is popular with sport fishermen?", correct: "tarpon" },
+        { text: "Name the fish that looks like a snake and lives in muddy waters.", correct: "swamp eel" },
+        { text: "What is the name of the fish that has a hump and is found in Lake Turkana?", correct: "humpback" },
+        { text: "Which fish is called 'sangara' in Kiswahili?", correct: "nile perch" },
+        { text: "Name the fish that is silver with red fins, common in Lake Baringo.", correct: "tilapia" },
+        { text: "What is the name of the oyster found in mangrove swamps?", correct: "rock oyster" },
+        { text: "Which fish is known for its whisker-like barbels?", correct: "catfish" },
+        { text: "Name the fish that is blue-black and lives in deep Lake Turkana.", correct: "Nile tilapia" },
+        { text: "What is the name of the herring-like fish found in coastal waters?", correct: "sardine" },
+        { text: "Which fish is the main catch for artisanal fishermen along the coast?", correct: "rabbitfish" }
+    ];
+    addToLevel(2, l3.slice(0,30));
+
+    // ========== LEVEL 4: Fishing Challenges and Conservation ==========
+    const l4 = [
+        { text: "What is the main environmental problem affecting fish breeding in Lake Victoria?", correct: "water hyacinth" },
+        { text: "Name the practice of catching too many fish that harms the population.", correct: "overfishing" },
+        { text: "What is the use of small mesh nets that catch juvenile fish called?", correct: "illegal fishing" },
+        { text: "Which organization promotes sustainable fishing in Kenya?", correct: "KMFRI" },
+        { text: "Name the local community groups that manage beach fishing activities.", correct: "Beach Management Unit" },
+        { text: "What is the process of releasing young fish into water bodies to restock?", correct: "stocking" },
+        { text: "Which law regulates fishing activities in Kenya?", correct: "Fisheries Act" },
+        { text: "Name the conservation area where fishing is prohibited to protect breeding.", correct: "fish sanctuary" },
+        { text: "What is the main cause of fish poisoning in polluted waters?", correct: "industrial waste" },
+        { text: "Which fishing method using explosives is illegal and destructive?", correct: "blast fishing" },
+        { text: "Name the chemical used to kill fish, which is banned in Kenya.", correct: "poison" },
+        { text: "What is the effect of climate change on fish populations in lakes?", correct: "reduced breeding" },
+        { text: "Which invasive plant chokes Lake Victoria, reducing oxygen for fish?", correct: "water hyacinth" },
+        { text: "Name the organization that conducts research on Kenyan fisheries.", correct: "Kenya Marine and Fisheries Research Institute" },
+        { text: "What is the closed fishing season meant to allow fish to breed?", correct: "fishing ban" },
+        { text: "Which international body helps Kenya manage its fisheries?", correct: "FAO" },
+        { text: "Name the practice of farming fish in controlled environments to reduce pressure on wild stock.", correct: "aquaculture" },
+        { text: "What is the main pollutant from agriculture that harms fish in Lake Victoria?", correct: "fertilizer runoff" },
+        { text: "Which fishing gear is allowed because it allows small fish to escape?", correct: "selective net" },
+        { text: "Name the Kenyan government initiative to restock overfished lakes.", correct: "fish restocking program" },
+        { text: "What is the effect of sedimentation on fish breeding grounds?", correct: "destroys eggs" },
+        { text: "Which group of people depend on fishing and need conservation education?", correct: "fishermen" },
+        { text: "Name the invasive fish species that competes with native fish in Lake Victoria.", correct: "nile perch" },
+        { text: "What is the main benefit of fish farming to wild fish populations?", correct: "reduces overfishing" },
+        { text: "Which county has banned plastic bags to protect marine life?", correct: "Mombasa" },
+        { text: "Name the marine protected area along Kenya's coast.", correct: "Kiunga Marine Reserve" },
+        { text: "What is the main threat to coral reef fish populations?", correct: "coral bleaching" },
+        { text: "Which organization certifies sustainable fisheries globally?", correct: "MSC" },
+        { text: "Name the traditional fishing community that practices conservation.", correct: "El Molo" },
+        { text: "What is the main action fishermen can take to protect fish stocks?", correct: "use legal nets" }
+    ];
+    addToLevel(3, l4.slice(0,30));
+
+    // ========== LEVEL 5: Advanced Fishing in Kenya ==========
+    const l5 = [
+        { text: "What is the name of the fish processing factory in Kisumu that exports to Europe?", correct: "Lake Fish" },
+        { text: "Which Kenyan lake has a unique fish called 'Barbus altianalis'?", correct: "Lake Baringo" },
+        { text: "Name the deep-sea fishing competition held annually in Malindi.", correct: "Malindi Fishing Tournament" },
+        { text: "What is the value of Kenya's fish exports annually approximately?", correct: "billions" },
+        { text: "Which river in Kenya is known for its freshwater prawns?", correct: "Tana River" },
+        { text: "Name the traditional fish preservation method using salt.", correct: "salting" },
+        { text: "What is the name of the modern fish landing jetty in Homa Bay?", correct: "Homa Bay Pier" },
+        { text: "Which organization trains fishermen on sustainable practices in Lake Victoria?", correct: "LVFO" },
+        { text: "Name the fish auction market in Mombasa where fresh catch is sold.", correct: "Liwatoni" },
+        { text: "What is the name of the fish processing zone in Kilifi County?", correct: "Kilifi Fish Farm" },
+        { text: "Which type of fish oil is extracted from dagaa for industrial use?", correct: "fishmeal" },
+        { text: "Name the fish that is used to make 'fish fingers' in local factories.", correct: "tilapia" },
+        { text: "What is the main challenge for ice and cold storage for fishermen?", correct: "lack of electricity" },
+        { text: "Which community along Lake Victoria uses 'nyatiti' songs during fishing expeditions?", correct: "Luo" },
+        { text: "Name the traditional fish smoking kiln used in rural areas.", correct: "smoking rack" },
+        { text: "What is the name of the floating cage used in aquaculture in Lake Victoria?", correct: "fish cage" },
+        { text: "Which Kenyan university offers courses in fisheries management?", correct: "Kenyatta University" },
+        { text: "Name the fish that is called 'Sardine' in English and 'Dagaa' in Kiswahili.", correct: "omena" },
+        { text: "What is the main fish species farmed in aquaculture in Kenya?", correct: "tilapia" },
+        { text: "Which organization provides loans to fishermen for buying modern boats?", correct: "Youth Fund" },
+        { text: "Name the fish that is known for its large mouth and is invasive in some lakes.", correct: "nile perch" },
+        { text: "What is the name of the traditional Luo fishing song?", correct: "nyatiti" },
+        { text: "Which county on Lake Victoria has the most fish landing sites?", correct: "Homa Bay" },
+        { text: "Name the government program that distributes fishing gear to cooperatives.", correct: "Economic Stimulus Program" },
+        { text: "What is the name of the fish that has a bony head and is found in Lake Turkana?", correct: "cichlid" },
+        { text: "Which fish is known for its red meat and is popular in coastal curries?", correct: "tuna" },
+        { text: "Name the cold storage facility in Kisumu that preserves fish for export.", correct: "Kisumu Cold Storage" },
+        { text: "What is the name of the fish found in River Athi that is endangered?", correct: "Athi barb" },
+        { text: "Which fishing cooperative in Mbita is known for sustainable fishing?", correct: "Mbita Fishermen Cooperative" },
+        { text: "Name the future of fishing in Kenya that combines technology and conservation.", correct: "smart fishing" }
+    ];
+    addToLevel(4, l5.slice(0,30));
+
+    // ------------------- GAME ENGINE -------------------
+    let currentLevel = 0;
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let score = 0;
+    let answeredCount = 0;
+    let timerInterval = null;
+    let timeLeft = BASE_TIME_SEC;
+    let canAnswer = true;
+    let waitingNext = false;
+
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionText = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintDiv = document.getElementById('hintMessage');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+
+    function updateUI() {
+        levelDisplay.innerText = `🎣 Level ${currentLevel+1}`;
+        scoreDisplay.innerText = `⭐ Score: ${score} / ${answeredCount}`;
+        if (currentQuestions[currentQIndex])
+            questionText.innerText = currentQuestions[currentQIndex].text;
+    }
+
+    function stopTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function startTimer() {
+        stopTimer();
+        timeLeft = BASE_TIME_SEC;
+        timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+        timerDisplay.classList.remove('timer-warning');
+        timerInterval = setInterval(() => {
+            if (!canAnswer) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+                if (timeLeft <= 10) {
+                    timerDisplay.classList.add('timer-warning');
+                    const curr = currentQuestions[currentQIndex];
+                    if (curr && curr.correct) {
+                        hintDiv.innerHTML = `⏰ Hint: answer starts with "${curr.correct.substring(0,3)}..." Think about fish, lakes, or fishing methods.`;
+                    } else {
+                        hintDiv.innerHTML = `💡 Focus on Kenya's fishing industry: lakes, fish species, methods!`;
+                    }
+                } else {
+                    timerDisplay.classList.remove('timer-warning');
+                    hintDiv.innerHTML = `💡 Read carefully! 40 seconds. Type your answer about Fishing in Kenya.`;
+                }
+            }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if (!canAnswer) return;
+        canAnswer = false;
+        const correctAns = currentQuestions[currentQIndex].correct;
+        speakMessage(`Time is up! The correct answer is ${correctAns}.`, 0.8);
+        feedbackDiv.innerHTML = `⏰ TIME'S UP! Correct: "${correctAns}". Next question...`;
+        feedbackDiv.classList.add('wrong-feedback');
+        setTimeout(() => nextQuestion(), 1600);
+    }
+
+    function checkAnswer() {
+        if (!canAnswer || waitingNext) {
+            feedbackDiv.innerHTML = "⏳ Please wait...";
+            return;
+        }
+        const userAns = answerInput.value.trim();
+        if (userAns === "") {
+            feedbackDiv.innerHTML = "📝 Type your answer before submitting!";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        const correctFlag = isAnswerCorrect(currentQ.correct, userAns);
+        stopTimer();
+        canAnswer = false;
+        if (correctFlag) {
+            score++;
+            feedbackDiv.innerHTML = `✅ CORRECT! "${userAns}" is right! +1 point 🎉`;
+            feedbackDiv.classList.add('correct-feedback');
+            speakMessage("Correct! Excellent work.", 1.2);
+        } else {
+            feedbackDiv.innerHTML = `❌ INCORRECT! "${userAns}" is wrong. Correct: ${currentQ.correct}. Keep trying!`;
+            feedbackDiv.classList.add('wrong-feedback');
+            speakMessage(`Incorrect. The correct answer is ${currentQ.correct}.`, 0.9);
+        }
+        answeredCount++;
+        updateUI();
+        setTimeout(() => nextQuestion(), 1500);
+    }
+
+    function nextQuestion() {
+        waitingNext = false;
+        currentQIndex++;
+        if (currentQIndex >= currentQuestions.length) {
+            const percent = (score / QUESTIONS_PER_LEVEL) * 100;
+            if (percent >= PASS_PERCENT) {
+                if (currentLevel + 1 < LEVELS) {
+                    showModal(`🎉 Level ${currentLevel+1} complete! ${Math.floor(percent)}% (${score}/${QUESTIONS_PER_LEVEL}). Proceed to Level ${currentLevel+2}.`, true);
+                } else {
+                    showModal(`🏆 AMAZING! You mastered Fishing in Kenya! Final Score: ${score}/${QUESTIONS_PER_LEVEL}. You're a true Fisheries Expert! 🐟🎣`, false);
+                }
+            } else {
+                showModal(`😓 Level ${currentLevel+1} failed. ${Math.floor(percent)}% (need 80%). Restarting level...`, false);
+                resetCurrentLevel();
+            }
+            return;
+        }
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetCurrentLevel() {
+        stopTimer();
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+        loadQuestionsForLevel(currentLevel);
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetQInterface() {
+        answerInput.value = "";
+        feedbackDiv.classList.remove('correct-feedback', 'wrong-feedback');
+        feedbackDiv.innerHTML = "✨ New question! Type your answer carefully.";
+        hintDiv.innerHTML = "💡 Hint will appear when 10 seconds remain.";
+        timerDisplay.classList.remove('timer-warning');
+        canAnswer = true;
+        waitingNext = false;
+        if (timerInterval) stopTimer();
+        startTimer();
+    }
+
+    function loadCurrentQuestion() {
+        if (currentQuestions[currentQIndex]) {
+            questionText.innerText = currentQuestions[currentQIndex].text;
+            updateUI();
+            startTimer();
+            canAnswer = true;
+        }
+    }
+
+    function loadQuestionsForLevel(level) {
+        currentQuestions = [...questionBank[level]];
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+    }
+
+    function showModal(message, goNext) {
+        stopTimer();
+        canAnswer = false;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `<div class="modal-card"><p>${message}</p><button id="modalBtn">${goNext ? '➡️ NEXT LEVEL ⬅️' : '🔄 RESTART LEVEL'}</button></div>`;
+        document.body.appendChild(overlay);
+        document.getElementById('modalBtn').addEventListener('click', () => {
+            overlay.remove();
+            if (goNext) {
+                currentLevel++;
+                loadQuestionsForLevel(currentLevel);
+                resetQInterface();
+                loadCurrentQuestion();
+            } else {
+                resetCurrentLevel();
+            }
+        });
+    }
+
+    function init() {
+        loadQuestionsForLevel(0);
+        resetQInterface();
+        loadCurrentQuestion();
+        speakBtn.addEventListener('click', () => {
+            if (currentQuestions[currentQIndex])
+                speakMessage(currentQuestions[currentQIndex].text, 1.0);
+        });
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    }
+    init();
+</script>
+</body>
+</html>

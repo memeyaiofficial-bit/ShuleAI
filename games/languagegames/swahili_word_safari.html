@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swahili Safari - Word Adventure</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: linear-gradient(135deg, #ffb347 0%, #ff8c42 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 800px;
+        width: 100%;
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(90deg, #ffb347, #ff6b35, #ffb347);
+      }
+
+      h1 {
+        color: #d2691e;
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #8b4513;
+        font-size: 1.2em;
+        margin-bottom: 30px;
+        font-weight: bold;
+      }
+
+      .game-area {
+        background: #fff8dc;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 3px solid #deb887;
+      }
+
+      .word-display {
+        text-align: center;
+        font-size: 3em;
+        color: #8b4513;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      .translation-display {
+        text-align: center;
+        font-size: 1.5em;
+        color: #d2691e;
+        margin-bottom: 30px;
+        font-style: italic;
+      }
+
+      .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .option-btn {
+        padding: 20px;
+        font-size: 1.2em;
+        background: #ffe4b5;
+        border: 3px solid #deb887;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-weight: bold;
+        color: #8b4513;
+      }
+
+      .option-btn:hover {
+        background: #ffd700;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .option-btn.correct {
+        background: #98fb98;
+        border-color: #32cd32;
+        animation: bounce 0.5s;
+      }
+
+      .option-btn.incorrect {
+        background: #ffa07a;
+        border-color: #ff6347;
+        animation: shake 0.5s;
+      }
+
+      .score-board {
+        display: flex;
+        justify-content: space-between;
+        background: #f0e68c;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-label {
+        font-size: 0.9em;
+        color: #8b4513;
+        margin-bottom: 5px;
+      }
+
+      .score-value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #d2691e;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #dcdcdc;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 30px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #32cd32, #98fb98);
+        width: 0%;
+        transition: width 0.5s ease;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .control-btn {
+        padding: 15px 30px;
+        font-size: 1.1em;
+        background: #ff8c42;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-weight: bold;
+      }
+
+      .control-btn:hover {
+        background: #ff6b35;
+        transform: translateY(-3px);
+      }
+
+      .feedback {
+        text-align: center;
+        font-size: 1.3em;
+        margin-top: 20px;
+        font-weight: bold;
+        min-height: 30px;
+      }
+
+      .feedback.correct {
+        color: #32cd32;
+      }
+
+      .feedback.incorrect {
+        color: #ff6347;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        80% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-10px);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(10px);
+        }
+      }
+
+      .animal-icon {
+        font-size: 2em;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #ff8c42;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .back-btn:hover {
+        background: #ff6b35;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .word-display {
+          font-size: 2em;
+        }
+
+        .options {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="../games.html" class="back-btn">← Back to Games</a>
+
+      <h1>Swahili Safari</h1>
+      <p class="subtitle">
+        Learn Swahili words through interactive adventures!
+      </p>
+
+      <div class="score-board">
+        <div class="score-item">
+          <div class="score-label">Score</div>
+          <div class="score-value" id="score">0</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Level</div>
+          <div class="score-value" id="level">1</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Streak</div>
+          <div class="score-value" id="streak">0</div>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+
+      <div class="game-area">
+        <div class="animal-icon" id="animalIcon">🦁</div>
+        <div class="word-display" id="wordDisplay">Simba</div>
+        <div class="translation-display" id="translationDisplay">
+          What does this Swahili word mean?
+        </div>
+
+        <div class="options" id="options">
+          <button class="option-btn" onclick="selectAnswer(0)">Lion</button>
+          <button class="option-btn" onclick="selectAnswer(1)">Elephant</button>
+          <button class="option-btn" onclick="selectAnswer(2)">Zebra</button>
+          <button class="option-btn" onclick="selectAnswer(3)">Giraffe</button>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="control-btn" onclick="nextWord()">Next Word</button>
+        <button class="control-btn" onclick="resetGame()">New Game</button>
+      </div>
+    </div>
+
+    <script>
+      const words = [
+        { swahili: "Simba", english: "Lion", icon: "🦁" },
+        { swahili: "Tembo", english: "Elephant", icon: "🐘" },
+        { swahili: "Punda Milia", english: "Zebra", icon: "🦓" },
+        { swahili: "Twiga", english: "Giraffe", icon: "🦒" },
+        { swahili: "Nyoka", english: "Snake", icon: "🐍" },
+        { swahili: "Ndege", english: "Bird", icon: "🐦" },
+        { swahili: "Samaki", english: "Fish", icon: "🐟" },
+        { swahili: "Paka", english: "Cat", icon: "🐱" },
+        { swahili: "Mbwa", english: "Dog", icon: "🐕" },
+        { swahili: "Ng'ombe", english: "Cow", icon: "🐄" },
+        { swahili: "Mbuzi", english: "Goat", icon: "🐐" },
+        { swahili: "Farasi", english: "Horse", icon: "🐎" },
+        { swahili: "Kuku", english: "Chicken", icon: "🐓" },
+        { swahili: "Kondoo", english: "Sheep", icon: "🐑" },
+        { swahili: "Nyani", english: "Monkey", icon: "🐵" },
+        { swahili: "Kifaru", english: "Rhinoceros", icon: "🦏" },
+        { swahili: "Mti", english: "Tree", icon: "🌳" },
+        { swahili: "Ua", english: "Flower", icon: "🌸" },
+        { swahili: "Jua", english: "Sun", icon: "☀️" },
+        { swahili: "Mwezi", english: "Moon", icon: "🌙" },
+      ];
+
+      let currentWordIndex = 0;
+      let score = 0;
+      let level = 1;
+      let streak = 0;
+      let correctAnswer = 0;
+      let gameActive = true;
+
+      const otherWords = [
+        "Tiger",
+        "Bear",
+        "Wolf",
+        "Fox",
+        "Rabbit",
+        "Deer",
+        "Buffalo",
+        "Crocodile",
+        "Hippo",
+        "Cheetah",
+        "Leopard",
+        "Hyena",
+        "Ostrich",
+        "Eagle",
+        "Owl",
+        "Butterfly",
+        "Ant",
+        "Bee",
+        "Spider",
+        "Frog",
+      ];
+
+      function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      }
+
+      function generateOptions(correctWord) {
+        const options = [correctWord.english];
+        const availableWords = otherWords.filter(
+          (word) => word !== correctWord.english
+        );
+        const shuffledWords = shuffleArray(availableWords);
+
+        for (let i = 0; i < 3; i++) {
+          options.push(shuffledWords[i]);
+        }
+
+        return shuffleArray(options);
+      }
+
+      function displayWord() {
+        if (currentWordIndex >= words.length) {
+          currentWordIndex = 0;
+          level++;
+          updateDisplay();
+        }
+
+        const currentWord = words[currentWordIndex];
+        const options = generateOptions(currentWord);
+        correctAnswer = options.indexOf(currentWord.english);
+
+        document.getElementById("wordDisplay").textContent =
+          currentWord.swahili;
+        document.getElementById("animalIcon").textContent = currentWord.icon;
+
+        const optionButtons = document.querySelectorAll(".option-btn");
+        optionButtons.forEach((btn, index) => {
+          btn.textContent = options[index];
+          btn.className = "option-btn";
+          btn.disabled = false;
+        });
+
+        document.getElementById("feedback").textContent = "";
+        gameActive = true;
+      }
+
+      function selectAnswer(selectedIndex) {
+        if (!gameActive) return;
+
+        const optionButtons = document.querySelectorAll(".option-btn");
+        gameActive = false;
+
+        if (selectedIndex === correctAnswer) {
+          optionButtons[selectedIndex].classList.add("correct");
+          document.getElementById("feedback").textContent =
+            "Vizuri! (Excellent!)";
+          document.getElementById("feedback").className = "feedback correct";
+
+          score += 10 * level;
+          streak++;
+
+          if (streak > 0 && streak % 5 === 0) {
+            score += 50; // Bonus for streak
+          }
+        } else {
+          optionButtons[selectedIndex].classList.add("incorrect");
+          optionButtons[correctAnswer].classList.add("correct");
+          document.getElementById("feedback").textContent =
+            "Pole! (Sorry!) Try again next time.";
+          document.getElementById("feedback").className = "feedback incorrect";
+
+          streak = 0;
+        }
+
+        optionButtons.forEach((btn) => (btn.disabled = true));
+        updateDisplay();
+        setTimeout(() => nextWord(), 2000);
+      }
+
+      function nextWord() {
+        currentWordIndex++;
+        displayWord();
+      }
+
+      function updateDisplay() {
+        document.getElementById("score").textContent = score;
+        document.getElementById("level").textContent = level;
+        document.getElementById("streak").textContent = streak;
+
+        const progress = ((currentWordIndex % 10) / 10) * 100;
+        document.getElementById("progress").style.width = progress + "%";
+      }
+
+      function resetGame() {
+        score = 0;
+        level = 1;
+        streak = 0;
+        currentWordIndex = 0;
+
+        // Shuffle the words array
+        for (let i = words.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [words[i], words[j]] = [words[j], words[i]];
+        }
+
+        updateDisplay();
+        displayWord();
+      }
+
+      // Initialize game
+      resetGame();
+    </script>
+  </body>
+</html>

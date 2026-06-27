@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 3 | Environmental Activities | Water, Plants, Animals & Waste</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0277BD 0%, #0288D1 30%, #43A047 70%, #7CB342 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #FFFDF5;
+            border-radius: 60px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .stats-bar {
+            background: #2E7D32;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 4px solid #1B5E20;
+        }
+
+        .stat {
+            background: #01579B;
+            padding: 6px 14px;
+            border-radius: 50px;
+            color: #FFF9C4;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .stat span:first-child {
+            color: #FFB74D;
+            margin-right: 5px;
+        }
+
+        .level-badge {
+            background: #F9A825;
+            color: #01579B;
+        }
+
+        .question-area {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .question-text {
+            background: #E1F5FE;
+            padding: 25px 15px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #01579B;
+            box-shadow: inset 0 0 0 3px white, 0 8px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            word-break: break-word;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .voice-btn {
+            background: #F9A825;
+            border: none;
+            font-size: 1.1rem;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #2C1A0A;
+            box-shadow: 0 3px 0 #C47D0A;
+            transition: 0.05s linear;
+        }
+
+        .voice-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #C47D0A;
+        }
+
+        .answer-input {
+            width: 85%;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            text-align: center;
+            border-radius: 50px;
+            border: 3px solid #F9A825;
+            background: white;
+            font-weight: bold;
+            outline: none;
+        }
+
+        .answer-input:focus {
+            border-color: #2E7D32;
+        }
+
+        .hint-area {
+            background: #FFF8E1;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #E65100;
+            font-weight: bold;
+            min-height: 50px;
+        }
+
+        .timer-box {
+            background: #01579B;
+            padding: 10px 20px;
+            margin: 10px 20px;
+            border-radius: 50px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .timer-clock {
+            background: black;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 1.5rem;
+            color: #4CAF50;
+        }
+
+        .submit-btn {
+            background: #2E7D32;
+            border: none;
+            font-size: 1.2rem;
+            padding: 12px 20px;
+            width: 80%;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            margin: 15px auto;
+            display: block;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1B5E20;
+        }
+
+        .submit-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1B5E20;
+        }
+
+        .feedback {
+            font-size: 0.95rem;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 50px;
+            margin: 10px 20px;
+            background: #F0E6D2;
+        }
+
+        .next-level-info {
+            background: linear-gradient(90deg, #F9A825, #F1C40F);
+            text-align: center;
+            padding: 10px;
+            border-radius: 30px;
+            margin: 5px 20px 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #1B5E20;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1rem; padding: 18px 12px; }
+            .answer-input { font-size: 0.9rem; width: 90%; }
+            .timer-clock { font-size: 1.2rem; }
+            .stat { font-size: 0.7rem; padding: 4px 10px; }
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="stats-bar">
+        <div class="stat level-badge"><span>🌍 LEVEL</span> <span id="levelNum">1</span></div>
+        <div class="stat"><span>⭐ SCORE</span> <span id="scoreDisplay">0</span></div>
+        <div class="stat"><span>📊 PROGRESS</span> <span id="qCounter">0</span>/<span id="totalQLevel">30</span></div>
+        <div class="stat"><span>🎯 NEED</span> 80%</div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Loading your environmental adventure...</div>
+        <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+        <div class="answer-section">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+        </div>
+        <div class="hint-area" id="hintMsg">🎧 Click the speaker to hear the question. Type your answer (1-3 words).</div>
+    </div>
+    <div class="timer-box">
+        <span>⏳ TIME REMAINING</span>
+        <span class="timer-clock" id="timerDisplay">40</span>
+    </div>
+    <button class="submit-btn" id="submitAnswer">✅ SUBMIT ANSWER</button>
+    <div class="feedback" id="feedbackMsg">🌟 Answer 30 questions per level. Get 80% to advance!</div>
+    <div id="levelInfoMsg" class="next-level-info">💧 Water | 🌿 Plants | 🦒 Animals | 🗑️ Waste | Resources in our Environment</div>
+</div>
+
+<script>
+    // ============================================================
+    // CBC GRADE 3 - ENVIRONMENTAL ACTIVITIES
+    // Topics: Water, Plants, Animals, Waste Materials
+    // 5 Levels x 30 Questions | 40 Second Timer | Voice Output
+    // ============================================================
+    
+    // ----- WATER QUESTIONS (12+ unique) -----
+    const WATER_QUESTIONS = [
+        { text: "What is the liquid we drink to stay alive?", answer: "water" },
+        { text: "What is the frozen form of water called?", answer: "ice" },
+        { text: "What is water vapor that turns into a gas called?", answer: "steam" },
+        { text: "Where do we get most of our water from?", answer: "rain" },
+        { text: "What is a large body of salt water called?", answer: "ocean" },
+        { text: "What is a flowing body of fresh water called?", answer: "river" },
+        { text: "What is a still body of fresh water called?", answer: "lake" },
+        { text: "What is the process of water turning into vapor?", answer: "evaporation" },
+        { text: "What is the process of vapor turning into water?", answer: "condensation" },
+        { text: "What do we call water that falls from clouds?", answer: "rain" },
+        { text: "What is underground water called?", answer: "groundwater" },
+        { text: "What do we use to carry water from a well?", answer: "bucket" },
+        { text: "What percentage of Earth is covered by water?", answer: "70" },
+        { text: "What do we call a place where water is stored for drinking?", answer: "reservoir" }
+    ];
+    
+    // ----- PLANTS QUESTIONS (12+ unique) -----
+    const PLANT_QUESTIONS = [
+        { text: "What part of a plant grows in the soil?", answer: "root" },
+        { text: "What part of a plant carries water to leaves?", answer: "stem" },
+        { text: "What part of a plant makes food using sunlight?", answer: "leaf" },
+        { text: "What is the colorful part of a plant that becomes a fruit?", answer: "flower" },
+        { text: "What do seeds grow into?", answer: "plant" },
+        { text: "What do plants need from the sun to grow?", answer: "sunlight" },
+        { text: "What gas do plants take in from the air?", answer: "carbon dioxide" },
+        { text: "What gas do plants release into the air?", answer: "oxygen" },
+        { text: "What do plants need from the soil to grow?", answer: "nutrients" },
+        { text: "What is the process of plants making food called?", answer: "photosynthesis" },
+        { text: "What do we call a young plant?", answer: "seedling" },
+        { text: "What part of a plant protects the seed?", answer: "fruit" },
+        { text: "What do we call a place where plants grow?", answer: "garden" },
+        { text: "What do trees produce that gives us shade?", answer: "leaves" }
+    ];
+    
+    // ----- ANIMALS QUESTIONS (12+ unique) -----
+    const ANIMAL_QUESTIONS = [
+        { text: "What is the tallest animal with a long neck?", answer: "giraffe" },
+        { text: "What animal is called the king of the jungle?", answer: "lion" },
+        { text: "What animal has a trunk and large ears?", answer: "elephant" },
+        { text: "What animal says 'meow'?", answer: "cat" },
+        { text: "What animal says 'woof'?", answer: "dog" },
+        { text: "What animal gives us milk?", answer: "cow" },
+        { text: "What animal gives us eggs?", answer: "chicken" },
+        { text: "What animal lives in water and has fins?", answer: "fish" },
+        { text: "What animal hops and has a pouch?", answer: "kangaroo" },
+        { text: "What animal is known as the ship of the desert?", answer: "camel" },
+        { text: "What animal has black and white stripes?", answer: "zebra" },
+        { text: "What animal lives in a hive and makes honey?", answer: "bee" },
+        { text: "What animal is the fastest land animal?", answer: "cheetah" },
+        { text: "What animal has a shell and moves slowly?", answer: "tortoise" }
+    ];
+    
+    // ----- WASTE MATERIALS QUESTIONS (12+ unique) -----
+    const WASTE_QUESTIONS = [
+        { text: "What do we call things we throw away?", answer: "waste" },
+        { text: "What is a container where we put waste?", answer: "bin" },
+        { text: "What do we call waste that can be turned into new products?", answer: "recycling" },
+        { text: "What do we call waste that rots away naturally?", answer: "organic" },
+        { text: "What do we call waste that does not rot?", answer: "nonbiodegradable" },
+        { text: "What color bin is often used for recycling?", answer: "blue" },
+        { text: "What do we call the three Rs of waste management?", answer: "reduce reuse recycle" },
+        { text: "What do we call leftover food and peels?", answer: "compost" },
+        { text: "What do we call waste that is harmful to the environment?", answer: "toxic" },
+        { text: "What do we call plastic bags and bottles?", answer: "plastic" },
+        { text: "What can we do with old newspapers?", answer: "recycle" },
+        { text: "What do we call a place where waste is buried?", answer: "landfill" },
+        { text: "What should we do with litter to keep the environment clean?", answer: "pick it up" },
+        { text: "What do we call throwing waste in the right place?", answer: "proper disposal" }
+    ];
+    
+    // Generate 30 unique questions for a specific level (covers all 4 topics)
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        const usedTexts = new Set();
+        
+        function addQuestion(text, answer, topic) {
+            if (usedTexts.has(text)) return false;
+            usedTexts.add(text);
+            questions.push({
+                text: text,
+                expected: answer,
+                topic: topic,
+                expectedLower: String(answer).trim().toLowerCase(),
+                checkAnswer: function(userInput) {
+                    let inputNorm = String(userInput).trim().toLowerCase().replace(/\s+/g, ' ');
+                    return inputNorm === this.expectedLower;
+                },
+                getHint: function(seconds) {
+                    if (seconds <= 8) return `💡 HINT: The answer is "${this.expected}"`;
+                    if (seconds <= 18) return `⏰ Think about ${this.topic}!`;
+                    return `✨ Type your answer. ${seconds} seconds left.`;
+                }
+            });
+            return true;
+        }
+        
+        // Add 8 Water Questions (varied by level)
+        for (let i = 0; i < 8; i++) {
+            let idx = (level * 3 + i * 2) % WATER_QUESTIONS.length;
+            let q = WATER_QUESTIONS[idx];
+            addQuestion(q.text, q.answer, "Water 💧");
+        }
+        
+        // Add 8 Plants Questions (varied by level)
+        for (let i = 0; i < 8; i++) {
+            let idx = (level * 5 + i * 3) % PLANT_QUESTIONS.length;
+            let q = PLANT_QUESTIONS[idx];
+            addQuestion(q.text, q.answer, "Plants 🌿");
+        }
+        
+        // Add 7 Animals Questions (varied by level)
+        for (let i = 0; i < 7; i++) {
+            let idx = (level * 7 + i * 4) % ANIMAL_QUESTIONS.length;
+            let q = ANIMAL_QUESTIONS[idx];
+            addQuestion(q.text, q.answer, "Animals 🦒");
+        }
+        
+        // Add 7 Waste Questions (varied by level)
+        for (let i = 0; i < 7; i++) {
+            let idx = (level * 2 + i * 5) % WASTE_QUESTIONS.length;
+            let q = WASTE_QUESTIONS[idx];
+            addQuestion(q.text, q.answer, "Waste 🗑️");
+        }
+        
+        // Ensure we have exactly 30 (fill if needed from all sources)
+        let allSources = [...WATER_QUESTIONS, ...PLANT_QUESTIONS, ...ANIMAL_QUESTIONS, ...WASTE_QUESTIONS];
+        let fillIndex = 0;
+        while (questions.length < 30 && fillIndex < allSources.length) {
+            let q = allSources[fillIndex];
+            let topic = "Resources";
+            if (fillIndex < WATER_QUESTIONS.length) topic = "Water 💧";
+            else if (fillIndex < WATER_QUESTIONS.length + PLANT_QUESTIONS.length) topic = "Plants 🌿";
+            else if (fillIndex < WATER_QUESTIONS.length + PLANT_QUESTIONS.length + ANIMAL_QUESTIONS.length) topic = "Animals 🦒";
+            else topic = "Waste 🗑️";
+            addQuestion(q.text, q.answer, topic);
+            fillIndex++;
+        }
+        
+        // Shuffle questions for variety
+        for (let i = questions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+        
+        return questions;
+    }
+    
+    // ========== GAME STATE ==========
+    let currentLevel = 1;
+    let currentQuestionsList = [];
+    let currentQuestionIndex = 0;
+    let currentLevelScore = 0;
+    let timerInterval = null;
+    let secondsRemaining = 40;
+    let isTransitioning = false;
+    let activeQuestion = null;
+    let isTimeoutFlag = false;
+    
+    // DOM Elements
+    const levelSpan = document.getElementById("levelNum");
+    const scoreSpan = document.getElementById("scoreDisplay");
+    const progressSpan = document.getElementById("qCounter");
+    const totalSpan = document.getElementById("totalQLevel");
+    const questionDiv = document.getElementById("questionText");
+    const answerInput = document.getElementById("answerInput");
+    const hintDiv = document.getElementById("hintMsg");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const submitButton = document.getElementById("submitAnswer");
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    const levelInfoDiv = document.getElementById("levelInfoMsg");
+    const speakButton = document.getElementById("speakBtn");
+    
+    totalSpan.textContent = "30";
+    
+    // Speech Function
+    const speechSynth = window.speechSynthesis;
+    function speakMessage(message) {
+        if (!message) return;
+        try {
+            if (speechSynth.speaking) speechSynth.cancel();
+            setTimeout(() => {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = "en-US";
+                utterance.rate = 0.9;
+                speechSynth.speak(utterance);
+            }, 50);
+        } catch(e) {
+            console.log("Speech error");
+        }
+    }
+    
+    // Timer Functions
+    function stopGameTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function updateTimerView() {
+        timerDisplay.textContent = secondsRemaining;
+        if (secondsRemaining <= 8) timerDisplay.style.color = "#ff8888";
+        else if (secondsRemaining <= 20) timerDisplay.style.color = "#ffaa44";
+        else timerDisplay.style.color = "#4CAF50";
+    }
+    
+    function startGameTimer() {
+        stopGameTimer();
+        secondsRemaining = 40;
+        updateTimerView();
+        timerInterval = setInterval(() => {
+            if (isTransitioning) return;
+            if (secondsRemaining <= 1) {
+                stopGameTimer();
+                if (!isTransitioning) {
+                    // Voice says "Time is up, moving to the next question" (NOT incorrect)
+                    speakMessage("Time is up, moving to the next question");
+                    isTransitioning = true;
+                    isTimeoutFlag = true;
+                    feedbackDiv.innerHTML = "⏰ TIME IS UP! Moving to next question.";
+                    setTimeout(() => {
+                        moveToNextQuestion(false);
+                    }, 1500);
+                }
+            } else {
+                secondsRemaining--;
+                updateTimerView();
+                if (activeQuestion && !isTransitioning) {
+                    if (secondsRemaining <= 12) {
+                        hintDiv.innerHTML = activeQuestion.getHint(secondsRemaining);
+                    } else if (secondsRemaining <= 25) {
+                        hintDiv.innerHTML = `⏰ ${secondsRemaining} sec left. Think about ${activeQuestion.topic}!`;
+                    } else {
+                        hintDiv.innerHTML = `✨ ${secondsRemaining} sec left. Click speaker to hear question.`;
+                    }
+                }
+            }
+        }, 1000);
+    }
+    
+    function moveToNextQuestion(isAnswerCorrect) {
+        stopGameTimer();
+        
+        if (isAnswerCorrect) {
+            currentLevelScore++;
+            scoreSpan.textContent = currentLevelScore;
+            feedbackDiv.innerHTML = "✅ CORRECT! Great job! +1 point";
+            speakMessage("Correct answer! Well done.");
+        } else if (!isTimeoutFlag) {
+            let correctAns = activeQuestion ? activeQuestion.expected : "?";
+            feedbackDiv.innerHTML = `❌ INCORRECT! The correct answer is: ${correctAns}`;
+            speakMessage(`Wrong answer. The correct answer is ${correctAns}.`);
+        } else {
+            // Timeout case - already spoke "Time is up"
+            feedbackDiv.innerHTML = "⏰ TIME IS UP! Moving to next question.";
+        }
+        
+        isTimeoutFlag = false;
+        currentQuestionIndex++;
+        progressSpan.textContent = currentQuestionIndex;
+        
+        // Check if level is complete (30 questions)
+        if (currentQuestionIndex >= 30) {
+            let percentage = (currentLevelScore / 30) * 100;
+            if (percentage >= 80) {
+                if (currentLevel < 5) {
+                    levelInfoDiv.innerHTML = `🎉 LEVEL ${currentLevel} PASSED! ${Math.floor(percentage)}% → Moving to LEVEL ${currentLevel + 1}`;
+                    speakMessage(`Congratulations! You passed level ${currentLevel}. Moving to next level.`);
+                    currentLevel++;
+                    currentQuestionIndex = 0;
+                    currentLevelScore = 0;
+                    isTransitioning = false;
+                    initializeLevel(currentLevel);
+                } else {
+                    feedbackDiv.innerHTML = "🏆🏆🏆 AMAZING! You completed ALL 5 LEVELS! YOU ARE AN ENVIRONMENTAL HERO! 🏆🏆🏆";
+                    levelInfoDiv.innerHTML = "🌍🌍 GAME COMPLETE! Refresh to play again. Protect our resources! 🌍🌍";
+                    speakMessage("Congratulations! You completed all five levels. You are an environmental hero!");
+                    submitButton.disabled = true;
+                    answerInput.disabled = true;
+                    return;
+                }
+            } else {
+                levelInfoDiv.innerHTML = `❌ LEVEL ${currentLevel} FAILED! ${Math.floor(percentage)}% (Need 80%). Restarting level... Keep learning!`;
+                speakMessage(`You scored ${Math.floor(percentage)} percent. Need 80 to pass. Restarting level ${currentLevel}.`);
+                currentQuestionIndex = 0;
+                currentLevelScore = 0;
+                isTransitioning = false;
+                initializeLevel(currentLevel);
+            }
+            return;
+        }
+        
+        isTransitioning = false;
+        loadCurrentQuestion();
+    }
+    
+    function loadCurrentQuestion() {
+        activeQuestion = currentQuestionsList[currentQuestionIndex];
+        questionDiv.textContent = activeQuestion.text;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitButton.disabled = false;
+        feedbackDiv.innerHTML = "⏳ Type your answer & click SUBMIT. Timer: 40 seconds.";
+        hintDiv.innerHTML = `📚 Topic: ${activeQuestion.topic} | Type short answer.`;
+        scoreSpan.textContent = currentLevelScore;
+        levelSpan.textContent = currentLevel;
+        progressSpan.textContent = currentQuestionIndex;
+        isTransitioning = false;
+        stopGameTimer();
+        startGameTimer();
+        answerInput.focus();
+    }
+    
+    function handleAnswerSubmit() {
+        if (isTransitioning) {
+            feedbackDiv.innerHTML = "⏳ Please wait...";
+            return;
+        }
+        if (!activeQuestion) return;
+        
+        let userAnswer = answerInput.value.trim();
+        if (userAnswer === "") {
+            feedbackDiv.innerHTML = "📝 Please type an answer!";
+            speakMessage("Type your answer first.");
+            return;
+        }
+        
+        stopGameTimer();
+        let isCorrect = activeQuestion.checkAnswer(userAnswer);
+        isTransitioning = true;
+        isTimeoutFlag = false;
+        moveToNextQuestion(isCorrect);
+    }
+    
+    function speakActiveQuestion() {
+        if (!activeQuestion || isTransitioning) {
+            speakMessage("Please wait, the next question is loading.");
+            return;
+        }
+        speakMessage(activeQuestion.text);
+    }
+    
+    function initializeLevel(level) {
+        currentLevel = level;
+        currentQuestionsList = generateQuestionsForLevel(level);
+        currentQuestionIndex = 0;
+        currentLevelScore = 0;
+        isTransitioning = false;
+        isTimeoutFlag = false;
+        
+        levelSpan.textContent = level;
+        scoreSpan.textContent = "0";
+        progressSpan.textContent = "0";
+        totalSpan.textContent = "30";
+        feedbackDiv.innerHTML = `🌍 LEVEL ${level} START! Answer 30 questions, need 80% to advance. 💧🌿🦒🗑️`;
+        levelInfoDiv.innerHTML = `💧 Water | 🌿 Plants | 🦒 Animals | 🗑️ Waste | Level ${level} of 5 | You can do it!`;
+        
+        submitButton.disabled = false;
+        answerInput.disabled = false;
+        
+        // Load first question
+        activeQuestion = currentQuestionsList[0];
+        questionDiv.textContent = activeQuestion.text;
+        answerInput.value = "";
+        hintDiv.innerHTML = `📚 Topic: ${activeQuestion.topic} | Type short answer.`;
+        stopGameTimer();
+        startGameTimer();
+        answerInput.focus();
+    }
+    
+    // Event Listeners
+    submitButton.addEventListener("click", handleAnswerSubmit);
+    speakButton.addEventListener("click", speakActiveQuestion);
+    answerInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter" && !isTransitioning && activeQuestion) {
+            handleAnswerSubmit();
+        }
+    });
+    
+    // Start the game
+    initializeLevel(1);
+</script>
+</body>
+</html>

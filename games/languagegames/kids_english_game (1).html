@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Learning Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .level-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .level-card.locked {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .level-card.completed {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .level-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .level-title {
+            font-size: 1em;
+            margin: 10px 0;
+            color: #4a5568;
+        }
+
+        .stars {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .game-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .question-container {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .question {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .option {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .option:hover {
+            border-color: #4299e1;
+            transform: scale(1.05);
+        }
+
+        .option.correct {
+            background: #48bb78;
+            color: white;
+            border-color: #38a169;
+        }
+
+        .option.wrong {
+            background: #f56565;
+            color: white;
+            border-color: #e53e3e;
+        }
+
+        .lives {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .heart {
+            font-size: 2em;
+            margin: 0 5px;
+            color: #f56565;
+        }
+
+        .heart.lost {
+            color: #cbd5e0;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            animation: fall 3s linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .feedback {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .feedback.wrong {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .word-image {
+            font-size: 3em;
+            margin: 10px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .section-banner {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Main Menu Screen -->
+        <div id="main-menu">
+            <div class="header">
+                <h1 class="title">🌟 English Learning Adventure 🌟</h1>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overall-progress"></div>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div>⭐ Total Stars</div>
+                    <div id="total-stars">0</div>
+                </div>
+                <div class="stat">
+                    <div>🎯 Levels Completed</div>
+                    <div id="completed-levels">0</div>
+                </div>
+                <div class="stat">
+                    <div>🏆 Progress</div>
+                    <div id="progress-percent">0%</div>
+                </div>
+            </div>
+
+            <div class="section-banner">🎯 FOUNDATION (Levels 1-4)</div>
+            <div class="level-select" id="foundation-levels"></div>
+
+            <div class="section-banner">📚 BASIC VOCABULARY (Levels 5-8)</div>
+            <div class="level-select" id="vocabulary-levels"></div>
+
+            <div class="section-banner">✍️ GRAMMAR BASICS (Levels 9-12)</div>
+            <div class="level-select" id="grammar-levels"></div>
+
+            <div class="section-banner">🎨 INTERMEDIATE PRACTICE (Levels 13-16)</div>
+            <div class="level-select" id="intermediate-levels"></div>
+
+            <div class="section-banner">🚀 ADVANCED FUN (Levels 17-20)</div>
+            <div class="level-select" id="advanced-levels"></div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="game-screen">
+            <div class="header">
+                <h2 id="level-title"></h2>
+                <div class="lives" id="lives-container"></div>
+            </div>
+
+            <div class="question-container">
+                <div id="word-image" class="word-image"></div>
+                <div id="question" class="question"></div>
+                <div id="options" class="options"></div>
+            </div>
+
+            <div id="feedback" class="feedback" style="display: none;"></div>
+
+            <div class="controls">
+                <button class="btn" id="back-btn" onclick="goToMainMenu()">🏠 Back to Menu</button>
+                <button class="btn" id="next-btn" onclick="nextQuestion()" style="display: none;">Next Question ➡️</button>
+                <button class="btn" id="complete-btn" onclick="completeLevel()" style="display: none;">Complete Level 🎉</button>
+            </div>
+        </div>
+
+        <div class="celebration" id="celebration"></div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            currentLevel: 1,
+            currentQuestion: 0,
+            lives: 3,
+            score: 0,
+            completedLevels: JSON.parse(localStorage.getItem('completedLevels') || '{}'),
+            totalStars: parseInt(localStorage.getItem('totalStars') || '0')
+        };
+
+        // Level definitions
+        const levels = {
+            1: {
+                title: "Alphabet Review & Letter Sounds",
+                questions: [
+                    { question: "Which letter makes the 'A' sound in 'Apple'?", options: ["A", "E", "I", "O"], correct: 0, image: "🍎" },
+                    { question: "What sound does 'B' make?", options: ["Buh", "Kuh", "Duh", "Fuh"], correct: 0, image: "🐻" },
+                    { question: "Which vowel is in 'Elephant'?", options: ["A", "E", "I", "U"], correct: 1, image: "🐘" },
+                    { question: "What letter starts 'Cat'?", options: ["K", "C", "S", "T"], correct: 1, image: "🐱" },
+                    { question: "Which consonant is in 'Dog'?", options: ["G", "H", "J", "L"], correct: 0, image: "🐶" }
+                ]
+            },
+            2: {
+                title: "Simple 3-4 Letter Words",
+                questions: [
+                    { question: "What does this spell: C-A-T?", options: ["Dog", "Cat", "Bat", "Hat"], correct: 1, image: "🐱" },
+                    { question: "What does this spell: S-U-N?", options: ["Fun", "Run", "Sun", "Gun"], correct: 2, image: "☀️" },
+                    { question: "Complete: D-O-_", options: ["T", "G", "P", "B"], correct: 1, image: "🐶" },
+                    { question: "What does B-A-L-L spell?", options: ["Ball", "Bell", "Bull", "Bill"], correct: 0, image: "⚽" },
+                    { question: "Complete: B-E-_", options: ["D", "T", "E", "A"], correct: 2, image: "🐝" }
+                ]
+            },
+            3: {
+                title: "Sight Words (Common Words)",
+                questions: [
+                    { question: "Which word means 'a single item'?", options: ["the", "and", "a", "to"], correct: 2, image: "1️⃣" },
+                    { question: "Which word connects two things?", options: ["the", "and", "is", "of"], correct: 1, image: "🔗" },
+                    { question: "Complete: 'I am going ___ school'", options: ["and", "the", "to", "is"], correct: 2, image: "🏫" },
+                    { question: "Which word shows something exists?", options: ["the", "and", "is", "to"], correct: 2, image: "✅" },
+                    { question: "Complete: '___ cat is sleeping'", options: ["A", "The", "And", "To"], correct: 1, image: "😴" }
+                ]
+            },
+            4: {
+                title: "Rhyming Words",
+                questions: [
+                    { question: "Which word rhymes with 'cat'?", options: ["dog", "bat", "sun", "car"], correct: 1, image: "🐱" },
+                    { question: "Which word rhymes with 'sun'?", options: ["moon", "fun", "day", "hot"], correct: 1, image: "☀️" },
+                    { question: "Which word rhymes with 'ball'?", options: ["tall", "big", "round", "play"], correct: 0, image: "⚽" },
+                    { question: "Which word rhymes with 'tree'?", options: ["leaf", "green", "bee", "wood"], correct: 2, image: "🌳" },
+                    { question: "Which word rhymes with 'house'?", options: ["home", "mouse", "door", "roof"], correct: 1, image: "🏠" }
+                ]
+            },
+            5: {
+                title: "Opposites (Antonyms)",
+                questions: [
+                    { question: "What is the opposite of 'big'?", options: ["large", "small", "huge", "tall"], correct: 1, image: "📏" },
+                    { question: "What is the opposite of 'hot'?", options: ["warm", "cool", "cold", "dry"], correct: 2, image: "🌡️" },
+                    { question: "What is the opposite of 'happy'?", options: ["glad", "sad", "angry", "tired"], correct: 1, image: "😊" },
+                    { question: "What is the opposite of 'fast'?", options: ["quick", "slow", "rapid", "speedy"], correct: 1, image: "🏃" },
+                    { question: "What is the opposite of 'light'?", options: ["bright", "dark", "heavy", "soft"], correct: 1, image: "💡" }
+                ]
+            },
+            6: {
+                title: "Synonyms (Similar Words)",
+                questions: [
+                    { question: "Which word means the same as 'happy'?", options: ["sad", "glad", "angry", "tired"], correct: 1, image: "😊" },
+                    { question: "Which word means the same as 'fast'?", options: ["slow", "quick", "late", "lazy"], correct: 1, image: "💨" },
+                    { question: "Which word means the same as 'big'?", options: ["small", "large", "tiny", "little"], correct: 1, image: "🦣" },
+                    { question: "Which word means the same as 'pretty'?", options: ["ugly", "beautiful", "mean", "old"], correct: 1, image: "🌸" },
+                    { question: "Which word means the same as 'smart'?", options: ["dumb", "clever", "lazy", "slow"], correct: 1, image: "🧠" }
+                ]
+            },
+            7: {
+                title: "Plurals",
+                questions: [
+                    { question: "What is the plural of 'cat'?", options: ["cat", "cats", "cates", "caties"], correct: 1, image: "🐱" },
+                    { question: "What is the plural of 'box'?", options: ["boxs", "boxes", "boxies", "boxi"], correct: 1, image: "📦" },
+                    { question: "What is the plural of 'child'?", options: ["childs", "childes", "children", "childrens"], correct: 2, image: "👶" },
+                    { question: "What is the plural of 'mouse'?", options: ["mouses", "mice", "mousy", "mousies"], correct: 1, image: "🐭" },
+                    { question: "What is the plural of 'book'?", options: ["books", "bookes", "bookies", "book"], correct: 0, image: "📚" }
+                ]
+            },
+            8: {
+                title: "Simple Sentences",
+                questions: [
+                    { question: "I ___ a book", options: ["am", "read", "is", "are"], correct: 1, image: "📖" },
+                    { question: "She ___ to school", options: ["go", "goes", "going", "gone"], correct: 1, image: "🏫" },
+                    { question: "The dog ___ happy", options: ["am", "is", "are", "be"], correct: 1, image: "🐶" },
+                    { question: "We ___ playing", options: ["is", "am", "are", "be"], correct: 2, image: "🎮" },
+                    { question: "They ___ friends", options: ["is", "am", "are", "be"], correct: 2, image: "👫" }
+                ]
+            },
+            9: {
+                title: "Nouns (Person, Place, Thing)",
+                questions: [
+                    { question: "Which is a PERSON?", options: ["book", "teacher", "school", "happy"], correct: 1, image: "👩‍🏫" },
+                    { question: "Which is a PLACE?", options: ["dog", "run", "park", "big"], correct: 2, image: "🏞️" },
+                    { question: "Which is a THING?", options: ["jump", "girl", "quickly", "chair"], correct: 3, image: "🪑" },
+                    { question: "Which is a PERSON?", options: ["house", "car", "doctor", "red"], correct: 2, image: "👨‍⚕️" },
+                    { question: "Which is a PLACE?", options: ["table", "library", "eat", "small"], correct: 1, image: "📚" }
+                ]
+            },
+            10: {
+                title: "Verbs (Action Words)",
+                questions: [
+                    { question: "Which word shows an ACTION?", options: ["cat", "big", "run", "house"], correct: 2, image: "🏃" },
+                    { question: "Which is an action word?", options: ["book", "jump", "red", "school"], correct: 1, image: "🤸" },
+                    { question: "What action do you do with food?", options: ["sleep", "eat", "book", "chair"], correct: 1, image: "🍽️" },
+                    { question: "Which shows movement?", options: ["happy", "walk", "table", "blue"], correct: 1, image: "🚶" },
+                    { question: "What do you do with a ball?", options: ["house", "throw", "pretty", "window"], correct: 1, image: "⚾" }
+                ]
+            },
+            11: {
+                title: "Adjectives (Describing Words)",
+                questions: [
+                    { question: "Which word DESCRIBES something?", options: ["run", "big", "cat", "jump"], correct: 1, image: "📐" },
+                    { question: "The ___ flower", options: ["run", "jump", "beautiful", "eat"], correct: 2, image: "🌺" },
+                    { question: "Which describes size?", options: ["happy", "small", "walk", "book"], correct: 1, image: "📏" },
+                    { question: "Which describes color?", options: ["jump", "house", "red", "eat"], correct: 2, image: "🎨" },
+                    { question: "The dog is ___", options: ["run", "friendly", "jump", "house"], correct: 1, image: "🐕" }
+                ]
+            },
+            12: {
+                title: "Pronouns (he, she, it, they)",
+                questions: [
+                    { question: "The girl is happy. ___ is smiling.", options: ["He", "She", "It", "They"], correct: 1, image: "👧" },
+                    { question: "The boys are playing. ___ are having fun.", options: ["He", "She", "It", "They"], correct: 3, image: "👦" },
+                    { question: "The cat is sleeping. ___ is tired.", options: ["He", "She", "It", "They"], correct: 2, image: "🐱" },
+                    { question: "My dad is working. ___ is busy.", options: ["He", "She", "It", "They"], correct: 0, image: "👨" },
+                    { question: "The book is old. ___ is torn.", options: ["He", "She", "It", "They"], correct: 2, image: "📖" }
+                ]
+            },
+            13: {
+                title: "Sentence Building",
+                questions: [
+                    { question: "Put in order: is / She / playing", options: ["Playing she is", "She is playing", "Is playing she", "She playing is"], correct: 1, image: "🎮" },
+                    { question: "Put in order: the / big / dog / is", options: ["The dog is big", "Big the dog is", "Is big the dog", "Dog is big the"], correct: 0, image: "🐕" },
+                    { question: "Put in order: I / books / read", options: ["Books I read", "Read I books", "I read books", "I books read"], correct: 2, image: "📚" },
+                    { question: "Put in order: are / We / happy", options: ["Happy we are", "Are we happy", "We are happy", "We happy are"], correct: 2, image: "😊" },
+                    { question: "Put in order: school / go / to / They", options: ["They go to school", "Go they to school", "To school they go", "School go they to"], correct: 0, image: "🏫" }
+                ]
+            },
+            14: {
+                title: "Tenses (Past, Present, Future)",
+                questions: [
+                    { question: "Yesterday I ___ pizza", options: ["eat", "ate", "will eat", "eating"], correct: 1, image: "🍕" },
+                    { question: "Right now I ___ a book", options: ["read", "readed", "will read", "am reading"], correct: 3, image: "📖" },
+                    { question: "Tomorrow I ___ to the park", options: ["go", "went", "will go", "going"], correct: 2, image: "🏞️" },
+                    { question: "Last week she ___ her homework", options: ["do", "did", "will do", "doing"], correct: 1, image: "📝" },
+                    { question: "Next month we ___ on vacation", options: ["go", "went", "will go", "going"], correct: 2, image: "✈️" }
+                ]
+            },
+            15: {
+                title: "Prepositions",
+                questions: [
+                    { question: "The cat is ___ the table", options: ["under", "happy", "running", "big"], correct: 0, image: "🐱" },
+                    { question: "The book is ___ the shelf", options: ["jumping", "on", "pretty", "fast"], correct: 1, image: "📚" },
+                    { question: "She hid ___ the tree", options: ["beautiful", "behind", "quickly", "small"], correct: 1, image: "🌳" },
+                    { question: "The ball is ___ the box", options: ["in", "happy", "running", "loud"], correct: 0, image: "📦" },
+                    { question: "The bird flew ___ the house", options: ["sad", "over", "slowly", "tiny"], correct: 1, image: "🏠" }
+                ]
+            },
+            16: {
+                title: "Short Comprehension",
+                questions: [
+                    { 
+                        question: "Tom has a red bike. He rides it to school every day. What color is Tom's bike?", 
+                        options: ["Blue", "Red", "Green", "Yellow"], 
+                        correct: 1, 
+                        image: "🚲" 
+                    },
+                    { 
+                        question: "The sun is shining. Birds are singing. It's a beautiful day. How is the weather?", 
+                        options: ["Rainy", "Snowy", "Sunny", "Cloudy"], 
+                        correct: 2, 
+                        image: "☀️" 
+                    },
+                    { 
+                        question: "Anna loves to read books. She goes to the library every week. Where does Anna go?", 
+                        options: ["School", "Park", "Library", "Store"], 
+                        correct: 2, 
+                        image: "📚" 
+                    },
+                    { 
+                        question: "The dog is playing with a ball in the garden. Where is the dog?", 
+                        options: ["House", "Garden", "Street", "School"], 
+                        correct: 1, 
+                        image: "🐕" 
+                    },
+                    { 
+                        question: "Mom is cooking dinner in the kitchen. Dad is reading. What is Mom doing?", 
+                        options: ["Reading", "Cooking", "Sleeping", "Playing"], 
+                        correct: 1, 
+                        image: "👩‍🍳" 
+                    }
+                ]
+            },
+            17: {
+                title: "Word Categories",
+                questions: [
+                    { question: "Which is a FRUIT?", options: ["Carrot", "Apple", "Potato", "Broccoli"], correct: 1, image: "🍎" },
+                    { question: "Which is an ANIMAL?", options: ["Car", "House", "Elephant", "Book"], correct: 2, image: "🐘" },
+                    { question: "Which is a COLOR?", options: ["Happy", "Blue", "Fast", "Big"], correct: 1, image: "🎨" },
+                    { question: "Which is a VEHICLE?", options: ["Cat", "Tree", "Car", "Apple"], correct: 2, image: "🚗" },
+                    { question: "Which is CLOTHING?", options: ["Table", "Shirt", "Food", "Game"], correct: 1, image: "👕" }
+                ]
+            },
+            18: {
+                title: "Idioms & Expressions",
+                questions: [
+                    { question: "'It's raining cats and dogs' means:", options: ["Animals are falling", "It's raining heavily", "It's sunny", "Animals are wet"], correct: 1, image: "🌧️" },
+                    { question: "'Break a leg' means:", options: ["Get hurt", "Good luck", "Run fast", "Jump high"], correct: 1, image: "🍀" },
+                    { question: "'Time flies' means:", options: ["Birds fly", "Time goes quickly", "Clocks fly", "Time is slow"], correct: 1, image: "⏰" },
+                    { question: "'Hold your horses' means:", options: ["Grab horses", "Slow down", "Ride fast", "Feed horses"], correct: 1, image: "🐎" },
+                    { question: "'Piece of cake' means:", options: ["Dessert time", "Very easy", "Birthday", "Hungry"], correct: 1, image: "🍰" }
+                ]
+            },
+            19: {
+                title: "Spelling Challenge",
+                questions: [
+                    { question: "Choose the correct spelling:", options: ["beleve", "believe", "beleive", "belive"], correct: 1, image: "✨" },
+                    { question: "Choose the correct spelling:", options: ["freind", "friend", "frend", "friand"], correct: 1, image: "👫" },
+                    { question: "Choose the correct spelling:", options: ["becuase", "because", "becuse", "becase"], correct: 1, image: "❓" },
+                    { question: "Choose the correct spelling:", options: ["beautiful", "beatiful", "beutiful", "beautyful"], correct: 0, image: "🌺" },
+                    { question: "Choose the correct spelling:", options: ["seperate", "separate", "separete", "seprate"], correct: 1, image: "✂️" }
+                ]
+            },
+            20: {
+                title: "Final Boss: English Master",
+                questions: [
+                    { question: "What comes next: A, B, C, ?", options: ["E", "D", "F", "G"], correct: 1, image: "🔤" },
+                    { question: "Riddle: I have pages but I'm not a person. What am I?", options: ["Tree", "Book", "House", "Car"], correct: 1, image: "📚" },
+                    { question: "Which sentence is correct?", options: ["She are happy", "She is happy", "She am happy", "

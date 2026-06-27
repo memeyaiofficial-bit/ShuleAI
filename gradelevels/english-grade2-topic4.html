@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBC Game: Cultural Activities, Child Labour & Caring - Grade 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+        }
+        
+        :root {
+            --primary: #4A90E2;
+            --secondary: #50E3C2;
+            --accent: #F5A623;
+            --danger: #D0021B;
+            --success: #7ED321;
+            --light: #F8F9FA;
+            --dark: #2C3E50;
+            --shadow: 0 8px 25px rgba(0,0,0,0.2);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #start-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin: 15px 0;
+            color: var(--dark);
+            text-shadow: 2px 2px 0 var(--accent);
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            margin: 10px 0 25px;
+            color: var(--dark);
+            line-height: 1.4;
+        }
+        
+        .character {
+            font-size: 5rem;
+            margin: 15px 0;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--primary), #5A9AE2);
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 15px 10px;
+            box-shadow: 0 6px 0 rgba(40, 90, 180, 0.8);
+            transition: var(--transition);
+            font-weight: bold;
+            letter-spacing: 1px;
+            min-width: 200px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 rgba(40, 90, 180, 0.9);
+        }
+        
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 3px 0 rgba(40, 90, 180, 0.8);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary), #60E3C2);
+            box-shadow: 0 6px 0 rgba(40, 180, 150, 0.8);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 8px 0 rgba(40, 180, 150, 0.9);
+        }
+        
+        .btn-secondary:active {
+            box-shadow: 0 3px 0 rgba(40, 180, 150, 0.8);
+        }
+        
+        #level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .level-btn {
+            background: white;
+            border: 4px solid var(--secondary);
+            border-radius: 20px;
+            padding: 15px 10px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        
+        .level-btn:hover {
+            transform: scale(1.05);
+            background: var(--accent);
+        }
+        
+        .level-btn.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #ccc;
+        }
+        
+        .level-btn.locked:hover {
+            transform: none;
+            background: white;
+        }
+        
+        #game-screen {
+            padding: 15px;
+        }
+        
+        #level-indicator {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--dark);
+            background: var(--accent);
+            padding: 8px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            box-shadow: 0 4px 0 rgba(200, 150, 0, 0.8);
+        }
+        
+        #timer-container {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        #timer {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--danger);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        #timer.warning {
+            color: var(--accent);
+            animation: none;
+        }
+        
+        #timer.danger {
+            color: var(--danger);
+            animation: shake 0.5s infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        #question-container {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+            border: 3px solid var(--secondary);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.6rem;
+            line-height: 1.4;
+            position: relative;
+        }
+        
+        #question-container::before {
+            content: "❓";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            font-size: 2rem;
+            background: var(--accent);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+        
+        #answer-area {
+            margin: 25px 0;
+        }
+        
+        #answer-input {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 1.5rem;
+            border: 4px solid var(--secondary);
+            border-radius: 20px;
+            margin: 15px 0;
+            text-align: center;
+            transition: var(--transition);
+            background: #f8f9ff;
+        }
+        
+        #answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.2);
+            background: white;
+        }
+        
+        #voice-input-container {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        #voice-btn {
+            background: linear-gradient(45deg, #9d50ff, #6e48aa);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(100, 50, 150, 0.8);
+            transition: var(--transition);
+            margin: 10px;
+        }
+        
+        #voice-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 0 rgba(100, 50, 150, 0.9);
+        }
+        
+        #voice-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 0 rgba(100, 50, 150, 0.8);
+        }
+        
+        #voice-btn.recording {
+            animation: pulse 1s infinite;
+            background: linear-gradient(45deg, var(--danger), #c0021b);
+        }
+        
+        @keyframes recordingPulse {
+            0% { box-shadow: 0 0 0 0 rgba(208, 2, 27, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(208, 2, 27, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(208, 2, 27, 0); }
+        }
+        
+        #hint-container {
+            min-height: 60px;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 15px;
+            background: #e3f2fd;
+            border-left: 4px solid var(--secondary);
+            display: none;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+        
+        #hint-container.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        #feedback {
+            min-height: 40px;
+            margin: 15px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 15px;
+        }
+        
+        .feedback-correct {
+            background: rgba(126, 211, 33, 0.2);
+            color: #4a7a14;
+            border: 2px solid var(--success);
+        }
+        
+        .feedback-incorrect {
+            background: rgba(208, 2, 27, 0.15);
+            color: #8a010f;
+            border: 2px solid var(--danger);
+        }
+        
+        .feedback-timeup {
+            background: rgba(245, 166, 35, 0.2);
+            color: #8a5a00;
+            border: 2px solid var(--accent);
+        }
+        
+        #progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        #score-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        #progress-bar {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 0 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        #progress-text {
+            font-weight: bold;
+            color: var(--dark);
+            min-width: 60px;
+            text-align: right;
+        }
+        
+        #action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        #result-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .result-title {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            color: var(--dark);
+        }
+        
+        .result-message {
+            font-size: 1.8rem;
+            margin: 20px 0;
+            line-height: 1.4;
+            min-height: 80px;
+        }
+        
+        .stars {
+            font-size: 3rem;
+            margin: 15px 0;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(245, 166, 35, 0.7);
+        }
+        
+        .stats {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: var(--shadow);
+            text-align: left;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 1.3rem;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: confetti-fall 5s ease-in-out forwards;
+            z-index: 100;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .topic-tag {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .cultural { background: #FF9E6D; }
+        .child-labour { background: #A29BFE; }
+        .caring { background: #00D2D3; }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.9rem; }
+            .subtitle { font-size: 1.15rem; }
+            .character { font-size: 4rem; }
+            .btn { 
+                padding: 14px 35px; 
+                font-size: 1.3rem;
+                min-width: 180px;
+            }
+            #question-container { 
+                font-size: 1.4rem; 
+                padding: 20px 15px;
+                min-height: 130px;
+            }
+            #answer-input { 
+                font-size: 1.4rem; 
+                padding: 15px 20px;
+            }
+            #timer { font-size: 3rem; }
+            #level-indicator { font-size: 1.3rem; padding: 6px 15px; }
+            .result-title { font-size: 2.1rem; }
+            .result-message { font-size: 1.6rem; }
+            .stars { font-size: 2.5rem; }
+        }
+        
+        @media (max-width: 400px) {
+            #game-container { 
+                border-radius: 20px; 
+                padding: 15px;
+            }
+            h1 { font-size: 1.7rem; }
+            .btn { 
+                padding: 12px 25px; 
+                font-size: 1.2rem;
+                min-width: 160px;
+                margin: 10px 5px;
+            }
+            #question-container { 
+                font-size: 1.3rem; 
+                padding: 15px;
+            }
+            #answer-input { font-size: 1.3rem; }
+            #timer { font-size: 2.5rem; }
+            #level-indicator { font-size: 1.2rem; padding: 5px 15px; }
+            .stat-row { font-size: 1.2rem; }
+        }
+        
+        /* Animation for correct answer */
+        @keyframes correctAnim {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(126, 211, 33, 0); }
+            50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(126, 211, 33, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(126, 211, 33, 0); }
+        }
+        
+        .correct-answer {
+            animation: correctAnim 0.5s ease;
+            border-color: var(--success) !important;
+        }
+        
+        /* Animation for incorrect answer */
+        @keyframes incorrectAnim {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .incorrect-answer {
+            animation: incorrectAnim 0.4s ease;
+            border-color: var(--danger) !important;
+        }
+        
+        /* Floating elements for visual appeal */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* Voice button pulse animation */
+        @keyframes voicePulse {
+            0% { box-shadow: 0 0 0 0 rgba(157, 80, 255, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(157, 80, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(157, 80, 255, 0); }
+        }
+        
+        .voice-active {
+            animation: voicePulse 1.5s infinite;
+        }
+        
+        /* Level complete animation */
+        @keyframes levelComplete {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .level-complete {
+            animation: levelComplete 0.6s ease-out;
+        }
+        
+        /* Microphone animation when recording */
+        .mic-wave {
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: white;
+            margin: 0 2px;
+            border-radius: 2px;
+            animation: micWave 1.5s infinite ease-in-out;
+        }
+        
+        .mic-wave:nth-child(1) { animation-delay: 0s; height: 10px; }
+        .mic-wave:nth-child(2) { animation-delay: 0.1s; height: 15px; }
+        .mic-wave:nth-child(3) { animation-delay: 0.2s; height: 20px; }
+        .mic-wave:nth-child(4) { animation-delay: 0.3s; height: 15px; }
+        .mic-wave:nth-child(5) { animation-delay: 0.4s; height: 10px; }
+        
+        @keyframes micWave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="character floating">🌍✨</div>
+            <h1>CBC Learning Adventure</h1>
+            <p class="subtitle">Grade 2 • Topics:<br>🎭 Cultural Activities • ⚠️ Child Labour • ❤️ Caring for Others</p>
+            
+            <div style="margin: 25px 0;">
+                <span class="topic-tag cultural">🎭 Cultural</span>
+                <span class="topic-tag child-labour">⚠️ Child Labour</span>
+                <span class="topic-tag caring">❤️ Caring</span>
+            </div>
+            
+            <button id="start-btn" class="btn">🚀 Start Adventure!</button>
+            <button id="how-to-play" class="btn btn-secondary">❓ How to Play</button>
+            
+            <div id="instructions" style="display: none; margin-top: 25px; text-align: left; background: white; padding: 20px; border-radius: 20px; box-shadow: var(--shadow);">
+                <h3 style="margin-bottom: 15px; color: var(--dark);">🎮 How to Play:</h3>
+                <ul style="text-align: left; line-height: 1.6; font-size: 1.2rem; padding-left: 20px;">
+                    <li>🗣️ Tap the <strong>🎤 button</strong> to speak your answer OR type in the box</li>
+                    <li>🔊 Questions are read aloud automatically</li>
+                    <li>⏱️ You have <strong>40 seconds</strong> to answer each question</li>
+                    <li>💡 Hints appear as time runs out to help you!</li>
+                    <li>✍️ Type or speak your answer (no multiple choice!)</li>
+                    <li>⭐ Score <strong>80% or higher</strong> to unlock the next level</li>
+                    <li>🎯 5 exciting levels with 30 questions each</li>
+                    <li>🔄 Questions never repeat - all topics covered!</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Level Select Screen -->
+        <div id="level-select-screen" class="screen">
+            <h1 style="text-align: center; margin: 15px 0;">🏆 Choose Your Level</h1>
+            <p style="text-align: center; margin-bottom: 25px; font-size: 1.3rem;">Complete each level with 80% to unlock the next!</p>
+            
+            <div id="level-select">
+                <button class="level-btn" data-level="1">Level 1<br><small>Beginner</small></button>
+                <button class="level-btn locked" data-level="2">Level 2<br><small>Explorer</small></button>
+                <button class="level-btn locked" data-level="3">Level 3<br><small>Helper</small></button>
+                <button class="level-btn locked" data-level="4">Level 4<br><small>Champion</small></button>
+                <button class="level-btn locked" data-level="5">Level 5<br><small>Hero</small></button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="back-to-start" class="btn btn-secondary">← Back</button>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div id="level-indicator">Level <span id="current-level">1</span></div>
+            </div>
+            
+            <div id="timer-container">
+                <div id="timer">40</div>
+                <div style="font-size: 1.1rem; color: #666; margin-top: 5px;">seconds remaining</div>
+            </div>
+            
+            <div id="question-container">
+                Loading question...
+            </div>
+            
+            <div id="hint-container"></div>
+            
+            <div id="answer-area">
+                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+                
+                <div id="voice-input-container">
+                    <button id="voice-btn" title="Speak your answer">
+                        🎤
+                        <div id="mic-animation" style="display: none; margin-top: 5px;">
+                            <div class="mic-wave"></div>
+                            <div class="mic-wave"></div>
+                            <div class="mic-wave"></div>
+                            <div class="mic-wave"></div>
+                            <div class="mic-wave"></div>
+                        </div>
+                    </button>
+                    <div style="font-size: 1.1rem; color: #666; margin-top: 10px;">Tap microphone to speak your answer</div>
+                </div>
+            </div>
+            
+            <div id="feedback"></div>
+            
+            <div id="progress-container">
+                <div id="score-display">Score: <span id="score">0</span>/<span id="total-questions">30</span></div>
+                <div id="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <div id="progress-text"><span id="answered">0</span>/30</div>
+            </div>
+            
+            <div id="action-buttons">
+                <button id="submit-btn" class="btn">✓ Submit Answer</button>
+                <button id="next-btn" class="btn" style="display: none;">Next Question →</button>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div class="character">🎉</div>
+            <h1 class="result-title" id="result-title">Level Complete!</h1>
+            <div class="stars" id="stars">⭐⭐⭐</div>
+            <p class="result-message" id="result-message">Amazing job! You're a caring global citizen!</p>
+            
+            <div class="stats">
+                <div class="stat-row">
+                    <span>Questions Answered:</span>
+                    <span id="result-answered">0/30</span>
+                </div>
+                <div class="stat-row">
+                    <span>Correct Answers:</span>
+                    <span id="result-correct">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Your Score:</span>
+                    <span id="result-score">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span>Time Bonus:</span>
+                    <span id="result-bonus">+0</span>
+                </div>
+            </div>
+            
+            <div id="next-level-container" style="margin: 25px 0;">
+                <button id="next-level-btn" class="btn" style="display: none;">🚀 Next Level!</button>
+                <button id="retry-btn" class="btn btn-secondary">🔄 Try Again</button>
+                <button id="home-btn" class="btn btn-secondary">🏠 Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================
+        // GAME CONFIGURATION
+        // ======================
+        const CONFIG = {
+            levels: 5,
+            questionsPerLevel: 30,
+            timePerQuestion: 40, // seconds
+            passThreshold: 0.8, // 80% to pass
+            hintThresholds: [30, 20, 10], // seconds when hints appear
+            voiceEnabled: true
+        };
+
+        // ======================
+        // QUESTION BANK (150 unique questions)
+        // ======================
+        const questionBank = {
+            cultural: [
+                { q: "In many cultures, people celebrate special days with music and dance. What is one way your family celebrates special days?", a: ["music", "dance", "food", "singing", "dancing", "traditional food"], hint: "Think about celebrations like birthdays or holidays!" },
+                { q: "Different cultures have traditional clothing. What is a special outfit you or your family wears for celebrations?", a: ["kanga", "kitenge", "dress", "suit", "traditional clothes"], hint: "Clothing worn for special occasions" },
+                { q: "Many cultures tell stories to teach lessons. What is a story your family has told you?", a: ["folk tale", "family story", "traditional story", "moral story"], hint: "Stories passed down through generations" },
+                { q: "Cultural activities include making art and crafts. What is something you've made that shows your culture?", a: ["beads", "drawing", "craft", "art", "necklace"], hint: "Handmade items that represent your heritage" },
+                { q: "People in different cultures speak different languages. What language do you speak at home besides English?", a: ["swahili", "luo", "kikuyu", "luhya", "kamba", "meru", "kalenjin"], hint: "Languages spoken in Kenya" },
+                { q: "Traditional games are part of cultural activities. What is a game you play that your parents or grandparents also played?", a: ["hide and seek", "tag", "marbles", "hopscotch", "traditional game"], hint: "Games passed down through generations" },
+                { q: "Cultural festivals bring communities together. What festival does your community celebrate?", a: ["jamhuri day", "mashujaa day", "easter", "christmas", "eid", "diwali"], hint: "Special days celebrated by your community" },
+                { q: "Music is important in many cultures. What instrument have you seen or played in cultural events?", a: ["drum", "guitar", "piano", "flute", "traditional instrument"], hint: "Tools used to make music" },
+                { q: "Cultural dances tell stories. What dance have you learned that shows your culture?", a: ["traditional dance", "school dance", "community dance"], hint: "Movement that expresses cultural stories" },
+                { q: "Food is an important part of culture. What special dish does your family make for celebrations?", a: ["pilau", "ugali", "nyama choma", "mandazi", "traditional food"], hint: "Delicious meals for special occasions" },
+                { q: "Cultural symbols represent important ideas. What symbol have you seen that shows your culture?", a: ["flag", "beads", "patterns", "colors", "traditional symbols"], hint: "Visual representations of cultural values" },
+                { q: "Storytelling is a cultural tradition. Who in your family tells the best stories?", a: ["grandma", "grandpa", "parent", "elder", "family member"], hint: "The person who shares cultural tales" },
+                { q: "Cultural activities teach us about our history. What have you learned about your ancestors?", a: ["traditions", "stories", "history", "customs", "ancestral knowledge"], hint: "Lessons from the past" },
+                { q: "Many cultures use special greetings. How do you greet elders in your culture?", a: ["hello", "good morning", "respectful greeting", "traditional greeting"], hint: "Ways to show respect when saying hello" },
+                { q: "Cultural clothing often has special meanings. What does your traditional clothing represent?", a: ["identity", "pride", "culture", "heritage", "belonging"], hint: "What your special clothes mean to you" },
+                { q: "Cultural songs teach important lessons. What song have you learned that teaches good values?", a: ["school song", "traditional song", "moral song", "educational song"], hint: "Music that shares wisdom" },
+                { q: "Cultural activities happen in special places. Where does your community gather for celebrations?", a: ["church", "mosque", "community center", "school", "home"], hint: "Places where people come together" },
+                { q: "Traditional crafts show cultural skills. What craft have you tried that comes from your culture?", a: ["weaving", "beading", "pottery", "drawing", "making crafts"], hint: "Handmade cultural items" },
+                { q: "Cultural stories often have animals as characters. What animal appears in your favorite cultural story?", a: ["hare", "lion", "elephant", "hyena", "animal character"], hint: "Creatures in traditional tales" },
+                { q: "Cultural values guide how we live. What value have you learned from your culture?", a: ["respect", "kindness", "sharing", "honesty", "hard work"], hint: "Important life lessons from your heritage" },
+                { q: "Cultural celebrations often include special foods. What food do you eat during your favorite celebration?", a: ["cake", "pilau", "mandazi", "special food", "celebration food"], hint: "Tasty treats for happy occasions" },
+                { q: "Cultural dances use special movements. What movement have you learned in a cultural dance?", a: ["stomping", "jumping", "spinning", "clapping", "dance move"], hint: "Steps in traditional dancing" },
+                { q: "Cultural instruments make unique sounds. What sound does a traditional drum make?", a: ["boom", "beat", "rhythm", "drum sound", "percussion"], hint: "The noise from a cultural drum" },
+                { q: "Cultural patterns appear on clothing and art. What pattern have you seen in your culture?", a: ["stripes", "dots", "geometric", "traditional pattern", "design"], hint: "Repeated designs in cultural items" },
+                { q: "Cultural proverbs teach wisdom. What short saying have you heard that teaches a lesson?", a: ["proverb", "saying", "wise words", "traditional saying"], hint: "Short phrases with big meanings" },
+                { q: "Cultural activities connect generations. What have you learned from your grandparents?", a: ["stories", "songs", "dances", "crafts", "traditions"], hint: "Knowledge passed from elders" },
+                { q: "Cultural celebrations mark important times. What celebration marks the start of a new year in your culture?", a: ["new year", "january 1st", "cultural new year", "special day"], hint: "When your community celebrates new beginnings" },
+                { q: "Cultural masks are used in performances. What do masks represent in cultural shows?", a: ["characters", "spirits", "animals", "symbols", "cultural meanings"], hint: "What faces behind masks show" },
+                { q: "Cultural body art shows identity. What kind of body decoration have you seen in your culture?", a: ["beads", "paint", "scars", "traditional decoration", "body art"], hint: "Art on the human body" },
+                { q: "Cultural storytelling uses special voices. How do storytellers make their stories exciting?", a: ["different voices", "sounds", "gestures", "expressions", "storytelling techniques"], hint: "Ways to bring stories to life" }
+            ],
+            childLabour: [
+                { q: "Child labour means children doing work that is harmful or stops them from going to school. What should children be doing instead of working?", a: ["going to school", "playing", "learning", "studying", "education"], hint: "The most important activity for children" },
+                { q: "Children should not work in dangerous places like construction sites. Where should children spend their time instead?", a: ["school", "home", "safe places", "playground", "classroom"], hint: "Safe environments for children" },
+                { q: "If you see a child working instead of going to school, who should you tell?", a: ["teacher", "parent", "adult", "police", "trusted grown-up"], hint: "Someone who can help the child" },
+                { q: "Child labour takes away a child's childhood. What activities should children enjoy instead?", a: ["playing", "learning", "games", "fun", "childhood activities"], hint: "Happy things kids should do" },
+                { q: "Children need to learn and grow. What helps children develop properly?", a: ["education", "school", "learning", "play", "proper development"], hint: "What children need to thrive" },
+                { q: "Working long hours is bad for children. Why is rest important for kids?", a: ["health", "growth", "energy", "well-being", "physical development"], hint: "Why children need time to relax" },
+                { q: "Child labour can hurt a child's health. What keeps children healthy?", a: ["rest", "play", "school", "proper care", "healthy lifestyle"], hint: "Things that maintain good health" },
+                { q: "Children have rights that protect them. What right ensures children go to school?", a: ["right to education", "education", "school", "learning right"], hint: "The legal protection for learning" },
+                { q: "No child should work in factories. Where should children be during school hours?", a: ["classroom", "school", "learning", "educational setting"], hint: "The proper place during school time" },
+                { q: "Child labour prevents children from playing. Why is play important for kids?", a: ["development", "learning", "fun", "social skills", "childhood growth"], hint: "Benefits of playing for children" },
+                { q: "Children should not carry heavy loads. What should children carry instead?", a: ["school bags", "books", "toys", "light items", "educational materials"], hint: "Appropriate items for children" },
+                { q: "Working too much makes children tired. What helps children stay energetic?", a: ["rest", "sleep", "play", "balanced schedule", "proper routine"], hint: "What maintains children's energy" },
+                { q: "Child labour can stop children from making friends. Where do children meet friends?", a: ["school", "playground", "community", "safe places", "social settings"], hint: "Places for social interaction" },
+                { q: "Children need time to learn new things. What helps children gain knowledge?", a: ["school", "education", "teachers", "books", "learning environment"], hint: "Sources of knowledge for kids" },
+                { q: "No child should work late at night. When should children be sleeping?", a: ["at night", "early", "proper bedtime", "regular sleep schedule"], hint: "Healthy sleep habits for children" },
+                { q: "Child labour can make children sad. What makes children happy?", a: ["playing", "learning", "friends", "family", "positive experiences"], hint: "Sources of joy for kids" },
+                { q: "Children should not work in hot sun all day. Where should children be during extreme weather?", a: ["indoors", "shaded areas", "safe places", "protected environments"], hint: "Safe locations during harsh conditions" },
+                { q: "Working prevents children from dreaming about their future. What helps children plan their future?", a: ["education", "school", "guidance", "mentoring", "career planning"], hint: "Support for future aspirations" },
+                { q: "Child labour takes away a child's freedom. What gives children freedom to grow?", a: ["education", "play", "safe environment", "supportive adults", "childhood"], hint: "Elements that enable healthy development" },
+                { q: "Children should not miss school to work. Why is school attendance important?", a: ["learning", "education", "future success", "social development", "academic progress"], hint: "Benefits of regular school attendance" },
+                { q: "No child should work with dangerous tools. What tools should children use instead?", a: ["pencils", "books", "toys", "educational tools", "safe materials"], hint: "Appropriate items for children's use" },
+                { q: "Child labour can cause injuries. What keeps children safe?", a: ["supervision", "safe environments", "adult protection", "proper care", "safety measures"], hint: "Factors that ensure child safety" },
+                { q: "Children need time to be creative. What activities encourage creativity?", a: ["drawing", "singing", "dancing", "arts", "creative play"], hint: "Ways to foster imagination" },
+                { q: "Working too young affects a child's growth. What supports healthy development?", a: ["nutrition", "rest", "play", "education", "proper care"], hint: "Elements for physical and mental growth" },
+                { q: "Child labour isolates children from peers. How do children build relationships?", a: ["playing together", "school", "group activities", "social interaction", "friendship"], hint: "Ways children connect with others" },
+                { q: "Children should not work long hours. What is a healthy daily schedule for kids?", a: ["school and play", "balanced routine", "education and rest", "structured day"], hint: "Proper time management for children" },
+                { q: "Child labour can lead to poor health. What promotes good health in children?", a: ["proper diet", "exercise", "rest", "medical care", "healthy habits"], hint: "Factors for maintaining wellness" },
+                { q: "No child should work instead of eating properly. Why is nutrition important?", a: ["growth", "energy", "health", "development", "well-being"], hint: "Benefits of good nutrition" },
+                { q: "Child labour prevents children from learning life skills. What skills do children learn at school?", a: ["reading", "writing", "math", "social skills", "life skills"], hint: "Essential abilities gained through education" },
+                { q: "Children deserve a happy childhood. What creates joyful childhood memories?", a: ["play", "family time", "learning", "celebrations", "positive experiences"], hint: "Elements of a happy childhood" }
+            ],
+            caring: [
+                { q: "Caring for others means helping people in need. How can you help a classmate who is sad?", a: ["talk to them", "listen", "comfort", "be kind", "offer help"], hint: "Ways to support someone feeling down" },
+                { q: "We should care for elderly people in our community. How can you help an older person?", a: ["carry things", "listen to stories", "visit", "help with tasks", "show respect"], hint: "Actions that support seniors" },
+                { q: "Caring includes sharing with others. What can you share with a friend who needs it?", a: ["food", "toys", "books", "pencil", "resources"], hint: "Items you can give to help others" },
+                { q: "We should care for animals too. How can you help a stray animal?", a: ["give water", "tell adult", "provide food", "contact help", "show kindness"], hint: "Ways to assist animals in need" },
+                { q: "Caring means being kind to everyone. How can you show kindness to a new student?", a: ["welcome them", "show around", "include in games", "be friendly", "introduce yourself"], hint: "Actions that make newcomers feel welcome" },
+                { q: "We should care for our environment. How can you help keep your school clean?", a: ["pick up litter", "recycle", "don't litter", "clean up", "environmental care"], hint: "Ways to maintain cleanliness" },
+                { q: "Caring includes helping family members. How can you help your parents at home?", a: ["clean", "wash dishes", "tidy room", "help siblings", "household chores"], hint: "Tasks that support your family" },
+                { q: "We should care for people who are sick. How can you help someone who is unwell?", a: ["get water", "tell adult", "offer comfort", "be quiet", "show concern"], hint: "Support for those who are ill" },
+                { q: "Caring means standing up for others. How can you help someone being treated unfairly?", a: ["tell teacher", "speak up", "include them", "report bullying", "defend others"], hint: "Actions against unfair treatment" },
+                { q: "We should care for younger children. How can you help a small child who is lost?", a: ["find teacher", "stay with them", "ask for help", "comfort them", "seek adult assistance"], hint: "Support for vulnerable children" },
+                { q: "Caring includes listening to others. How can you show you are listening?", a: ["eye contact", "nodding", "not interrupting", "asking questions", "active listening"], hint: "Behaviors that demonstrate attention" },
+                { q: "We should care for our community. How can you help make your neighborhood better?", a: ["clean up", "plant trees", "help neighbors", "community service", "local improvement"], hint: "Actions that benefit your area" },
+                { q: "Caring means sharing your knowledge. How can you help a classmate who doesn't understand?", a: ["explain", "teach", "show how", "study together", "offer guidance"], hint: "Ways to share understanding" },
+                { q: "We should care for people with disabilities. How can you include someone with different abilities?", a: ["invite to play", "be patient", "adapt games", "show respect", "inclusive actions"], hint: "Ways to ensure everyone participates" },
+                { q: "Caring includes saying kind words. What nice thing can you say to make someone smile?", a: ["compliment", "encouragement", "kind words", "positive message", "uplifting comment"], hint: "Verbal expressions of kindness" },
+                { q: "We should care for our planet. How can you reduce waste at school?", a: ["use both sides", "recycle", "reusable items", "less paper", "eco-friendly actions"], hint: "Ways to minimize environmental impact" },
+                { q: "Caring means noticing when someone needs help. How can you tell if someone needs assistance?", a: ["observe", "ask", "notice signs", "pay attention", "awareness"], hint: "Skills for recognizing needs" },
+                { q: "We should care for our friends' feelings. How can you apologize if you hurt someone's feelings?", a: ["say sorry", "explain", "make amends", "show regret", "sincere apology"], hint: "Ways to repair relationships" },
+                { q: "Caring includes respecting differences. How can you show respect for someone different from you?", a: ["accept", "learn about them", "be open-minded", "celebrate differences", "inclusive attitude"], hint: "Behaviors that honor diversity" },
+                { q: "We should care for people who are lonely. How can you include someone sitting alone?", a: ["invite to join", "sit with them", "start conversation", "include in activity", "companionship"], hint: "Actions that combat loneliness" },
+                { q: "Caring means being honest. How can honesty help others?", a: ["build trust", "prevent harm", "create safety", "foster relationships", "truthfulness benefits"], hint: "Positive impacts of honesty" },
+                { q: "We should care for our school property. How can you take care of classroom materials?", a: ["handle gently", "return properly", "keep clean", "respectful use", "property care"], hint: "Ways to maintain shared resources" },
+                { q: "Caring includes being patient. How can patience help in group work?", a: ["wait turn", "listen fully", "allow time", "understand others", "patient collaboration"], hint: "Benefits of waiting calmly" },
+                { q: "We should care for people who are scared. How can you comfort someone who is afraid?", a: ["stay close", "speak softly", "offer reassurance", "hold hand", "calming presence"], hint: "Support for those experiencing fear" },
+                { q: "Caring means celebrating others' successes. How can you show happiness for a friend's achievement?", a: ["congratulate", "cheer", "acknowledge", "share joy", "positive recognition"], hint: "Ways to honor others' accomplishments" },
+                { q: "We should care for our own belongings too. How can taking care of your things help others?", a: ["share better", "reduce waste", "set example", "resource responsibility", "personal care benefits"], hint: "How self-care extends to community" },
+                { q: "Caring includes following rules. How do school rules help everyone?", a: ["safety", "fairness", "order", "respect", "structured environment"], hint: "Benefits of rule compliance" },
+                { q: "We should care for people who are hungry. How can you help someone without food?", a: ["share snack", "tell adult", "food drive", "community kitchen", "address hunger"], hint: "Actions to alleviate hunger" },
+                { q: "Caring means being responsible. How does responsibility help your community?", a: ["trust", "reliability", "dependability", "community strength", "responsible citizenship"], hint: "Positive impacts of accountability" },
+                { q: "We should care for everyone equally. How can you treat all people with fairness?", a: ["no favoritism", "equal treatment", "impartiality", "justice", "equitable behavior"], hint: "Principles of fair treatment" }
+            ]
+        };
+
+        // ======================
+        // GAME STATE
+        // ======================
+        const gameState = {
+            currentLevel: 1,
+            currentQuestionIndex: 0,
+            score: 0,
+            answeredQuestions: 0,
+            usedQuestionIds: new Set(),
+            timer: null,
+            timeLeft: CONFIG.timePerQuestion,
+            hintsShown: 0,
+            levelUnlocked: [true, false, false, false, false],
+            currentQuestion: null,
+            gameActive: false
+        };
+
+        // ======================
+        // DOM ELEMENTS
+        // ======================
+        const elements = {
+            screens: {
+                start: document.getElementById('start-screen'),
+                levelSelect: document.getElementById('level-select-screen'),
+                game: document.getElementById('game-screen'),
+                result: document.getElementById('result-screen')
+            },
+            buttons: {
+                start: document.getElementById('start-btn'),
+                howToPlay: document.getElementById('how-to-play'),
+                backToStart: document.getElementById('back-to-start'),
+                voice: document.getElementById('voice-btn'),
+                submit: document.getElementById('submit-btn'),
+                next: document.getElementById('next-btn'),
+                nextLevel: document.getElementById('next-level-btn'),
+                retry: document.getElementById('retry-btn'),
+                home: document.getElementById('home-btn'),
+                levelButtons: document.querySelectorAll('.level-btn')
+            },
+            displays: {
+                level: document.getElementById('current-level'),
+                timer: document.getElementById('timer'),
+                question: document.getElementById('question-container'),
+                hint: document.getElementById('hint-container'),
+                feedback: document.getElementById('feedback'),
+                score: document.getElementById('score'),
+                totalQuestions: document.getElementById('total-questions'),
+                answered: document.getElementById('answered'),
+                progressFill: document.getElementById('progress-fill'),
+                resultTitle: document.getElementById('result-title'),
+                resultMessage: document.getElementById('result-message'),
+                stars: document.getElementById('stars'),
+                resultAnswered: document.getElementById('result-answered'),
+                resultCorrect: document.getElementById('result-correct'),
+                resultScore: document.getElementById('result-score'),
+                resultBonus: document.getElementById('result-bonus')
+            },
+            inputs: {
+                answer: document.getElementById('answer-input')
+            },
+            containers: {
+                levelSelect: document.getElementById('level-select'),
+                instructions: document.getElementById('instructions'),
+                nextLevelContainer: document.getElementById('next-level-container'),
+                micAnimation: document.getElementById('mic-animation')
+            }
+        };
+
+        // ======================
+        // SPEECH SYNTHESIS SETUP
+        // ======================
+        let speechSynthesis = window.speechSynthesis;
+        let isSpeaking = false;
+
+        function speak(text, onEnd = null) {
+            if (!CONFIG.voiceEnabled || !speechSynthesis) return;
+            
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9; // Slightly slower for kids
+            utterance.pitch = 1.1; // Slightly higher pitch
+            utterance.lang = 'en-US';
+            
+            utterance.onend = () => {
+                isSpeaking = false;
+                if (onEnd) onEnd();
+            };
+            
+            utterance.onerror = () => {
+                isSpeaking = false;
+                if (onEnd) onEnd();
+            };
+            
+            isSpeaking = true;
+            speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeaking() {
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+                isSpeaking = false;
+            }
+        }
+
+        // ======================
+        // SPEECH RECOGNITION SETUP
+        // ======================
+        let speechRecognition;
+        let isListening = false;
+
+        function initSpeechRecognition() {
+            // Check if browser supports speech recognition
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                console.warn('Speech recognition not supported');
+                elements.buttons.voice.style.display = 'none';
+                return;
+            }
+            
+            speechRecognition = new SpeechRecognition();
+            speechRecognition.continuous = false;
+            speechRecognition.interimResults = false;
+            speechRecognition.lang = 'en-US';
+            
+            speechRecognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                elements.inputs.answer.value = transcript;
+                elements.containers.micAnimation.style.display = 'none';
+                elements.buttons.voice.classList.remove('recording');
+                isListening = false;
+                
+                // Auto-submit if we have a valid answer
+                if (transcript.trim()) {
+                    setTimeout(submitAnswer, 500);
+                }
+            };
+            
+            speechRecognition.onerror = (event) => {
+                console.error('Speech recognition error', event.error);
+                elements.containers.micAnimation.style.display = 'none';
+                elements.buttons.voice.classList.remove('recording');
+                isListening = false;
+                showFeedback("Sorry, I didn't catch that. Please try again or type your answer.", 'incorrect');
+            };
+            
+            speechRecognition.onend = () => {
+                if (isListening) {
+                    // Restart if still supposed to be listening
+                    speechRecognition.start();
+                }
+            };
+        }
+
+        function startListening() {
+            if (!speechRecognition || isListening) return;
+            
+            isListening = true;
+            elements.buttons.voice.classList.add('recording');
+            elements.containers.micAnimation.style.display = 'flex';
+            elements.containers.micAnimation.style.justifyContent = 'center';
+            
+            try {
+                speechRecognition.start();
+            } catch (e) {
+                console.error('Error starting speech recognition', e);
+                elements.containers.micAnimation.style.display = 'none';
+                elements.buttons.voice.classList.remove('recording');
+                isListening = false;
+                showFeedback("Microphone error. Please type your answer.", 'incorrect');
+            }
+        }
+
+        function stopListening() {
+            if (speechRecognition && isListening) {
+                speechRecognition.stop();
+                isListening = false;
+                elements.containers.micAnimation.style.display = 'none';
+                elements.buttons.voice.classList.remove('recording');
+            }
+        }
+
+        // ======================
+        // QUESTION MANAGEMENT
+        // ======================
+        function getAvailableQuestions() {
+            // For demo, we use all questions. In production, filter by difficulty
+            const allQuestions = [
+                ...questionBank.cultural.map(q => ({...q, topic: 'cultural', id: 'c_' + questionBank.cultural.indexOf(q)})),
+                ...questionBank.childLabour.map(q => ({...q, topic: 'childLabour', id: 'l_' + questionBank.childLabour.indexOf(q)})),
+                ...questionBank.caring.map(q => ({...q, topic: 'caring', id: 'r_' + questionBank.caring.indexOf(q)}))
+            ];
+            
+            // Filter out already used questions
+            return allQuestions.filter(q => !gameState.usedQuestionIds.has(q.id));
+        }
+
+        function getRandomQuestion() {
+            const available = getAvailableQuestions();
+            if (available.length === 0) {
+                // Reset used questions if we run out (shouldn't happen with 150 questions)
+                gameState.usedQuestionIds.clear();
+                return getRandomQuestion();
+            }
+            
+            // Get questions from all topics to ensure coverage
+            const culturalQs = available.filter(q => q.topic === 'cultural');
+            const labourQs = available.filter(q => q.topic === 'childLabour');
+            const caringQs = available.filter(q => q.topic === 'caring');
+            
+            // Prioritize topics that have been used less
+            const topicCounts = {
+                cultural: Array.from(gameState.usedQuestionIds).filter(id => id.startsWith('c_')).length,
+                childLabour: Array.from(gameState.usedQuestionIds).filter(id => id.startsWith('l_')).length,
+                caring: Array.from(gameState.usedQuestionIds).filter(id => id.startsWith('r_')).length
+            };
+            
+            // Choose topic with least usage
+            let selectedTopic = 'cultural';
+            let minCount = topicCounts.cultural;
+            if (topicCounts.childLabour < minCount) {
+                selectedTopic = 'childLabour';
+                minCount = topicCounts.childLabour;
+            }
+            if (topicCounts.caring < minCount) {
+                selectedTopic = 'caring';
+            }
+            
+            // Get questions from selected topic, or fallback to any
+            let topicQuestions = available.filter(q => q.topic === selectedTopic);
+            if (topicQuestions.length === 0) {
+                topicQuestions = available;
+            }
+            
+            // Random selection from topic questions
+            const randomIndex = Math.floor(Math.random() * topicQuestions.length);
+            const question = topicQuestions[randomIndex];
+            
+            // Mark as used
+            gameState.usedQuestionIds.add(question.id);
+            
+            return question;
+        }
+
+        function checkAnswer(userAnswer, correctAnswers) {
+            if (!userAnswer) return false;
+            const normalizedUser = userAnswer.trim().toLowerCase();
+            return correctAnswers.some(ans => normalizedUser.includes(ans.toLowerCase()));
+        }
+
+        // ======================
+        // TIMER & HINTS
+        // ======================
+        function startTimer() {
+            gameState.timeLeft = CONFIG.timePerQuestion;
+            gameState.hintsShown = 0;
+            updateTimerDisplay();
+            
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                // Show hints at thresholds
+                if (CONFIG.hintThresholds.includes(gameState.timeLeft) && 
+                    gameState.hintsShown < CONFIG.hintThresholds.length) {
+                    showHint();
+                    gameState.hintsShown++;
+                }
+                
+                // Warning styles
+                if (gameState.timeLeft <= 10) {
+                    elements.displays.timer.className = 'danger';
+                } else if (gameState.timeLeft <= 20) {
+                    elements.displays.timer.className = 'warning';
+                }
+                
+                // Time's up
+                if (gameState.timeLeft <= 0) {
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            elements.displays.timer.textContent = gameState.timeLeft;
+        }
+
+        function showHint() {
+            if (gameState.currentQuestion && gameState.currentQuestion.hint) {
+                elements.displays.hint.textContent = `💡 Hint: ${gameState.currentQuestion.hint}`;
+                elements.displays.hint.classList.add('show');
+            }
+        }
+
+        function hideHint() {
+            elements.displays.hint.classList.remove('show');
+            elements.displays.hint.textContent = '';
+        }
+
+        function handleTimeUp() {
+            clearInterval(gameState.timer);
+            stopSpeaking();
+            stopListening();
+            
+            // Say "time is up" not "incorrect"
+            speak("Time is up!", () => {
+                showFeedback("⏰ Time is up! The answer was: " + gameState.currentQuestion.a[0], 'timeup');
+                disableAnswerInput();
+                elements.buttons.next.style.display = 'inline-block';
+                elements.buttons.submit.style.display = 'none';
+            });
+        }
+
+        // ======================
+        // FEEDBACK & SCORING
+        // ======================
+        function showFeedback(message, type) {
+            elements.displays.feedback.textContent = message;
+            elements.displays.feedback.className = `feedback-${type}`;
+            
+            // Animate answer input
+            if (type === 'correct') {
+                elements.inputs.answer.classList.add('correct-answer');
+                setTimeout(() => elements.inputs.answer.classList.remove('correct-answer'), 500);
+            } else if (type === 'incorrect' || type === 'timeup') {
+                elements.inputs.answer.classList.add('incorrect-answer');
+                setTimeout(() => elements.inputs.answer.classList.remove('incorrect-answer'), 400);
+            }
+        }
+
+        function disableAnswerInput() {
+            elements.inputs.answer.disabled = true;
+            elements.buttons.voice.disabled = true;
+        }
+
+        function enableAnswerInput() {
+            elements.inputs.answer.disabled = false;
+            elements.buttons.voice.disabled = false;
+            elements.inputs.answer.value = '';
+            elements.inputs.answer.focus();
+        }
+
+        function updateProgress() {
+            const percent = (gameState.answeredQuestions / CONFIG.questionsPerLevel) * 100;
+            elements.displays.progressFill.style.width = `${percent}%`;
+            elements.displays.answered.textContent = gameState.answeredQuestions;
+            elements.displays.score.textContent = gameState.score;
+        }
+
+        // ======================
+        // LEVEL & GAME FLOW
+        // ======================
+        function loadQuestion() {
+            hideHint();
+            elements.displays.feedback.textContent = '';
+            elements.displays.feedback.className = '';
+            
+            // Get new question
+            gameState.currentQuestion = getRandomQuestion();
+            elements.displays.question.textContent = gameState.currentQuestion.q;
+            
+            // Read question aloud automatically
+            setTimeout(() => {
+                speak(gameState.currentQuestion.q);
+            }, 500);
+            
+            // Reset UI
+            enableAnswerInput();
+            elements.buttons.submit.style.display = 'inline-block';
+            elements.buttons.next.style.display = 'none';
+            
+            // Start timer
+            startTimer();
+        }
+
+        function submitAnswer() {
+            clearInterval(gameState.timer);
+            stopSpeaking();
+            stopListening();
+            
+            const userAnswer = elements.inputs.answer.value;
+            const isCorrect = checkAnswer(userAnswer, gameState.currentQuestion.a);
+            
+            if (isCorrect) {
+                gameState.score++;
+                showFeedback("✨ Brilliant! That's correct!", 'correct');
+                speak("Great job! That's correct!", () => {
+                    // Small celebration
+                    createConfetti(5);
+                });
+            } else {
+                showFeedback("💭 Good try! The answer was: " + gameState.currentQuestion.a[0], 'incorrect');
+                speak("Good try! The answer was: " + gameState.currentQuestion.a[0]);
+            }
+            
+            gameState.answeredQuestions++;
+            updateProgress();
+            
+            // Disable input and show next button
+            disableAnswerInput();
+            elements.buttons.submit.style.display = 'none';
+            elements.buttons.next.style.display = 'inline-block';
+            
+            // Auto-advance after delay if last question
+            if (gameState.answeredQuestions >= CONFIG.questionsPerLevel) {
+                setTimeout(endLevel, 3000);
+            }
+        }
+
+        function nextQuestion() {
+            if (gameState.answeredQuestions >= CONFIG.questionsPerLevel) {
+                endLevel();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function endLevel() {
+            // Calculate results
+            const percentage = gameState.score / CONFIG.questionsPerLevel;
+            const passed = percentage >= CONFIG.passThreshold;
+            const stars = percentage >= 1 ? '⭐⭐⭐' : percentage >= CONFIG.passThreshold ? '⭐⭐' : '⭐';
+            
+            // Update result screen
+            elements.displays.resultTitle.textContent = passed ? "🎉 Level Complete!" : "💪 Great Effort!";
+            elements.displays.resultMessage.textContent = passed ? 
+                "You're ready for the next challenge!" : 
+                "Practice makes perfect! Try again to unlock the next level.";
+            elements.displays.stars.textContent = stars;
+            elements.displays.resultAnswered.textContent = `${gameState.answeredQuestions}/${CONFIG.questionsPerLevel}`;
+            elements.displays.resultCorrect.textContent = gameState.score;
+            elements.displays.resultScore.textContent = `${Math.round(percentage * 100)}%`;
+            
+            // Unlock next level if passed
+            if (passed && gameState.currentLevel < CONFIG.levels) {
+                gameState.levelUnlocked[gameState.currentLevel] = true;
+                elements.buttons.nextLevel.style.display = 'inline-block';
+                elements.buttons.nextLevel.onclick = () => {
+                    gameState.currentLevel++;
+                    startLevel();
+                };
+            } else {
+                elements.buttons.nextLevel.style.display = 'none';
+            }
+            
+            // Show result screen
+            showScreen('result');
+            
+            // Update level select buttons
+            updateLevelButtons();
+            
+            // Confetti celebration if passed
+            if (passed) {
+                createConfetti(30);
+            }
+        }
+
+        function startLevel() {
+            // Reset level state
+            gameState.currentQuestionIndex = 0;
+            gameState.score = 0;
+            gameState.answeredQuestions = 0;
+            gameState.usedQuestionIds.clear(); // Reset for new level
+            
+            // Update UI
+            elements.displays.level.textContent = gameState.currentLevel;
+            elements.displays.totalQuestions.textContent = CONFIG.questionsPerLevel;
+            updateProgress();
+            
+            // Show game screen
+            showScreen('game');
+            gameState.gameActive = true;
+            
+            // Load first question
+            loadQuestion();
+        }
+
+        function createConfetti(count) {
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#A29BFE', '#00D2D3', '#FF9E6D'];
+            const container = document.getElementById('game-container');
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                container.appendChild(confetti);
+                
+                // Remove after animation
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        // ======================
+        // SCREEN MANAGEMENT
+        // ======================
+        function showScreen(screenName) {
+            // Hide all screens
+            Object.values(elements.screens).forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show requested screen
+            elements.screens[screenName].classList.add('active');
+            
+            // Special handling for game screen
+            if (screenName === 'game') {
+                elements.inputs.answer.focus();
+            }
+        }
+
+        function updateLevelButtons() {
+            elements.buttons.levelButtons.forEach(btn => {
+                const level = parseInt(btn.dataset.level);
+                if (gameState.levelUnlocked[level-1]) {
+                    btn.classList.remove('locked');
+                } else {
+                    btn.classList.add('locked');
+                }
+            });
+        }
+
+        // ======================
+        // EVENT LISTENERS
+        // ======================
+        function setupEventListeners() {
+            // Start button
+            elements.buttons.start.addEventListener('click', () => {
+                showScreen('levelSelect');
+                updateLevelButtons();
+            });
+            
+            // How to play toggle
+            elements.buttons.howToPlay.addEventListener('click', () => {
+                const instructions = elements.containers.instructions;
+                instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+                elements.buttons.howToPlay.textContent = 
+                    instructions.style.display === 'none' ? '❓ How to Play' : '🔼 Hide Instructions';
+            });
+            
+            // Back to start
+            elements.buttons.backToStart.addEventListener('click', () => {
+                showScreen('start');
+            });
+            
+            // Level selection
+            elements.buttons.levelButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!btn.classList.contains('locked')) {
+                        gameState.currentLevel = parseInt(btn.dataset.level);
+                        startLevel();
+                    }
+                });
+            });
+            
+            // Voice input button
+            elements.buttons.voice.addEventListener('click', () => {
+                if (isListening) {
+                    stopListening();
+                } else {
+                    startListening();
+                }
+            });
+            
+            // Submit answer
+            elements.buttons.submit.addEventListener('click', submitAnswer);
+            elements.inputs.answer.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !elements.inputs.answer.disabled) {
+                    submitAnswer();
+                }
+            });
+            
+            // Next question
+            elements.buttons.next.addEventListener('click', nextQuestion);
+            
+            // Result screen buttons
+            elements.buttons.retry.addEventListener('click', () => {
+                startLevel();
+            });
+            
+            elements.buttons.home.addEventListener('click', () => {
+                showScreen('start');
+            });
+            
+            // Prevent form submission on enter
+            document.getElementById('answer-input').form?.addEventListener('submit', (e) => e.preventDefault());
+            
+            // Handle page visibility change to pause timer
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && gameState.gameActive) {
+                    clearInterval(gameState.timer);
+                } else if (!document.hidden && gameState.gameActive && gameState.timeLeft > 0) {
+                    // Resume timer if game is active and not finished
+                    startTimer();
+                }
+            });
+        }
+
+        // ======================
+        // INITIALIZATION
+        // ======================
+        function init() {
+            setupEventListeners();
+            
+            // Set initial state
+            elements.displays.totalQuestions.textContent = CONFIG.questionsPerLevel;
+            
+            // Initialize speech recognition
+            initSpeechRecognition();
+            
+            // Preload voices
+            if (speechSynthesis) {
+                speechSynthesis.onvoiceschanged = () => {
+                    // Voices loaded
+                };
+                // Trigger voice loading
+                speechSynthesis.getVoices();
+            }
+            
+            console.log("🌍 CBC Game loaded! Ready for Grade 2 Cultural Activities, Child Labour and Caring for Others!");
+            console.log("✨ Features: Voice output/input • 40s timer • Hints • 5 levels • 150 unique questions");
+            console.log("🎯 Topics: Cultural Activities • Child Labour • Caring for Others");
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

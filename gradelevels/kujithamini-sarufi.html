@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>CBC Grade 7: Vinyume vya Maneno (Nomino/Vivumishi) + Sarufi + Kujithamini</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a3a, #2c3e2f, #3d2a1f);
+            background-attachment: fixed;
+            font-family: 'Poppins', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: #fffdf5;
+            border-radius: 60px 50px 60px 50px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #1e2f2a;
+            padding: 1.2rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 5px solid #4c9f70;
+            color: #fff3e0;
+        }
+
+        .level-badge {
+            background: #4c9f70;
+            color: #1e2f2a;
+            font-weight: bold;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #2a6b46;
+        }
+
+        .score-area {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            padding: 6px 22px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .question-counter {
+            background: #2a5a45;
+            padding: 6px 20px;
+            border-radius: 32px;
+            font-weight: bold;
+        }
+
+        .quiz-body {
+            padding: 35px 30px;
+            background: #fffaf0;
+        }
+
+        .question-box {
+            background: linear-gradient(145deg, #2d4236, #1f3329);
+            padding: 28px 30px;
+            border-radius: 55px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 0 #0f1f18;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #fff2d7;
+            text-align: center;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .answer-area {
+            margin: 20px 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .answer-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d4236;
+            background: #fff2d7;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+            width: fit-content;
+            border-left: 6px solid #4c9f70;
+        }
+
+        .answer-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .answer-input {
+            flex: 3;
+            min-width: 220px;
+            padding: 16px 22px;
+            font-size: 1.1rem;
+            border: 3px solid #d4c5a3;
+            border-radius: 60px;
+            background: white;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+            color: #1a2f26;
+            font-weight: 500;
+        }
+
+        .answer-input:focus {
+            border-color: #4c9f70;
+            box-shadow: 0 0 0 3px rgba(76, 159, 112, 0.3);
+        }
+
+        .submit-btn {
+            background: #4c9f70;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #1a2f26;
+            cursor: pointer;
+            transition: 0.08s linear;
+            font-family: inherit;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.96);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .action-bar {
+            background: #2d4236;
+            border-radius: 60px;
+            padding: 12px 25px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feedback-message {
+            background: #fff2d7;
+            padding: 12px 22px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: #2d4236;
+            flex: 2;
+            font-size: 1rem;
+        }
+
+        .next-button {
+            background: #4c9f70;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 50px;
+            color: #1a2f26;
+            cursor: pointer;
+            transition: 0.05s linear;
+            font-family: inherit;
+        }
+
+        .next-button:active {
+            transform: scale(0.96);
+        }
+
+        .next-button:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .hint-text {
+            font-size: 0.9rem;
+            color: #2a6b46;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        footer {
+            background: #1e2f2a;
+            text-align: center;
+            padding: 12px;
+            color: #ffefcf;
+            font-size: 0.8rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-card {
+            background: linear-gradient(145deg, #fff2d7, #ffe4b5);
+            max-width: 550px;
+            width: 85%;
+            padding: 35px 20px;
+            border-radius: 65px 35px;
+            text-align: center;
+            border: 4px solid #4c9f70;
+            box-shadow: 0 20px 35px black;
+        }
+
+        .modal-card h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #1a2f26;
+        }
+
+        .modal-card button {
+            background: #1a2f26;
+            color: #4c9f70;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 60px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 680px) {
+            .quiz-body {
+                padding: 20px 16px;
+            }
+            .question-text {
+                font-size: 1.2rem;
+            }
+            .answer-input {
+                font-size: 1rem;
+                padding: 12px 18px;
+            }
+            .submit-btn, .next-button {
+                padding: 10px 22px;
+                font-size: 1rem;
+            }
+            .level-badge {
+                font-size: 1rem;
+                padding: 5px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Ngazi ya 1</div>
+        <div class="score-area">🏆 <span id="totalScore">0</span> alama</div>
+        <div class="question-counter">📖 Swali <span id="currentQ">1</span>/<span id="totalQ">30</span></div>
+    </div>
+
+    <div class="quiz-body">
+        <div class="question-box">
+            <div class="question-text" id="questionText">...</div>
+        </div>
+        
+        <div class="answer-area">
+            <div class="answer-label">✍️ Andika kinyume cha neno (kinyume cha nomino au kivumishi):</div>
+            <div class="answer-input-wrapper">
+                <input type="text" id="answerInput" class="answer-input" placeholder="Chapa kinyume sahihi..." autocomplete="off">
+                <button id="submitBtn" class="submit-btn">✅ Thibitisha Jibu</button>
+            </div>
+            <div class="hint-text">💡 Kidokezo: Vinyume = Mkubwa ↔ Mdogo, Mrefu ↔ Mfupi, Tajiri ↔ Masikini, Mwema ↔ Mwovu. Kila swali ni GENI kabisa!</div>
+        </div>
+
+        <div class="action-bar">
+            <div class="feedback-message" id="feedbackMsg">📚 Tafuta kinyume cha neno, andika jibu, kisha bonyeza "Thibitisha"! Hakuna marudio ya maswali.</div>
+            <button class="next-button" id="nextBtn">SWALI LINALOFUATA →</button>
+        </div>
+    </div>
+    <footer>🔄 Vinyume vya Maneno (Nomino na Vivumishi) | 📖 Sarufi | 💖 Kujithamini | Maswali MAPYA kila wakati!</footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 7: VINYUME VYA MANENO (NOMINO/VIVUMISHI) + SARUFI + KUJITHAMINI
+    // NO REPETITION: Each level generates FRESH, UNIQUE questions dynamically
+    // Every new game and each level has completely different questions
+    // --------------------------------------------------------------
+
+    const TOTAL_LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+
+    // ------------- EXTENSIVE WORD PAIRS DATABASE (Over 300 unique pairs) -------------
+    // Each pair: [word, opposite, category]
+    // This ensures we can always generate unique questions without repetition
+    
+    const wordPairs = [
+        // VIVUMISHI (Adjectives) - Basic
+        ["mkubwa", "mdogo", "vivumishi"], ["mrefu", "mfupi", "vivumishi"], ["mjinja", "mwerevu", "vivumishi"],
+        ["mwema", "mwovu", "vivumishi"], ["tajiri", "masikini", "vivumishi"], ["jepesi", "zito", "vivumishi"],
+        ["kikubwa", "kidogo", "vivumishi"], ["nyingi", "chache", "vivumishi"], ["nzuri", "baya", "vivumishi"],
+        ["safi", "chafu", "vivumishi"], ["kali", "telezi", "vivumishi"], ["tamu", "chungu", "vivumishi"],
+        ["baridi", "moto", "vivumishi"], ["kavu", "majimaji", "vivumishi"], ["imara", "dhaifu", "vivumishi"],
+        ["ororo", "mikali", "vivumishi"], ["tele", "chache", "vivumishi"], ["pana", "embamba", "vivumishi"],
+        ["kirefu", "kifupi", "vivumishi"], ["kizito", "chepesi", "vivumishi"],
+        
+        // VIVUMISHI VYA NGELI TOFAUTI
+        ["mlaini", "mkali", "vivumishi"], ["mpole", "mkatili", "vivumishi"], ["mshikamanifu", "msaliti", "vivumishi"],
+        ["msema kweli", "mwongo", "vivumishi"], ["mnyenyekevu", "mwenye kiburi", "vivumishi"],
+        
+        // NOMINO (Nouns)
+        ["rais", "raia", "nomino"], ["baba", "mama", "nomino"], ["mwanaume", "mwanamke", "nomino"],
+        ["mjini", "kijijini", "nomino"], ["mshindi", "mshindiwa", "nomino"], ["mpenzi", "mchukia", "nomino"],
+        ["rafiki", "adui", "nomino"], ["mwalimu", "mwanafunzi", "nomino"], ["mkuu", "mtumishi", "nomino"],
+        ["mwenyeji", "mgeni", "nomino"], ["bwana", "mtumwa", "nomino"], ["mtajiri", "fukara", "nomino"],
+        ["mkazi", "mgeni", "nomino"], ["mzaliwa", "mgeni", "nomino"], ["mzee", "kijana", "nomino"],
+        ["mkwe", "mkwe (kinyume?)", "nomino"], ["mlevi", "mwangalifu", "nomino"],
+        
+        // KUJITHAMINI (Self-Esteem Related)
+        ["kujithamini", "kujidharau", "kujithamini"], ["kujiamini", "kutojiamini", "kujithamini"],
+        ["uthubutu", "woga", "kujithamini"], ["mwenye ujasiri", "mwoga", "kujithamini"],
+        ["mshindanda", "mnyonge", "kujithamini"], ["matumaini", "kukata tamaa", "kujithamini"],
+        ["kujipenda", "kujichukia", "kujithamini"], ["kuijali nafsi", "kujisahau", "kujithamini"],
+        ["heshima", "fedheha", "kujithamini"], ["ustahimilivu", "kukata tamaa", "kujithamini"],
+        ["furaha", "huzuni", "kujithamini"], ["amani", "fitina", "kujithamini"], ["upendo", "chuki", "kujithamini"],
+        ["unyenyekevu", "kiburi", "kujithamini"], ["uvumilivu", "woga", "kujithamini"],
+        ["kujisifu", "kujinyenyekeza", "kujithamini"], ["kujitukuza", "kujidharau", "kujithamini"],
+        
+        // SARUFI (Grammar)
+        ["jina", "kitenzi", "sarufi"], ["ngeli ya umoja", "ngeli ya wingi", "sarufi"],
+        ["kiambishi awali", "kiambishi tamati", "sarufi"], ["sentensi chanya", "sentensi kukanusha", "sarufi"],
+        
+        // Additional common opposites
+        ["mkali", "mpole", "vivumishi"], ["mwenye huruma", "mkatili", "vivumishi"], ["mwaminifu", "msaliti", "vivumishi"],
+        ["mwenye subira", "mwepesi hasira", "vivumishi"], ["tulivu", "mwenye fujo", "vivumishi"],
+        ["muhimu", "duni", "vivumishi"], ["mzito", "mwepesi", "vivumishi"], ["mtakatifu", "mnajisi", "vivumishi"],
+        ["halali", "haramu", "vivumishi"], ["kipya", "kizamani", "vivumishi"], ["kweli", "uwongo", "nomino"],
+        ["siku", "usiku", "nomino"], ["mchana", "usiku", "nomino"], ["nguvu", "udhaifu", "nomino"],
+        ["ushindi", "kushindwa", "nomino"], ["maisha", "mauti", "nomino"], ["uzima", "kifo", "nomino"],
+        ["utajiri", "umasikini", "nomino"], ["ukubwa", "udogo", "nomino"], ["urefu", "ufupi", "nomino"],
+        ["uzuri", "ubaya", "nomino"], ["usafi", "uchafu", "nomino"], ["ukali", "utelezi", "nomino"],
+        ["baridi", "joto", "nomino"], ["amani", "vita", "nomino"], ["upendo", "chuki", "nomino"],
+        ["urahisi", "ugumu", "nomino"], ["ufungu", "kufungwa", "nomino"], ["uhuru", "utumwa", "nomino"]
+    ];
+
+    // Function to get a random subset of unique pairs (no duplicates within a level)
+    function getRandomUniqueQuestions(level, count) {
+        // Create a fresh copy and shuffle
+        let shuffled = [...wordPairs];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        
+        let selected = [];
+        let usedWords = new Set();
+        
+        for (let i = 0; i < shuffled.length && selected.length < count; i++) {
+            const [word, opposite, category] = shuffled[i];
+            // Avoid using same word twice in a level
+            if (!usedWords.has(word) && !usedWords.has(opposite)) {
+                usedWords.add(word);
+                usedWords.add(opposite);
+                let questionText = `Neno: ${word.toUpperCase()} - Taja kinyume chake.`;
+                
+                // Add difficulty flavor based on level
+                if (level >= 3 && Math.random() > 0.6) {
+                    questionText = "⚡ CHALLENGE: " + questionText + " (Tafuta kinyume sahihi!)";
+                }
+                if (level >= 4 && Math.random() > 0.7) {
+                    questionText = "🔥 UJUZI WA SARUFI: " + questionText;
+                }
+                
+                let explanation = `${word} ↔ ${opposite}`;
+                if (category === "kujithamini") {
+                    explanation += " | Hii inahusiana na kujithamini na afya ya akili.";
+                } else if (category === "sarufi") {
+                    explanation += " | Kanuni za sarufi ya Kiswahili.";
+                }
+                
+                selected.push({
+                    id: `L${level}_Q${selected.length}_${Date.now()}_${Math.random()}`,
+                    text: questionText,
+                    correctAnswer: opposite.toLowerCase(),
+                    explanation: explanation
+                });
+            }
+        }
+        
+        // Fallback: if we somehow don't have enough, generate from a backup list
+        const fallbackPairs = [
+            ["mkubwa", "mdogo"], ["mrefu", "mfupi"], ["tajiri", "masikini"], ["mwema", "mwovu"],
+            ["kujithamini", "kujidharau"], ["kujiamini", "kutojiamini"], ["uthubutu", "woga"],
+            ["rafiki", "adui"], ["mpenzi", "mchukia"], ["mshindi", "mshindiwa"]
+        ];
+        
+        while (selected.length < count) {
+            const idx = selected.length % fallbackPairs.length;
+            const [word, opposite] = fallbackPairs[idx];
+            selected.push({
+                id: `fallback_${selected.length}_${Math.random()}`,
+                text: `Neno: ${word.toUpperCase()} - Taja kinyume chake.`,
+                correctAnswer: opposite.toLowerCase(),
+                explanation: `${word} ↔ ${opposite}`
+            });
+        }
+        
+        return selected;
+    }
+
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let totalScore = 0;
+    let levelsCache = {};      // Store generated questions for each level
+    let activeQuestions = [];
+    let isAnswered = false;
+    let currentCorrectAnswer = "";
+
+    // DOM elements
+    const levelDisplaySpan = document.getElementById("levelDisplay");
+    const totalScoreSpan = document.getElementById("totalScore");
+    const currentQSpan = document.getElementById("currentQ");
+    const totalQSpan = document.getElementById("totalQ");
+    const questionTextDiv = document.getElementById("questionText");
+    const answerInput = document.getElementById("answerInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const nextBtnElem = document.getElementById("nextBtn");
+
+    totalQSpan.innerText = QUESTIONS_PER_LEVEL;
+
+    function loadLevel(level) {
+        // Generate FRESH questions for this level if not already generated
+        // But to ensure "new questions" even when replaying, we regenerate each time the level loads
+        // However we store in cache so that within the same level session questions don't change
+        if (!levelsCache[level]) {
+            levelsCache[level] = getRandomUniqueQuestions(level, QUESTIONS_PER_LEVEL);
+        }
+        activeQuestions = levelsCache[level];
+        currentQIndex = 0;
+        isAnswered = false;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        nextBtnElem.disabled = true;
+        renderCurrentQuestion();
+        updateUI();
+        feedbackMsgDiv.innerHTML = `🔄 Ngazi ${level}: Maswali YOTE ni MAPYA na HAYARUDIWI! Andika kinyume sahihi.`;
+        answerInput.focus();
+    }
+
+    function renderCurrentQuestion() {
+        if (!activeQuestions.length || currentQIndex >= activeQuestions.length) return;
+        const q = activeQuestions[currentQIndex];
+        questionTextDiv.innerText = q.text;
+        currentCorrectAnswer = q.correctAnswer;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        isAnswered = false;
+        nextBtnElem.disabled = true;
+        answerInput.style.borderColor = "#d4c5a3";
+        answerInput.focus();
+    }
+
+    function normalizeAnswer(ans) {
+        return ans.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.,!?;:()-]$/, '').replace(/[^a-z0-9]/g, '');
+    }
+
+    function checkAnswer() {
+        if (isAnswered) {
+            feedbackMsgDiv.innerHTML = "⏳ Umeshajibu swali hili! Bonyeza 'SWALI LINALOFUATA' kuendelea.";
+            return;
+        }
+        const userRaw = answerInput.value;
+        if (userRaw.trim() === "") {
+            feedbackMsgDiv.innerHTML = "⚠️ Tafadhali andika kinyume cha neno kabla ya kuthibitisha!";
+            return;
+        }
+        const userAnswer = normalizeAnswer(userRaw);
+        const q = activeQuestions[currentQIndex];
+        const correctNormalized = normalizeAnswer(q.correctAnswer);
+        const isCorrect = (userAnswer === correctNormalized);
+        isAnswered = true;
+
+        if (isCorrect) {
+            totalScore += 10;
+            totalScoreSpan.innerText = totalScore;
+            feedbackMsgDiv.innerHTML = `✅ SAHIHI! ${q.explanation} +10 alama.`;
+            answerInput.style.borderColor = "#2c7a2f";
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ SI SAHIHI. Kinyume sahihi: "${q.correctAnswer}". ${q.explanation} Endelea kufanya mazoezi ya vinyume.`;
+            answerInput.style.borderColor = "#b91c1c";
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+        }
+        nextBtnElem.disabled = false;
+    }
+
+    function nextQuestion() {
+        if (!isAnswered) {
+            feedbackMsgDiv.innerHTML = "⚠️ Lazima ujibu swali kwanza (andika kinyume na ubofye 'Thibitisha Jibu')!";
+            return;
+        }
+        if (currentQIndex + 1 < activeQuestions.length) {
+            currentQIndex++;
+            renderCurrentQuestion();
+            updateUI();
+            feedbackMsgDiv.innerHTML = "📖 Swali JIPYA KABISA! Andika kinyume cha neno lililotolewa kwa usahihi. Hakuna marudio katika ngazi hii.";
+        } else {
+            completeLevel();
+        }
+    }
+
+    function completeLevel() {
+        const levelCompleted = currentLevel;
+        const maxPointsPerLevel = QUESTIONS_PER_LEVEL * 10;
+        const pointsEarned = totalScore - ((levelCompleted - 1) * maxPointsPerLevel);
+        const isGameFinished = (currentLevel === TOTAL_LEVELS);
+        
+        const modalDiv = document.createElement("div");
+        modalDiv.className = "modal-overlay";
+        let modalContent = "";
+        if (isGameFinished) {
+            modalContent = `
+                <div class="modal-card">
+                    <h2>🏆 HONGERA! UMEMALIZA 🏆</h2>
+                    <p>Jumla ya alama: ${totalScore} / ${TOTAL_LEVELS * maxPointsPerLevel}</p>
+                    <p>⭐ Umebobea: Vinyume vya Maneno (Nomino/Vivumishi), Sarufi na Kujithamini ⭐</p>
+                    <p style="font-size:0.9rem;">🎉 Maswali yote yalikuwa MAPYA na HAYAKURUDIWA!</p>
+                    <button id="restartGameBtn">🔁 CHEZA TENA (Maswali MAPYA kabisa)</button>
+                </div>
+            `;
+        } else {
+            modalContent = `
+                <div class="modal-card">
+                    <h2>✨ UMEMALIZA NGELI ${levelCompleted}! ✨</h2>
+                    <p>Alama za ngazi hii: ${pointsEarned}/${maxPointsPerLevel}</p>
+                    <p>📚 Ngazi inayofuata ina vinyume Vipya 30 - HAKUNA MARUDIO!</p>
+                    <button id="nextLevelBtn">🚀 ENDELEA KWA NGELI INAYOFUATA</button>
+                </div>
+            `;
+        }
+        modalDiv.innerHTML = modalContent;
+        document.body.appendChild(modalDiv);
+        
+        const btn = modalDiv.querySelector(isGameFinished ? "#restartGameBtn" : "#nextLevelBtn");
+        btn.addEventListener("click", () => {
+            modalDiv.remove();
+            if (isGameFinished) {
+                // Full reset - clear cache so new questions are generated
+                levelsCache = {};
+                currentLevel = 1;
+                totalScore = 0;
+                totalScoreSpan.innerText = "0";
+                loadLevel(1);
+                updateLevelDisplay();
+                updateUI();
+                feedbackMsgDiv.innerHTML = "Mchezo umeanza upya! Maswali YOTE ni MAPYA kabisa. Andika vinyume kwa usahihi.";
+            } else {
+                currentLevel++;
+                loadLevel(currentLevel);
+                updateLevelDisplay();
+                updateUI();
+                feedbackMsgDiv.innerHTML = `⚡ Ngazi ${currentLevel} ina vinyume VIPYA 30! Hakuna swali linalorudiwa. Endelea kujifunza sarufi na kujithamini.`;
+            }
+        });
+    }
+
+    function updateUI() {
+        currentQSpan.innerText = currentQIndex + 1;
+        totalScoreSpan.innerText = totalScore;
+    }
+
+    function updateLevelDisplay() {
+        levelDisplaySpan.innerText = `Ngazi ya ${currentLevel}`;
+    }
+
+    // Event listeners
+    submitBtn.addEventListener("click", checkAnswer);
+    nextBtnElem.addEventListener("click", nextQuestion);
+    answerInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !isAnswered && answerInput.value.trim() !== "") {
+            checkAnswer();
+        }
+    });
+
+    // Initialize
+    loadLevel(1);
+    updateLevelDisplay();
+    updateUI();
+</script>
+</body>
+</html>

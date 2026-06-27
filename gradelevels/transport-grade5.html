@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 5 Social Studies - Transport in Kenya Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c5c 0%, #0f2a45 100%);
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fefefe;
+            border-radius: 70px 50px 70px 50px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.6);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .game-header {
+            background: #2c5f8a;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #1a3f5c;
+            color: #fef9c3;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #0d2b40;
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: #ffdd88;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -1px 0 #06202f, 0 3px 0 #031520;
+            font-weight: 600;
+        }
+
+        .timer-box {
+            background: #1e4d2e;
+            color: #ffe082;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer-warning {
+            background: #c73d23;
+            color: white;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            100% { opacity: 0.7; transform: scale(1.02);}
+        }
+
+        .question-area {
+            padding: 30px 28px 25px;
+            background: #ffffff;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 20px;
+            color: #1e4a76;
+            background: #e8f0fe;
+            padding: 22px;
+            border-radius: 55px;
+            text-align: center;
+            word-break: break-word;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #2c5f8a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 5px 0 #1a405c;
+        }
+
+        .voice-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #1a405c;
+        }
+
+        .hint-area {
+            background: #fff7e0;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            flex: 1;
+            text-align: center;
+            color: #b45f1b;
+            font-weight: 600;
+            border-left: 6px solid #fbbf24;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .answer-input-area {
+            margin: 15px 0 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            border-radius: 100px;
+            border: 2px solid #9bbdd0;
+            background: white;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #2c5f8a;
+            box-shadow: 0 0 0 3px rgba(44,95,138,0.3);
+        }
+
+        .submit-btn {
+            background: #2c5f8a;
+            width: 100%;
+            margin-top: 18px;
+            padding: 16px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 6px 0 #1a405c;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #1a405c;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            background: #eef2ff;
+            padding: 14px;
+            border-radius: 50px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: #fff7e8;
+            max-width: 90%;
+            width: 420px;
+            padding: 30px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            border: 3px solid #ffbc6e;
+        }
+
+        .modal-card button {
+            background: #2c5f8a;
+            margin-top: 25px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .question-text {
+                font-size: 1.2rem;
+                padding: 16px;
+            }
+            .game-header {
+                justify-content: center;
+            }
+            .voice-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+            .submit-btn {
+                font-size: 1.2rem;
+            }
+        }
+
+        .correct-feedback {
+            background: #dcfce7;
+            color: #15803d;
+            border-left: 8px solid #22c55e;
+        }
+
+        .wrong-feedback {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-left: 8px solid #ef4444;
+        }
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🚌 Level 1</div>
+        <div class="score-badge" id="scoreDisplay">⭐ Score: 0 / 0</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Welcome! Let's explore Transport in Kenya!</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-area" id="hintMessage">💡 Hint appears when 10 seconds remain</div>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✅ CHECK ANSWER</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">✨ Answer each question. Score 80% to unlock next level!</div>
+    </div>
+</div>
+
+<script>
+    // ------------------- VOICE SYSTEM -------------------
+    function speakMessage(message, pitchVal = 1.0) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.92;
+            utterance.pitch = pitchVal;
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    // ------------------- ANSWER NORMALIZATION -------------------
+    function normalize(ans) {
+        let norm = ans.trim().toLowerCase();
+        norm = norm.replace(/[.,?!;:()]/g, '');
+        norm = norm.replace(/\s+/g, ' ').trim();
+        return norm;
+    }
+
+    function isAnswerCorrect(correct, user) {
+        const normUser = normalize(user);
+        const normCorrect = normalize(correct);
+        if (normUser === normCorrect) return true;
+        
+        // Common variations for transport in Kenya
+        const variations = {
+            "matatu": ["matatus", "public minibus", "matatu bus"],
+            "boda boda": ["bodaboda", "motorbike taxi", "bike taxi"],
+            "tuk tuk": ["tuktuk", "three wheeler", "auto rickshaw"],
+            "sgr": ["standard gauge railway", "madaraka express", "sgr train"],
+            "kenya airways": ["kq", "national carrier"],
+            "jkia": ["jomo kenyatta international airport", "nairobi airport"],
+            "moi international airport": ["mombasa airport", "moi airport"],
+            "keNHA": ["kenha", "kenya national highways authority"],
+            "ntsa": ["national transport and safety authority"],
+            "kbs": ["kenya bus service"],
+            "likoni ferry": ["likoni", "ferry"],
+            "kilindini harbour": ["kilindini", "mombasa harbour"],
+            "thika superhighway": ["thika highway", "thika road"],
+            "nairobi expressway": ["expressway", "toll road"],
+            "madaraka express": ["sgr express", "madaraka"],
+            "lunatic express": ["old railway", "uganda railway"],
+            "commuter rail": ["nairobi commuter", "train"],
+            "flyover": ["fly overs", "overpass"]
+        };
+        
+        for (let [key, aliases] of Object.entries(variations)) {
+            if (normCorrect === key && (aliases.includes(normUser) || normUser === key)) return true;
+            if (aliases.includes(normCorrect) && normUser === key) return true;
+        }
+        return false;
+    }
+
+    // ------------------- QUESTION BANK: TRANSPORT IN KENYA (5 levels x 30 questions) -------------------
+    const LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+    const PASS_PERCENT = 80;
+    const BASE_TIME_SEC = 40;
+
+    const questionBank = [[], [], [], [], []];
+
+    function addToLevel(level, qArray) {
+        questionBank[level].push(...qArray);
+    }
+
+    // ========== LEVEL 1: Road Transport ==========
+    const l1 = [
+        { text: "What is the most common public transport minibus in Kenya?", correct: "matatu" },
+        { text: "Name the motorcycle taxis common in rural and urban areas.", correct: "boda boda" },
+        { text: "What is the three-wheeled vehicle used for short distance transport in towns?", correct: "tuk tuk" },
+        { text: "Which highway connects Nairobi to Thika, reducing traffic jams?", correct: "Thika Superhighway" },
+        { text: "What is the name of the toll road that links Nairobi to Jomo Kenyatta International Airport?", correct: "Nairobi Expressway" },
+        { text: "Which road is known as the 'Great North Road' connecting Kenya to Ethiopia?", correct: "A2 Road" },
+        { text: "Name the authority responsible for maintaining national roads in Kenya.", correct: "KeNHA" },
+        { text: "Which government agency registers vehicles and issues driving licenses?", correct: "NTSA" },
+        { text: "What is the name of the bus company that operates long-distance routes within Kenya?", correct: "Easy Coach" },
+        { text: "Which modern bus rapid transit system is being developed in Nairobi?", correct: "BRT" },
+        { text: "Name the road linking Mombasa to Nairobi that is a major trade route.", correct: "Mombasa Road" },
+        { text: "What is the pedestrian footbridge over busy roads called?", correct: "footbridge" },
+        { text: "Which type of road has multiple lanes and controlled access, reducing travel time?", correct: "highway" },
+        { text: "Name the street lighting system that improves road safety at night.", correct: "streetlights" },
+        { text: "What is the name of the digital system for electronic toll collection on Nairobi Expressway?", correct: "e-toll" },
+        { text: "Which public transport vehicle is known for its colourful decals and loud music?", correct: "matatu" },
+        { text: "What is the main challenge facing road transport in Nairobi?", correct: "traffic jams" },
+        { text: "Name the app-based taxi service widely used in Kenyan cities.", correct: "Uber" },
+        { text: "Which local ride-hailing app competes with Uber in Kenya?", correct: "Bolt" },
+        { text: "What is the name of the highway that connects Nairobi to Naivasha and Nakuru?", correct: "Nairobi-Nakuru Highway" },
+        { text: "Which road construction project connects Nairobi's CBD to Westlands?", correct: "Westlands Road" },
+        { text: "Name the flyover at the Mombasa Road-Uhuru Highway junction.", correct: "Mombasa Road Flyover" },
+        { text: "What is the term for a road tunnel that goes under a busy intersection?", correct: "underpass" },
+        { text: "Which organization manages matatu routes and regulations?", correct: "NTSA" },
+        { text: "Name the modern bus station in Nairobi that serves long-distance travellers.", correct: "Machakos Country Bus Station" },
+        { text: "What is the main cause of road accidents in Kenya?", correct: "speeding" },
+        { text: "Which safety gear is mandatory for boda boda riders?", correct: "helmet" },
+        { text: "Name the vehicle inspection centre that tests roadworthiness.", correct: "KBS" },
+        { text: "What is the name of the pedestrian crossing with traffic lights?", correct: "zebra crossing" },
+        { text: "Which government campaign promotes road safety in Kenya?", correct: "Usalama Barabarani" }
+    ];
+    addToLevel(0, l1.slice(0,30));
+
+    // ========== LEVEL 2: Rail Transport ==========
+    const l2 = [
+        { text: "What is the modern railway from Mombasa to Nairobi called?", correct: "SGR" },
+        { text: "Name the express passenger train on the Standard Gauge Railway.", correct: "Madaraka Express" },
+        { text: "Which old railway line was built during the colonial era from Mombasa to Kisumu?", correct: "Lunatic Express" },
+        { text: "What is the main station for the SGR in Nairobi?", correct: "Nairobi Terminus" },
+        { text: "Name the SGR station located in Mombasa.", correct: "Mombasa Terminus" },
+        { text: "Which city is connected to the SGR by a branch line from Nairobi to Naivasha?", correct: "Naivasha" },
+        { text: "What is the name of the commuter train service in Nairobi that uses old railway lines?", correct: "Nairobi Commuter Rail" },
+        { text: "Which railway line connects Nairobi to Nanyuki?", correct: "Nanyuki Railway" },
+        { text: "Name the railway line that serves the coastal town of Kilifi.", correct: "Kilifi Line" },
+        { text: "What is the main cargo transported by rail from Mombasa to Nairobi?", correct: "containers" },
+        { text: "Which company operates the SGR in Kenya?", correct: "Kenya Railways" },
+        { text: "Name the Chinese company that built the SGR.", correct: "China Communications Construction Company" },
+        { text: "What is the maximum speed of the Madaraka Express passenger train?", correct: "120 km/h" },
+        { text: "How long does the SGR train take from Nairobi to Mombasa?", correct: "5 hours" },
+        { text: "Which city is planned to be connected to the SGR next (northwards)?", correct: "Kisumu" },
+        { text: "Name the old railway museum in Nairobi that shows colonial train history.", correct: "Nairobi Railway Museum" },
+        { text: "What is the name of the SGR freight train that moves goods?", correct: "Freight Train" },
+        { text: "Which county has a new SGR station at Voi?", correct: "Taita Taveta" },
+        { text: "Name the railway bridge over the Tsavo River on the SGR line.", correct: "Tsavo Bridge" },
+        { text: "What was the original name of the Lunatic Express?", correct: "Uganda Railway" },
+        { text: "Which town along the old railway line is known for its railway workshop?", correct: "Nakuru" },
+        { text: "Name the locomotive type used on the SGR (electric or diesel)?", correct: "diesel" },
+        { text: "What is the main advantage of the SGR over road transport?", correct: "speed" },
+        { text: "Which international train connection from Kenya goes to Uganda (currently under revival)?", correct: "Malaba" },
+        { text: "Name the railway station in Kisumu on Lake Victoria.", correct: "Kisumu Railway Station" },
+        { text: "What is the name of the train that used to carry tourists to Mount Kenya?", correct: "Mount Kenya Railway" },
+        { text: "Which railway line serves the sugar belt area of Western Kenya?", correct: "Mumias Line" },
+        { text: "What is the name of the SGR tunnel through the Ngong Hills?", correct: "Ngong Tunnel" },
+        { text: "Which organization regulates rail safety in Kenya?", correct: "Kenya Railways Corporation" },
+        { text: "Name the new railway line planned from Naivasha to Kisumu.", correct: "Kisumu SGR" }
+    ];
+    addToLevel(1, l2.slice(0,30));
+
+    // ========== LEVEL 3: Air Transport ==========
+    const l3 = [
+        { text: "What is the main international airport in Nairobi?", correct: "Jomo Kenyatta International Airport" },
+        { text: "Name the international airport in Mombasa.", correct: "Moi International Airport" },
+        { text: "Which airport serves the coastal tourist town of Malindi?", correct: "Malindi Airport" },
+        { text: "Name the airport in Kisumu that serves the Lake Victoria region.", correct: "Kisumu International Airport" },
+        { text: "What is the name of the airstrip in Maasai Mara for safari flights?", correct: "Mara Serena Airstrip" },
+        { text: "Which airline is the national carrier of Kenya?", correct: "Kenya Airways" },
+        { text: "Name the low-cost airline based in Kenya that flies domestic routes.", correct: "Jambojet" },
+        { text: "Which airline connects Nairobi to Mombasa using small planes?", correct: "Safarilink" },
+        { text: "Name the cargo airline based at JKIA that transports flowers to Europe.", correct: "Astral Aviation" },
+        { text: "What is the name of the domestic airline that flies to Lamu?", correct: "Fly540" },
+        { text: "Which airport serves the town of Eldoret, known as the 'Home of Champions'?", correct: "Eldoret International Airport" },
+        { text: "Name the airport in the coastal town of Diani.", correct: "Ukunda Airstrip" },
+        { text: "What is the main runway length at JKIA?", correct: "4.2 km" },
+        { text: "Which airline is a subsidiary of Kenya Airways for domestic flights?", correct: "Jambojet" },
+        { text: "Name the new terminal at JKIA that handles international arrivals.", correct: "Terminal 1A" },
+        { text: "What is the name of the aviation college in Nairobi that trains pilots?", correct: "East African School of Aviation" },
+        { text: "Which airport serves the town of Nanyuki near Mount Kenya?", correct: "Nanyuki Airstrip" },
+        { text: "Name the airstrip in the Amboseli National Park.", correct: "Amboseli Airstrip" },
+        { text: "What is the busiest air route in Kenya?", correct: "Nairobi-Mombasa" },
+        { text: "Which international airline flies direct from Nairobi to London?", correct: "British Airways" },
+        { text: "Name the government body that manages airports in Kenya.", correct: "Kenya Airports Authority" },
+        { text: "What is the name of the VIP terminal at JKIA?", correct: "Presidential Pavilion" },
+        { text: "Which airline offers the first-class lounge called 'Simba Lounge' at JKIA?", correct: "Kenya Airways" },
+        { text: "Name the cargo terminal at JKIA that handles perishable goods like flowers.", correct: "Greenfields" },
+        { text: "What is the main challenge facing air travel in remote areas?", correct: "cost" },
+        { text: "Which airport serves the Lake Turkana region?", correct: "Lodwar Airport" },
+        { text: "Name the airstrip in the Tsavo National Park.", correct: "Tsavo Airstrip" },
+        { text: "What is the name of the helicopter service that offers charters in Kenya?", correct: "Kenya Helicopters" },
+        { text: "Which airport is closest to the Maasai Mara National Reserve?", correct: "Keekorok Airstrip" },
+        { text: "Name the aviation fuel supplier at JKIA.", correct: "KPLC Aviation" }
+    ];
+    addToLevel(2, l3.slice(0,30));
+
+    // ========== LEVEL 4: Water Transport ==========
+    const l4 = [
+        { text: "What is the main seaport in Kenya?", correct: "Mombasa" },
+        { text: "Name the container terminal at Mombasa Port.", correct: "Kipevu" },
+        { text: "What is the name of the ferry that connects Likoni to Mombasa island?", correct: "Likoni Ferry" },
+        { text: "Which port serves Lake Victoria in Kisumu?", correct: "Kisumu Port" },
+        { text: "Name the modern oil jetty at Mombasa for fuel imports.", correct: "Kipevu Oil Terminal" },
+        { text: "What is the name of the cargo ship that transports goods from Mombasa to Zanzibar?", correct: "dhow" },
+        { text: "Which island is accessed by boat from Lamu town?", correct: "Lamu Island" },
+        { text: "Name the lake port on Lake Turkana.", correct: "Loyangalani" },
+        { text: "What is the name of the boat used for tourism in Lake Naivasha?", correct: "motorboat" },
+        { text: "Which organization manages the Likoni Ferry services?", correct: "Kenya Ferry Services" },
+        { text: "Name the creek that serves as a small port in Kilifi County.", correct: "Kilifi Creek" },
+        { text: "What is the main import through Mombasa Port?", correct: "petroleum" },
+        { text: "Which authority manages Mombasa Port?", correct: "Kenya Ports Authority" },
+        { text: "Name the new cruise terminal at Mombasa for tourists.", correct: "Mombasa Cruise Terminal" },
+        { text: "What is the traditional sailing boat used along the Kenyan coast?", correct: "dhow" },
+        { text: "Which lake has a ferry service connecting Mbita to Luanda Kotieno?", correct: "Lake Victoria" },
+        { text: "Name the port on the Indian Ocean that handles oil exports.", correct: "Mombasa" },
+        { text: "What is the name of the shipyard in Mombasa that repairs vessels?", correct: "Mombasa Shipyard" },
+        { text: "Which river is used for transport of goods in Tana Delta?", correct: "Tana River" },
+        { text: "Name the floating restaurant in Lamu that doubles as a transport boat.", correct: "dhow restaurant" },
+        { text: "What is the main challenge facing water transport in Lake Victoria?", correct: "water hyacinth" },
+        { text: "Which organization regulates safety on Lake Victoria ferries?", correct: "Kenya Maritime Authority" },
+        { text: "Name the boat used for water taxi service in Mombasa's Tudor Creek.", correct: "water taxi" },
+        { text: "What is the name of the new port being developed in Lamu?", correct: "Lamu Port" },
+        { text: "Which country does the Lamu Port serve as a transport hub for?", correct: "South Sudan" },
+        { text: "Name the old slave port on the Kenyan coast.", correct: "Fort Jesus" },
+        { text: "What is the main fish landing site that also serves as a small port in Homa Bay?", correct: "Homa Bay Pier" },
+        { text: "Which sea connects to Mombasa Port?", correct: "Indian Ocean" },
+        { text: "Name the boat racing event held annually in Mombasa.", correct: "Mombasa Regatta" },
+        { text: "What is the main export through Mombasa Port from Kenya?", correct: "tea" }
+    ];
+    addToLevel(3, l4.slice(0,30));
+
+    // ========== LEVEL 5: Pipeline, Smart Transport and Future Trends ==========
+    const l5 = [
+        { text: "What is the name of the pipeline that transports oil from Mombasa to Nairobi?", correct: "Kenya Pipeline" },
+        { text: "Which pipeline extension goes from Nairobi to Eldoret?", correct: "Kipevu - Eldoret Pipeline" },
+        { text: "Name the digital system that tracks public transport vehicles in real-time.", correct: "GPS tracking" },
+        { text: "What is the name of the new electric bus trial project in Nairobi?", correct: "e-bus" },
+        { text: "Which technology allows passengers to pay bus fare using mobile phones?", correct: "mobile payment" },
+        { text: "Name the app that provides real-time matatu locations in Nairobi.", correct: "Ma3Route" },
+        { text: "What is the planned light rail system for Nairobi called?", correct: "Nairobi Light Rail" },
+        { text: "Which company is testing drone delivery services in Kenya?", correct: "Zipline" },
+        { text: "Name the bike-sharing program being introduced in Nairobi CBD.", correct: "Mobike" },
+        { text: "What is the future transport concept that uses underground tunnels?", correct: "hyperloop" },
+        { text: "Which electric motorcycle company is manufacturing in Kenya?", correct: "ARC Ride" },
+        { text: "Name the walking and cycling path being built along Nairobi River.", correct: "Nairobi River Walk" },
+        { text: "What is the name of the transport data platform by the World Bank in Kenya?", correct: "Digital Transport" },
+        { text: "Which smart traffic management system uses cameras to control lights?", correct: "intelligent traffic system" },
+        { text: "Name the mobile app that connects boda boda riders to customers.", correct: "SafeBoda" },
+        { text: "What is the concept of using shared electric scooters in cities?", correct: "e-scooter sharing" },
+        { text: "Which Kenyan start-up converts old matatus to electric?", correct: "Opibus" },
+        { text: "Name the airport express train planned from JKIA to Nairobi CBD.", correct: "JKIA Express" },
+        { text: "What is the name of the inland container depot in Nairobi?", correct: "Nairobi ICD" },
+        { text: "Which technology uses artificial intelligence to predict traffic jams?", correct: "AI traffic prediction" },
+        { text: "Name the public transport card that works on the BRT system.", correct: "smart card" },
+        { text: "What is the name of the pedestrian bridge with moving walkways (travelator) in Nairobi?", correct: "moving walkway" },
+        { text: "Which Kenyan city is piloting electric tuk tuks?", correct: "Kisumu" },
+        { text: "Name the sustainable transport initiative that promotes cycling to school.", correct: "bike-to-school" },
+        { text: "What is the name of the app that reports road accidents to emergency services?", correct: "Sasa Doctor" },
+        { text: "Which autonomous vehicle is being tested in closed environments in Kenya?", correct: "self-driving shuttle" },
+        { text: "Name the concept of car-free days in Nairobi CBD.", correct: "car-free day" },
+        { text: "What is the name of the logistics company using electric delivery vans?", correct: "G4S" },
+        { text: "Which international organization supports smart transport projects in Kenya?", correct: "World Bank" },
+        { text: "Name the future of transport that combines train and bus networks in one ticket.", correct: "integrated transport" }
+    ];
+    addToLevel(4, l5.slice(0,30));
+
+    // ------------------- GAME ENGINE -------------------
+    let currentLevel = 0;
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let score = 0;
+    let answeredCount = 0;
+    let timerInterval = null;
+    let timeLeft = BASE_TIME_SEC;
+    let canAnswer = true;
+    let waitingNext = false;
+
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionText = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintDiv = document.getElementById('hintMessage');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+
+    function updateUI() {
+        levelDisplay.innerText = `🚌 Level ${currentLevel+1}`;
+        scoreDisplay.innerText = `⭐ Score: ${score} / ${answeredCount}`;
+        if (currentQuestions[currentQIndex])
+            questionText.innerText = currentQuestions[currentQIndex].text;
+    }
+
+    function stopTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function startTimer() {
+        stopTimer();
+        timeLeft = BASE_TIME_SEC;
+        timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+        timerDisplay.classList.remove('timer-warning');
+        timerInterval = setInterval(() => {
+            if (!canAnswer) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+                if (timeLeft <= 10) {
+                    timerDisplay.classList.add('timer-warning');
+                    const curr = currentQuestions[currentQIndex];
+                    if (curr && curr.correct) {
+                        hintDiv.innerHTML = `⏰ Hint: answer starts with "${curr.correct.substring(0,3)}..." Think about roads, trains, planes, or ships.`;
+                    } else {
+                        hintDiv.innerHTML = `💡 Focus on Kenya's transport modes: road, rail, air, water, and pipeline!`;
+                    }
+                } else {
+                    timerDisplay.classList.remove('timer-warning');
+                    hintDiv.innerHTML = `💡 Read carefully! 40 seconds. Type your answer about Transport in Kenya.`;
+                }
+            }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if (!canAnswer) return;
+        canAnswer = false;
+        const correctAns = currentQuestions[currentQIndex].correct;
+        speakMessage(`Time is up! The correct answer is ${correctAns}.`, 0.8);
+        feedbackDiv.innerHTML = `⏰ TIME'S UP! Correct: "${correctAns}". Next question...`;
+        feedbackDiv.classList.add('wrong-feedback');
+        setTimeout(() => nextQuestion(), 1600);
+    }
+
+    function checkAnswer() {
+        if (!canAnswer || waitingNext) {
+            feedbackDiv.innerHTML = "⏳ Please wait...";
+            return;
+        }
+        const userAns = answerInput.value.trim();
+        if (userAns === "") {
+            feedbackDiv.innerHTML = "📝 Type your answer before submitting!";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        const correctFlag = isAnswerCorrect(currentQ.correct, userAns);
+        stopTimer();
+        canAnswer = false;
+        if (correctFlag) {
+            score++;
+            feedbackDiv.innerHTML = `✅ CORRECT! "${userAns}" is right! +1 point 🎉`;
+            feedbackDiv.classList.add('correct-feedback');
+            speakMessage("Correct! Excellent work.", 1.2);
+        } else {
+            feedbackDiv.innerHTML = `❌ INCORRECT! "${userAns}" is wrong. Correct: ${currentQ.correct}. Keep trying!`;
+            feedbackDiv.classList.add('wrong-feedback');
+            speakMessage(`Incorrect. The correct answer is ${currentQ.correct}.`, 0.9);
+        }
+        answeredCount++;
+        updateUI();
+        setTimeout(() => nextQuestion(), 1500);
+    }
+
+    function nextQuestion() {
+        waitingNext = false;
+        currentQIndex++;
+        if (currentQIndex >= currentQuestions.length) {
+            const percent = (score / QUESTIONS_PER_LEVEL) * 100;
+            if (percent >= PASS_PERCENT) {
+                if (currentLevel + 1 < LEVELS) {
+                    showModal(`🎉 Level ${currentLevel+1} complete! ${Math.floor(percent)}% (${score}/${QUESTIONS_PER_LEVEL}). Proceed to Level ${currentLevel+2}.`, true);
+                } else {
+                    showModal(`🏆 AMAZING! You mastered Transport in Kenya! 🚂✈️🚢\nFinal Score: ${score}/${QUESTIONS_PER_LEVEL}. You're a Transport Expert!`, false);
+                }
+            } else {
+                showModal(`😓 Level ${currentLevel+1} failed. ${Math.floor(percent)}% (need 80%). Restarting level...`, false);
+                resetCurrentLevel();
+            }
+            return;
+        }
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetCurrentLevel() {
+        stopTimer();
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+        loadQuestionsForLevel(currentLevel);
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetQInterface() {
+        answerInput.value = "";
+        feedbackDiv.classList.remove('correct-feedback', 'wrong-feedback');
+        feedbackDiv.innerHTML = "✨ New question! Type your answer carefully.";
+        hintDiv.innerHTML = "💡 Hint will appear when 10 seconds remain.";
+        timerDisplay.classList.remove('timer-warning');
+        canAnswer = true;
+        waitingNext = false;
+        if (timerInterval) stopTimer();
+        startTimer();
+    }
+
+    function loadCurrentQuestion() {
+        if (currentQuestions[currentQIndex]) {
+            questionText.innerText = currentQuestions[currentQIndex].text;
+            updateUI();
+            startTimer();
+            canAnswer = true;
+        }
+    }
+
+    function loadQuestionsForLevel(level) {
+        currentQuestions = [...questionBank[level]];
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+    }
+
+    function showModal(message, goNext) {
+        stopTimer();
+        canAnswer = false;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `<div class="modal-card"><p>${message}</p><button id="modalBtn">${goNext ? '➡️ NEXT LEVEL ⬅️' : '🔄 RESTART LEVEL'}</button></div>`;
+        document.body.appendChild(overlay);
+        document.getElementById('modalBtn').addEventListener('click', () => {
+            overlay.remove();
+            if (goNext) {
+                currentLevel++;
+                loadQuestionsForLevel(currentLevel);
+                resetQInterface();
+                loadCurrentQuestion();
+            } else {
+                resetCurrentLevel();
+            }
+        });
+    }
+
+    function init() {
+        loadQuestionsForLevel(0);
+        resetQInterface();
+        loadCurrentQuestion();
+        speakBtn.addEventListener('click', () => {
+            if (currentQuestions[currentQIndex])
+                speakMessage(currentQuestions[currentQIndex].text, 1.0);
+        });
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    }
+    init();
+</script>
+</body>
+</html>

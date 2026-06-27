@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Soil Shield | Erosion Control & Conservation | Grade 6 CBC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #eef2ff 0%, #ffffff 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 3rem 2rem 3rem 2rem;
+            box-shadow: 0 30px 45px -12px rgba(2, 62, 138, 0.3);
+            overflow: hidden;
+            border: 2px solid #60a5fa;
+        }
+
+        .game-header {
+            background: #1e3a8a;
+            padding: 1.2rem 1.8rem;
+            color: white;
+            text-align: center;
+            border-bottom: 6px solid #fcd34d;
+        }
+
+        .game-header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .kenyan-flag-badge {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kenyan-fact {
+            background: #dbeafe;
+            margin: 14px 20px 0;
+            padding: 10px 18px;
+            border-radius: 48px;
+            color: #0c4a6e;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-left: 10px solid #fbbf24;
+        }
+
+        .levels-row {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f9ff;
+            padding: 14px 22px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 2px dashed #93c5fd;
+        }
+
+        .level-btn {
+            background: white;
+            border: none;
+            padding: 10px 0;
+            flex: 1;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .level-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 8px 18px rgba(37,99,235,0.4);
+            border-color: #2563eb;
+            transform: scale(0.97);
+        }
+
+        .level-btn:hover:not(.active) {
+            background: #bfdbfe;
+            transform: translateY(-3px);
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 10px 28px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .score-box, .q-counter {
+            background: #e0e7ff;
+            padding: 5px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .score-box span, .q-counter span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-left: 8px;
+            color: #0f3b5c;
+        }
+
+        .quiz-area {
+            padding: 1.5rem 1.5rem 0.8rem;
+            text-align: center;
+        }
+
+        .question-card {
+            background: linear-gradient(105deg, #fefefe, #eff6ff);
+            padding: 20px 18px;
+            border-radius: 48px;
+            margin-bottom: 20px;
+            border: 2px solid #93c5fd;
+            box-shadow: 0 12px 18px -12px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #93c5fd;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1e40af;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .option-btn:hover:not(.disabled-opt) {
+            background: #dbeafe;
+            transform: translateX(5px);
+            border-color: #2563eb;
+        }
+
+        .option-btn.selected-correct {
+            background: #22c55e;
+            color: white;
+            border-color: #16a34a;
+        }
+
+        .option-btn.selected-wrong {
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .disabled-opt {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .voice-zone {
+            background: #ffffff;
+            border-radius: 56px;
+            padding: 15px;
+            margin: 10px 0 5px;
+            border: 2px dashed #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mic-button {
+            background: #2563eb;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: 0.08s linear;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-button:active {
+            transform: scale(0.92);
+            background: #1e40af;
+        }
+
+        .voice-status {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f4c5f;
+            flex: 1;
+            text-align: left;
+        }
+
+        .answer-status {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 8px;
+            min-height: 55px;
+            color: #0f4c5f;
+            text-align: center;
+        }
+
+        .hint-box {
+            background: #fef9e3;
+            border-left: 12px solid #fbbf24;
+            padding: 12px 20px;
+            margin: 8px 20px 20px;
+            border-radius: 36px;
+            font-size: 0.95rem;
+            color: #0a537c;
+            font-weight: 500;
+        }
+
+        .next-level-msg {
+            background: #0d9488;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 60px;
+            margin: 10px 24px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 14px;
+            color: #22668d;
+        }
+
+        @keyframes pulseMic {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 #3b82f6; }
+            50% { transform: scale(1.03); background: #0d9488; box-shadow: 0 0 0 8px rgba(59,130,246,0.3);}
+            100% { transform: scale(1); }
+        }
+        .mic-button.listening-active {
+            animation: pulseMic 1s infinite;
+            background: #0d9488;
+        }
+
+        .mic-button.mic-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.1rem; }
+            .option-btn { font-size: 0.85rem; padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <h1>🌱 SOIL SHIELD 🛡️
+            <span class="kenyan-flag-badge">🇰🇪 GRADE 6 • SOIL EROSION & CONSERVATION</span>
+        </h1>
+        <div class="kenyan-fact">
+            🌍 <strong>Kenyan Fact:</strong> The Great Rift Valley in Kenya was formed by soil erosion over millions of years! Today, farmers use terracing and tree planting to prevent further erosion and protect their land.
+        </div>
+    </div>
+
+    <div class="levels-row" id="levelButtonsContainer"></div>
+
+    <div class="info-panel">
+        <div class="score-box">⭐ SCORE: <span id="scoreValue">0</span></div>
+        <div class="q-counter">📖 QUESTION: <span id="currentQNumber">1</span> / <span id="totalQperLevel">15</span></div>
+    </div>
+
+    <div class="quiz-area">
+        <div class="question-card">
+            <div class="question-text" id="questionText">What is soil erosion?</div>
+            <div class="option-buttons" id="optionsContainer"></div>
+        </div>
+        <div class="voice-zone">
+            <button class="mic-button" id="micBtn">🎤</button>
+            <div class="voice-status" id="voiceStatusMsg">🎙️ Ready • Click mic and say the letter of your answer (A, B, C, or D)</div>
+            <div class="answer-status" id="answerFeedback"></div>
+        </div>
+        <div class="hint-box" id="hintDisplay">
+            💡 Hint: Think about the movement of soil by wind, water, or human activity.
+        </div>
+    </div>
+
+    <div id="levelCompleteMsg"></div>
+    <div class="footer-note">🎤 Speak the letter (A, B, C, or D) • +10 points for correct answers • Learn to conserve our precious soil!</div>
+</div>
+
+<script>
+    // ==============================================================
+    // SOIL EROSION CONTROL & RESOURCE CONSERVATION
+    // Grade 6 CBC - Science & Agriculture
+    // 4 Levels, 15 questions each - challenging and educational
+    // ==============================================================
+    const QUESTIONS_DB = {
+        1: [
+            { q: "What is soil erosion?", options: ["A) Formation of new soil", "B) Removal of topsoil by natural forces", "C) Adding fertilizers to soil", "D) Soil becoming more fertile"], correct: "B", hint: "Topsoil gets carried away by wind or water." },
+            { q: "Which of these is a natural cause of soil erosion?", options: ["A) Deforestation", "B) Overgrazing", "C) Heavy rainfall", "D) Poor farming"], correct: "C", hint: "Raindrops can dislodge soil particles." },
+            { q: "What is the main agent of soil erosion in deserts?", options: ["A) Water", "B) Wind", "C) Ice", "D) Animals"], correct: "B", hint: "Strong winds blow sand and dust." },
+            { q: "Which farming practice helps prevent soil erosion?", options: ["A) Plowing up and down slopes", "B) Contour plowing", "C) Burning crop residues", "D) Overgrazing"], correct: "B", hint: "Plowing along the curve of the land reduces runoff." },
+            { q: "What are shelterbelts?", options: ["A) Rows of trees planted to reduce wind speed", "B) Fences made of metal", "C) Underground water tanks", "D) Types of chemical fertilizers"], correct: "A", hint: "Trees act as windbreaks." },
+            { q: "Which method involves growing different crops in strips across a slope?", options: ["A) Crop rotation", "B) Strip cropping", "C) Terracing", "D) Mulching"], correct: "B", hint: "Alternating strips of different crops." },
+            { q: "What is the purpose of mulching?", options: ["A) To add nutrients only", "B) To cover soil with organic matter, reducing erosion", "C) To remove weeds completely", "D) To irrigate crops"], correct: "B", hint: "Leaves or grass cover protect the soil." },
+            { q: "Which human activity speeds up soil erosion the most?", options: ["A) Planting trees", "B) Building terraces", "C) Deforestation", "D) Crop rotation"], correct: "C", hint: "Removing trees leaves soil exposed." },
+            { q: "What is contour plowing?", options: ["A) Plowing in circles", "B) Plowing along the natural shape of the land", "C) Plowing very deep", "D) Using animals to plow"], correct: "B", hint: "Follows the contour lines of a slope." },
+            { q: "How does terracing help control erosion?", options: ["A) It makes slopes steeper", "B) It creates flat steps that slow water runoff", "C) It adds chemicals to soil", "D) It removes all vegetation"], correct: "B", hint: "Like stairs on a hillside." },
+            { q: "What is the most fertile layer of soil called?", options: ["A) Subsoil", "B) Bedrock", "C) Topsoil", "D) Clay layer"], correct: "C", hint: "It contains humus and nutrients." },
+            { q: "Which of these conserves water and prevents runoff?", options: ["A) Bare soil", "B) Concrete pavement", "C) Grass cover", "D) Sand"], correct: "C", hint: "Plants hold water and soil." },
+            { q: "What is gully erosion?", options: ["A) Tiny rills on the surface", "B) Deep channels carved by running water", "C) Wind-blown sand dunes", "D) Soil compaction"], correct: "B", hint: "Large ditches that form after heavy rain." },
+            { q: "Which tree species is commonly planted in Kenya to prevent erosion?", options: ["A) Eucalyptus", "B) Grevillea", "C) Acacia", "D) All of the above"], correct: "D", hint: "Many trees have deep roots that bind soil." },
+            { q: "What is the benefit of cover crops?", options: ["A) They protect soil from rain impact", "B) They add organic matter", "C) They reduce runoff", "D) All of the above"], correct: "D", hint: "Plants like beans and peas cover the soil." }
+        ],
+        2: [
+            { q: "Which type of erosion is caused by raindrops hitting bare soil?", options: ["A) Gully erosion", "B) Rill erosion", "C) Splash erosion", "D) Sheet erosion"], correct: "C", hint: "Raindrops splash soil particles." },
+            { q: "What is the main purpose of building gabions?", options: ["A) To store water", "B) To hold soil in place using stones and wire mesh", "C) To plant trees", "D) To irrigate crops"], correct: "B", hint: "Stones in wire cages along riverbanks." },
+            { q: "Which of these is a renewable resource that helps prevent erosion?", options: ["A) Plastic sheets", "B) Concrete", "C) Grass strips", "D) Metal fences"], correct: "C", hint: "Living plants grow back each year." },
+            { q: "What does 'afforestation' mean?", options: ["A) Cutting down trees", "B) Planting trees in a new area", "C) Burning forests", "D) Grazing animals"], correct: "B", hint: "Creating new forests." },
+            { q: "How does overgrazing cause soil erosion?", options: ["A) Animals trample and remove grass cover", "B) Animals add manure", "C) Animals drink too much water", "D) Animals dig holes"], correct: "A", hint: "Too many animals eat all the grass." },
+            { q: "What is the best time to apply mulch?", options: ["A) After heavy rain", "B) Before the rainy season", "C) During drought", "D) After harvesting only"], correct: "B", hint: "To protect soil before rains come." },
+            { q: "Which of these is NOT a method to control wind erosion?", options: ["A) Planting windbreaks", "B) Leaving soil bare", "C) Strip cropping", "D) Cover crops"], correct: "B", hint: "Bare soil is easily blown away." },
+            { q: "What causes sheet erosion?", options: ["A) Thin layer of topsoil removed evenly", "B) Deep channels", "C) Wind only", "D) Animals digging"], correct: "A", hint: "Like peeling off a thin layer." },
+            { q: "Which mineral is often lost first during soil erosion?", options: ["A) Iron", "B) Nitrogen", "C) Potassium", "D) Calcium"], correct: "B", hint: "Nitrogen is in the topsoil and easily washed away." },
+            { q: "How does crop rotation help conserve soil?", options: ["A) Different crops have different root depths, holding soil together", "B) It increases pests", "C) It removes nutrients", "D) It requires more water"], correct: "A", hint: "Changing crops keeps soil healthy." },
+            { q: "What is the role of roots in preventing erosion?", options: ["A) They release water", "B) They bind soil particles together", "C) They attract insects", "D) They make soil dry"], correct: "B", hint: "Roots act like a net." },
+            { q: "Which Kenyan region is most affected by soil erosion?", options: ["A) Coastal plains", "B) Lake Victoria basin", "C) Central highlands (slopes)", "D) Nairobi city"], correct: "C", hint: "Steep slopes and heavy farming." },
+            { q: "What is a check dam?", options: ["A) A small barrier across a gully to slow water", "B) A large hydroelectric dam", "C) A fence for animals", "D) A type of tree"], correct: "A", hint: "Slows water flow in erosion gullies." },
+            { q: "Which organic material is best for mulching?", options: ["A) Plastic bottles", "B) Dry grass or leaves", "C) Metal sheets", "D) Glass pieces"], correct: "B", hint: "Natural materials decompose and enrich soil." },
+            { q: "What is the first step in controlling erosion on a slope?", options: ["A) Plant trees immediately", "B) Survey the land and identify problem areas", "C) Burn all vegetation", "D) Bring in heavy machinery"], correct: "B", hint: "Plan before acting." }
+        ],
+        3: [
+            { q: "What is the relationship between deforestation and erosion?", options: ["A) Deforestation increases erosion by removing tree roots", "B) Deforestation decreases erosion", "C) No relationship exists", "D) Deforestation makes soil stronger"], correct: "A", hint: "Trees hold soil with their roots." },
+            { q: "Which of these is a biological method of erosion control?", options: ["A) Concrete walls", "B) Rip-rap stones", "C) Vetiver grass planting", "D) Gabions"], correct: "C", hint: "Using living plants." },
+            { q: "What is the main disadvantage of using plastic mulch?", options: ["A) It doesn't decompose", "B) It's cheap", "C) It looks nice", "D) It adds nutrients"], correct: "A", hint: "Plastic pollution is a problem." },
+            { q: "How does conservation tillage help?", options: ["A) Leaving crop residues on the field to protect soil", "B) Plowing very deep", "C) Burning all residues", "D) Using only chemicals"], correct: "A", hint: "No-till or minimal till farming." },
+            { q: "What is a riparian buffer zone?", options: ["A) Vegetated area near rivers that traps sediment", "B) A factory near water", "C) A type of fish", "D) A dam"], correct: "A", hint: "Plants along riverbanks stop erosion." },
+            { q: "Which human structure can worsen erosion if poorly built?", options: ["A) Terraces", "B) Roads and drainage channels", "C) Houses", "D) Schools"], correct: "B", hint: "Water running off roads can carve gullies." },
+            { q: "What is the term for erosion caused by animals walking the same path repeatedly?", options: ["A) Trampling erosion", "B) Gully erosion", "C) Rill erosion", "D) Wind erosion"], correct: "A", hint: "Animal trails become eroded." },
+            { q: "How does climate change affect soil erosion?", options: ["A) More intense rainfall increases erosion", "B) It stops erosion", "C) It only affects cold areas", "D) No effect"], correct: "A", hint: "Heavier storms = more runoff." },
+            { q: "Which of these is NOT a benefit of soil conservation?", options: ["A) Increased crop yields", "B) Cleaner water", "C) More landslides", "D) Reduced flooding"], correct: "C", hint: "Landslides are a negative effect." },
+            { q: "What is the main component of humus that improves soil structure?", options: ["A) Sand", "B) Decomposed organic matter", "C) Clay", "D) Gravel"], correct: "B", hint: "Decayed plants and animals." },
+            { q: "Which method is best for steep slopes (over 30 degrees)?", options: ["A) Terracing", "B) Contour plowing alone", "C) No-till farming", "D) Burning vegetation"], correct: "A", hint: "Steps are needed on very steep land." },
+            { q: "What is the purpose of a sediment basin?", options: ["A) To collect eroded soil before it reaches rivers", "B) To irrigate crops", "C) To store drinking water", "D) To create a lake"], correct: "A", hint: "Traps soil from runoff." },
+            { q: "Which Kenyan crop, when planted in rows along slopes, helps control erosion?", options: ["A) Tea", "B) Coffee", "C) Napier grass strips", "D) Wheat"], correct: "C", hint: "Grass strips slow water flow." },
+            { q: "What is the effect of soil erosion on aquatic life?", options: ["A) Sediment clogs fish gills and destroys habitats", "B) It helps fish grow", "C) No effect", "D) It cleans rivers"], correct: "A", hint: "Muddy water harms living things." },
+            { q: "How long can it take to form just 1 cm of topsoil naturally?", options: ["A) 1 year", "B) 100 to 400 years", "C) 10 days", "D) 1000 years"], correct: "B", hint: "Soil formation is extremely slow." }
+        ],
+        4: [
+            { q: "What is the carrying capacity of land related to erosion?", options: ["A) Maximum number of animals land can support without degrading", "B) How many trees can grow", "C) Amount of water available", "D) Soil color"], correct: "A", hint: "Overloading leads to erosion." },
+            { q: "Which type of erosion is hardest to detect early?", options: ["A) Gully erosion", "B) Sheet erosion", "C) Rill erosion", "D) Splash erosion"], correct: "B", hint: "It removes a thin uniform layer." },
+            { q: "What is the role of mycorrhizal fungi in soil conservation?", options: ["A) They bind soil particles with fungal threads", "B) They cause erosion", "C) They are pests", "D) They remove nutrients"], correct: "A", hint: "Fungi create a web that holds soil." },
+            { q: "How does urbanization contribute to erosion?", options: ["A) More concrete increases runoff speed", "B) Less vegetation", "C) Construction exposes soil", "D) All of the above"], correct: "D", hint: "Cities change natural water flow." },
+            { q: "Which alternative to burning crop residues is better for soil?", options: ["A) Leaving them as mulch", "B) Throwing them away", "C) Burning is best", "D) Feeding to animals only"], correct: "A", hint: "Mulch protects the soil." },
+            { q: "What is the difference between soil conservation and soil preservation?", options: ["A) Conservation allows sustainable use; preservation means no use", "B) They are the same", "C) Preservation uses chemicals", "D) Conservation is for farms only"], correct: "A", hint: "One uses wisely, one locks away." },
+            { q: "Which indigenous Kenyan practice helps prevent erosion?", options: ["A) Fanya juu terraces", "B) Burning charcoal", "C) Overgrazing", "D) Monocropping"], correct: "A", hint: "Traditional terracing method." },
+            { q: "What is the 'Universal Soil Loss Equation' used for?", options: ["A) Predicting erosion risk", "B) Measuring soil color", "C) Counting earthworms", "D) Determining crop prices"], correct: "A", hint: "A formula to estimate soil loss." },
+            { q: "How does soil erosion affect global food security?", options: ["A) Reduces productive farmland", "B) Increases food production", "C) No impact", "D) Only affects forests"], correct: "A", hint: "Less fertile soil = less food." },
+            { q: "Which of these is a mechanical method (using structures) for erosion control?", options: ["A) Contour bunds", "B) Grass strips", "C) Cover crops", "D) Crop rotation"], correct: "A", hint: "Earthen or stone barriers." },
+            { q: "What is the primary nutrient lost when topsoil erodes?", options: ["A) Phosphorus", "B) Nitrogen", "C) Potassium", "D) All major nutrients"], correct: "D", hint: "Topsoil contains most plant nutrients." },
+            { q: "Which international goal relates to soil conservation?", options: ["A) SDG 15 - Life on Land", "B) SDG 7 - Affordable Energy", "C) SDG 1 - No Poverty", "D) SDG 5 - Gender Equality"], correct: "A", hint: "Land degradation neutral world." },
+            { q: "What is the maximum slope percentage where contour farming alone is effective?", options: ["A) 2-5%", "B) 10-15%", "C) 30-40%", "D) 50%+"], correct: "B", hint: "Steeper slopes need terracing." },
+            { q: "How do earthworms help prevent erosion?", options: ["A) They create burrows that improve water infiltration", "B) They eat soil", "C) They cause erosion", "D) They have no effect"], correct: "A", hint: "Worm channels let water soak in." },
+            { q: "Which of these is a sign of severe soil erosion that requires immediate action?", options: ["A) Small rills", "B) Large gullies", "C) Thin topsoil", "D) All of the above"], correct: "D", hint: "Multiple warning signs." }
+        ]
+    };
+
+    // Ensure each level has exactly 15 questions
+    for(let lvl=1; lvl<=4; lvl++){
+        while(QUESTIONS_DB[lvl].length < 15){
+            QUESTIONS_DB[lvl].push({ q: "What is a good way to prevent soil erosion?", options: ["A) Planting trees", "B) Burning forests", "C) Overgrazing", "D) Plowing downhill"], correct: "A", hint: "Trees hold the soil." });
+        }
+    }
+
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let scores = {1:0,2:0,3:0,4:0};
+    let levelCompleteFlag = false;
+    const totalPerLevel = 15;
+    let recognition = null;
+    let listening = false;
+    let speechSupported = true;
+    let answeringLock = false;
+
+    const questionTextEl = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const scoreValueSpan = document.getElementById('scoreValue');
+    const currentQNumberSpan = document.getElementById('currentQNumber');
+    const totalQperLevelSpan = document.getElementById('totalQperLevel');
+    const micBtn = document.getElementById('micBtn');
+    const voiceStatusMsg = document.getElementById('voiceStatusMsg');
+    const answerFeedback = document.getElementById('answerFeedback');
+    const hintDisplay = document.getElementById('hintDisplay');
+    const levelCompleteDiv = document.getElementById('levelCompleteMsg');
+    
+    totalQperLevelSpan.innerText = totalPerLevel;
+
+    function speakEnglish(text, isSuccess=true){
+        if(!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = isSuccess ? 1.1 : 0.9;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+    }
+
+    function loadQuestion(){
+        const item = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(item){
+            questionTextEl.innerText = item.q;
+            hintDisplay.innerText = `💡 Hint: ${item.hint}`;
+            // Render options as buttons
+            optionsContainer.innerHTML = '';
+            item.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.setAttribute('data-value', opt.charAt(0));
+                btn.addEventListener('click', () => handleOptionClick(opt.charAt(0)));
+                optionsContainer.appendChild(btn);
+            });
+        }
+        // Reset answering lock
+        answeringLock = false;
+        // Remove any styling from previous answers
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('selected-correct', 'selected-wrong', 'disabled-opt');
+            btn.style.pointerEvents = 'auto';
+        });
+    }
+
+    function handleOptionClick(selectedLetter){
+        if(answeringLock) return;
+        const currentItem = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(!currentItem) return;
+        const isCorrect = (selectedLetter === currentItem.correct);
+        
+        answeringLock = true;
+        
+        // Disable all option buttons visually
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+            btn.classList.add('disabled-opt');
+        });
+        
+        // Highlight the clicked button
+        const clickedBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === selectedLetter);
+        if(clickedBtn){
+            if(isCorrect){
+                clickedBtn.classList.add('selected-correct');
+                answerFeedback.innerHTML = `✅ Correct! ${currentItem.correct}) ${currentItem.options.find(o => o.startsWith(currentItem.correct)).substring(3)} +10 points! 🎉`;
+                speakEnglish("Excellent! That is correct! You are helping save our soil!", true);
+                scores[currentLevel] += 10;
+                scoreValueSpan.innerText = scores[currentLevel];
+                
+                // Move to next question after delay
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 AMAZING! You completed Level ${currentLevel} with ${scores[currentLevel]} points! Click Next Level to continue!`;
+                        speakEnglish(`Congratulations! You finished level ${currentLevel}. You are a soil conservation champion!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE TO NEXT LEVEL ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! These questions are more challenging!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("INCREDIBLE! You've mastered all four levels! You are a true Soil Erosion Expert!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏅 SOIL CONSERVATION HERO CERTIFICATE! YOU DID IT! 🏅</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1000);
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+                const correctLetter = currentItem.correct;
+                const correctOptionText = currentItem.options.find(o => o.startsWith(correctLetter));
+                answerFeedback.innerHTML = `❌ Sorry! "${selectedLetter}" is incorrect. The correct answer is ${correctLetter}) ${correctOptionText.substring(3)}. Hint: ${currentItem.hint}`;
+                speakEnglish(`That is not correct. The right answer is ${correctLetter}. ${correctOptionText.substring(3)}. Keep learning!`, false);
+                
+                // Highlight the correct answer for learning
+                const correctBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === correctLetter);
+                if(correctBtn) correctBtn.classList.add('selected-correct');
+                
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        updateUI();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 Level ${currentLevel} completed! Score: ${scores[currentLevel]}. Click Next Level!`;
+                        speakEnglish(`You finished level ${currentLevel}. Great effort!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! Stay focused!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("FANTASTIC! You completed all levels! You are a Soil Conservation Expert!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏆 MASTER OF SOIL CONSERVATION! 🏆</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1500);
+            }
+        }
+    }
+
+    function processVoiceAnswer(spoken){
+        if(levelCompleteFlag){
+            answerFeedback.innerHTML = "⚠️ Level complete! Click Next Level to continue.";
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock) return;
+        
+        let letter = spoken.trim().toUpperCase();
+        // Extract single letter if they said something like "A", "B", "C", "D", "choice A"
+        if(letter.includes("CHOICE") || letter.includes("OPTION")){
+            if(letter.includes("A")) letter = "A";
+            else if(letter.includes("B")) letter = "B";
+            else if(letter.includes("C")) letter = "C";
+            else if(letter.includes("D")) letter = "D";
+        } else if(letter.length > 1){
+            letter = letter.charAt(0);
+        }
+        
+        if(!['A','B','C','D'].includes(letter)){
+            answerFeedback.innerHTML = "⚠️ Please say A, B, C, or D only!";
+            speakEnglish("Please say A, B, C, or D only.", false);
+            return;
+        }
+        
+        handleOptionClick(letter);
+    }
+
+    function updateCounter(){
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function updateUI(){
+        scoreValueSpan.innerText = scores[currentLevel];
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function initSpeech(){
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SpeechRec){
+            voiceStatusMsg.innerHTML = "❌ Your browser doesn't support voice input. Use Chrome, Edge, or Safari.";
+            micBtn.disabled = true;
+            micBtn.classList.add('mic-disabled');
+            speechSupported = false;
+            return false;
+        }
+        recognition = new SpeechRec();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onstart = () => { listening=true; voiceStatusMsg.innerHTML="🎤 Listening... Say A, B, C, or D 🎤"; micBtn.classList.add('listening-active'); };
+        recognition.onend = () => { listening=false; voiceStatusMsg.innerHTML="✅ Ready • Click mic and say the letter of your answer (A, B, C, or D)"; micBtn.classList.remove('listening-active'); };
+        recognition.onresult = (ev) => { let spoken = ev.results[0][0].transcript; voiceStatusMsg.innerHTML=`🗣️ You said: "${spoken}"`; processVoiceAnswer(spoken); };
+        recognition.onerror = (e) => { 
+            let msg = e.error === 'not-allowed' ? "❌ Microphone permission denied. Please allow access." : "❌ Speech error. Click mic again.";
+            voiceStatusMsg.innerHTML = msg; 
+            micBtn.classList.remove('listening-active'); 
+            listening=false; 
+        };
+        return true;
+    }
+
+    micBtn.addEventListener('click', ()=>{
+        if(!speechSupported && !recognition && !window.SpeechRecognition && !window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "Sorry, your browser doesn't support voice input.";
+            return;
+        }
+        if(levelCompleteFlag){
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock){
+            speakEnglish("Please wait, processing your previous answer.", false);
+            return;
+        }
+        if(!recognition){
+            if(!initSpeech()) return;
+        }
+        if(listening){
+            recognition.stop();
+            return;
+        }
+        try{ recognition.start(); } catch(e){ recognition = null; initSpeech(); }
+    });
+
+    function highlightActiveLevel(){
+        document.querySelectorAll('.level-btn').forEach(btn=>{
+            if(parseInt(btn.getAttribute('data-level'))===currentLevel) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+
+    function buildLevels(){
+        const container = document.getElementById('levelButtonsContainer');
+        container.innerHTML = '';
+        for(let l=1; l<=4; l++){
+            const btn = document.createElement('button');
+            btn.className = 'level-btn';
+            if(l===currentLevel) btn.classList.add('active');
+            btn.innerText = `LEVEL ${l}`;
+            btn.setAttribute('data-level', l);
+            btn.addEventListener('click', ()=>{
+                if(levelCompleteFlag && currentLevel !== l) levelCompleteFlag = false;
+                currentLevel = l;
+                currentQIndex = 0;
+                levelCompleteFlag = false;
+                levelCompleteDiv.innerHTML = "";
+                loadQuestion();
+                updateUI();
+                highlightActiveLevel();
+                answerFeedback.innerHTML = "";
+                speakEnglish(`Level ${l} selected. Answer the questions to protect our soil!`, true);
+                setTimeout(() => { answeringLock = false; }, 100);
+            });
+            container.appendChild(btn);
+        }
+    }
+
+    function startGame(){ 
+        buildLevels(); 
+        loadQuestion(); 
+        updateUI(); 
+        highlightActiveLevel();
+        if(window.SpeechRecognition || window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "🎙️ Ready! Click the microphone and say A, B, C, or D";
+        }
+        answeringLock = false;
+    }
+    startGame();
+</script>
+</body>
+</html>

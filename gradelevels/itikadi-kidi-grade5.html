@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Shujaa wa Kiswahili - CBC Grade 5 | Insha, Sarufi na Itikadi</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(145deg, #1e5a3a 0%, #0a2f1f 100%);
+      font-family: 'Segoe UI', 'Poppins', 'Roboto', 'Noto Sans', system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .game-container {
+      max-width: 850px;
+      width: 100%;
+      background: rgba(255, 248, 225, 0.97);
+      border-radius: 70px 70px 60px 60px;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255, 255, 200, 0.8);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .game-header {
+      background: linear-gradient(135deg, #f9a826, #ff7e05);
+      padding: 20px 20px 15px;
+      color: #2d1b00;
+      text-align: center;
+      border-bottom: 5px solid gold;
+    }
+
+    .level-badge {
+      font-size: 1.7rem;
+      font-weight: bold;
+      background: #2c1a0c;
+      display: inline-block;
+      padding: 5px 20px;
+      border-radius: 50px;
+      color: #ffdd99;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .score-box, .timer-box, .progress-box {
+      background: #2e241fcc;
+      backdrop-filter: blur(4px);
+      padding: 8px 14px;
+      border-radius: 60px;
+      font-weight: bold;
+      color: #fff2cf;
+      font-size: 1.2rem;
+    }
+
+    .timer-box {
+      background: #2c2e1ecc;
+      font-family: monospace;
+      font-size: 1.5rem;
+    }
+
+    .progress-box {
+      background: #1f4d3ccc;
+    }
+
+    .quest-area {
+      padding: 25px 28px 20px;
+      background: #fffef7;
+    }
+
+    .story-narrative {
+      background: #fef3d6;
+      padding: 20px 18px;
+      border-radius: 48px;
+      font-size: 1.2rem;
+      line-height: 1.5;
+      color: #2c2418;
+      border-left: 12px solid #e67e22;
+      margin-bottom: 25px;
+      font-weight: 500;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .question-prompt {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin: 15px 0 8px;
+      color: #a55217;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .question-text {
+      background: #fff0db;
+      padding: 22px;
+      border-radius: 45px;
+      font-size: 1.25rem;
+      margin-bottom: 20px;
+      font-weight: 500;
+      line-height: 1.45;
+      border: 1px solid #ffcf9a;
+    }
+
+    .answer-input-area {
+      margin: 20px 0 25px;
+    }
+
+    .answer-input-area label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      color: #3b2a1f;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 18px 20px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      border: 3px solid #e0b074;
+      background: #fffff2;
+      font-family: 'Segoe UI', 'Noto Sans', system-ui;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .answer-input:focus {
+      border-color: #f39c12;
+      box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    button {
+      background: #f39c12;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 60px;
+      color: #2d1f07;
+      cursor: pointer;
+      transition: 0.2s;
+      flex: 1;
+      min-width: 120px;
+      box-shadow: 0 4px 0 #b4621a;
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #b4621a;
+    }
+
+    .btn-primary {
+      background: #2ecc71;
+      color: #1e3a1e;
+      box-shadow: 0 4px 0 #1f8f4b;
+    }
+
+    .btn-danger {
+      background: #e67e22;
+    }
+
+    .feedback {
+      background: #e9e3d5;
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 40px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #2c3e2b;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-card {
+      background: #fff6e8;
+      max-width: 400px;
+      width: 90%;
+      padding: 30px;
+      border-radius: 70px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 20px 35px black;
+      border: 4px solid gold;
+    }
+
+    .modal-card button {
+      margin-top: 20px;
+      background: #27ae60;
+      color: white;
+      padding: 12px 28px;
+    }
+
+    @media (max-width: 550px) {
+      .quest-area {
+        padding: 18px;
+      }
+      .story-narrative,
+      .question-text {
+        font-size: 1rem;
+      }
+      .question-prompt {
+        font-size: 1.2rem;
+      }
+      .stats {
+        justify-content: center;
+      }
+      .timer-box {
+        font-size: 1.3rem;
+      }
+      .button-group button {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="game-container" id="gameApp">
+  <div class="game-header">
+    <div class="level-badge" id="levelDisplay">Ngazi ya 1</div>
+    <div class="stats">
+      <div class="score-box">⭐ Alama: <span id="scoreSpan">0</span> / <span id="levelTotalSpan">40</span></div>
+      <div class="timer-box">⏱️ <span id="timerSpan">00:00</span></div>
+      <div class="progress-box">📖 Maswali: <span id="qIndexSpan">1</span> / <span id="totalQSpan">40</span></div>
+    </div>
+  </div>
+  <div class="quest-area">
+    <div class="story-narrative" id="storyNarrative"></div>
+    <div class="question-prompt">🗣️ Swali la Ngazi:</div>
+    <div class="question-text" id="questionText">Loading...</div>
+    <div class="answer-input-area">
+      <label>✍️ Jibu lako (andika neno au sentensi fupi):</label>
+      <input type="text" id="answerInput" class="answer-input" placeholder="Andika jibu hapa..." autocomplete="off">
+    </div>
+    <div class="button-group">
+      <button id="submitBtn" class="btn-primary">✅ Jibu</button>
+      <button id="nextBtn" class="btn-danger" disabled>⏩ Swali lijalo</button>
+    </div>
+    <div class="feedback" id="feedbackMsg">💡 Jibu swali kwa kuandika. Sauti itakujulisha. Muda wa kujibu ni sekunde 40 kwa swali.</div>
+  </div>
+</div>
+
+<script>
+  // ======================== MERGED GAME ========================
+  // CBC Kiswahili Grade 5 - 5 Levels × 40 Questions each (200 total)
+  // Topics: Insha ya Masimulizi, Hali ya Mazoea, Hali Timilifu,
+  // Tashbihi za Tabia, Kudhibiti Itikadi za Kidini, Matini za Kidijitali
+  // Timer: 40 seconds per question. Pass 80% to advance.
+  // Voice output, fully responsive, open-ended answers.
+
+  // ---------- Generate Rich Question Bank ----------
+  function generateQuestions() {
+    const levels = [];
+    
+    for (let lvl = 1; lvl <= 5; lvl++) {
+      let levelQuestions = [];
+      
+      const storyIntro = (lvl) => {
+        if (lvl === 1) return "📖 Ngazi ya Kwanza: Hadithi za Asili na Hali ya Mazoea. Mwalimu Aisha anakuuliza: 'Je, unaweza kutunga sentensi za mazoea na timilifu?' Anza safari yako ya insha simulizi.";
+        if (lvl === 2) return "✍️ Ngazi ya Pili: Insha za Masimulizi yenye maadili. Unaposoma hadithi za kidijitali, jifunze kudhibiti itikadi potofu. Tumia hali timilifu kueleza matukio yaliyokamilika.";
+        if (lvl === 3) return "⚖️ Ngazi ya Tatu: Kudhibiti Itikadi za Kidini katika jamii. Hali ya mazoea (huwa, mara kwa mara) na hali timilifu (imekwisha). Jibu kwa usahihi ili kuvunja imani potofu.";
+        if (lvl === 4) return "🏆 Ngazi ya Nne: Ustadi wa Kiuandishi. Unganisha insha simulizi na sarufi. Tambua sentensi zenye mazoea na timilifu, na jinsi ya kukabiliana na itikadi za kidini mtandaoni.";
+        if (lvl === 5) return "🎓 Ngazi ya Tano: Bingwa wa Lugha. Masimulizi changamano, hali timilifu na mazoea, na mikakati ya kudhibiti itikadi za kidini katika maktaba dijitali. Jibu kwa weledi!";
+      };
+      
+      for (let i = 1; i <= 40; i++) {
+        let qText = "";
+        let ans = "";
+        const topicSeed = i % 6; // mix topics: 0-5
+        
+        // Level 1: Mazoea na Timilifu
+        if (lvl === 1) {
+          if (topicSeed === 0 || topicSeed === 1) {
+            qText = `Hadithi: "Kila asubuhi, Ali huenda sokoni." Hii ni sentensi ya hali ya mazoea. Taja neno la Kiswahili linaloashiria mazoea katika sentensi hii?`;
+            ans = "huenda";
+          } else if (topicSeed === 2) {
+            qText = `"Jana, nilimaliza kusoma kitabu cha Insha ya Masimulizi." Hii ni hali timilifu. Taja kitenzi kilicho katika hali timilifu?`;
+            ans = "nilimaliza";
+          } else {
+            qText = `Katika insha simulizi: "Watu wa kijiji hiki huwa wanashirikiana." Ni neno gani linaloonesha mazoea?`;
+            ans = "huwa";
+          }
+        }
+        // Level 2: Tashbihi za Tabia na Matini za Kidijitali
+        else if (lvl === 2) {
+          if (i % 4 === 0) {
+            qText = `Unasoma makala dijitali: "Mitandao ya Kijamii inaeneza uvumi kama moto." Hii ni tashbihi ya tabia gani?`;
+            ans = "kueneza uvumi";
+          } else if (i % 3 === 0) {
+            qText = `Kusoma kwa mapana: Tovuti ya habari inapotosha ukweli. Ni wazo gani linalopaswa kudhibitiwa ili kuepuka itikadi potofu?`;
+            ans = "itikadi";
+          } else {
+            qText = `Tashbihi: "Mhadhiri huyo ana tabia za mbweha mjanja." Hii inawakilisha nini?`;
+            ans = "ujanja";
+          }
+        }
+        // Level 3: Kudhibiti Itikadi za Kidini
+        else if (lvl === 3) {
+          if (i % 2 === 0) {
+            qText = `Jukwaa la kidijitali linaeneza maneno ya kukera kwa jina la dini. Unapaswa kufanya nini kudhibiti itikadi za kidini?`;
+            ans = "kuchuja";
+          } else {
+            qText = `Katika usomaji wa matini za kidijitali, "kutofautisha ukweli na uongo" ni ujuzi gani muhimu kwa kudhibiti itikadi?`;
+            ans = "ufahamu";
+          }
+        }
+        // Level 4: Uchambuzi wa Tabia na Tashbihi
+        else if (lvl === 4) {
+          if (i % 3 === 1) {
+            qText = `Tashbihi: "Tabia za baba yake ni kama mwamba usiotikisika." Hii inaonyesha sifa gani?`;
+            ans = "imara";
+          } else if (i % 3 === 2) {
+            qText = `Kusoma kwa mapana: Hadithi fupi ya kidijitali inamwonyesha Mfalme mwenye itikadi kali. Neno la kisasa la kudhibiti itikadi ni?`;
+            ans = "upinzani";
+          } else {
+            qText = `"Mwanamke huyo alikuwa na roho ya mama ng'ombe mwenye subira." Hii ni tashbihi ya tabia gani?`;
+            ans = "subira";
+          }
+        }
+        // Level 5: Ngazi ya Juu - Udhibiti wa Itikadi na Fasihi
+        else {
+          if (i % 4 === 0) {
+            qText = `Changamoto za kidijitali: Unakutana na video inayochochea chuki za kidini. Unachukua hatua gani kwa mujibu wa maadili?`;
+            ans = "kuripoti";
+          } else if (i % 4 === 1) {
+            qText = `Tashbihi ngumu: "Tabia zake ni kama chungu kitamu ndani, lakini sumu nje." Hii ni mfano wa nini?`;
+            ans = "unafiki";
+          } else if (i % 4 === 2) {
+            qText = `Kusoma kwa mapana - Kichwa: "Mbinu za Kudhibiti Itikadi kwenye Mijadala." Neno kuu ni?`;
+            ans = "mijadala";
+          } else {
+            qText = `Jina la shujaa anayepambana na habari potofu za kidini kwenye intaneti? (jibu la kufikirika)`;
+            ans = "mchunguzi";
+          }
+        }
+        
+        // Additional edge cases to ensure variety
+        if (lvl === 1 && i === 40) qText = `Jina la kitenzi katika hali timilifu: "Mzee alisimulia hadithi ya kusisimua." Alisimulia ni hali gani?`, ans = "timilifu";
+        if (lvl === 2 && i === 39) qText = `Insha simulizi inapaswa kuwa na mwito? Jina la sehemu ya mwisho ya insha?`, ans = "hitimisho";
+        if (lvl === 3 && i === 38) qText = `Tumia hali timilifu: "Jana, yeye ____ (kula) chakula cha jioni." Andika kitenzi sahihi.`, ans = "alikula";
+        if (lvl === 4 && i === 37) qText = `Kudhibiti itikadi kidini: Ni adabu gani ya kwanza katika mjadala wa kidini?`, ans = "heshima";
+        if (lvl === 5 && i === 36) qText = `Aina ya sentensi inayoonyesha ukweli wa kawaida "Jua huchomoza mashariki" ni hali ya?`, ans = "mazoea";
+        
+        levelQuestions.push({ question: qText, answer: ans.toLowerCase().trim() });
+      }
+      levels.push({ story: storyIntro(lvl), questions: levelQuestions });
+    }
+    return levels;
+  }
+
+  const gameData = generateQuestions(); // 5 levels × 40 questions
+
+  // ---------- App State ----------
+  let currentLevel = 0;
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let timerInterval = null;
+  let timeSeconds = 0;
+  const TIME_LIMIT = 40;
+  let isWaitingForNext = false;
+  let currentAnswerLock = false;
+
+  // DOM Elements
+  const levelDisplay = document.getElementById('levelDisplay');
+  const scoreSpan = document.getElementById('scoreSpan');
+  const levelTotalSpan = document.getElementById('levelTotalSpan');
+  const timerSpan = document.getElementById('timerSpan');
+  const qIndexSpan = document.getElementById('qIndexSpan');
+  const totalQSpan = document.getElementById('totalQSpan');
+  const storyNarrative = document.getElementById('storyNarrative');
+  const questionText = document.getElementById('questionText');
+  const answerInput = document.getElementById('answerInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedbackMsg = document.getElementById('feedbackMsg');
+
+  // Voice Function
+  function speakMessage(text, pitchVal = 1, rateVal = 0.9) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'sw-KE';
+    utterance.rate = rateVal;
+    utterance.pitch = pitchVal;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function updateUIForLevel() {
+    const levelNum = currentLevel + 1;
+    levelDisplay.innerText = `Ngazi ya ${levelNum}`;
+    storyNarrative.innerText = gameData[currentLevel].story;
+    levelTotalSpan.innerText = "40";
+    totalQSpan.innerText = "40";
+    updateProgressAndScore();
+  }
+
+  function updateProgressAndScore() {
+    qIndexSpan.innerText = currentQuestionIndex + 1;
+    scoreSpan.innerText = score;
+  }
+
+  function updateTimerDisplay() {
+    const mins = Math.floor(timeSeconds / 60);
+    const secs = timeSeconds % 60;
+    timerSpan.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  function handleTimeOut() {
+    if (currentAnswerLock) return;
+    currentAnswerLock = true;
+    speakMessage("Muda umekwisha! Sekunde 40 zimepita. Bonyeza Swali lijalo kuendelea.", 0.85);
+    feedbackMsg.innerHTML = "⏰ Muda umekwisha! Hakuna alama kwa swali hili. Bonyeza 'Swali lijalo'.";
+    isWaitingForNext = true;
+    answerInput.disabled = true;
+    submitBtn.disabled = true;
+    nextBtn.disabled = false;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    timerSpan.innerText = "00:00";
+  }
+
+  function normalizeString(str) {
+    return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+  }
+
+  function checkAnswer() {
+    if (currentAnswerLock || isWaitingForNext) {
+      speakMessage("Umeshajibu swali hili. Bonyeza Swali lijalo.", 0.9);
+      feedbackMsg.innerHTML = "⚠️ Umeshajibu! Bonyeza 'Swali lijalo'.";
+      return;
+    }
+    const userRaw = answerInput.value.trim();
+    if (userRaw === "") {
+      speakMessage("Tafadhali andika jibu kabla ya kuwasilisha.", 0.9);
+      feedbackMsg.innerHTML = "✏️ Andika jibu kwenye kisanduku.";
+      return;
+    }
+    
+    const correctAnswerRaw = gameData[currentLevel].questions[currentQuestionIndex].answer;
+    const userNorm = normalizeString(userRaw);
+    const correctNorm = normalizeString(correctAnswerRaw);
+    
+    let isCorrect = false;
+    if (userNorm === correctNorm) {
+      isCorrect = true;
+    } else if (correctNorm.length > 3 && userNorm.includes(correctNorm)) {
+      isCorrect = true;
+    } else if (correctNorm.includes(userNorm) && userNorm.length > 2) {
+      isCorrect = true;
+    } else if (userNorm === correctNorm.replace(/[aeiou]/g, '')) {
+      isCorrect = true;
+    }
+    
+    if (isCorrect) {
+      score++;
+      scoreSpan.innerText = score;
+      speakMessage(`Sahihi kabisa! Umepata alama. Jibu linalofaa ni ${correctAnswerRaw}.`, 1.1, 0.9);
+      feedbackMsg.innerHTML = `✅ Sahihi! "${correctAnswerRaw}" ni jibu sahihi. +1 alama.`;
+    } else {
+      speakMessage(`Pole, jibu si sahihi. Jibu sahihi ni ${correctAnswerRaw}. Endelea kujifunza.`, 0.9, 0.85);
+      feedbackMsg.innerHTML = `❌ Si sahihi. Jibu sahihi: "${correctAnswerRaw}". Usikate tamaa!`;
+    }
+    
+    currentAnswerLock = true;
+    isWaitingForNext = true;
+    answerInput.disabled = true;
+    submitBtn.disabled = true;
+    nextBtn.disabled = false;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  function loadQuestion() {
+    if (timerInterval) clearInterval(timerInterval);
+    currentAnswerLock = false;
+    isWaitingForNext = false;
+    answerInput.disabled = false;
+    answerInput.value = '';
+    submitBtn.disabled = false;
+    nextBtn.disabled = true;
+    feedbackMsg.innerHTML = "📖 Soma swali, andika jibu. Una sekunde 40 kwa swali.";
+    const qObj = gameData[currentLevel].questions[currentQuestionIndex];
+    questionText.innerText = qObj.question;
+    timeSeconds = TIME_LIMIT;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if (isWaitingForNext) return;
+      if (timeSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        handleTimeOut();
+      } else {
+        timeSeconds--;
+        updateTimerDisplay();
+      }
+    }, 1000);
+  }
+
+  function nextQuestion() {
+    if (!isWaitingForNext) {
+      speakMessage("Jibu swali la sasa kwanza kabla ya kuendelea.", 0.9);
+      feedbackMsg.innerHTML = "Jibu swali, kisha bonyeza 'Swali lijalo'.";
+      return;
+    }
+    
+    const totalQuestions = 40;
+    if (currentQuestionIndex + 1 < totalQuestions) {
+      currentQuestionIndex++;
+      loadQuestion();
+    } else {
+      const percentage = (score / 40) * 100;
+      if (percentage >= 80) {
+        if (currentLevel + 1 < gameData.length) {
+          speakMessage(`Hongera! Umepata asilimia ${Math.floor(percentage)}. Umefuzu ngazi ya ${currentLevel+1}! Tunaendelea.`, 1.2);
+          showLevelCompleteModal(true, percentage);
+        } else {
+          speakMessage(`Umepiga hatua! Umemaliza ngazi zote 5! Wewe ni Bingwa wa Insha na Sarufi.`, 1.3);
+          showGameWinModal();
+        }
+      } else {
+        speakMessage(`Samahani, umepata asilimia ${Math.floor(percentage)}. Unahitaji 80% kupita ngazi. Rudia tena ngazi hii.`, 0.9);
+        resetCurrentLevel();
+      }
+    }
+  }
+
+  function resetCurrentLevel() {
+    score = 0;
+    currentQuestionIndex = 0;
+    currentAnswerLock = false;
+    isWaitingForNext = false;
+    updateUIForLevel();
+    loadQuestion();
+    if (timerInterval) clearInterval(timerInterval);
+    speakMessage(`Rudia ngazi ${currentLevel+1}. Angalia hali ya mazoea na timilifu. Una sekunde 40 kwa swali.`, 1);
+  }
+
+  function proceedToNextLevel() {
+    currentLevel++;
+    score = 0;
+    currentQuestionIndex = 0;
+    isWaitingForNext = false;
+    currentAnswerLock = false;
+    updateUIForLevel();
+    loadQuestion();
+  }
+
+  function showLevelCompleteModal(passed, percent) {
+    const modalDiv = document.createElement('div');
+    modalDiv.className = 'modal';
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        🎉 ${passed ? 'Umefanikiwa Ngazi!' : 'Jaribu tena'} 🎉<br>
+        Alama: ${score}/40 (${Math.floor(percent)}%)<br>
+        ${passed ? 'Wewe ni hodari! Unaendelea ngazi inayofuata.' : 'Haukufikia 80% . Rudia ngazi hii.'}
+        <button id="modalContinueBtn">${passed ? 'Ngazi Ijayo ➡️' : 'Rudia Ngazi 🔁'}</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById('modalContinueBtn').onclick = () => {
+      modalDiv.remove();
+      if (passed) {
+        if (currentLevel + 1 < gameData.length) proceedToNextLevel();
+        else showGameWinModal();
+      } else {
+        resetCurrentLevel();
+      }
+    };
+  }
+
+  function showGameWinModal() {
+    const modalDiv = document.createElement('div');
+    modalDiv.className = 'modal';
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        🏆 SHUJAA WA LUGHA YA KISWAHILI 🏆<br>
+        Umemaliza ngazi zote 5 kwa ustadi!<br>
+        Hongera kufahamu Insha, Mazoea, Timilifu na Kudhibiti Itikadi.<br>
+        <button id="restartGameBtn">Cheza Tena 🔄</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById('restartGameBtn').onclick = () => {
+      modalDiv.remove();
+      restartGame();
+    };
+  }
+
+  function restartGame() {
+    currentLevel = 0;
+    score = 0;
+    currentQuestionIndex = 0;
+    isWaitingForNext = false;
+    currentAnswerLock = false;
+    if (timerInterval) clearInterval(timerInterval);
+    updateUIForLevel();
+    loadQuestion();
+  }
+
+  // Event Listeners
+  submitBtn.addEventListener('click', checkAnswer);
+  nextBtn.addEventListener('click', nextQuestion);
+  answerInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !submitBtn.disabled && !currentAnswerLock && !isWaitingForNext) {
+      checkAnswer();
+    }
+  });
+
+  // Start Game
+  updateUIForLevel();
+  loadQuestion();
+</script>
+</body>
+</html>

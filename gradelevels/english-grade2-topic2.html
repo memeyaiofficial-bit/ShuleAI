@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grade 2 CBC Adventure Quiz | Voice Feedback & Timer Alerts</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1e6b5e 0%, #0f4c3f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI Emoji', 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: #fff7e8;
+            border-radius: 80px 80px 70px 70px;
+            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.3), inset 0 1px 4px rgba(255, 255, 200, 0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #ffb74d;
+            padding: 20px 24px 16px;
+            text-align: center;
+            border-bottom: 5px solid #ff8a2c;
+        }
+
+        .level-badge {
+            background: #3e2723;
+            display: inline-block;
+            padding: 6px 22px;
+            border-radius: 60px;
+            color: #ffd966;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #1f1310, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .stars {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .star {
+            font-size: 28px;
+            transition: 0.1s;
+            color: #ffc107;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.2);
+        }
+
+        .score-progress {
+            background: #ffecb3;
+            margin: 12px 16px 0;
+            border-radius: 30px;
+            padding: 6px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #4e2e1e;
+        }
+
+        .quiz-card {
+            padding: 25px 25px 20px;
+        }
+
+        .question-text {
+            background: #fdf8ed;
+            padding: 20px 18px;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: inset 0 0 0 2px white, 0 6px 12px rgba(0,0,0,0.05);
+            border: 1px solid #ffe0a3;
+            word-break: break-word;
+            color: #2c3e2f;
+            margin-bottom: 24px;
+        }
+
+        .timer-area {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-circle {
+            background: #283b29;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+            font-family: monospace;
+            box-shadow: 0 5px 0 #1b2a1c;
+            transition: 0.1s linear;
+        }
+
+        .warning {
+            background: #c0392b;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); background-color: #c0392b; }
+            100% { transform: scale(1.05); background-color: #e67e22; }
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin: 25px 0 15px;
+        }
+
+        .option-btn {
+            background: #f4e5c7;
+            border: 3px solid #ffc857;
+            border-radius: 50px;
+            padding: 14px 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s ease;
+            text-align: center;
+            color: #2d3e2b;
+            font-family: inherit;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #ffdd99;
+            transform: scale(0.97);
+            border-color: #ff9f2e;
+        }
+
+        .option-btn:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .voice-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 12px 0 10px;
+        }
+
+        .voice-btn {
+            background: #51adcf;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            flex: 1;
+            transition: 0.1s;
+            font-family: inherit;
+        }
+
+        .voice-btn.mic {
+            background: #2c7a47;
+        }
+
+        .voice-btn.speaker {
+            background: #ff8c42;
+        }
+
+        .voice-btn:active {
+            transform: scale(0.96);
+        }
+
+        .voice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status-msg {
+            background: #e9e3d5;
+            border-radius: 36px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            text-align: center;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .next-btn {
+            background: #f39c12;
+            width: 100%;
+            border: none;
+            padding: 16px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c2b1f;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.1s;
+            font-family: inherit;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .reset-area {
+            text-align: center;
+            margin: 15px 20px 20px;
+        }
+
+        .reset-btn {
+            background: #bc9a6c;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.2rem; }
+            .option-btn { font-size: 1rem; padding: 12px 6px; }
+            .voice-btn { font-size: 0.8rem; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #d9c9a7;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🌟 LEVEL 1 / 5</div>
+        <div class="stars" id="starRating">⭐⭐⭐</div>
+        <div class="score-progress">
+            <span>🎯 SCORE: <span id="currentScore">0</span></span>
+            <span>✅ NEED 80% ➡️ <span id="requiredInfo">0/24</span></span>
+        </div>
+    </div>
+    <div class="quiz-card">
+        <div class="question-text" id="questionText">Loading fun questions...</div>
+        <div class="timer-area"><div class="timer-circle" id="timerCircle">40</div></div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="voice-actions">
+            <button class="voice-btn speaker" id="speakBtn">🔊 READ QUESTION</button>
+            <button class="voice-btn mic" id="micBtn">🎤 VOICE ANSWER</button>
+        </div>
+        <div class="status-msg" id="statusMsg">✨ Tap a choice or use voice! 40 sec each ✨</div>
+        <button class="next-btn" id="nextBtn" disabled>➡️ NEXT QUESTION</button>
+        <div class="reset-area"><button class="reset-btn" id="resetGameBtn">🔄 RESTART GAME</button></div>
+    </div>
+    <footer>🏆 CBC Grade 2 | Shopping • Garden • Accidents • Classroom | Voice Feedback ON</footer>
+</div>
+
+<script>
+    // ------------------- TOPICS & QUESTION BANK (5 LEVELS * 30 = 150)
+    const topics = ["Shopping", "Garden", "Accidents", "Classroom"];
+    
+    function generateQuestion(topic, id, level) {
+        if (topic === "Shopping") {
+            const variants = [
+                { q: "If you have 50 shillings and you buy a juice for 30 shillings, how much money is left?", opts: ["20 shillings", "30 shillings", "10 shillings", "40 shillings"], ans: "20 shillings" },
+                { q: "Which item do you buy at a grocery store?", opts: ["Milk", "Pencil", "Ruler", "Shovel"], ans: "Milk" },
+                { q: "What do we use to pay for things at a shop?", opts: ["Money", "Toy", "Book", "Hat"], ans: "Money" },
+                { q: "If a bag costs 80 shillings and you give 100 shillings, what is your change?", opts: ["20 shillings", "10 shillings", "30 shillings", "15 shillings"], ans: "20 shillings" },
+                { q: "Which one is sold at a fruit shop?", opts: ["Apple", "Broom", "Notebook", "Plate"], ans: "Apple" },
+                { q: "Mom bought 4 oranges and 2 mangoes. How many fruits total?", opts: ["6", "5", "7", "4"], ans: "6" },
+                { q: "What do you call the person who helps you at a shop?", opts: ["Shopkeeper", "Driver", "Teacher", "Nurse"], ans: "Shopkeeper" },
+                { q: "Which is used to carry shopping bags?", opts: ["Trolley", "Ruler", "Book", "Crayon"], ans: "Trolley" }
+            ];
+            let picked = variants[(id + level) % variants.length];
+            return { text: picked.q, options: shuffleArray([...picked.opts]), correct: picked.ans, topic: "Shopping" };
+        }
+        else if (topic === "Garden") {
+            const variants = [
+                { q: "What tool do we use to dig soil in the garden?", opts: ["Hoe", "Ruler", "Pen", "Cup"], ans: "Hoe" },
+                { q: "Which one grows in a garden?", opts: ["Tomato plant", "Bicycle", "Television", "Sofa"], ans: "Tomato plant" },
+                { q: "What do plants need to grow well?", opts: ["Water & Sun", "Salt", "Sugar", "Sand"], ans: "Water & Sun" },
+                { q: "Who takes care of the garden?", opts: ["Gardener", "Pilot", "Driver", "Teacher"], ans: "Gardener" },
+                { q: "We should pull out _______ from the garden.", opts: ["Weeds", "Flowers", "Vegetables", "Seeds"], ans: "Weeds" },
+                { q: "Which insect is helpful for flowers?", opts: ["Bee", "Fly", "Mosquito", "Ant"], ans: "Bee" },
+                { q: "What do you use to water plants?", opts: ["Watering can", "Plate", "Cup", "Bowl"], ans: "Watering can" }
+            ];
+            let picked = variants[(id + level*2) % variants.length];
+            return { text: picked.q, options: shuffleArray([...picked.opts]), correct: picked.ans, topic: "Garden" };
+        }
+        else if (topic === "Accidents") {
+            const variants = [
+                { q: "If someone gets a cut, what should you use first?", opts: ["Bandage", "Soap", "Toothpaste", "Shampoo"], ans: "Bandage" },
+                { q: "What number do you call in case of emergency in Kenya?", opts: ["999/112", "100", "200", "555"], ans: "999/112" },
+                { q: "When crossing the road, you should _____.", opts: ["Look both ways", "Run fast", "Close eyes", "Jump"], ans: "Look both ways" },
+                { q: "Which is a sign of a safe playground?", opts: ["No broken glass", "Wet slide", "Broken swing", "Rusty bars"], ans: "No broken glass" },
+                { q: "If your friend falls and hurts the leg, what should you do?", opts: ["Tell an adult", "Run away", "Ignore", "Push again"], ans: "Tell an adult" },
+                { q: "A small burn on skin needs ______.", opts: ["Cold water", "Hot oil", "Soap", "Salt"], ans: "Cold water" },
+                { q: "What should you wear to protect your head while biking?", opts: ["Helmet", "Cap", "Hat", "Scarf"], ans: "Helmet" }
+            ];
+            let picked = variants[(id + level*3) % variants.length];
+            return { text: picked.q, options: shuffleArray([...picked.opts]), correct: picked.ans, topic: "Accidents" };
+        }
+        else {
+            const variants = [
+                { q: "What do you use to write on a blackboard?", opts: ["Chalk", "Pencil", "Pen", "Marker"], ans: "Chalk" },
+                { q: "Where do you sit in class?", opts: ["Desk", "Bed", "Carpet", "Chair only"], ans: "Desk" },
+                { q: "What should you raise before speaking in class?", opts: ["Hand", "Foot", "Book", "Pencil"], ans: "Hand" },
+                { q: "Which school item helps you cut paper?", opts: ["Scissors", "Ruler", "Eraser", "Stapler"], ans: "Scissors" },
+                { q: "Who teaches you at school?", opts: ["Teacher", "Doctor", "Farmer", "Driver"], ans: "Teacher" },
+                { q: "What do you use to keep your worksheets organized?", opts: ["Folder", "Cup", "Plate", "Box of crayons"], ans: "Folder" },
+                { q: "Which one is a school subject?", opts: ["Math", "Apple", "Car", "Tree"], ans: "Math" }
+            ];
+            let picked = variants[(id + level*5) % variants.length];
+            return { text: picked.q, options: shuffleArray([...picked.opts]), correct: picked.ans, topic: "Classroom" };
+        }
+    }
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function buildQuestionsForLevel(level) {
+        const qs = [];
+        for (let i = 1; i <= 30; i++) {
+            const topicIdx = (i + level) % 4;
+            const topic = topics[topicIdx];
+            qs.push(generateQuestion(topic, i, level));
+        }
+        return qs;
+    }
+
+    // ------------------- GAME STATE
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let questions = [];
+    let score = 0;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let waitingForNext = false;
+    let lockAnswer = false;
+    let currentQuestionObj = null;
+    
+    // Speech synthesis helpers
+    let speechSynthesisUtterance = null;
+    let isSpeaking = false;
+    
+    function stopSpeaking() {
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+    }
+    
+    function speakText(text, priority = true) {
+        if (!window.speechSynthesis) return;
+        if (priority) stopSpeaking();
+        speechSynthesisUtterance = new SpeechSynthesisUtterance(text);
+        speechSynthesisUtterance.lang = "en-US";
+        speechSynthesisUtterance.rate = 0.9;
+        speechSynthesisUtterance.pitch = 1.1;
+        speechSynthesisUtterance.volume = 1;
+        window.speechSynthesis.speak(speechSynthesisUtterance);
+    }
+    
+    // Read question aloud with full sentence
+    function readQuestionAloud() {
+        if (!currentQuestionObj) return;
+        const questionMessage = `Question: ${currentQuestionObj.text}`;
+        speakText(questionMessage);
+        statusMsg.innerText = "🔊 Reading question aloud...";
+        setTimeout(() => {
+            if (statusMsg.innerText.includes("Reading")) statusMsg.innerText = "✅ Listen to question, then answer!";
+        }, 2000);
+    }
+    
+    // Voice feedback for correct/wrong/timeup
+    function announceResult(isCorrect, correctAnswer = "") {
+        if (isCorrect) {
+            const praiseMessages = ["Excellent!", "Great job!", "You are smart!", "Correct!", "Wonderful!"];
+            const randomPraise = praiseMessages[Math.floor(Math.random() * praiseMessages.length)];
+            speakText(`${randomPraise} That is right!`);
+            statusMsg.innerText = `🎉 CORRECT! ${randomPraise} 🎉`;
+        } else {
+            const message = `Oh no! The correct answer is ${correctAnswer}. Don't worry, try the next one!`;
+            speakText(message);
+            statusMsg.innerText = `😓 OOPS! Correct answer: "${correctAnswer}". Keep trying!`;
+        }
+    }
+    
+    function announceTimeUp() {
+        const timeMsg = "Time is up! Moving to the next question.";
+        speakText(timeMsg);
+        statusMsg.innerText = "⏰ TIME'S UP! ⏰ No answer given.";
+    }
+    
+    // Voice Input (Speech Recognition)
+    let recognition = null;
+    function initVoiceInput() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            micBtn.disabled = true;
+            micBtn.style.opacity = 0.5;
+            statusMsg.innerText = "⚠️ Voice input not supported in this browser. Use click.";
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.trim().toLowerCase();
+            statusMsg.innerText = `🎙️ You said: "${transcript}" — checking...`;
+            checkVoiceAnswer(transcript);
+        };
+        recognition.onerror = (ev) => {
+            statusMsg.innerText = `🎙️ Voice error: ${ev.error}. Try clicking an answer.`;
+            lockAnswer = false;
+        };
+    }
+    
+    function checkVoiceAnswer(spoken) {
+        if (lockAnswer || waitingForNext) {
+            statusMsg.innerText = "⏳ Question already finished! Press Next.";
+            return;
+        }
+        if (!currentQuestionObj) return;
+        const correctAns = currentQuestionObj.correct.toLowerCase();
+        let isCorrect = false;
+        if (spoken === correctAns) isCorrect = true;
+        else if (correctAns.includes(spoken) && spoken.length > 2) isCorrect = true;
+        else if (spoken.includes(correctAns)) isCorrect = true;
+        else {
+            for (let opt of currentQuestionObj.options) {
+                if (opt.toLowerCase() === spoken && opt === currentQuestionObj.correct) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+        }
+        if (isCorrect) {
+            if (!lockAnswer) handleCorrectAnswer();
+        } else {
+            if (!lockAnswer) handleWrongAnswer();
+        }
+    }
+    
+    // Core answer handlers with voice announcement
+    function handleCorrectAnswer() {
+        if (lockAnswer) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        score++;
+        updateScoreUI();
+        // Voice: tell correct
+        announceResult(true, currentQuestionObj.correct);
+        highlightCorrectAnswer();
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+    
+    function handleWrongAnswer() {
+        if (lockAnswer) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        announceResult(false, currentQuestionObj.correct);
+        highlightCorrectAnswer(); // show correct answer for learning
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+    
+    function handleTimeOut() {
+        if (lockAnswer || waitingForNext) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        announceTimeUp();
+        // Show correct answer visually
+        highlightCorrectAnswer();
+        disableOptions();
+        statusMsg.innerText = `⏰ TIME IS UP! The correct answer was: ${currentQuestionObj.correct}. Next question.`;
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+    
+    function highlightCorrectAnswer() {
+        const allBtns = document.querySelectorAll('.option-btn');
+        for (let btn of allBtns) {
+            if (btn.innerText === currentQuestionObj.correct) {
+                btn.style.background = "#c8e6c9";
+                btn.style.border = "3px solid #2e7d32";
+            } else {
+                btn.style.background = "#ffe0b5";
+            }
+        }
+    }
+    
+    function disableOptions() {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => btn.disabled = true);
+    }
+    
+    function updateScoreUI() {
+        document.getElementById("currentScore").innerText = score;
+        let needed = Math.ceil(questions.length * 0.8);
+        document.getElementById("requiredInfo").innerText = `${score}/${needed}`;
+        const starSpan = document.getElementById("starRating");
+        let percent = (score / questions.length) * 100;
+        let starCount = Math.floor(percent / 20);
+        starCount = Math.min(5, starCount);
+        starSpan.innerHTML = "⭐".repeat(starCount) + "☆".repeat(5-starCount);
+    }
+    
+    // Timer management
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (lockAnswer || waitingForNext) return;
+            if (timeLeft <= 1) {
+                clearInterval(timerInterval);
+                if (!lockAnswer && !waitingForNext) {
+                    handleTimeOut();
+                }
+            } else {
+                timeLeft--;
+                timerCircle.innerText = timeLeft;
+                if (timeLeft <= 10) timerCircle.classList.add("warning");
+                else timerCircle.classList.remove("warning");
+            }
+        }, 1000);
+    }
+    
+    function resetTimerUI() {
+        timeLeft = 40;
+        timerCircle.innerText = timeLeft;
+        timerCircle.classList.remove("warning");
+    }
+    
+    // Load question
+    function loadQuestion() {
+        if (timerInterval) clearInterval(timerInterval);
+        lockAnswer = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        
+        if (currentQuestionIndex >= questions.length) {
+            let required = Math.ceil(questions.length * 0.8);
+            if (score >= required) {
+                if (currentLevel === 5) {
+                    statusMsg.innerText = "🏆 YOU BEAT ALL LEVELS! GRADE 2 CHAMPION! 🏆";
+                    speakText("Congratulations! You completed all levels! You are a champion!");
+                    questionTextEl.innerText = "🎉 GRAND VICTORY! 🎉 You finished the game!";
+                    optionsContainer.innerHTML = "";
+                    nextBtn.disabled = true;
+                    return;
+                } else {
+                    currentLevel++;
+                    currentQuestionIndex = 0;
+                    score = 0;
+                    loadLevelData();
+                    updateLevelDisplay();
+                    updateScoreUI();
+                    loadQuestion();
+                    return;
+                }
+            } else {
+                statusMsg.innerText = `❌ You got ${score}/${questions.length} (need ${required}). Restarting level ${currentLevel}... ❌`;
+                speakText(`You need more practice. Restarting level ${currentLevel}. Try your best!`);
+                resetCurrentLevel();
+                return;
+            }
+        }
+        
+        currentQuestionObj = questions[currentQuestionIndex];
+        questionTextEl.innerText = currentQuestionObj.text;
+        // Build options
+        optionsContainer.innerHTML = "";
+        currentQuestionObj.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.classList.add("option-btn");
+            btn.addEventListener("click", () => {
+                if (lockAnswer || waitingForNext) return;
+                if (opt === currentQuestionObj.correct) handleCorrectAnswer();
+                else handleWrongAnswer();
+            });
+            optionsContainer.appendChild(btn);
+        });
+        
+        resetTimerUI();
+        startTimer();
+        updateScoreUI();
+        statusMsg.innerText = "🎤 Choose an answer or use voice! I can read question loud. 🎤";
+        // Auto read the question when new question loads (voice output)
+        speakText(currentQuestionObj.text);
+    }
+    
+    function loadLevelData() {
+        questions = buildQuestionsForLevel(currentLevel);
+        score = 0;
+        currentQuestionIndex = 0;
+        updateScoreUI();
+    }
+    
+    function updateLevelDisplay() {
+        document.getElementById("levelDisplay").innerText = `🌟 LEVEL ${currentLevel} / 5 🌟`;
+        let needed = Math.ceil(30 * 0.8);
+        document.getElementById("requiredInfo").innerText = `0/${needed}`;
+    }
+    
+    function resetCurrentLevel() {
+        if (timerInterval) clearInterval(timerInterval);
+        loadLevelData();
+        currentQuestionIndex = 0;
+        score = 0;
+        lockAnswer = false;
+        waitingForNext = false;
+        updateLevelDisplay();
+        updateScoreUI();
+        loadQuestion();
+    }
+    
+    function fullReset() {
+        if (timerInterval) clearInterval(timerInterval);
+        currentLevel = 1;
+        currentQuestionIndex = 0;
+        loadLevelData();
+        score = 0;
+        updateLevelDisplay();
+        updateScoreUI();
+        loadQuestion();
+    }
+    
+    // DOM elements
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetGameBtn");
+    const speakBtn = document.getElementById("speakBtn");
+    const micBtn = document.getElementById("micBtn");
+    const timerCircle = document.getElementById("timerCircle");
+    const questionTextEl = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const statusMsg = document.getElementById("statusMsg");
+    
+    nextBtn.addEventListener("click", () => {
+        if (!waitingForNext && !lockAnswer) {
+            statusMsg.innerText = "👉 Please answer the question first!";
+            speakText("Please answer the question first.");
+            return;
+        }
+        if (waitingForNext) {
+            currentQuestionIndex++;
+            waitingForNext = false;
+            loadQuestion();
+        }
+    });
+    
+    resetBtn.addEventListener("click", () => {
+        if (timerInterval) clearInterval(timerInterval);
+        fullReset();
+    });
+    speakBtn.addEventListener("click", () => {
+        if (currentQuestionObj) readQuestionAloud();
+        else speakText("Wait for question to load.");
+    });
+    micBtn.addEventListener("click", () => {
+        if (lockAnswer || waitingForNext) {
+            statusMsg.innerText = "Finish current question first!";
+            speakText("Please finish this question first.");
+            return;
+        }
+        if (recognition) {
+            try {
+                recognition.start();
+                statusMsg.innerText = "🎤 Listening... say your answer clearly!";
+            } catch(e) {
+                statusMsg.innerText = "Voice busy, click again.";
+            }
+        } else statusMsg.innerText = "Voice not supported.";
+    });
+    
+    // Initialize game
+    initVoiceInput();
+    loadLevelData();
+    updateLevelDisplay();
+    updateScoreUI();
+    loadQuestion();
+</script>
+</body>
+</html>

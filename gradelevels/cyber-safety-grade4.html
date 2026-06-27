@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Cyber Safety English Master | Grade 4 CBC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a2a6c, #b21f1f, #fdbb4d);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 16px;
+        }
+
+        .master-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Module Navigation */
+        .module-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .module-btn {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .module-btn.active {
+            background: linear-gradient(135deg, #ffde59, #ff914d);
+            border-color: #ffd966;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+            color: #1a2a6c;
+        }
+
+        .module-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Game Containers */
+        .game-container {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            overflow: hidden;
+            display: none;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .game-container.active-module {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Styles */
+        .game-header {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: white;
+        }
+
+        .level-badge {
+            background: #2c3e50;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .timer-box {
+            background: #2c3e50;
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .score-panel {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .quiz-core {
+            padding: 20px;
+        }
+
+        /* Common Elements */
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        .instruction-box {
+            background: #fdebd0;
+            border-radius: 25px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #b21f1f;
+            font-weight: bold;
+        }
+
+        .reading-box, .example-box {
+            background: #e8f4fd;
+            border-left: 5px solid #f39c12;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            color: #2c3e50;
+            line-height: 1.5;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .bad-sentence {
+            background: #f8f3e0;
+            border-left: 5px solid #e74c3c;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            border-radius: 20px;
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        /* Answer Area */
+        .answer-input {
+            width: 100%;
+            font-size: 1rem;
+            padding: 12px 15px;
+            text-align: center;
+            border: 3px solid #f39c12;
+            border-radius: 30px;
+            background: white;
+            outline: none;
+        }
+
+        .answer-input:focus {
+            border-color: #e67e22;
+        }
+
+        .btn {
+            background: #27ae60;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-next {
+            background: #3498db;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message-area {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .timer-critical {
+            background: #c0392b;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .restart-btn {
+            background: #e67e22;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 650px) {
+            .module-btn { padding: 8px 16px; font-size: 0.8rem; }
+            .question-text { font-size: 1rem; padding: 14px; }
+            .reading-box, .bad-sentence { font-size: 0.85rem; }
+            .answer-input { font-size: 0.9rem; }
+            .btn { padding: 10px 20px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="master-container">
+    <div class="module-nav">
+        <button class="module-btn active" data-module="module1">🛡️ Cyber Wordsmith</button>
+        <button class="module-btn" data-module="module2">✏️ Punctuation Pro</button>
+        <button class="module-btn" data-module="module3">📝 Grammar Guardian</button>
+    </div>
+
+    <!-- MODULE 1: Vocabulary, Narratives & Poems -->
+    <div id="module1" class="game-container active-module">
+        <div class="game-header">
+            <div class="level-badge">🛡️ LEVEL <span id="m1_levelNum">1</span>/5</div>
+            <div class="timer-box">⏱️ <span id="m1_timerDisplay">00</span>s</div>
+        </div>
+        <div class="score-panel">
+            <span>⭐ SCORE: <span id="m1_score">0</span>/30</span>
+            <span>🎯 NEED 24/30 (80%)</span>
+        </div>
+        <div class="quiz-core">
+            <div class="instruction-box">🗣️🔐 CYBER WORDSMITH! Practice pronunciation, vocabulary, and reading comprehension about cyber safety.</div>
+            <div class="reading-box" id="m1_readingBox"></div>
+            <div class="question-text" id="m1_questionText">Loading...</div>
+            <div class="flex-col">
+                <input type="text" id="m1_answerInput" class="answer-input" placeholder="Type your answer here...">
+                <button id="m1_submitBtn" class="btn">✓ CHECK ANSWER</button>
+                <button id="m1_nextBtn" class="btn btn-next" disabled>➡️ NEXT QUESTION</button>
+            </div>
+        </div>
+        <div class="message-area" id="m1_gameMessage">🛡️ Read, understand, and answer! Master cyber safety words, poems, and stories.</div>
+    </div>
+
+    <!-- MODULE 2: Punctuation - Full Stops & Capital Letters -->
+    <div id="module2" class="game-container">
+        <div class="game-header">
+            <div class="level-badge">🔐 LEVEL <span id="m2_levelNum">1</span>/5</div>
+            <div class="timer-box">⏱️ <span id="m2_timerDisplay">00</span>s</div>
+        </div>
+        <div class="score-panel">
+            <span>⭐ SCORE: <span id="m2_score">0</span>/30</span>
+            <span>🎯 NEED 24/30 (80%)</span>
+        </div>
+        <div class="quiz-core">
+            <div class="instruction-box">✏️ PUNCTUATION PRO! Every sentence must start with a CAPITAL LETTER and end with a FULL STOP (.).</div>
+            <div class="bad-sentence" id="m2_badSentence">⚠️ Original (WRONG):</div>
+            <div class="question-text">✏️ Rewrite the sentence with correct capital letter and full stop:</div>
+            <div class="flex-col">
+                <textarea id="m2_answerInput" class="answer-input" rows="2" placeholder="Type the corrected sentence here..."></textarea>
+                <button id="m2_submitBtn" class="btn">✓ CHECK ANSWER</button>
+                <button id="m2_nextBtn" class="btn btn-next" disabled>➡️ NEXT QUESTION</button>
+            </div>
+        </div>
+        <div class="message-area" id="m2_gameMessage">🔐 Fix each sentence by adding capital letters and full stops. Type the whole corrected sentence!</div>
+    </div>
+
+    <!-- MODULE 3: Present & Past Progressive Grammar -->
+    <div id="module3" class="game-container">
+        <div class="game-header">
+            <div class="level-badge">🛡️ LEVEL <span id="m3_levelNum">1</span>/5</div>
+            <div class="timer-box">⏱️ <span id="m3_timerDisplay">00</span>s</div>
+        </div>
+        <div class="score-panel">
+            <span>⭐ SCORE: <span id="m3_score">0</span>/30</span>
+            <span>🎯 NEED 24/30 (80%)</span>
+        </div>
+        <div class="quiz-core">
+            <div class="instruction-box">📝 CYBER GRAMMAR GUARDIAN! Learn Present Progressive (is/am/are + -ing) and Past Progressive (was/were + -ing).</div>
+            <div class="example-box" id="m3_exampleBox">💡 Tip: Present Progressive = happening NOW. Past Progressive = WAS happening in the past.</div>
+            <div class="question-text" id="m3_questionText">Loading...</div>
+            <div class="flex-col">
+                <input type="text" id="m3_answerInput" class="answer-input" placeholder="Type the correct verb form...">
+                <button id="m3_submitBtn" class="btn">✓ CHECK ANSWER</button>
+                <button id="m3_nextBtn" class="btn btn-next" disabled>➡️ NEXT QUESTION</button>
+            </div>
+        </div>
+        <div class="message-area" id="m3_gameMessage">🛡️ Complete each sentence with the correct present or past progressive verb form!</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ========== MODULE 1: Vocabulary & Reading ==========
+        const vocabBank = [
+            { type: "vocab", q: "What is a secret word to access an account called?", a: "password", hint: "pass + word" },
+            { type: "vocab", q: "Someone you don't know online is called a ______.", a: "stranger", hint: "stran + ger" },
+            { type: "vocab", q: "The right to keep your personal matters secret is called ______.", a: "privacy", hint: "pri + va + cy" },
+            { type: "vocab", q: "Harassing someone online is called cyber ______.", a: "bullying", hint: "bull + ying" },
+            { type: "narrative", story: "Tom loved online games. A stranger asked for his password. He told his parents immediately.", q: "What did the stranger ask for?", a: "password", hint: "secret word" },
+            { type: "narrative", story: "Sara received an email saying she won a free tablet. She deleted it.", q: "What did Sara delete?", a: "email", hint: "message" },
+            { type: "poem", poem: "Click with care, don't be fast,\nKeep your password safe at last.", q: "What should you keep safe?", a: "password", hint: "secret word" },
+            { type: "poem", poem: "Stranger online, don't reply,\nTell your parents, don't be shy.", q: "Who should you tell if a stranger messages you?", a: "parents", hint: "mom and dad" }
+        ];
+        while(vocabBank.length < 150) vocabBank.push({ type: "vocab", q: "What should you create to protect your account?", a: "password", hint: "strong secret word" });
+        
+        let m1Levels = [[],[],[],[],[]];
+        for(let i=0;i<150;i++) m1Levels[Math.floor(i/30)].push(vocabBank[i % vocabBank.length]);
+        
+        let m1State = { level:0, idx:0, score:0, timerSec:0, timerInt:null, active:true, locked:false, waiting:false, totalScore:0 };
+        const m1El = {};
+        function m1$(id){ return document.getElementById(id); }
+        
+        function m1UpdateUI() { m1El.score.textContent = m1State.score; }
+        function m1StopTimer() { if(m1State.timerInt) clearInterval(m1State.timerInt); }
+        function m1StartTimer() {
+            m1StopTimer();
+            const times = {0:210,1:200,2:190,3:180,4:170};
+            m1State.timerSec = times[m1State.level];
+            m1El.timerDisplay.textContent = m1State.timerSec;
+            m1State.timerInt = setInterval(() => {
+                if(!m1State.active) return;
+                if(m1State.timerSec <= 1) {
+                    m1StopTimer(); m1State.active=false;
+                    m1El.gameMessage.innerHTML = `⏰ TIME'S UP! Level ${m1State.level+1} FAILED! Refresh to restart.`;
+                    m1Disable(true);
+                } else {
+                    m1State.timerSec--;
+                    m1El.timerDisplay.textContent = m1State.timerSec;
+                    if(m1State.timerSec <= 30) m1El.timerDisplay.classList.add('timer-critical');
+                }
+            },1000);
+        }
+        function m1Disable(d){ m1El.answerInput.disabled=d; m1El.submitBtn.disabled=d; m1El.nextBtn.disabled=!d; }
+        function m1LoadQuestion() {
+            if(m1State.idx>=30) return m1FinishLevel();
+            const q = m1Levels[m1State.level][m1State.idx];
+            if(q.type==="narrative") m1El.readingBox.innerHTML = `<strong>📖 READ THIS STORY:</strong><br><br>${q.story}`;
+            else if(q.type==="poem") m1El.readingBox.innerHTML = `<strong>📝 READ THIS POEM:</strong><br><br>${q.poem.replace(/\n/g,'<br>')}`;
+            else m1El.readingBox.innerHTML = `<strong>🗣️ PRONUNCIATION & VOCABULARY:</strong><br><br>Read the question carefully.`;
+            m1El.questionText.textContent = q.q;
+            m1El.answerInput.value = "";
+            m1El.answerInput.disabled = false;
+            m1El.submitBtn.disabled = false;
+            m1State.waiting = false;
+            m1State.locked = false;
+            m1El.nextBtn.disabled = true;
+        }
+        function m1CheckAnswer() {
+            if(m1State.locked || m1State.waiting || !m1State.active) return;
+            const user = m1El.answerInput.value.trim().toLowerCase();
+            const q = m1Levels[m1State.level][m1State.idx];
+            const correct = q.a.toLowerCase();
+            const isMatch = user === correct || (correct.includes(user) && user.length>3) || (user.includes(correct) && correct.length>3);
+            m1State.locked = true;
+            if(isMatch) { m1State.score++; m1UpdateUI(); }
+            m1El.gameMessage.innerHTML = isMatch ? `✅ CORRECT! +1 (${m1State.score}/30)` : `❌ Correct: "${q.a}". ${q.hint}`;
+            m1State.waiting = true;
+            m1El.answerInput.disabled = true;
+            m1El.submitBtn.disabled = true;
+            m1El.nextBtn.disabled = false;
+        }
+        function m1NextQuestion() {
+            if(!m1State.waiting) return;
+            m1State.idx++;
+            if(m1State.idx < 30) m1LoadQuestion();
+            else m1FinishLevel();
+        }
+        function m1FinishLevel() {
+            m1StopTimer();
+            const passed = m1State.score >= 24;
+            if(passed && m1State.level+1 < 5) {
+                m1El.gameMessage.innerHTML = `🎉 LEVEL ${m1State.level+1} PASSED! Moving to Level ${m1State.level+2}...`;
+                m1State.level++; m1State.idx=0; m1State.score=0; m1UpdateUI(); m1StartTimer(); m1LoadQuestion();
+            } else if(passed && m1State.level+1===5) {
+                m1El.gameMessage.innerHTML = `🏆 MASTER CYBER WORDSMITH! Final Score: ${m1State.score}/30 🏆`;
+                m1Disable(true);
+            } else {
+                m1El.gameMessage.innerHTML = `❌ Level ${m1State.level+1} failed. Score: ${m1State.score}/30 (need 24). Refresh to restart.`;
+                m1Disable(true);
+            }
+        }
+        m1El.levelNum = m1$('m1_levelNum'); m1El.timerDisplay = m1$('m1_timerDisplay'); m1El.score = m1$('m1_score');
+        m1El.readingBox = m1$('m1_readingBox'); m1El.questionText = m1$('m1_questionText'); m1El.answerInput = m1$('m1_answerInput');
+        m1El.submitBtn = m1$('m1_submitBtn'); m1El.nextBtn = m1$('m1_nextBtn'); m1El.gameMessage = m1$('m1_gameMessage');
+        m1State.level=0; m1State.idx=0; m1State.score=0; m1UpdateUI(); m1StartTimer(); m1LoadQuestion();
+        m1El.submitBtn.onclick = m1CheckAnswer;
+        m1El.nextBtn.onclick = m1NextQuestion;
+        m1El.answerInput.addEventListener('keypress', e => { if(e.key==='Enter' && !m1El.submitBtn.disabled) m1CheckAnswer(); });
+
+        // ========== MODULE 2: Punctuation ==========
+        const punctBank = [
+            { wrong: "never share your password with anyone", correct: "Never share your password with anyone." },
+            { wrong: "always log out of your accounts", correct: "Always log out of your accounts." },
+            { wrong: "do not talk to strangers online", correct: "Do not talk to strangers online." },
+            { wrong: "create a strong password", correct: "Create a strong password." },
+            { wrong: "keep your personal information private", correct: "Keep your personal information private." }
+        ];
+        while(punctBank.length < 150) punctBank.push({ wrong: "be careful online", correct: "Be careful online." });
+        let m2Levels = [[],[],[],[],[]];
+        for(let i=0;i<150;i++) m2Levels[Math.floor(i/30)].push(punctBank[i % punctBank.length]);
+        
+        let m2State = { level:0, idx:0, score:0, timerSec:0, timerInt:null, active:true, locked:false, waiting:false };
+        const m2El = {};
+        function m2$(id){ return document.getElementById(id); }
+        function m2UpdateUI() { m2El.score.textContent = m2State.score; }
+        function m2StopTimer() { if(m2State.timerInt) clearInterval(m2State.timerInt); }
+        function m2StartTimer() {
+            m2StopTimer();
+            const times = {0:210,1:200,2:190,3:180,4:170};
+            m2State.timerSec = times[m2State.level];
+            m2El.timerDisplay.textContent = m2State.timerSec;
+            m2State.timerInt = setInterval(() => {
+                if(!m2State.active) return;
+                if(m2State.timerSec <= 1) {
+                    m2StopTimer(); m2State.active=false;
+                    m2El.gameMessage.innerHTML = `⏰ TIME'S UP! Level ${m2State.level+1} FAILED! Refresh to restart.`;
+                    m2Disable(true);
+                } else {
+                    m2State.timerSec--;
+                    m2El.timerDisplay.textContent = m2State.timerSec;
+                    if(m2State.timerSec <= 30) m2El.timerDisplay.classList.add('timer-critical');
+                }
+            },1000);
+        }
+        function m2Disable(d){ m2El.answerInput.disabled=d; m2El.submitBtn.disabled=d; m2El.nextBtn.disabled=!d; }
+        function m2LoadQuestion() {
+            if(m2State.idx>=30) return m2FinishLevel();
+            const q = m2Levels[m2State.level][m2State.idx];
+            m2El.badSentence.innerHTML = `⚠️ Original (WRONG):<br> ${q.wrong}`;
+            m2El.answerInput.value = "";
+            m2El.answerInput.disabled = false;
+            m2El.submitBtn.disabled = false;
+            m2State.waiting = false;
+            m2State.locked = false;
+            m2El.nextBtn.disabled = true;
+        }
+        function m2CheckAnswer() {
+            if(m2State.locked || m2State.waiting || !m2State.active) return;
+            const user = m2El.answerInput.value.trim().replace(/\s+/g,' ');
+            const q = m2Levels[m2State.level][m2State.idx];
+            let userNorm = user.toLowerCase();
+            let correctNorm = q.correct.toLowerCase();
+            let isMatch = userNorm === correctNorm || (userNorm + '.' === correctNorm) || (userNorm === correctNorm.replace(/\.$/,''));
+            m2State.locked = true;
+            if(isMatch) { m2State.score++; m2UpdateUI(); }
+            m2El.gameMessage.innerHTML = isMatch ? `✅ PERFECT! +1 (${m2State.score}/30)` : `❌ Correct: "${q.correct}"`;
+            m2State.waiting = true;
+            m2El.answerInput.disabled = true;
+            m2El.submitBtn.disabled = true;
+            m2El.nextBtn.disabled = false;
+        }
+        function m2NextQuestion() {
+            if(!m2State.waiting) return;
+            m2State.idx++;
+            if(m2State.idx < 30) m2LoadQuestion();
+            else m2FinishLevel();
+        }
+        function m2FinishLevel() {
+            m2StopTimer();
+            const passed = m2State.score >= 24;
+            if(passed && m2State.level+1 < 5) {
+                m2El.gameMessage.innerHTML = `🎉 LEVEL ${m2State.level+1} PASSED! Moving to Level ${m2State.level+2}...`;
+                m2State.level++; m2State.idx=0; m2State.score=0; m2UpdateUI(); m2StartTimer(); m2LoadQuestion();
+            } else if(passed && m2State.level+1===5) {
+                m2El.gameMessage.innerHTML = `🏆 PUNCTUATION PRO! Final Score: ${m2State.score}/30 🏆`;
+                m2Disable(true);
+            } else {
+                m2El.gameMessage.innerHTML = `❌ Level ${m2State.level+1} failed. Score: ${m2State.score}/30 (need 24). Refresh to restart.`;
+                m2Disable(true);
+            }
+        }
+        m2El.levelNum = m2$('m2_levelNum'); m2El.timerDisplay = m2$('m2_timerDisplay'); m2El.score = m2$('m2_score');
+        m2El.badSentence = m2$('m2_badSentence'); m2El.answerInput = m2$('m2_answerInput');
+        m2El.submitBtn = m2$('m2_submitBtn'); m2El.nextBtn = m2$('m2_nextBtn'); m2El.gameMessage = m2$('m2_gameMessage');
+        m2State.level=0; m2State.idx=0; m2State.score=0; m2UpdateUI(); m2StartTimer(); m2LoadQuestion();
+        m2El.submitBtn.onclick = m2CheckAnswer;
+        m2El.nextBtn.onclick = m2NextQuestion;
+
+        // ========== MODULE 3: Progressive Grammar ==========
+        const grammarBank = [
+            { tense:"present", q:"She _______ (protect) her password right now.", a:"is protecting", hint:"is + protecting" },
+            { tense:"present", q:"I _______ (learn) about cyber safety today.", a:"am learning", hint:"am + learning" },
+            { tense:"past", q:"Yesterday, she _______ (use) her real name online.", a:"was using", hint:"was + using" },
+            { tense:"past", q:"They _______ (share) their password with a friend last week.", a:"were sharing", hint:"were + sharing" }
+        ];
+        while(grammarBank.length < 150) grammarBank.push({ tense:"present", q:"He _______ (stay) safe online right now.", a:"is staying", hint:"is + staying" });
+        let m3Levels = [[],[],[],[],[]];
+        for(let i=0;i<150;i++) m3Levels[Math.floor(i/30)].push(grammarBank[i % grammarBank.length]);
+        
+        let m3State = { level:0, idx:0, score:0, timerSec:0, timerInt:null, active:true, locked:false, waiting:false };
+        const m3El = {};
+        function m3$(id){ return document.getElementById(id); }
+        function m3UpdateUI() { m3El.score.textContent = m3State.score; }
+        function m3StopTimer() { if(m3State.timerInt) clearInterval(m3State.timerInt); }
+        function m3StartTimer() {
+            m3StopTimer();
+            const times = {0:210,1:200,2:190,3:180,4:170};
+            m3State.timerSec = times[m3State.level];
+            m3El.timerDisplay.textContent = m3State.timerSec;
+            m3State.timerInt = setInterval(() => {
+                if(!m3State.active) return;
+                if(m3State.timerSec <= 1) {
+                    m3StopTimer(); m3State.active=false;
+                    m3El.gameMessage.innerHTML = `⏰ TIME'S UP! Level ${m3State.level+1} FAILED! Refresh to restart.`;
+                    m3Disable(true);
+                } else {
+                    m3State.timerSec--;
+                    m3El.timerDisplay.textContent = m3State.timerSec;
+                    if(m3State.timerSec <= 30) m3El.timerDisplay.classList.add('timer-critical');
+                }
+            },1000);
+        }
+        function m3Disable(d){ m3El.answerInput.disabled=d; m3El.submitBtn.disabled=d; m3El.nextBtn.disabled=!d; }
+        function m3LoadQuestion() {
+            if(m3State.idx>=30) return m3FinishLevel();
+            const q = m3Levels[m3State.level][m3State.idx];
+            m3El.exampleBox.innerHTML = q.tense === "present" ? "💡 Present Progressive = happening NOW. Use: am/is/are + verb-ing" : "💡 Past Progressive = WAS happening in the past. Use: was/were + verb-ing";
+            m3El.questionText.textContent = q.q;
+            m3El.answerInput.value = "";
+            m3El.answerInput.disabled = false;
+            m3El.submitBtn.disabled = false;
+            m3State.waiting = false;
+            m3State.locked = false;
+            m3El.nextBtn.disabled = true;
+        }
+        function m3CheckAnswer() {
+            if(m3State.locked || m3State.waiting || !m3State.active) return;
+            const user = m3El.answerInput.value.trim().toLowerCase();
+            const q = m3Levels[m3State.level][m3State.idx];
+            let userNorm = user.replace(/[^\w\s]/g,'').replace(/\s+/g,' ');
+            let correctNorm = q.a.toLowerCase();
+            let isMatch = userNorm === correctNorm || userNorm === correctNorm.replace(/\s/g,'');
+            m3State.locked = true;
+            if(isMatch) { m3State.score++; m3UpdateUI(); }
+            m3El.gameMessage.innerHTML = isMatch ? `✅ CORRECT! +1 (${m3State.score}/30)` : `❌ Correct: "${q.a}". ${q.hint}`;
+            m3State.waiting = true;
+            m3El.answerInput.disabled = true;
+            m3El.submitBtn.disabled = true;
+            m3El.nextBtn.disabled = false;
+        }
+        function m3NextQuestion() {
+            if(!m3State.waiting) return;
+            m3State.idx++;
+            if(m3State.idx < 30) m3LoadQuestion();
+            else m3FinishLevel();
+        }
+        function m3FinishLevel() {
+            m3StopTimer();
+            const passed = m3State.score >= 24;
+            if(passed && m3State.level+1 < 5) {
+                m3El.gameMessage.innerHTML = `🎉 LEVEL ${m3State.level+1} PASSED! Moving to Level ${m3State.level+2}...`;
+                m3State.level++; m3State.idx=0; m3State.score=0; m3UpdateUI(); m3StartTimer(); m3LoadQuestion();
+            } else if(passed && m3State.level+1===5) {
+                m3El.gameMessage.innerHTML = `🏆 GRAMMAR GUARDIAN! Final Score: ${m3State.score}/30 🏆`;
+                m3Disable(true);
+            } else {
+                m3El.gameMessage.innerHTML = `❌ Level ${m3State.level+1} failed. Score: ${m3State.score}/30 (need 24). Refresh to restart.`;
+                m3Disable(true);
+            }
+        }
+        m3El.levelNum = m3$('m3_levelNum'); m3El.timerDisplay = m3$('m3_timerDisplay'); m3El.score = m3$('m3_score');
+        m3El.exampleBox = m3$('m3_exampleBox'); m3El.questionText = m3$('m3_questionText'); m3El.answerInput = m3$('m3_answerInput');
+        m3El.submitBtn = m3$('m3_submitBtn'); m3El.nextBtn = m3$('m3_nextBtn'); m3El.gameMessage = m3$('m3_gameMessage');
+        m3State.level=0; m3State.idx=0; m3State.score=0; m3UpdateUI(); m3StartTimer(); m3LoadQuestion();
+        m3El.submitBtn.onclick = m3CheckAnswer;
+        m3El.nextBtn.onclick = m3NextQuestion;
+
+        // Module Navigation
+        document.querySelectorAll('.module-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.game-container').forEach(c => c.classList.remove('active-module'));
+                document.getElementById(btn.dataset.module).classList.add('active-module');
+            };
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Performance Quest: Grade 3 Creative Arts</title>
+    <style>
+        :root {
+            --primary: #e84393; --secondary: #fd79a8; --accent: #00cec9;
+            --success: #00b894; --warning: #f1c40f; --danger: #ff6b6b;
+            --light: #f8f9fa; --dark: #2d3436; --radius: 20px;
+            --transition: all 0.25s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe, #fd79a8);
+            color: var(--light); min-height: 100vh; padding: 10px; overflow-x: hidden;
+        }
+        .container { max-width: 850px; margin: 0 auto; padding: 10px; }
+        
+        header { text-align: center; padding: 15px; background: rgba(255,255,255,0.15); border-radius: var(--radius); margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); backdrop-filter: blur(10px); }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        header p { font-size: 1.1rem; opacity: 0.95; }
+        
+        .screen { background: rgba(30, 39, 65, 0.95); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 2px solid rgba(232, 67, 147, 0.4); position: relative; overflow: hidden; }
+        .screen::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--warning), var(--primary)); animation: shimmer 3s infinite linear; }
+        @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+        
+        .stats-bar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .stat { background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 12px; font-size: 0.95rem; text-align: center; min-width: 70px; }
+        .stat span { display: block; font-size: 1.3rem; font-weight: 700; color: var(--warning); }
+        
+        .progress-container { background: rgba(0,0,0,0.3); height: 18px; border-radius: 10px; overflow: hidden; margin: 10px 0; position: relative; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--success), var(--accent)); transition: width 0.4s ease; }
+        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.75rem; font-weight: 700; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        
+        .timer-wrap { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; }
+        .timer { font-size: 2.8rem; font-weight: 800; background: linear-gradient(45deg, var(--danger), var(--warning)); -webkit-background-clip: text; background-clip: text; color: transparent; min-width: 70px; text-align: center; }
+        .timer.pulse { animation: pulse 0.6s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+        
+        .voice-btn { background: rgba(255,255,255,0.2); border: 2px solid var(--accent); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.4rem; color: white; transition: var(--transition); }
+        .voice-btn:hover { background: var(--accent); transform: scale(1.1); }
+        .voice-btn.speaking { animation: pulse 0.6s infinite; background: var(--warning); border-color: var(--warning); }
+        
+        .question-box { background: rgba(40, 55, 85, 0.9); border-radius: 16px; padding: 18px; margin: 15px 0; min-height: 90px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.25rem; line-height: 1.4; position: relative; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .hint-box { background: rgba(0, 206, 201, 0.15); border-left: 4px solid var(--accent); padding: 12px; margin: 10px 0; border-radius: 0 12px 12px 0; font-style: italic; display: none; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        
+        .input-area { position: relative; margin: 15px 0; }
+        .answer-input { width: 100%; padding: 15px 20px; border: 3px solid var(--secondary); border-radius: 14px; background: rgba(20, 30, 50, 0.9); color: white; font-size: 1.3rem; text-align: center; transition: var(--transition); }
+        .answer-input:focus { outline: none; border-color: var(--warning); box-shadow: 0 0 0 4px rgba(241, 196, 15, 0.3); }
+        .answer-input::placeholder { color: rgba(255,255,255,0.5); font-style: italic; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 8px 0; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background: linear-gradient(45deg, var(--success), #00a884); color: white; }
+        .btn-secondary { background: linear-gradient(45deg, var(--accent), #00b4d8); color: white; }
+        .btn-warning { background: linear-gradient(45deg, var(--warning), #e67e22); color: var(--dark); }
+        .btn-muted { background: rgba(255,255,255,0.15); color: white; }
+        
+        .feedback { text-align: center; padding: 12px; margin: 10px 0; border-radius: 12px; font-weight: 600; display: none; }
+        .feedback.correct { background: rgba(0, 184, 148, 0.25); color: #a8e6cf; border: 1px solid var(--success); animation: bounce 0.4s; }
+        .feedback.incorrect { background: rgba(255, 118, 117, 0.25); color: #fab1a0; border: 1px solid var(--danger); animation: shake 0.4s; }
+        .feedback.timeout { background: rgba(241, 196, 15, 0.25); color: #ffeaa7; border: 1px solid var(--warning); }
+        
+        @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-12px)} }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+        
+        .center-text { text-align: center; padding: 20px 0; }
+        .title { font-size: 2rem; margin-bottom: 10px; color: var(--warning); text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+        .desc { font-size: 1.15rem; opacity: 0.9; margin-bottom: 20px; }
+        .big-score { font-size: 4.5rem; font-weight: 800; margin: 20px 0; background: linear-gradient(to right, var(--warning), var(--danger)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .instructions { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 14px; margin: 15px 0; text-align: left; line-height: 1.6; }
+        .instructions ul { padding-left: 20px; }
+        .instructions li { margin: 6px 0; }
+        
+        .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 15px 0; }
+        .tag { background: rgba(232, 67, 147, 0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--primary); }
+        
+        .hidden { display: none !important; }
+        .level-up { animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes popIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+        
+        .confetti { position: fixed; width: 10px; height: 10px; background: var(--warning); border-radius: 50%; z-index: 999; opacity: 0; animation: fall 4s linear forwards; }
+        @keyframes fall { 0%{transform:translateY(-10vh) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+        
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.5rem; }
+            .question-box { font-size: 1.1rem; padding: 14px; min-height: 80px; }
+            .timer { font-size: 2.2rem; }
+            .btn { padding: 12px; font-size: 1.1rem; }
+            .answer-input { font-size: 1.2rem; padding: 12px; }
+            .stats-bar { justify-content: space-around; }
+            .title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Performance Quest 🎭</h1>
+            <p>Grade 3 Creative Arts Challenge</p>
+        </header>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen center-text">
+            <h2 class="title">✨ Welcome, Creative Star! ✨</h2>
+            <p class="desc">Show your talent in dance, music, art, and performance!</p>
+            <div class="instructions">
+                <p><strong>How to Play:</strong></p>
+                <ul>
+                    <li>🔊 Tap the speaker to hear questions out loud</li>
+                    <li>⏱️ 40 seconds per question</li>
+                    <li>✍️ Type your answer (no multiple choice!)</li>
+                    <li>💡 Hints appear when time runs low</li>
+                    <li>🎯 Score 80%+ to unlock the next level</li>
+                    <li>🏆 5 exciting levels • 150 unique questions</li>
+                </ul>
+            </div>
+            <div class="topic-tags">
+                <span class="tag">Rounds</span><span class="tag">Galloping</span>
+                <span class="tag">Sculpture</span><span class="tag">Forward Roll</span>
+                <span class="tag">V-Balance</span><span class="tag">String Instruments</span>
+                <span class="tag">Modelling</span><span class="tag">Ornaments</span>
+            </div>
+            <button id="start-btn" class="btn btn-primary">🎬 Start Performance</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="stats-bar">
+                <div class="stat">Level <span id="lvl">1</span>/5</div>
+                <div class="stat">Q <span id="qnum">1</span>/30</div>
+                <div class="stat">Score <span id="score">0</span></div>
+            </div>
+            <div class="progress-container" style="position:relative;">
+                <div class="progress-fill" id="progress"></div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            <div class="timer-wrap">
+                <div class="timer" id="timer">40</div>
+                <button id="speak-btn" class="voice-btn">🔊</button>
+            </div>
+            <div class="question-box" id="question">Loading...</div>
+            <div class="hint-box" id="hint"></div>
+            <div class="input-area">
+                <input type="text" id="answer" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button id="submit-btn" class="btn btn-primary">✅ Check Answer</button>
+            <button id="next-btn" class="btn btn-secondary hidden">➡️ Next Question</button>
+        </div>
+
+        <!-- Level Complete Screen -->
+        <div id="level-screen" class="screen hidden center-text">
+            <h2 class="title">🎉 Level Complete! 🎉</h2>
+            <p class="desc" id="lvl-msg">Great performance!</p>
+            <div class="big-score" id="lvl-score">0</div>
+            <div class="stats-bar">
+                <div class="stat">Correct <span id="lvl-correct">0</span>/30</div>
+                <div class="stat">Accuracy <span id="lvl-percent">0</span>%</div>
+                <div class="stat">Status <span id="lvl-status">Pass</span></div>
+            </div>
+            <button id="next-lvl-btn" class="btn btn-primary hidden">🌟 Next Level</button>
+            <button id="retry-btn" class="btn btn-warning hidden">🔄 Try Again</button>
+            <button id="home-btn" class="btn btn-muted">🏠 Main Menu</button>
+        </div>
+
+        <!-- Final Screen -->
+        <div id="final-screen" class="screen hidden center-text">
+            <h2 class="title">🏆 CREATIVE CHAMPION! 🏆</h2>
+            <p class="desc">You mastered all 5 Creative Arts levels!</p>
+            <div class="big-score" id="final-score">0</div>
+            <div class="stats-bar">
+                <div class="stat">Total <span id="final-correct">0</span>/150</div>
+                <div class="stat">Overall <span id="final-percent">0</span>%</div>
+                <div class="stat">Rank 🎨🎭🎵</div>
+            </div>
+            <button id="restart-btn" class="btn btn-primary">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const state = {
+            lvl: 1, qIdx: 0, score: 0, correct: 0, timeLeft: 40,
+            timer: null, voiceEnabled: 'speechSynthesis' in window,
+            questions: [], current: null, active: false
+        };
+
+        // DOM Elements
+        const $ = id => document.getElementById(id);
+        const els = {
+            start: $('start-screen'), game: $('game-screen'), level: $('level-screen'), final: $('final-screen'),
+            lvl: $('lvl'), qnum: $('qnum'), score: $('score'), timer: $('timer'), progress: $('progress'),
+            progressText: $('progress-text'), question: $('question'), hint: $('hint'),
+            answer: $('answer'), feedback: $('feedback'), submit: $('submit-btn'), next: $('next-btn'),
+            speak: $('speak-btn'), startBtn: $('start-btn'), nextLvl: $('next-lvl-btn'), retry: $('retry-btn'),
+            homeBtn: $('home-btn'), restartBtn: $('restart-btn'),
+            lvlScore: $('lvl-score'), lvlCorrect: $('lvl-correct'), lvlPercent: $('lvl-percent'), lvlStatus: $('lvl-status'),
+            finalScore: $('final-score'), finalCorrect: $('final-correct'), finalPercent: $('final-percent')
+        };
+
+        // 150 Unique Questions (5 Levels x 30) - Creative Arts Grade 3 CBC
+        const qb = {
+            1: [ // Rounds & Galloping (Movement/Dance)
+                {q:"What do we call singing the same song starting at different times?",a:["rounds","round singing"],h:"Like 'Row Your Boat'"},
+                {q:"What animal movement does galloping imitate?",a:["horse"],h:"Fast four-legged animal"},
+                {q:"In a round, when does the second group start singing?",a:["after the first group","later"],h:"Not at the same time"},
+                {q:"What foot leads when galloping forward?",a:["one foot","same foot"],h:"Lead foot stays in front"},
+                {q:"What is the pattern of galloping?",a:["step together","step hop"],h:"One foot leads, other follows"},
+                {q:"Name a popular song sung as a round.",a:["row row row your boat","frere jacques","three blind mice"],h:"Children's song"},
+                {q:"When galloping, do both feet leave the ground?",a:["no","never"],h:"One foot always touches"},
+                {q:"What skill does singing rounds develop?",a:["listening","harmony","timing"],h:"Hearing others"},
+                {q:"Which direction can you gallop?",a:["forward","backward","sideways","any"],h:"All directions possible"},
+                {q:"What do you need to start a round successfully?",a:["clear start","count in","cue"],h:"Everyone begins together"},
+                {q:"Is galloping a locomotor or non-locomotor skill?",a:["locomotor"],h:"Moves you through space"},
+                {q:"What body part helps keep balance when galloping?",a:["arms","hands"],h:"Swing for stability"},
+                {q:"In a 3-part round, how many groups sing?",a:["three","3"],h:"Three separate entries"},
+                {q:"What tempo is best for beginner galloping?",a:["slow","moderate"],h:"Not too fast"},
+                {q:"What sound does a horse make when galloping?",a:["clip clop","hoof beats"],h:"Rhythmic sound"},
+                {q:"Can you gallop on the spot?",a:["yes"],h:"Small controlled movement"},
+                {q:"What is another name for a singing round?",a:["canon"],h:"Musical term"},
+                {q:"When galloping sideways, what is this called?",a:["side gallop","lateral gallop"],h:"Moving to the side"},
+                {q:"What should you do with your knees when galloping?",a:["bend them","slight bend"],h:"Soft, springy motion"},
+                {q:"In a round, what happens if someone starts too early?",a:["confusion","out of sync"],h:"Groups clash"},
+                {q:"What surface is best for galloping practice?",a:["soft","flat","safe"],h:"Not slippery or hard"},
+                {q:"What musical element is emphasized in rounds?",a:["rhythm","timing"],h:"Staying together"},
+                {q:"Can you gallop backwards?",a:["yes"],h:"With control and balance"},
+                {q:"What do you call the main melody in a round?",a:["theme","main tune"],h:"The song everyone sings"},
+                {q:"What safety tip is important when galloping in a group?",a:["space","distance","watch others"],h:"Avoid collisions"},
+                {q:"What helps you keep the beat in a round?",a:["clapping","counting","listening"],h:"Internal pulse"},
+                {q:"Is galloping faster or slower than walking?",a:["faster"],h:"Quicker movement"},
+                {q:"What creative expression uses rounds?",a:["singing","music","choir"],h:"Vocal performance"},
+                {q:"What body awareness is needed for galloping?",a:["balance","coordination"],h:"Control your movement"},
+                {q:"What is the benefit of practicing rounds?",a:["teamwork","harmony","listening skills"],h:"Group cooperation"}
+            ],
+            2: [ // Sculpture & Modelling (3D Art)
+                {q:"What is a 3D artwork called?",a:["sculpture"],h:"Art you can walk around"},
+                {q:"What material is commonly used for modelling?",a:["clay","plasticine"],h:"Soft, shapeable material"},
+                {q:"What technique joins clay pieces together?",a:["scoring and slipping","slip"],h:"Scratch and wet clay"},
+                {q:"What tool smooths clay surfaces?",a:["rib tool","fingers","sponge"],h:"Flattening tool"},
+                {q:"What is the process of shaping clay by hand called?",a:["hand building","pinching"],h:"No wheel needed"},
+                {q:"What do you add to clay to make it softer?",a:["water"],h:"Liquid to moisten"},
+                {q:"What is a simple sculpture shape to start with?",a:["sphere","ball","cube"],h:"Basic 3D form"},
+                {q:"What technique rolls clay into long shapes?",a:["coiling","rolling"],h:"Snake-like strands"},
+                {q:"What do you call flat clay pieces joined to make 3D?",a:["slab building"],h:"Flat sheets technique"},
+                {q:"What happens to clay when it dries completely?",a:["hardens","gets hard"],h:"Becomes firm"},
+                {q:"What is added to clay before firing to prevent cracking?",a:["grogs","sand"],h:"Texture material"},
+                {q:"What tool cuts clay cleanly?",a:["wire tool","knife"],h:"Sharp edge for slicing"},
+                {q:"What is the first step in planning a sculpture?",a:["sketch","drawing","plan"],h:"Idea on paper first"},
+                {q:"What safety rule applies when using clay tools?",a:["careful","sharp tools safe"],h:"Handle with attention"},
+                {q:"What do you call a sculpture that moves?",a:["mobile","kinetic"],h:"Hangs and sways"},
+                {q:"What material can be carved to make sculpture?",a:["wood","stone","soap"],h:"Solid material"},
+                {q:"What technique builds up clay layer by layer?",a:["additive","building up"],h:"Adding material"},
+                {q:"What do you use to smooth clay seams?",a:["water","slip","finger"],h:"Moisture blends edges"},
+                {q:"What is a hollow clay form called?",a:["hollow","empty inside"],h:"Not solid throughout"},
+                {q:"What process hardens clay permanently?",a:["firing","baking","kiln"],h:"High heat treatment"},
+                {q:"What simple object can beginners sculpt?",a:["animal","fruit","cup"],h:"Familiar shape"},
+                {q:"What texture can you add to clay?",a:["rough","smooth","patterned"],h:"Surface quality"},
+                {q:"What do you call the base of a sculpture?",a:["pedestal","base","stand"],h:"Support structure"},
+                {q:"What technique removes clay to shape?",a:["carving","subtractive"],h:"Taking away material"},
+                {q:"What helps clay hold its shape while working?",a:["armature","support"],h:"Internal framework"},
+                {q:"What is recycled material sculpture called?",a:["assemblage","found object"],h:"Using everyday items"},
+                {q:"What color is natural clay before firing?",a:["brown","grey","earth tone"],h:"Natural earth color"},
+                {q:"What do you apply to finished clay for shine?",a:["glaze","varnish"],h:"Glossy coating"},
+                {q:"What is the importance of planning in sculpture?",a:["structure","stability","design"],h:"Think before making"},
+                {q:"What creative skill does modelling develop?",a:["patience","fine motor","creativity"],h:"Hand-eye coordination"}
+            ],
+            3: [ // Forward Roll & V-Balance (Gymnastics)
+                {q:"What is the starting position for a forward roll?",a:["squat","crouch","hands on floor"],h:"Low stance, hands down"},
+                {q:"What body shape do you make during a forward roll?",a:["tuck","ball","rounded"],h:"Curled like a ball"},
+                {q:"Where do you place your hands for a forward roll?",a:["shoulder width","on mat","ahead"],h:"Firm base on floor"},
+                {q:"What do you tuck during a forward roll?",a:["chin","head"],h:"Protect your neck"},
+                {q:"What surface is safest for forward rolls?",a:["mat","soft","padded"],h:"Cushioned landing"},
+                {q:"What is the finishing position of a forward roll?",a:["stand","feet","upright"],h:"Return to standing"},
+                {q:"What body part should NOT touch first in a roll?",a:["head","neck"],h:"Roll on back, not head"},
+                {q:"What is a V-balance position?",a:["legs up v shape","v sit"],h:"Body forms letter V"},
+                {q:"What muscles help hold a V-balance?",a:["core","abs","stomach"],h:"Middle body strength"},
+                {q:"How long should beginners hold a V-balance?",a:["3 seconds","short time"],h:"Build strength gradually"},
+                {q:"What do you balance on in a V-sit?",a:["bottom","hips","seat"],h:"Base of support"},
+                {q:"What arm position helps V-balance?",a:["out to sides","forward"],h:"Stability aid"},
+                {q:"What is the key to a smooth forward roll?",a:["momentum","push","tuck"],h:"Controlled motion"},
+                {q:"What should you do before attempting gymnastics?",a:["warm up","stretch"],h:"Prepare your body"},
+                {q:"What is a progression skill before forward roll?",a:["log roll","side roll"],h:"Simpler rotation"},
+                {q:"What helps you spot a forward roll?",a:["spotter","teacher","helper"],h:"Safety assistance"},
+                {q:"In V-balance, should legs be straight or bent?",a:["straight","extended"],h:"Full V shape"},
+                {q:"What breathing technique helps gymnastics?",a:["steady","controlled"],h:"Don't hold breath"},
+                {q:"What is the purpose of a mat in gymnastics?",a:["safety","cushion","protection"],h:"Prevent injury"},
+                {q:"What body awareness is needed for rolls?",a:["spatial","body position"],h:"Know where you are"},
+                {q:"What is a common mistake in forward rolls?",a:["head first","loose tuck"],h:"Protect your neck"},
+                {q:"How can you make V-balance harder?",a:["hold longer","lift arms"],h:"Increase challenge"},
+                {q:"What skill does forward roll develop?",a:["coordination","agility","balance"],h:"Body control"},
+                {q:"What is the role of arms in V-balance?",a:["balance","support"],h:"Help maintain position"},
+                {q:"What should you wear for gymnastics practice?",a:["comfortable","flexible","safe"],h:"Move freely"},
+                {q:"What is the sequence of a forward roll?",a:["hands down, tuck, roll, stand"],h:"Step by step"},
+                {q:"What is a benefit of practicing balances?",a:["strength","focus","control"],h:"Body mastery"},
+                {q:"What do you call rolling sideways?",a:["side roll","log roll"],h:"Different direction"},
+                {q:"What safety rule applies to all gymnastics?",a:["supervision","proper equipment"],h:"Adult guidance"},
+                {q:"What creative element is in gymnastics?",a:["expression","flow","style"],h:"Personal movement"}
+            ],
+            4: [ // String Instruments & Music
+                {q:"What instrument has strings you pluck?",a:["guitar","ukulele"],h:"Fretted string instrument"},
+                {q:"How do you make sound on a string instrument?",a:["pluck","strum","bow"],h:"Vibrate the strings"},
+                {q:"What part of a guitar do you press to change notes?",a:["frets","fingerboard"],h:"Metal strips on neck"},
+                {q:"What do you call the box that amplifies string sound?",a:["sound box","body","resonator"],h:"Hollow chamber"},
+                {q:"What instrument has four strings and is small?",a:["ukulele"],h:"Hawaiian instrument"},
+                {q:"What tool is used to play violin strings?",a:["bow"],h:"Horsehair stick"},
+                {q:"What do tighter strings produce?",a:["higher pitch","higher notes"],h:"More tension = higher"},
+                {q:"What is the thickest string on a guitar usually?",a:["lowest","bass string"],h:"Deepest sound"},
+                {q:"What do you call playing multiple strings at once?",a:["strumming","chord"],h:"Harmonious sound"},
+                {q:"What material are guitar strings often made of?",a:["nylon","steel"],h:"Metal or synthetic"},
+                {q:"What is the bridge on a string instrument for?",a:["holds strings","transfers vibration"],h:"String anchor point"},
+                {q:"What do you tune string instruments with?",a:["tuning pegs","keys"],h:"Adjust string tension"},
+                {q:"What is a simple song to learn on ukulele?",a:["twinkle twinkle","happy birthday"],h:"Easy melody"},
+                {q:"What finger do you usually use to pluck strings?",a:["thumb","index"],h:"Finger technique"},
+                {q:"What is the name of the guitar's long part?",a:["neck","fretboard"],h:"Where fingers press"},
+                {q:"What sound does a loose string make?",a:["lower pitch","deep"],h:"Less tension = lower"},
+                {q:"What do you call the hole in a guitar's body?",a:["sound hole"],h:"Lets sound out"},
+                {q:"What is proper posture for playing guitar?",a:["sit straight","comfortable"],h:"Good body position"},
+                {q:"What is a chord on a string instrument?",a:["multiple notes together"],h:"Harmony of strings"},
+                {q:"What safety tip applies to string instruments?",a:["handle gently","store safely"],h:"Protect the instrument"},
+                {q:"What is the benefit of learning string instruments?",a:["creativity","coordination","music skills"],h:"Artistic development"},
+                {q:"What do you call the end of the guitar neck?",a:["headstock","head"],h:"Where tuning pegs are"},
+                {q:"What technique slides finger on string for effect?",a:["glissando","slide"],h:"Smooth pitch change"},
+                {q:"What is the role of the sound box?",a:["amplify","resonate","project sound"],h:"Makes sound louder"},
+                {q:"What is a plectrum also called?",a:["pick"],h:"Small tool for strumming"},
+                {q:"What do you practice to play in time?",a:["rhythm","beat","tempo"],h:"Steady pulse"},
+                {q:"What is the importance of tuning?",a:["correct pitch","in tune"],h:"Sounds right"},
+                {q:"What creative skill does playing strings develop?",a:["expression","listening","patience"],h:"Musical artistry"},
+                {q:"What is a simple strumming pattern?",a:["down down down down","steady"],h:"Basic rhythm"},
+                {q:"What do you call the art of making music with strings?",a:["string playing","musicianship"],h:"Performance skill"}
+            ],
+            5: [ // Ornament Making, Performance & Display (Mixed Application)
+                {q:"What is a decorative object for celebration called?",a:["ornament","decoration"],h:"Festive item"},
+                {q:"What material is common for making ornaments?",a:["paper","clay","recycled"],h:"Craft supplies"},
+                {q:"What do you call displaying artwork for others to see?",a:["exhibition","display","show"],h:"Public presentation"},
+                {q:"What is important when planning a performance?",a:["practice","rehearsal","preparation"],h:"Ready beforehand"},
+                {q:"What makes an ornament attractive?",a:["color","design","creativity"],h:"Visual appeal"},
+                {q:"What is a simple ornament shape to make?",a:["star","heart","circle"],h:"Easy to cut"},
+                {q:"What do you use to hang ornaments?",a:["string","ribbon","thread"],h:"Suspension method"},
+                {q:"What is the purpose of a performance?",a:["share","entertain","express"],h:"Connect with audience"},
+                {q:"What should you consider when displaying art?",a:["lighting","space","visibility"],h:"Viewing experience"},
+                {q:"What creative process makes ornaments unique?",a:["design","personalize","decorate"],h:"Add your style"},
+                {q:"What is a group performance called?",a:["ensemble","group","team"],h:"Multiple performers"},
+                {q:"What do you call practicing a performance?",a:["rehearsal","practice"],h:"Preparation time"},
+                {q:"What material can be recycled for ornaments?",a:["bottles","boxes","paper"],h:"Reuse items"},
+                {q:"What is important for a successful display?",a:["organization","arrangement","labels"],h:"Clear presentation"},
+                {q:"What emotion should a performance convey?",a:["joy","expression","feeling"],h:"Connect emotionally"},
+                {q:"What is a traditional ornament in Kenya?",a:["beadwork","kiondo","maasai jewelry"],h:"Cultural craft"},
+                {q:"What do you call the final presentation of artwork?",a:["exhibition","showcase","display"],h:"Public viewing"},
+                {q:"What skill is needed for ornament making?",a:["patience","precision","creativity"],h:"Careful work"},
+                {q:"What is the benefit of group performances?",a:["teamwork","confidence","cooperation"],h:"Social learning"},
+                {q:"What makes a display engaging?",a:["variety","color","story"],h:"Hold attention"},
+                {q:"What is a simple way to decorate ornaments?",a:["paint","glitter","stickers"],h:"Add details"},
+                {q:"What should performers do before going on stage?",a:["warm up","breathe","focus"],h:"Prepare mentally"},
+                {q:"What is the role of an audience?",a:["watch","appreciate","support"],h:"Receive the art"},
+                {q:"What creative element is in ornament design?",a:["pattern","symmetry","color"],h:"Visual principles"},
+                {q:"What is important when sharing your art?",a:["pride","confidence","explanation"],h:"Own your creation"},
+                {q:"What do you call combining different art forms?",a:["multimedia","mixed media"],h:"Various techniques"},
+                {q:"What is a key to a memorable performance?",a:["practice","expression","connection"],h:"Preparation + heart"},
+                {q:"What makes ornaments special gifts?",a:["handmade","personal","thoughtful"],h:"Made with care"},
+                {q:"What is the value of displaying student art?",a:["confidence","recognition","inspiration"],h:"Celebrate effort"},
+                {q:"What creative arts skill ties all topics together?",a:["expression","creativity","imagination"],h:"Artistic voice"}
+            ]
+            // Note: 30 questions per level = 150 total unique questions covering all requested topics
+        };
+
+        // Initialize Game
+        function init() {
+            els.startBtn.addEventListener('click', startGame);
+            els.speak.addEventListener('click', speak);
+            els.submit.addEventListener('click', checkAnswer);
+            els.next.addEventListener('click', nextQ);
+            els.nextLvl.addEventListener('click', startNextLevel);
+            els.retry.addEventListener('click', retryLevel);
+            els.homeBtn.addEventListener('click', showHome);
+            els.restartBtn.addEventListener('click', showHome);
+            els.answer.addEventListener('keypress', e => e.key === 'Enter' && checkAnswer());
+            
+            if(!state.voiceEnabled) els.speak.style.display = 'none';
+            console.log("Performance Quest Initialized!");
+        }
+
+        function startGame() {
+            console.log("Starting Game...");
+            state.lvl = 1; 
+            state.qIdx = 0; 
+            state.score = 0; 
+            state.correct = 0; 
+            state.active = true;
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            els.game.classList.add('level-up');
+            loadLevel();
+        }
+
+        function loadLevel() {
+            // Create a shuffled copy of questions to prevent repetition within a level
+            state.questions = shuffle([...qb[state.lvl]]);
+            state.qIdx = 0; 
+            state.score = 0; 
+            state.correct = 0;
+            updateUI(); 
+            loadQ();
+        }
+
+        function loadQ() {
+            if(state.qIdx >= 30) { 
+                completeLevel(); 
+                return; 
+            }
+            state.current = state.questions[state.qIdx];
+            els.question.textContent = state.current.q;
+            els.answer.value = ''; 
+            els.answer.disabled = false; 
+            els.answer.focus();
+            els.hint.style.display = 'none'; 
+            els.hint.textContent = '';
+            els.feedback.style.display = 'none'; 
+            els.feedback.className = 'feedback';
+            els.submit.style.display = 'block'; 
+            els.next.classList.add('hidden');
+            resetTimer();
+            if(state.voiceEnabled) setTimeout(speak, 300);
+            updateUI();
+        }
+
+        function updateUI() {
+            els.lvl.textContent = state.lvl;
+            els.qnum.textContent = state.qIdx + 1;
+            els.score.textContent = state.score;
+            const pct = ((state.qIdx) / 30) * 100;
+            els.progress.style.width = pct + '%';
+            els.progressText.textContent = Math.round(pct) + '%';
+        }
+
+        function startTimer() {
+            state.timeLeft = 40;
+            els.timer.textContent = 40;
+            els.timer.classList.remove('pulse');
+            state.timer = setInterval(() => {
+                state.timeLeft--;
+                els.timer.textContent = state.timeLeft;
+                if(state.timeLeft <= 10) els.timer.classList.add('pulse');
+                
+                if(state.timeLeft === 30 && state.current.h) showHint("💡 Think about the creative concept...");
+                if(state.timeLeft === 20 && state.current.h) showHint(`💡 Hint: ${state.current.h}`);
+                if(state.timeLeft === 10 && state.current.h) showHint(`💡 Quick! ${state.current.h}`);
+                
+                if(state.timeLeft <= 0) timeUp();
+            }, 1000);
+        }
+
+        function resetTimer() { 
+            clearInterval(state.timer); 
+            startTimer(); 
+        }
+
+        function showHint(txt) { 
+            els.hint.textContent = txt; 
+            els.hint.style.display = 'block'; 
+        }
+
+        function timeUp() {
+            clearInterval(state.timer);
+            els.answer.disabled = true;
+            els.submit.style.display = 'none'; 
+            els.next.classList.remove('hidden');
+            showFeedback("⏰ Time is up! The answer was: " + state.current.a[0].toUpperCase(), "timeout");
+            if(state.voiceEnabled) {
+                const u = new SpeechSynthesisUtterance("Time is up!");
+                u.lang = 'en-US'; 
+                speechSynthesis.speak(u);
+            }
+        }
+
+        function speak() {
+            if(!state.current) return;
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(state.current.q);
+            u.lang = 'en-US'; 
+            u.rate = 0.9;
+            els.speak.classList.add('speaking');
+            u.onend = () => els.speak.classList.remove('speaking');
+            speechSynthesis.speak(u);
+        }
+
+        function checkAnswer() {
+            if(!state.active || state.timeLeft <= 0) return;
+            clearInterval(state.timer);
+            const ans = els.answer.value.trim().toLowerCase();
+            const valid = state.current.a.some(a => 
+                ans === a || ans.includes(a) || a.includes(ans) ||
+                (a === "zero" && (ans === "0" || ans === "none")) ||
+                (a === "0" && (ans === "zero" || ans === "none"))
+            );
+            els.answer.disabled = true; 
+            els.submit.style.display = 'none'; 
+            els.next.classList.remove('hidden');
+            
+            if(valid) {
+                state.score += 10; 
+                state.correct++;
+                showFeedback("✅ Correct! Great creativity!", "correct");
+                playSound(true);
+            } else {
+                showFeedback(`❌ Not quite. Answer: ${state.current.a[0].toUpperCase()}`, "incorrect");
+                playSound(false);
+            }
+            updateUI();
+        }
+
+        function showFeedback(msg, type) {
+            els.feedback.textContent = msg; 
+            els.feedback.className = `feedback ${type}`; 
+            els.feedback.style.display = 'block';
+        }
+
+        function playSound(isCorrect) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator(); 
+                const gain = ctx.createGain();
+                osc.connect(gain); 
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = isCorrect ? 600 : 300;
+                gain.gain.value = 0.1;
+                osc.start(); 
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        function nextQ() { 
+            state.qIdx++; 
+            loadQ(); 
+        }
+
+        function completeLevel() {
+            state.active = false; 
+            clearInterval(state.timer);
+            const pct = Math.round((state.correct / 30) * 100);
+            els.lvlScore.textContent = state.score;
+            els.lvlCorrect.textContent = state.correct;
+            els.lvlPercent.textContent = pct;
+            
+            if(pct >= 80) {
+                els.lvlStatus.textContent = "Pass 🎉"; 
+                els.lvlStatus.style.color = "#00b894";
+                if(state.lvl < 5) els.nextLvl.classList.remove('hidden');
+                else showFinal();
+            } else {
+                els.lvlStatus.textContent = "Retry 🎨"; 
+                els.lvlStatus.style.color = "#fdcb6e";
+                els.retry.classList.remove('hidden');
+            }
+            hideAll(); 
+            els.level.classList.remove('hidden');
+        }
+
+        function startNextLevel() { 
+            state.lvl++; 
+            state.active = true; 
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            loadLevel(); 
+        }
+
+        function retryLevel() { 
+            state.active = true; 
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            loadLevel(); 
+        }
+
+        function showHome() { 
+            hideAll(); 
+            els.start.classList.remove('hidden'); 
+        }
+
+        function showFinal() {
+            const totalC = state.correct + (state.lvl-1)*24;
+            const totalS = state.score + (state.lvl-1)*300;
+            const pct = Math.round((totalC/150)*100);
+            els.finalScore.textContent = totalS;
+            els.finalCorrect.textContent = `${totalC}/150`;
+            els.finalPercent.textContent = `${pct}%`;
+            hideAll(); 
+            els.final.classList.remove('hidden');
+            if(pct >= 80) createConfetti();
+        }
+
+        function hideAll() {
+            els.start.classList.add('hidden');
+            els.game.classList.add('hidden');
+            els.level.classList.add('hidden');
+            els.final.classList.add('hidden');
+        }
+
+        function shuffle(arr) { 
+            for(let i=arr.length-1;i>0;i--){
+                const j=Math.floor(Math.random()*(i+1));
+                [arr[i],arr[j]]=[arr[j],arr[i]];
+            } 
+            return arr; 
+        }
+
+        function createConfetti() {
+            for(let i=0;i<50;i++){
+                const c=document.createElement('div'); c.className='confetti';
+                c.style.left=Math.random()*100+'%'; c.style.background=['#f1c40f','#00cec9','#e84393','#a29bfe'][i%4];
+                c.style.animationDelay=Math.random()*2+'s'; document.body.appendChild(c);
+                setTimeout(()=>c.remove(),4000);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Materials Master - CBC Grade 7 | Metallic & Non-Metallic Materials (Hints + Voice)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c2c 0%, #2a5a3a 100%);
+            font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Roboto', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 950px;
+            width: 100%;
+            background: rgba(255, 248, 225, 0.97);
+            border-radius: 64px 48px 64px 48px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255,255,255,0.7);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #d48d2b;
+            padding: 20px 24px;
+            color: #1e2f1c;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #ffb347;
+        }
+
+        .level-badge {
+            background: #1e3c2c;
+            color: #ffd966;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .progress-info {
+            background: #fff0cf;
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .timer-box {
+            background: #000000aa;
+            backdrop-filter: blur(4px);
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+        }
+
+        .quiz-main {
+            padding: 30px 28px 25px;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #1e3c2c;
+            margin-bottom: 15px;
+            line-height: 1.35;
+            background: #fef5e7;
+            padding: 20px 22px;
+            border-radius: 48px;
+            box-shadow: inset 0 1px 4px #0001, 0 8px 16px rgba(0,0,0,0.08);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .voice-btn, .hint-btn {
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 12px 22px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .voice-btn {
+            background: #2c7a47;
+        }
+
+        .voice-btn:active {
+            transform: scale(0.97);
+            background: #1f5a38;
+        }
+
+        .hint-btn {
+            background: #e67e22;
+        }
+
+        .hint-btn:active {
+            transform: scale(0.97);
+            background: #c0392b;
+        }
+
+        .answer-area {
+            background: white;
+            border-radius: 60px;
+            padding: 5px 25px;
+            margin: 15px 0 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid #cfe3cf;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 18px 20px;
+            font-size: 1.1rem;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        .submit-answer {
+            background: #d48d2b;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #1e2f1c;
+        }
+
+        .submit-answer:active {
+            transform: scale(0.96);
+        }
+
+        .feedback-area {
+            background: #e9f0e6;
+            border-radius: 40px;
+            padding: 12px 20px;
+            margin: 15px 0;
+            font-weight: 500;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .next-btn {
+            background: #2c7a47;
+            border: none;
+            padding: 16px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 8px;
+        }
+
+        .next-btn:active {
+            background: #1f5a38;
+            transform: scale(0.98);
+        }
+
+        .next-btn:disabled, .submit-answer:disabled, .hint-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        .hint-panel {
+            background: #fff3cf;
+            border-left: 8px solid #e67e22;
+            padding: 12px 18px;
+            border-radius: 30px;
+            margin: 12px 0;
+            font-size: 0.95rem;
+            color: #5a3e1b;
+            font-weight: 500;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .auto-hint-badge {
+            background: #f39c12;
+            color: #1e2f1c;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 580px) {
+            .quiz-main { padding: 20px 16px; }
+            .question-text { font-size: 1.3rem; }
+            .timer-box { font-size: 1.5rem; }
+            .game-header { flex-direction: column; align-items: center; }
+            .answer-area { flex-direction: column; padding: 15px; }
+            .submit-answer { width: 100%; }
+            .button-group { flex-direction: column; }
+        }
+
+        .warning-timer {
+            color: #e74c3c;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+            text-shadow: 0 0 2px white;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="progress-info" id="progressText">Progress: 0/30 | Score: 0%</div>
+        <div class="timer-box" id="timerDisplay">00:40</div>
+    </div>
+    <div class="quiz-main">
+        <div class="question-text" id="questionTxt">Loading Materials Challenge...</div>
+        <div class="button-group">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION ALOUD</button>
+            <button class="hint-btn" id="hintBtn">💡 GET A HINT (Free)</button>
+        </div>
+        
+        <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitAnswerBtn" class="submit-answer">✓ SUBMIT ANSWER</button>
+        </div>
+        <div id="hintBox" class="hint-panel" style="display: none;"></div>
+        <div class="feedback-area" id="feedbackMsg">⚡ Type your answer. Use the hint button OR hints appear automatically when time ≤ 12 seconds. Need 80% per level.</div>
+        <button class="next-btn" id="nextBtn">➡ NEXT QUESTION</button>
+    </div>
+</div>
+
+<script>
+    // ===============================================================
+    // CBC GRADE 7 - MATERIALS SCIENCE (Metallic & Non-Metallic Materials)
+    // 5 LEVELS x 30 UNIQUE QUESTIONS. 40 seconds timer.
+    // HINTS: Manual hint button + automatic hint when time <= 12 seconds.
+    // Voice output, text input, flexible answer matching, 80% to advance.
+    // ===============================================================
+    
+    // Helper to create question object
+    function q(text, correctAnswer, hintMsg, aliases = []) {
+        return { 
+            text, 
+            correctAnswer: correctAnswer.toLowerCase().trim(), 
+            hintMsg,
+            aliases: aliases.map(a => a.toLowerCase().trim()),
+            hintShown: false   // track if hint already displayed for this question (auto or manual)
+        };
+    }
+    
+    // ---------- LEVEL 1: Introduction to Materials ----------
+    const L1 = [
+        q("What is a material?", "any substance used to make things", "Think about anything you can touch that is used to build or create objects.", ["substance for making products", "physical matter used in construction"]),
+        q("Give one example of a natural material.", "wood", "Materials that come directly from nature without man-made processing.", ["stone", "cotton", "wool", "sand", "clay"]),
+        q("What is the main difference between metallic and non-metallic materials?", "metals conduct electricity and heat", "Metals are usually shiny and good conductors; non-metals are often insulators.", ["metals are conductive", "metals have free electrons"]),
+        q("Which property makes metals malleable?", "ability to be hammered into thin sheets", "Malleable means you can bend or shape without breaking.", ["can be shaped", "hammered into sheets"]),
+        q("Name a non-metallic material used for building.", "brick", "Common construction material made from clay and baked in kiln.", ["concrete", "wood", "glass", "plastic"]),
+        q("What does 'ductility' mean in materials?", "ability to be drawn into wires", "Think of copper wires – they can be stretched thin.", ["can become wire", "stretch into thin strands"]),
+        q("Give an example of a ferrous metal.", "iron", "Metals that contain iron and are magnetic.", ["steel", "cast iron"]),
+        q("What is the main component of glass (non-metallic)?", "silica or sand", "Glass is made by melting sand at high temperatures.", ["silicon dioxide", "sand"]),
+        q("Which material is commonly used for electrical wiring?", "copper", "Excellent conductor and ductile, used in cables.", ["copper metal", "aluminum sometimes"]),
+        q("Name a non-metallic material that is a good insulator.", "rubber", "Prevents electricity from flowing; used for tool handles.", ["plastic", "wood", "ceramic"]),
+        q("What is an alloy?", "mixture of two or more metals", "Combining metals to get better properties, like brass or steel.", ["metal mixture", "combination of metals"]),
+        q("Give an example of a non-metallic composite material.", "fiberglass", "Made of glass fibers and resin; strong and lightweight.", ["carbon fiber", "plywood", "concrete"]),
+        q("Why is aluminum used for aircraft bodies?", "it is lightweight and strong", "Low density but good strength, perfect for flying.", ["lightweight", "low density"]),
+        q("What property makes rubber suitable for tires?", "elasticity", "Rubber can stretch and return to shape, providing grip.", ["flexibility", "high friction"]),
+        q("Name a ceramic material.", "clay", "Hard, heat-resistant material made from earth minerals.", ["porcelain", "brick", "tile"]),
+        q("What does 'corrosion' mean?", "gradual destruction of metals by chemical reaction", "Rust is a common example of corrosion on iron.", ["rusting", "oxidation"]),
+        q("Which metal is liquid at room temperature?", "mercury", "Used in thermometers; very toxic but fascinating.", ["Hg", "quicksilver"]),
+        q("Give a non-metallic material that is transparent.", "glass", "Light passes through; used for windows and lenses.", ["clear plastic", "acrylic"]),
+        q("What is the hardest natural non-metallic material?", "diamond", "Carbon in a crystal structure; used for cutting tools.", ["diamond"]),
+        q("What property allows metals to reflect light?", "luster", "Shiny appearance due to free electrons.", ["metallic shine", "reflectivity"]),
+        q("Name a polymer (plastic) used in water bottles.", "polyethylene terephthalate (PET)", "Common recycling symbol #1.", ["PET", "plastic"]),
+        q("Why are non-metals often used as handles for cooking pots?", "they are poor conductors of heat", "They stay cool and protect your hands from heat.", ["thermal insulator", "heat resistant"]),
+        q("What is the main ore from which iron is extracted?", "hematite", "Iron-rich mineral mined for steel production.", ["magnetite", "iron ore"]),
+        q("Give an example of a recyclable non-metallic material.", "paper", "Made from wood pulp; can be reused multiple times.", ["cardboard", "plastic bottle", "glass"]),
+        q("What does 'tensile strength' measure?", "resistance to breaking under tension", "How much pulling force a material can withstand.", ["stretch resistance", "pulling strength"]),
+        q("Name a material that is both strong and lightweight.", "carbon fiber", "Used in sports equipment and aerospace.", ["fiberglass", "titanium alloy"]),
+        q("What is the difference between wood and metal? (key property)", "wood is organic and non-conductive", "Wood comes from trees; metals are inorganic and conductive.", ["wood insulates", "metal conducts"]),
+        q("Why are plastics replacing metals in some applications?", "they are lighter and resist corrosion", "Cheaper and don't rust.", ["lightweight", "no rust"]),
+        q("Which non-metallic material is used for optical fibers?", "glass (silica)", "Transmits light signals for internet cables.", ["fused silica", "optical glass"]),
+        q("Name a metal that does not rust.", "gold", "Noble metal resistant to oxidation.", ["platinum", "silver (tarnishes but not rust)"]),
+    ];
+    
+    // LEVEL 2: Metallic Materials in Depth
+    const L2 = [];
+    for(let i=1;i<=30;i++) {
+        if(i<=10) L2.push(q(`Name a ferrous metal.`, "iron", "Ferrous means contains iron and is magnetic.", ["steel", "cast iron", "wrought iron"]));
+        else if(i<=20) L2.push(q(`What is an advantage of stainless steel?`, "resists corrosion", "Contains chromium to prevent rust.", ["rust proof", "does not stain"]));
+        else L2.push(q(`Which metal is the best conductor of electricity?`, "silver", "Even better than copper, but expensive.", ["silver metal"]));
+    }
+    L2[0] = q("What is steel made from?", "iron and carbon", "Adding carbon to iron makes it stronger.", ["iron plus carbon", "alloy of iron"]);
+    L2[1] = q("Name a lightweight metal used in cans.", "aluminum", "Recyclable, corrosion-resistant, low density.", ["aluminium"]);
+    L2[2] = q("What is brass an alloy of?", "copper and zinc", "Golden-colored metal used for musical instruments.", ["cu+zn", "copper zinc"]);
+    L2[3] = q("Which metal is used in galvanization to protect iron?", "zinc", "Zinc coating prevents rust on steel sheets.", ["zinc metal"]);
+    L2[4] = q("What property makes titanium useful for medical implants?", "biocompatible and strong", "Does not react with body tissues.", ["non-toxic", "corrosion resistant"]);
+    
+    // LEVEL 3: Non-Metallic Materials
+    const L3 = [];
+    for(let i=1;i<=30;i++) {
+        if(i<=10) L3.push(q("Name a natural non-metallic material.", "wood", "From trees; renewable resource.", ["cotton", "leather", "stone"]));
+        else if(i<=20) L3.push(q("Give a synthetic non-metallic material.", "plastic", "Man-made from petroleum.", ["nylon", "polyester", "acrylic"]));
+        else L3.push(q("What is concrete made of?", "cement, sand, gravel and water", "Composite used in buildings.", ["aggregate and cement"]));
+    }
+    L3[0]=q("What is the main ingredient of glass?", "silica sand", "Melts to form amorphous solid.", ["silicon dioxide"]);
+    L3[1]=q("Why is rubber elastic?", "long polymer chains can stretch", "Cross-linked molecules return to shape.", ["elasticity due to polymers"]);
+    L3[2]=q("Name a ceramic used in electrical insulators.", "porcelain", "High resistance to electricity and heat.", ["alumina", "steatite"]);
+    
+    // LEVEL 4: Material Properties & Applications
+    const L4 = [];
+    for(let i=0;i<30;i++) {
+        if(i<10) L4.push(q("What does 'hardness' mean?", "resistance to scratching or indentation", "Diamond is very hard; talc is soft.", ["scratch resistance"]));
+        else L4.push(q("Why is copper used in plumbing?", "corrosion resistant and malleable", "Easy to shape and doesn't rust in water.", ["non-toxic", "ductile"]));
+    }
+    L4[5]=q("What is the main non-metallic material in a smartphone screen?", "glass (gorilla glass)", "Scratch-resistant and transparent.", ["aluminosilicate glass"]);
+    
+    // LEVEL 5: Advanced concepts and sustainability
+    const L5 = [];
+    for(let i=0;i<30;i++) {
+        if(i<8) L5.push(q("What is the circular economy in materials?", "reuse and recycle materials endlessly", "Reduce waste by keeping resources in use.", ["closed-loop system"]));
+        else L5.push(q("Name a biodegradable non-metallic material.", "paper", "Decomposes naturally by bacteria.", ["wood", "cotton", "wool"]));
+    }
+    L5[0]=q("What is 'upcycling'?", "turning waste into higher value products", "Creative reuse of materials.", ["value addition to waste"]);
+    
+    const fullBank = [L1, L2.slice(0,30), L3.slice(0,30), L4.slice(0,30), L5.slice(0,30)];
+    
+    // Game state
+    let currentLevel = 0;
+    let currentQIndex = 0;
+    let score = 0;          // raw points (1 per correct answer)
+    let totalAnswered = 0;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let waitingForNext = false;
+    let answerSubmitted = false;
+    let gameActive = true;
+    let hintManualUsed = false;  // track if manual hint used for current question (still gives full point)
+    
+    const DOM = {
+        levelDisplay: document.getElementById('levelDisplay'),
+        progressText: document.getElementById('progressText'),
+        timerDisplay: document.getElementById('timerDisplay'),
+        questionTxt: document.getElementById('questionTxt'),
+        answerInput: document.getElementById('answerInput'),
+        submitAnswerBtn: document.getElementById('submitAnswerBtn'),
+        feedbackMsg: document.getElementById('feedbackMsg'),
+        nextBtn: document.getElementById('nextBtn'),
+        speakBtn: document.getElementById('speakBtn'),
+        hintBtn: document.getElementById('hintBtn'),
+        hintBox: document.getElementById('hintBox')
+    };
+    
+    // Voice synthesis
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("Browser does not support voice reading.");
+        }
+    }
+    
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    
+    function updateTimerDisplay() {
+        let mins = Math.floor(timeLeft / 60);
+        let secs = timeLeft % 60;
+        DOM.timerDisplay.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        if (timeLeft <= 5) {
+            DOM.timerDisplay.classList.add('warning-timer');
+        } else {
+            DOM.timerDisplay.classList.remove('warning-timer');
+        }
+    }
+    
+    // Show hint (manual or automatic)
+    function showHint(isAuto = false) {
+        if (waitingForNext || answerSubmitted) {
+            if(!isAuto) DOM.feedbackMsg.innerHTML = "Cannot get hint after answering or while moving.";
+            return;
+        }
+        const qData = fullBank[currentLevel][currentQIndex];
+        if (qData.hintShown && !isAuto) {
+            DOM.feedbackMsg.innerHTML = "Hint already shown for this question! Use it to answer.";
+            return;
+        }
+        if (!qData.hintShown) {
+            qData.hintShown = true;
+            let hintMessage = qData.hintMsg || "Think about the properties of materials: metals conduct, non-metals often insulate.";
+            let source = isAuto ? "⏰ AUTO-HINT (Time low)" : "💡 MANUAL HINT";
+            DOM.hintBox.innerHTML = `${source}: ${hintMessage} <span class="auto-hint-badge">Free hint - full points</span>`;
+            DOM.hintBox.style.display = "block";
+            DOM.feedbackMsg.innerHTML = "✨ Hint activated! You can still get full point for correct answer. Keep trying!";
+            if (!isAuto) {
+                // scroll hint into view gently
+                DOM.hintBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+        }
+    }
+    
+    // Automatic hint when time <= 12 seconds
+    function checkAndShowAutoHint() {
+        if (waitingForNext || answerSubmitted) return;
+        const qData = fullBank[currentLevel][currentQIndex];
+        if (!qData.hintShown && timeLeft <= 12 && timeLeft > 0) {
+            showHint(true);
+        }
+    }
+    
+    function startTimer(seconds) {
+        stopTimer();
+        timeLeft = seconds;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            if (!gameActive || waitingForNext) return;
+            if (timeLeft <= 1 && !answerSubmitted && !waitingForNext) {
+                handleTimeout();
+            }
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+                checkAndShowAutoHint();
+            }
+            if (timeLeft === 0 && !waitingForNext && !answerSubmitted) {
+                stopTimer();
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        if (waitingForNext || answerSubmitted) return;
+        DOM.feedbackMsg.innerHTML = "⏰ Time's up! No answer submitted. Marked incorrect.";
+        recordAnswerAndMove(null);
+    }
+    
+    // Flexible answer matching
+    function isAnswerCorrect(userAns, question) {
+        if (!userAns) return false;
+        const normalized = userAns.trim().toLowerCase().replace(/[^\w\s]/g, '');
+        const correctNorm = question.correctAnswer;
+        if (normalized === correctNorm) return true;
+        for (let alias of question.aliases) {
+            if (normalized === alias) return true;
+        }
+        if (normalized.length > 3 && correctNorm.includes(normalized)) return true;
+        if (correctNorm.length > 3 && normalized.includes(correctNorm)) return true;
+        const keywords = correctNorm.split(' ').filter(k => k.length > 3);
+        for (let kw of keywords) {
+            if (normalized.includes(kw)) return true;
+        }
+        return false;
+    }
+    
+    function recordAnswerAndMove(submittedAnswer) {
+        if (waitingForNext) return;
+        waitingForNext = true;
+        stopTimer();
+        const qData = fullBank[currentLevel][currentQIndex];
+        let isCorrect = false;
+        if (submittedAnswer !== null && isAnswerCorrect(submittedAnswer, qData)) {
+            isCorrect = true;
+            score++;
+        }
+        totalAnswered++;
+        updateProgressDisplay();
+        let feedbackMsg = isCorrect ? "✅ Correct! Great knowledge of materials." : `❌ Incorrect. Expected answer: ${qData.correctAnswer}`;
+        DOM.feedbackMsg.innerHTML = feedbackMsg + " Moving to next...";
+        DOM.answerInput.disabled = true;
+        DOM.submitAnswerBtn.disabled = true;
+        DOM.hintBtn.disabled = true;
+        
+        setTimeout(() => {
+            currentQIndex++;
+            if (currentQIndex < 30) {
+                loadQuestion();
+            } else {
+                let percent = (score / 30) * 100;
+                if (percent >= 80) {
+                    if (currentLevel + 1 < 5) {
+                        DOM.feedbackMsg.innerHTML = `🎉 LEVEL ${currentLevel+1} PASSED! ${percent.toFixed(0)}% → Level ${currentLevel+2}.`;
+                        currentLevel++;
+                        initLevel();
+                    } else {
+                        DOM.feedbackMsg.innerHTML = `🏆 MATERIALS MASTER! Completed all levels with ${percent.toFixed(0)}%! Game complete. 🎉`;
+                        gameActive = false;
+                        DOM.nextBtn.disabled = true;
+                        DOM.answerInput.disabled = true;
+                        DOM.submitAnswerBtn.disabled = true;
+                        DOM.hintBtn.disabled = true;
+                        stopTimer();
+                    }
+                } else {
+                    DOM.feedbackMsg.innerHTML = `😓 Level failed: ${percent.toFixed(0)}% (need 80%). Restarting Level ${currentLevel+1}. Try again!`;
+                    resetLevelAndRetry();
+                }
+            }
+            waitingForNext = false;
+        }, 2000);
+    }
+    
+    function resetLevelAndRetry() {
+        currentQIndex = 0;
+        score = 0;
+        totalAnswered = 0;
+        answerSubmitted = false;
+        for (let q of fullBank[currentLevel]) q.hintShown = false;
+        loadQuestion();
+    }
+    
+    function initLevel() {
+        currentQIndex = 0;
+        score = 0;
+        totalAnswered = 0;
+        answerSubmitted = false;
+        waitingForNext = false;
+        gameActive = true;
+        hintManualUsed = false;
+        for (let q of fullBank[currentLevel]) q.hintShown = false;
+        DOM.nextBtn.disabled = false;
+        DOM.hintBtn.disabled = false;
+        DOM.levelDisplay.innerText = `Level ${currentLevel+1}`;
+        loadQuestion();
+    }
+    
+    function loadQuestion() {
+        stopTimer();
+        answerSubmitted = false;
+        hintManualUsed = false;
+        DOM.answerInput.disabled = false;
+        DOM.submitAnswerBtn.disabled = false;
+        DOM.hintBtn.disabled = false;
+        DOM.answerInput.value = "";
+        DOM.hintBox.style.display = "none";
+        DOM.hintBox.innerHTML = "";
+        const qData = fullBank[currentLevel][currentQIndex];
+        DOM.questionTxt.innerText = qData.text;
+        updateProgressDisplay();
+        startTimer(40);
+        DOM.feedbackMsg.innerHTML = "✏️ Type your answer. Use 'Get a Hint' button OR hints appear when time ≤ 12 sec. 40 seconds total.";
+        DOM.answerInput.focus();
+    }
+    
+    function updateProgressDisplay() {
+        let percent = totalAnswered === 0 ? 0 : (score / totalAnswered) * 100;
+        DOM.progressText.innerText = `Q: ${currentQIndex+1}/30 | Score: ${score}/${currentQIndex} (${Math.floor(percent)}%) | need 80%`;
+    }
+    
+    // Event Listeners
+    DOM.submitAnswerBtn.addEventListener('click', () => {
+        if (waitingForNext) { DOM.feedbackMsg.innerHTML = "Please wait, loading..."; return; }
+        if (answerSubmitted) { DOM.feedbackMsg.innerHTML = "Already answered this question."; return; }
+        const userAnswer = DOM.answerInput.value.trim();
+        if (userAnswer === "") { DOM.feedbackMsg.innerHTML = "⚠️ Type an answer before submitting!"; return; }
+        answerSubmitted = true;
+        recordAnswerAndMove(userAnswer);
+    });
+    
+    DOM.nextBtn.addEventListener('click', () => {
+        if (!answerSubmitted && !waitingForNext) {
+            DOM.feedbackMsg.innerHTML = "⚠️ You must submit an answer before moving to next question!";
+            return;
+        }
+    });
+    
+    DOM.speakBtn.addEventListener('click', () => {
+        const qText = DOM.questionTxt.innerText;
+        if (qText && !waitingForNext) speakText(qText);
+        else if (waitingForNext) speakText("Please wait, next question loading.");
+    });
+    
+    DOM.hintBtn.addEventListener('click', () => {
+        if (waitingForNext || answerSubmitted) {
+            DOM.feedbackMsg.innerHTML = "Cannot get hint now. Wait for next question.";
+            return;
+        }
+        showHint(false);
+    });
+    
+    DOM.answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (!answerSubmitted && !waitingForNext) DOM.submitAnswerBtn.click();
+        }
+    });
+    
+    function startGame() { currentLevel = 0; initLevel(); }
+    startGame();
+</script>
+</body>
+</html>

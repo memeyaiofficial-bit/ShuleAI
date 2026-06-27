@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💡 Light Explorer: CBC Force & Energy Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0e2b 0%, #1a1a4a 30%, #2c2c6e 70%, #1a1a4a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 5px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+                radial-gradient(rgba(255,255,255,.1), rgba(255,255,255,.05) 1px, transparent 2px);
+            background-size: 50px 50px, 35px 35px, 25px 25px;
+            background-position: 0 0, 15px 15px, 25px 25px;
+            animation: twinkle 8s linear infinite;
+            z-index: -2;
+            opacity: 0.7;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.9; }
+            100% { opacity: 0.7; }
+        }
+        
+        #game-container {
+            background: rgba(25, 25, 55, 0.95);
+            border-radius: 25px;
+            box-shadow: 
+                0 0 30px rgba(100, 180, 255, 0.4),
+                0 0 60px rgba(150, 200, 255, 0.2),
+                inset 0 0 40px rgba(50, 100, 200, 0.1);
+            width: 100%;
+            max-width: 950px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid rgba(100, 180, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #ffcc00, #ff9900, #ff6600, #ff3300, #ff0066, #cc00ff, #6600ff, #0066ff, #00ccff, #00ffcc, #66ff66, #ccff33, #ffcc00);
+            border-radius: 25px 25px 0 0;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.7);
+            animation: rainbow-flow 8s linear infinite;
+        }
+        
+        @keyframes rainbow-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        #start-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        h1 {
+            color: #fff;
+            font-size: 3rem;
+            margin: 15px 0;
+            text-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.8),
+                0 0 20px rgba(100, 180, 255, 0.9),
+                0 0 30px rgba(150, 200, 255, 0.7);
+            background: linear-gradient(45deg, #ffcc00, #ff9900, #ff6600, #ff3366, #cc33ff, #6666ff, #33ccff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            position: relative;
+            animation: glow-pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(100,180,255,0.9), 0 0 30px rgba(150,200,255,0.7); }
+            50% { text-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(100,180,255,1), 0 0 45px rgba(150,200,255,0.9), 0 0 60px rgba(255,204,0,0.8); }
+        }
+        
+        .subtitle {
+            color: #a0c8ff;
+            font-size: 1.5rem;
+            margin: 10px 0 25px;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(100, 180, 255, 0.7);
+        }
+        
+        .light-illustration {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 25px;
+            background: radial-gradient(circle, #ffcc00 0%, #ff9900 30%, #ff6600 60%, transparent 80%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 
+                0 0 30px rgba(255, 204, 0, 0.8),
+                0 0 60px rgba(255, 153, 0, 0.6),
+                0 0 90px rgba(255, 102, 0, 0.4);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            animation: pulse-light 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-light {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(255, 204, 0, 0.8), 0 0 60px rgba(255, 153, 0, 0.6), 0 0 90px rgba(255, 102, 0, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(255, 204, 0, 1), 0 0 80px rgba(255, 153, 0, 0.9), 0 0 120px rgba(255, 102, 0, 0.7);
+                transform: scale(1.05);
+            }
+        }
+        
+        .light-illustration::before {
+            content: "💡";
+            font-size: 90px;
+            animation: bounce-light 2.5s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+        }
+        
+        @keyframes bounce-light {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(5deg); }
+            75% { transform: translateY(-5px) rotate(-5deg); }
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4a6cf7, #6a8dff);
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 15px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 15px rgba(74, 108, 247, 0.4),
+                0 0 20px rgba(106, 141, 255, 0.3);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(74, 108, 247, 0.6),
+                0 0 30px rgba(106, 141, 255, 0.5),
+                0 0 40px rgba(138, 180, 255, 0.4);
+            background: linear-gradient(45deg, #3a5ce5, #5a7dff);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            transform: scale(0);
+            transition: transform 0.5s ease;
+            border-radius: 50%;
+        }
+        
+        .btn:hover::after {
+            transform: scale(1);
+        }
+        
+        .btn-large {
+            padding: 20px 60px;
+            font-size: 1.6rem;
+            margin-top: 10px;
+            background: linear-gradient(45deg, #ffcc00, #ff9900);
+            box-shadow: 
+                0 6px 15px rgba(255, 204, 0, 0.5),
+                0 0 25px rgba(255, 153, 0, 0.4);
+        }
+        
+        .btn-large:hover {
+            background: linear-gradient(45deg, #e6b800, #e68a00);
+            box-shadow: 
+                0 8px 25px rgba(255, 204, 0, 0.7),
+                0 0 35px rgba(255, 153, 0, 0.6);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #6a8dff, #8aafff);
+            box-shadow: 0 6px 15px rgba(106, 141, 255, 0.4);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #5a7dff, #7a9fff);
+            box-shadow: 0 8px 25px rgba(106, 141, 255, 0.6);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #ff5252, #ff7575);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(45deg, #00d4aa, #00e6b8);
+            box-shadow: 
+                0 6px 15px rgba(0, 212, 170, 0.4),
+                0 0 20px rgba(0, 230, 184, 0.3);
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(45deg, #00c49a, #00d6a8);
+            box-shadow: 
+                0 8px 25px rgba(0, 212, 170, 0.6),
+                0 0 30px rgba(0, 230, 184, 0.5);
+        }
+        
+        .btn-submit:disabled {
+            background: linear-gradient(45deg, #66d4c4, #88e6d4);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            opacity: 0.7;
+        }
+        
+        #game-screen {
+            padding: 20px;
+        }
+        
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(45deg, #1e3c72, #2a5298, #1e3c72);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(100, 180, 255, 0.3);
+            border: 2px solid rgba(100, 180, 255, 0.4);
+        }
+        
+        .level-indicator {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 0 10px rgba(100, 180, 255, 0.8);
+        }
+        
+        .timer-display {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.4rem;
+            min-width: 120px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 2px solid rgba(255, 204, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+        }
+        
+        .timer-warning {
+            animation: pulse-warning 0.5s infinite;
+            background: rgba(255, 107, 107, 0.25) !important;
+            border-color: rgba(255, 107, 107, 0.7) !important;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5) !important;
+        }
+        
+        @keyframes pulse-warning {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 107, 107, 0.7); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+        }
+        
+        .score-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+        
+        .progress-container {
+            background: rgba(30, 50, 90, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(100, 180, 255, 0.4);
+            box-shadow: inset 0 0 15px rgba(0, 30, 80, 0.5);
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #a0c8ff;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: rgba(20, 40, 80, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(100, 180, 255, 0.3);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4aa, #00e6b8, #4da6ff, #8aafff);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 212, 170, 0.6);
+        }
+        
+        .progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent, rgba(255,255,255,0.2));
+            animation: shine 2s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        #question-container {
+            background: rgba(30, 45, 85, 0.85);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 
+                0 5px 20px rgba(0, 0, 0, 0.3),
+                0 0 25px rgba(100, 180, 255, 0.2);
+            border: 3px solid rgba(100, 180, 255, 0.4);
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #e0f0ff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #question-container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(100, 180, 255, 0.1) 0%, transparent 70%);
+            animation: pulse-question 4s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        @keyframes pulse-question {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .option-btn {
+            background: linear-gradient(45deg, rgba(40, 60, 100, 0.8), rgba(30, 50, 90, 0.9));
+            border: 3px solid rgba(100, 180, 255, 0.5);
+            border-radius: 18px;
+            padding: 18px 25px;
+            font-size: 1.3rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 
+                0 3px 10px rgba(0, 0, 0, 0.2),
+                0 0 15px rgba(100, 180, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+            color: #e0f0ff;
+        }
+        
+        .option-btn:hover {
+            transform: translateX(5px);
+            border-color: rgba(150, 200, 255, 0.8);
+            background: linear-gradient(45deg, rgba(50, 75, 120, 0.9), rgba(40, 65, 110, 0.95));
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(100, 180, 255, 0.3);
+        }
+        
+        .option-btn.selected {
+            border-color: #00d4aa;
+            background: linear-gradient(45deg, rgba(0, 212, 170, 0.2), rgba(0, 230, 184, 0.3));
+            box-shadow: 
+                0 0 0 3px rgba(0, 212, 170, 0.3),
+                0 0 25px rgba(0, 212, 170, 0.4);
+            transform: translateX(3px);
+        }
+        
+        .option-btn.correct {
+            background: linear-gradient(45deg, rgba(0, 212, 170, 0.3), rgba(0, 230, 184, 0.4)) !important;
+            border-color: #00d4aa !important;
+            animation: correctAnim 0.4s ease;
+            box-shadow: 0 0 25px rgba(0, 212, 170, 0.6) !important;
+        }
+        
+        .option-btn.incorrect {
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.3), rgba(255, 130, 130, 0.4)) !important;
+            border-color: #ff6b6b !important;
+            animation: shake 0.5s ease;
+            box-shadow: 0 0 25px rgba(255, 107, 107, 0.6) !important;
+        }
+        
+        @keyframes correctAnim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #4a6cf7, #6a8dff);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+            box-shadow: 0 0 10px rgba(74, 108, 247, 0.5);
+        }
+        
+        #feedback {
+            min-height: 30px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.3rem;
+            padding: 10px;
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .feedback-correct {
+            background: rgba(0, 212, 170, 0.2);
+            color: #00e6b8;
+            border: 2px solid rgba(0, 212, 170, 0.5);
+            display: block;
+            animation: popIn 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 212, 170, 0.3);
+        }
+        
+        .feedback-incorrect {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff8e8e;
+            border: 2px solid rgba(255, 107, 107, 0.5);
+            display: block;
+            animation: popIn 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        #action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .level-complete {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .level-complete h2 {
+            color: #fff;
+            font-size: 2.3rem;
+            margin: 15px 0;
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.8);
+        }
+        
+        .score-summary {
+            background: linear-gradient(45deg, rgba(30, 50, 90, 0.8), rgba(40, 65, 110, 0.9));
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 3px dashed rgba(255, 204, 0, 0.5);
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.2);
+        }
+        
+        .score-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin: 10px 0;
+            text-shadow: 
+                0 0 10px rgba(255, 204, 0, 0.9),
+                0 0 20px rgba(255, 153, 0, 0.8);
+            animation: glow-score 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow-score {
+            0%, 100% { text-shadow: 0 0 10px rgba(255,204,0,0.9), 0 0 20px rgba(255,153,0,0.8); }
+            50% { text-shadow: 0 0 15px rgba(255,204,0,1), 0 0 30px rgba(255,153,0,0.9), 0 0 40px rgba(255,255,255,0.7); }
+        }
+        
+        .pass-message {
+            font-size: 1.8rem;
+            color: #00e6b8;
+            font-weight: bold;
+            margin: 15px 0;
+            min-height: 30px;
+            text-shadow: 0 0 10px rgba(0, 230, 184, 0.7);
+        }
+        
+        .fail-message {
+            font-size: 1.8rem;
+            color: #ff8e8e;
+            font-weight: bold;
+            margin: 15px 0;
+            min-height: 30px;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+        }
+        
+        .stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            font-size: 2.5rem;
+        }
+        
+        .star {
+            color: #555;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(100, 100, 100, 0.5);
+        }
+        
+        .star.earned {
+            color: #ffcc00;
+            animation: starPop 0.5s ease;
+            text-shadow: 
+                0 0 10px rgba(255, 204, 0, 0.9),
+                0 0 20px rgba(255, 153, 0, 0.8),
+                0 0 30px rgba(255, 255, 255, 0.7);
+        }
+        
+        @keyframes starPop {
+            0% { transform: scale(0.5) rotate(0deg); opacity: 0.5; }
+            50% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ffd700;
+            border-radius: 0;
+            animation: confetti-fall 5s ease-in-out forwards;
+            z-index: 100;
+            opacity: 0;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        @keyframes confetti-fall {
+            0% { 
+                transform: translateY(-100px) rotate(0deg) scale(0.8); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(1000px) rotate(720deg) scale(1.2); 
+                opacity: 0; 
+            }
+        }
+        
+        .light-decoration {
+            position: absolute;
+            font-size: 2.2rem;
+            opacity: 0.2;
+            z-index: 0;
+            animation: float-light 8s ease-in-out infinite;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            pointer-events: none;
+        }
+        
+        .light-1 { top: 10%; left: 5%; animation-delay: 0s; animation-duration: 10s; }
+        .light-2 { top: 25%; right: 8%; animation-delay: -3s; font-size: 1.8rem; animation-duration: 12s; }
+        .light-3 { bottom: 15%; left: 10%; animation-delay: -6s; font-size: 2.5rem; animation-duration: 9s; }
+        .light-4 { bottom: 30%; right: 5%; animation-delay: -2s; animation-duration: 11s; }
+        .light-5 { top: 45%; left: 3%; animation-delay: -4s; font-size: 1.6rem; animation-duration: 13s; }
+        .light-6 { top: 60%; right: 12%; animation-delay: -7s; font-size: 2rem; animation-duration: 10s; }
+        
+        @keyframes float-light {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg) scale(1); 
+                opacity: 0.2;
+            }
+            25% { 
+                transform: translateY(-20px) rotate(5deg) scale(1.1); 
+                opacity: 0.35;
+            }
+            50% { 
+                transform: translateY(-10px) rotate(-3deg) scale(0.95); 
+                opacity: 0.25;
+            }
+            75% { 
+                transform: translateY(-25px) rotate(8deg) scale(1.05); 
+                opacity: 0.4;
+            }
+        }
+        
+        .topic-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #4a6cf7, #6a8dff);
+            color: white;
+            padding: 6px 18px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            margin: 5px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(74, 108, 247, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .instructions {
+            background: rgba(30, 50, 90, 0.7);
+            border-left: 4px solid #00d4aa;
+            padding: 18px;
+            border-radius: 0 15px 15px 0;
+            margin: 20px 0;
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: #e0f0ff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .instructions ul {
+            padding-left: 25px;
+            margin: 12px 0;
+        }
+        
+        .instructions li {
+            margin: 6px 0;
+            position: relative;
+        }
+        
+        .instructions li::before {
+            content: "✨";
+            position: absolute;
+            left: -20px;
+            color: #ffcc00;
+        }
+        
+        .difficulty-indicator {
+            display: flex;
+            gap: 6px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+        
+        .difficulty-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(100, 180, 255, 0.3);
+            border: 2px solid rgba(150, 200, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-dot.active {
+            background: linear-gradient(45deg, #ffcc00, #ff9900);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 0 10px rgba(255, 204, 0, 0.7),
+                0 0 20px rgba(255, 153, 0, 0.5);
+            transform: scale(1.2);
+        }
+        
+        .final-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .trophy {
+            font-size: 6rem;
+            margin: 20px 0;
+            animation: bounce-trophy 1.8s ease-in-out infinite;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+        }
+        
+        @keyframes bounce-trophy {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(3deg); }
+            75% { transform: translateY(-8px) rotate(-3deg); }
+        }
+        
+        .certificate {
+            background: linear-gradient(135deg, rgba(40, 60, 100, 0.9), rgba(30, 50, 90, 0.95));
+            border: 4px solid rgba(255, 204, 0, 0.7);
+            border-radius: 25px;
+            padding: 30px;
+            margin: 25px 0;
+            position: relative;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.4),
+                0 0 50px rgba(255, 204, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .certificate::before {
+            content: "🏆";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            background: linear-gradient(45deg, #ffcc00, #ff9900);
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 5px 20px rgba(255, 204, 0, 0.6),
+                0 0 30px rgba(255, 153, 0, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            z-index: 2;
+        }
+        
+        .certificate::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: certificate-glow 4s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        @keyframes certificate-glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        
+        .certificate-title {
+            font-size: 2.4rem;
+            color: #ffcc00;
+            margin: 25px 0 15px;
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.8);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .certificate-text {
+            font-size: 1.45rem;
+            margin: 12px 0;
+            line-height: 1.5;
+            color: #e0f0ff;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .player-name {
+            font-weight: 800;
+            color: #00e6b8;
+            font-size: 1.8rem;
+            text-shadow: 0 0 12px rgba(0, 230, 184, 0.7);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .restart-btn {
+            margin-top: 20px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Light beam animation for correct answers */
+        .light-beam {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.9), transparent);
+            border-radius: 2px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(100, 180, 255, 0.7);
+            z-index: 1000;
+            animation: beam-down 1.5s ease-out forwards;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+        
+        @keyframes beam-down {
+            0% { height: 0; opacity: 1; }
+            100% { height: 100vh; opacity: 0; }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #game-container { padding: 15px; border-radius: 20px; }
+            h1 { font-size: 2.4rem; }
+            .subtitle { font-size: 1.3rem; }
+            .light-illustration { width: 160px; height: 160px; }
+            .light-illustration::before { font-size: 70px; }
+            .btn { padding: 14px 35px; font-size: 1.25rem; margin: 10px 5px; }
+            .btn-large { padding: 16px 45px; font-size: 1.45rem; }
+            .header-bar { flex-direction: column; gap: 12px; padding: 12px 20px; }
+            #question-container { font-size: 1.35rem; padding: 20px 15px; min-height: 160px; }
+            .option-btn { padding: 15px 20px; font-size: 1.25rem; }
+            .score-value { font-size: 2.9rem; }
+            #action-buttons { flex-direction: column; }
+            .btn { width: 100%; margin: 8px 0; }
+            .certificate { padding: 25px 20px; }
+            .certificate-title { font-size: 2rem; }
+            .certificate-text { font-size: 1.3rem; }
+        }
+        
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            #game-container { padding: 12px; border-radius: 18px; }
+            h1 { font-size: 2.1rem; }
+            .subtitle { font-size: 1.2rem; }
+            .light-illustration { width: 140px; height: 140px; }
+            .light-illustration::before { font-size: 60px; }
+            .btn { width: 100%; margin: 8px 0; padding: 14px; font-size: 1.2rem; }
+            .header-bar { padding: 10px 15px; }
+            .timer-display, .score-display, .level-indicator { font-size: 1.25rem; }
+            #question-container { font-size: 1.25rem; padding: 15px; }
+            .option-btn { font-size: 1.2rem; padding: 12px 15px; }
+            .option-letter { width: 28px; height: 28px; font-size: 1rem; }
+            .score-value { font-size: 2.5rem; }
+            .stars-container { font-size: 2.1rem; }
+            .trophy { font-size: 5rem; }
+            .certificate-title { font-size: 1.8rem; }
+            .certificate-text { font-size: 1.2rem; }
+            .player-name { font-size: 1.6rem; }
+        }
+        
+        /* Special effects for level transitions */
+        .level-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(100,180,255,0.7) 40%, rgba(30,50,90,0.95) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: level-transition 1.5s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes level-transition {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(1.5); }
+        }
+        
+        .level-transition-text {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1a1a4a;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+            animation: text-pop 1.5s ease-out;
+        }
+        
+        @keyframes text-pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Decorative light elements -->
+        <div class="light-decoration light-1">✨</div>
+        <div class="light-decoration light-2">💡</div>
+        <div class="light-decoration light-3">🌟</div>
+        <div class="light-decoration light-4">☀️</div>
+        <div class="light-decoration light-5">🔦</div>
+        <div class="light-decoration light-6">🕯️</div>
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="light-illustration"></div>
+            <h1>💡 Light Explorer</h1>
+            <p class="subtitle">A CBC Force & Energy Adventure for Grade 4<br>Discover the magic of light while having fun!</p>
+            
+            <div class="instructions">
+                <strong>🎮 How to Play:</strong>
+                <ul>
+                    <li>Answer 30 questions per level about light and energy</li>
+                    <li>👆 <strong>Select an answer, then click "Submit"</strong></li>
+                    <li>Score at least 80% (24/30) to advance to next level</li>
+                    <li>Beat the 2:30 timer for bonus points!</li>
+                    <li>Collect stars for each level completed</li>
+                    <li>Earn your Light Scientist certificate!</li>
+                </ul>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <span class="topic-badge">☀️ Natural Light Sources</span>
+                <span class="topic-badge">🏠 Home Lighting</span>
+                <span class="topic-badge">🔦 Light Applications</span>
+                <span class="topic-badge">⚡ Energy & Light</span>
+            </div>
+            
+            <div class="difficulty-indicator">
+                <div class="difficulty-dot active"></div>
+                <div class="difficulty-dot"></div>
+                <div class="difficulty-dot"></div>
+                <div class="difficulty-dot"></div>
+                <div class="difficulty-dot"></div>
+            </div>
+            <p style="margin-top: 8px; font-weight: bold; color: #a0c8ff; text-shadow: 0 0 10px rgba(100,180,255,0.7);">5 Exciting Levels • Increasing Challenge</p>
+            
+            <button id="start-btn" class="btn btn-large">🚀 Start Light Adventure!</button>
+            <p style="margin-top: 20px; font-size: 0.95rem; color: #a0c8ff; text-shadow: 0 0 8px rgba(100,180,255,0.5);">
+                Aligned with CBC Grade 4 Science & Technology Curriculum • Force & Energy Strand
+            </p>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="header-bar">
+                <div class="level-indicator">🏆 Level: <span id="level-display">1</span>/5</div>
+                <div class="timer-display">⏱️ <span id="timer">02:30</span></div>
+                <div class="score-display">⭐ Score: <span id="score-display">0</span></div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Question Progress</span>
+                    <span><span id="question-counter">1</span>/30</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div id="question-container">Loading question...</div>
+            
+            <div id="options-container">
+                <!-- Options will be inserted here by JavaScript -->
+            </div>
+            
+            <div id="feedback"></div>
+            
+            <div id="action-buttons">
+                <button id="submit-btn" class="btn btn-submit" style="display: none;">📝 Submit Answer</button>
+                <button id="next-btn" class="btn" style="display: none;">Next Question →</button>
+            </div>
+        </div>
+        
+        <!-- Level Complete Screen -->
+        <div id="level-complete-screen" class="screen">
+            <div class="level-complete">
+                <h2>🎉 Level <span id="completed-level">1</span> Complete!</h2>
+                
+                <div class="score-summary">
+                    <p>Your Score:</p>
+                    <div class="score-value"><span id="level-score">0</span>/30</div>
+                    <p id="percentage-display">0%</p>
+                </div>
+                
+                <div class="stars-container">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                
+                <div id="pass-fail-message" class="pass-message"></div>
+                
+                <div id="level-action-buttons">
+                    <button id="next-level-btn" class="btn btn-large hidden">➡️ Next Level</button>
+                    <button id="retry-level-btn" class="btn btn-large btn-secondary hidden">🔄 Retry Level</button>
+                    <button id="main-menu-btn" class="btn btn-large btn-danger">🏠 Main Menu</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Final Screen -->
+        <div id="final-screen" class="screen">
+            <div class="final-screen">
+                <div class="trophy">🏆</div>
+                <h1>🎉 CONGRATULATIONS! 🎉</h1>
+                <p class="subtitle">You've mastered light and energy!</p>
+                
+                <div class="certificate">
+                    <div class="certificate-title">Certificate of Achievement</div>
+                    <p class="certificate-text">This certifies that</p>
+                    <p class="player-name">Young Light Scientist</p>
+                    <p class="certificate-text">has successfully completed all 5 levels of<br><strong>Light Explorer: CBC Force & Energy Adventure</strong><br>with excellent knowledge of light sources, applications, and energy!</p>
+                    <p style="margin-top: 15px; font-weight: bold; color: #00e6b8; text-shadow: 0 0 10px rgba(0,230,184,0.7); position: relative; z-index: 2;">✨ Expert Light & Energy Specialist ✨</p>
+                </div>
+                
+                <div style="background: rgba(30, 50, 90, 0.8); border-radius: 15px; padding: 20px; margin: 20px 0; border: 2px solid rgba(100, 180, 255, 0.4);">
+                    <p style="font-size: 1.35rem; font-weight: bold; color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.8);">
+                        🌟 Final Score: <span id="final-score">0</span>/150<br>
+                        🌟 Average: <span id="final-percentage">0</span>%
+                    </p>
+                </div>
+                
+                <button id="restart-btn" class="btn btn-large restart-btn">🔄 Play Again</button>
+                <button id="share-btn" class="btn btn-large btn-secondary" style="margin-top: 10px;">📤 Share Achievement</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentLevel: 1,
+            currentQuestion: 0,
+            score: 0,
+            levelScore: 0,
+            totalScore: 0,
+            timer: null,
+            timeRemaining: 150, // 2 minutes 30 seconds per level
+            selectedOption: null,
+            answered: false,
+            levelQuestions: []
+        };
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const levelCompleteScreen = document.getElementById('level-complete-screen');
+        const finalScreen = document.getElementById('final-screen');
+        const startBtn = document.getElementById('start-btn');
+        const nextLevelBtn = document.getElementById('next-level-btn');
+        const retryLevelBtn = document.getElementById('retry-level-btn');
+        const mainMenuBtn = document.getElementById('main-menu-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const questionContainer = document.getElementById('question-container');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const timerDisplay = document.getElementById('timer');
+        const scoreDisplay = document.getElementById('score-display');
+        const levelDisplay = document.getElementById('level-display');
+        const questionCounter = document.getElementById('question-counter');
+        const progressFill = document.getElementById('progress-fill');
+        const levelScoreDisplay = document.getElementById('level-score');
+        const percentageDisplay = document.getElementById('percentage-display');
+        const completedLevelDisplay = document.getElementById('completed-level');
+        const passFailMessage = document.getElementById('pass-fail-message');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const finalPercentageDisplay = document.getElementById('final-percentage');
+
+        // CBC-aligned questions for Grade 4 - 150 questions (30 per level)
+        // Topics: Sources of light, lighting a house, uses of light, applications of light
+        const allQuestions = [
+            // LEVEL 1: Basic sources of light in nature (easiest)
+            { level: 1, question: "Which of these is a natural source of light?", options: ["Electric bulb", "Sun", "Candle", "Torch"], correct: 1, topic: "Sources of light" },
+            { level: 1, question: "What is the main source of light during the day?", options: ["Moon", "Stars", "Sun", "Clouds"], correct: 2, topic: "Sources of light" },
+            { level: 1, question: "Which of these gives light at night in nature?", options: ["Sun", "Moon (reflecting sunlight)", "Clouds", "Mountains"], correct: 1, topic: "Sources of light" },
+            { level: 1, question: "What do we call tiny natural lights we see in the night sky?", options: ["Planets", "Stars", "Clouds", "Birds"], correct: 1, topic: "Sources of light" },
+            { level: 1, question: "Which natural event produces light and sound?", options: ["Rain", "Thunderstorm (lightning)", "Wind", "Fog"], correct: 1, topic: "Sources of light" },
+            { level: 1, question: "What do fireflies produce to attract mates?", options: ["Sound", "Light", "Heat only", "Water"], correct: 1, topic: "Sources of light" },
+            { level: 1, question: "Which of these is NOT a natural source of light?", options: ["Sun", "Fire from lightning", "Glowing mushrooms", "Electric lamp"], correct: 3, topic: "Sources of light" },
+            { level: 1, question: "Why can we see the moon at night?", options: ["It produces its own light", "It reflects light from the sun", "It is made of light", "It absorbs all light"], correct: 1, topic: "Sources of light" },
+            { level: 1, question: "What is the closest star to Earth?", options: ["Moon", "Mars", "Sun", "Venus"], correct: 2, topic: "Sources of light" },
+            { level: 1, question: "Which of these helps us see in the dark without electricity?", options: ["Mirror", "Candle or lantern", "Glass", "Plastic bottle"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 1, question: "What is the simplest way to light a traditional house?", options: ["Solar panels", "Candles or oil lamps", "Electric bulbs", "LED strips"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 1, question: "Which of these is a modern way to light a house?", options: ["Firewood", "Kerosene lamp", "Electric bulb", "Candle"], correct: 2, topic: "Ways of lighting a house" },
+            { level: 1, question: "Why do we need light in our houses?", options: ["To make noise", "To see clearly and do activities safely", "To cook food only", "To grow plants inside"], correct: 1, topic: "Uses of light" },
+            { level: 1, question: "Which activity needs good lighting?", options: ["Sleeping", "Reading a book", "Dreaming", "Listening to music"], correct: 1, topic: "Uses of light" },
+            { level: 1, question: "What do we use light for at night?", options: ["To make it darker", "To see our way and stay safe", "To hide things", "To cool the room"], correct: 1, topic: "Uses of light" },
+            { level: 1, question: "Which of these is a use of light in daily life?", options: ["Making food taste better", "Helping us see to walk safely", "Changing the weather", "Growing hair faster"], correct: 1, topic: "Uses of light" },
+            { level: 1, question: "Why do street lights turn on at night?", options: ["To use more electricity", "To help people see and stay safe", "To attract animals", "To make the sky brighter"], correct: 1, topic: "Applications of light" },
+            { level: 1, question: "What do car headlights help drivers do?", options: ["Drive faster only", "See the road clearly at night or in fog", "Make the car heavier", "Use more fuel"], correct: 1, topic: "Applications of light" },
+            { level: 1, question: "Which of these uses light to show time?", options: ["Radio", "Clock with light display", "Fan", "Chair"], correct: 1, topic: "Applications of light" },
+            { level: 1, question: "What is a torch used for?", options: ["Cooking food", "Providing portable light in dark places", "Cleaning floors", "Watering plants"], correct: 1, topic: "Applications of light" },
+            { level: 1, question: "Why do we use light in hospitals?", options: ["To make patients sleepy", "To help doctors see clearly during treatment", "To use more electricity", "To make rooms colder"], correct: 1, topic: "Applications of light" },
+            { level: 1, question: "Which of these is a safety use of light?", options: ["Decorating a party", "Warning lights on roads or bicycles", "Taking photos", "Watching TV"], correct: 1, topic: "Applications of light" },
+            { level: 1, question: "What do traffic lights use light for?", options: ["Making noise", "Controlling vehicle and pedestrian movement safely", "Growing plants", "Charging phones"], correct: 1, topic: "Applications of light" },
+            { level: 1, question: "Why do we need light in classrooms?", options: ["To make students tired", "To help students see books and boards clearly", "To use more energy", "To keep windows closed"], correct: 1, topic: "Uses of light" },
+            { level: 1, question: "Which of these is a traditional source of light in rural homes?", options: ["Solar lamp", "Kerosene lamp or candle", "LED bulb", "Fluorescent tube"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 1, question: "What happens when there is no light in a room?", options: ["We see better", "We cannot see objects clearly", "Objects become colorful", "We hear better"], correct: 1, topic: "Uses of light" },
+            { level: 1, question: "Which natural source of light helps plants grow?", options: ["Moonlight", "Sunlight", "Starlight", "Firefly light"], correct: 1, topic: "Sources of light" },
+            { level: 1, question: "Why do we open curtains during the day?", options: ["To keep dust out", "To let natural sunlight enter and light the room", "To make rooms darker", "To block sound"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 1, question: "Which of these is a benefit of natural light?", options: ["It uses electricity", "It saves energy and is free", "It makes rooms hotter always", "It only works at night"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 1, question: "What do we call the study of light?", options: ["Biology", "Optics (part of Physics)", "Geography", "History"], correct: 1, topic: "Applications of light" },
+            
+            // LEVEL 2: Slightly more challenging - lighting methods and basic applications
+            { level: 2, question: "Which of these is a renewable source for generating light energy?", options: ["Coal", "Solar power", "Petrol", "Natural gas"], correct: 1, topic: "Sources of light" },
+            { level: 2, question: "What is the main advantage of LED bulbs over traditional bulbs?", options: ["They are heavier", "They use less energy and last longer", "They produce more heat", "They are more expensive to run"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "Which of these helps reduce eye strain when reading?", options: ["Dim light", "Bright, even lighting without glare", "Flickering light", "Colored light only"], correct: 1, topic: "Uses of light" },
+            { level: 2, question: "Why do we use reflectors in torches and car headlights?", options: ["To make them heavier", "To focus and direct the light beam", "To change the color of light", "To reduce battery life"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Which of these is a way to save energy when lighting a house?", options: ["Leaving lights on all day", "Using natural daylight when possible", "Using many bulbs in one room", "Choosing the brightest bulb always"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "What is bioluminescence?", options: ["Light from electric bulbs", "Light produced by living organisms like fireflies", "Light from the sun only", "Light reflected from mirrors"], correct: 1, topic: "Sources of light" },
+            { level: 2, question: "Which of these is a disadvantage of kerosene lamps?", options: ["They are very bright", "They produce smoke and can be a fire hazard", "They use solar energy", "They last forever"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "Why do emergency vehicles use flashing lights?", options: ["To look colorful", "To alert other road users and clear the way quickly", "To use more battery", "To make noise"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "What is the purpose of a light switch?", options: ["To decorate the wall", "To control the flow of electricity to a light", "To measure light intensity", "To change light color"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "Which of these is a use of light in communication?", options: ["Cooking", "Traffic signals and fiber optic cables", "Watering plants", "Building houses"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Why do we use different colors of light in traffic signals?", options: ["To make them look nice", "Red=stop, yellow=caution, green=go for clear communication", "To use more electricity", "To confuse drivers"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "What is a solar lamp?", options: ["A lamp that uses petrol", "A lamp that stores sunlight energy to produce light at night", "A lamp that only works during the day", "A lamp made of glass only"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "Which of these helps plants make food using light?", options: ["Respiration", "Photosynthesis", "Digestion", "Transpiration"], correct: 1, topic: "Uses of light" },
+            { level: 2, question: "Why do photographers use flash lights?", options: ["To make cameras heavier", "To provide extra light for clear photos in dark conditions", "To change photo colors", "To reduce photo quality"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "What is the main energy transformation in an electric bulb?", options: ["Sound to light", "Electrical energy to light and heat", "Chemical to light", "Nuclear to light"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Which of these is a safety feature of modern lighting?", options: ["Exposed wires", "Circuit breakers and proper insulation", "Using water near lights", "Overloading sockets"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "Why do we use light in microscopes?", options: ["To make them heavier", "To illuminate specimens for clear viewing", "To change specimen colors", "To reduce magnification"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Which of these is an example of light helping in agriculture?", options: ["Using darkness to grow crops", "Greenhouses using light to extend growing seasons", "Removing all light from farms", "Using only moonlight for farming"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "What is the purpose of a dimmer switch?", options: ["To turn lights off completely", "To adjust the brightness of lights", "To change light color only", "To increase electricity bills"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "Which of these is a benefit of task lighting?", options: ["It lights the whole house equally", "It provides focused light where needed, saving energy", "It uses more bulbs", "It makes rooms darker"], correct: 1, topic: "Uses of light" },
+            { level: 2, question: "Why do we use light in projectors?", options: ["To make them heavier", "To display images and videos on screens", "To reduce image quality", "To use more electricity unnecessarily"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Which of these is a way light helps in medicine?", options: ["Making patients sleepy", "Laser surgery and diagnostic imaging", "Reducing hospital cleanliness", "Increasing waiting times"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "What is the main source of energy for solar lights?", options: ["Wind", "Sunlight", "Water", "Coal"], correct: 1, topic: "Sources of light" },
+            { level: 2, question: "Which of these is a disadvantage of incandescent bulbs?", options: ["They are very energy efficient", "They waste energy as heat and have short lifespans", "They produce no light", "They are too bright"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "Why do we use light in barcode scanners?", options: ["To make scanners heavier", "To read product information quickly and accurately", "To change product prices", "To reduce scanning speed"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Which of these helps conserve energy in home lighting?", options: ["Using incandescent bulbs everywhere", "Choosing energy-efficient LEDs and turning off unused lights", "Leaving lights on 24/7", "Using the brightest bulbs possible"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 2, question: "What is the role of light in photosynthesis?", options: ["It is not needed", "It provides energy to convert CO2 and water into glucose and oxygen", "It destroys plant cells", "It only affects flower color"], correct: 1, topic: "Uses of light" },
+            { level: 2, question: "Which of these is a use of light in entertainment?", options: ["Cooking shows only", "Stage lighting, projectors, and screens in theaters", "Silent movies only", "Radio programs"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Why do we use light in endoscopes?", options: ["To make them heavier", "To illuminate internal body parts for medical examination", "To reduce image clarity", "To increase procedure time"], correct: 1, topic: "Applications of light" },
+            { level: 2, question: "Which of these is a characteristic of good task lighting?", options: ["Causes glare and shadows", "Provides even, shadow-free light on the work area", "Is always very bright", "Uses only natural light"], correct: 1, topic: "Uses of light" },
+            
+            // LEVEL 3: Intermediate - applications and energy concepts
+            { level: 3, question: "In fiber optic communication, how is information transmitted?", options: ["Through electrical wires only", "As pulses of light through thin glass fibers", "Through sound waves", "Through radio waves only"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these best describes how solar panels generate electricity for lighting?", options: ["They burn fuel to produce light", "They convert sunlight directly into electrical energy using photovoltaic cells", "They store moonlight for later use", "They reflect sunlight to create heat"], correct: 1, topic: "Sources of light" },
+            { level: 3, question: "What is the main reason for using motion-sensor lights in homes?", options: ["To make lights flash constantly", "To save energy by lighting areas only when needed", "To use more electricity", "To reduce light quality"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "How does light help in water purification systems?", options: ["It makes water taste better", "UV light kills harmful microorganisms without chemicals", "It changes water color", "It adds minerals to water"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these is an example of light energy being converted to chemical energy?", options: ["A bulb lighting up", "Photosynthesis in plants storing energy in glucose", "A mirror reflecting light", "A prism splitting light"], correct: 1, topic: "Uses of light" },
+            { level: 3, question: "Why are LED lights preferred for street lighting in many cities?", options: ["They are the cheapest to buy initially", "They are energy-efficient, long-lasting, and provide good visibility", "They produce more heat", "They require frequent replacement"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "What is the purpose of anti-reflective coatings on glasses and camera lenses?", options: ["To make them heavier", "To reduce glare and improve light transmission for clearer vision/images", "To change light color", "To increase reflections"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these demonstrates light traveling in straight lines?", options: ["Light bending around corners easily", "Shadows having sharp edges", "Light spreading equally in all directions from a point", "Light changing color in air"], correct: 1, topic: "Properties of light" },
+            { level: 3, question: "How do light-dependent resistors (LDRs) work in automatic street lights?", options: ["They produce light when dark", "Their electrical resistance changes with light intensity, triggering circuits", "They store light energy", "They reflect all light"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these is a benefit of using natural light in building design?", options: ["It increases electricity bills", "It reduces energy consumption and improves well-being", "It makes buildings darker", "It only works in winter"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "What is the main advantage of using lasers in surgery?", options: ["They are less precise", "They allow precise cutting with minimal damage to surrounding tissue", "They always cause more bleeding", "They work only on skin"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these explains why the sky appears blue?", options: ["The sky is painted blue", "Shorter blue wavelengths of sunlight scatter more in the atmosphere", "Clouds are always blue", "The ocean reflects blue light only"], correct: 1, topic: "Properties of light" },
+            { level: 3, question: "How do photovoltaic cells in solar lights store energy for night use?", options: ["They burn fuel at night", "They convert sunlight to electricity that charges a battery for later use", "They store sunlight directly as light", "They use moonlight to generate power"], correct: 1, topic: "Sources of light" },
+            { level: 3, question: "Which of these is a safety application of light in vehicles?", options: ["Decorative interior lights", "Brake lights, turn signals, and headlights for communication and visibility", "Radio displays only", "Air conditioning controls"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "What is the role of light in photosensors used in smartphones?", options: ["To make phones heavier", "To automatically adjust screen brightness based on ambient light", "To change phone colors", "To reduce battery life"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these best describes energy efficiency in lighting?", options: ["Using the most powerful bulb available", "Getting the most useful light output per unit of electrical energy input", "Using lights only at night", "Choosing the cheapest bulbs"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "How does light help in barcode and QR code technology?", options: ["It makes codes colorful", "Sensors detect reflected light patterns to decode information quickly", "It erases codes", "It changes code sizes"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these is an example of light being used for measurement?", options: ["Using light to cook food", "Laser distance measurers and light meters in photography", "Using light to make noise", "Using light to change weight"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Why do we use diffusers in lighting fixtures?", options: ["To make lights brighter", "To scatter light evenly and reduce harsh shadows/glare", "To focus light to a point", "To change light color permanently"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "What is the main energy transformation in a solar-powered garden light?", options: ["Chemical to light", "Solar (light) to electrical to light", "Electrical to chemical", "Heat to light"], correct: 1, topic: "Sources of light" },
+            { level: 3, question: "Which of these is a benefit of using task lighting combined with ambient lighting?", options: ["It uses more energy", "It provides flexibility, saves energy, and reduces eye strain", "It makes rooms darker", "It requires more switches"], correct: 1, topic: "Uses of light" },
+            { level: 3, question: "How do light pipes or tubular daylighting devices work?", options: ["They burn fuel to produce light", "They capture sunlight on the roof and channel it through reflective tubes to interior spaces", "They store moonlight", "They reflect artificial light outside"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "Which of these demonstrates the particle nature of light?", options: ["Light always traveling in curves", "Photoelectric effect where light ejects electrons from metals", "Light never having energy", "Light only behaving as a wave"], correct: 1, topic: "Properties of light" },
+            { level: 3, question: "What is the purpose of using specific light wavelengths in plant growth lamps?", options: ["To make plants colorful", "To provide optimal light spectra for photosynthesis and growth stages", "To reduce plant growth", "To change plant species"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these is a way light helps in environmental monitoring?", options: ["Light cannot monitor environment", "Satellite sensors using reflected light to track deforestation, pollution, and climate changes", "Using darkness to measure air quality", "Light only for photography"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Why are smart lighting systems considered energy-efficient?", options: ["They always use maximum brightness", "They adjust lighting based on occupancy, daylight, and schedules to minimize waste", "They require manual control only", "They use older bulb technology"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "What is the main advantage of OLED lighting over traditional lighting?", options: ["They are heavier", "They provide uniform, glare-free light from thin, flexible panels with high efficiency", "They produce more heat", "They last shorter"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 3, question: "Which of these explains how we see colors?", options: ["Objects create their own colors", "Objects absorb some light wavelengths and reflect others; our eyes detect the reflected wavelengths as color", "Light has no color", "Colors only exist in our imagination"], correct: 1, topic: "Properties of light" },
+            { level: 3, question: "How do light-based sensors help in automatic doors?", options: ["They make doors heavier", "They detect changes in light patterns when a person approaches, triggering the door mechanism", "They only work with sound", "They require manual activation"], correct: 1, topic: "Applications of light" },
+            { level: 3, question: "Which of these is a sustainable practice for home lighting?", options: ["Using incandescent bulbs everywhere", "Combining energy-efficient LEDs, natural daylight, and smart controls", "Leaving lights on when not needed", "Choosing bulbs based only on initial cost"], correct: 1, topic: "Ways of lighting a house" },
+            
+            // LEVEL 4: Advanced applications and critical thinking
+            { level: 4, question: "In a solar-powered community lighting project, which factor is MOST important for reliability?", options: ["Using the cheapest panels", "Proper system sizing, battery storage for cloudy days, and maintenance planning", "Installing lights only in sunny areas", "Using only one large panel for the whole community"], correct: 1, topic: "Sources of light" },
+            { level: 4, question: "A student designs an experiment to compare energy efficiency of different bulbs. Which measurement is MOST relevant?", options: ["Bulb weight", "Light output (lumens) per watt of electrical power consumed", "Bulb color only", "How hot the bulb gets to touch"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "Which scenario BEST demonstrates the wave-particle duality of light?", options: ["Light only traveling in straight lines", "Light showing interference patterns (wave) and ejecting electrons in photoelectric effect (particle)", "Light always being visible", "Light never changing speed"], correct: 1, topic: "Properties of light" },
+            { level: 4, question: "How might understanding light absorption and reflection help in designing energy-efficient buildings?", options: ["It doesn't help", "Using materials that reflect summer heat but absorb winter sunlight can reduce heating/cooling energy needs", "All materials behave the same with light", "Light doesn't affect building temperature"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Which approach BEST addresses both lighting needs and energy conservation in a school?", options: ["Using only the brightest bulbs in all rooms", "Combining daylight harvesting, occupancy sensors, task lighting, and efficient LEDs with student awareness programs", "Turning off all lights during the day", "Using only natural light regardless of weather"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "In fiber optic communication, why is total internal reflection crucial?", options: ["It makes fibers heavier", "It allows light signals to travel long distances through the fiber core with minimal loss", "It changes signal color", "It increases signal speed beyond light speed"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Which factor is MOST critical when selecting lighting for a hospital operating room?", options: ["Lowest cost bulbs", "High color rendering index (CRI), shadow reduction, and reliability for accurate medical procedures", "Brightest possible light regardless of quality", "Using only natural light"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "How does the concept of 'light pollution' relate to responsible lighting design?", options: ["Light pollution doesn't exist", "Excessive or misdirected artificial light wastes energy, disrupts ecosystems, and obscures stars; good design uses shielded, appropriate-intensity fixtures", "More light is always better", "Light pollution only affects cities"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Which experimental design would BEST test how light color affects plant growth?", options: ["Using one plant under white light", "Multiple identical plants under different colored lights (red, blue, green, white) with controlled conditions, measuring growth over time", "Using different plant species for each color", "Only measuring leaf color"], correct: 1, topic: "Uses of light" },
+            { level: 4, question: "In a community transitioning from kerosene lamps to solar lights, which consideration is MOST important for success?", options: ["Choosing the most expensive system", "Community training, maintenance plans, appropriate technology for local needs, and affordable financing", "Installing lights only in wealthy households", "Using only imported technology"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "How might understanding light scattering help explain why sunsets are red?", options: ["Sunsets are always red", "At sunset, sunlight travels through more atmosphere; shorter blue wavelengths scatter away, leaving longer red/orange wavelengths to reach our eyes", "The sun changes color", "Clouds are always red at sunset"], correct: 1, topic: "Properties of light" },
+            { level: 4, question: "Which approach demonstrates systems thinking in designing a sustainable lighting solution for a rural clinic?", options: ["Focusing only on bulb cost", "Considering energy source (solar), storage, efficient fixtures, maintenance capacity, user needs, and environmental impact as interconnected parts", "Using only grid electricity regardless of reliability", "Choosing lights based only on brightness"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Why is the spectral power distribution of light sources important in applications like art galleries or retail?", options: ["All light looks the same", "Different spectra affect how colors appear; high-CRI lighting ensures accurate color perception for art display or product presentation", "Color doesn't matter for lighting", "Only brightness matters"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Which scenario BEST illustrates the trade-off between light quality and energy efficiency?", options: ["All efficient lights have poor quality", "Some very efficient LEDs may have lower CRI; optimal solutions balance efficiency with adequate color quality for the task", "Quality and efficiency are unrelated", "Only expensive lights are efficient"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "How do adaptive lighting systems in smart cities contribute to sustainability?", options: ["They always use maximum light", "They adjust street lighting based on traffic, weather, and time to save energy while maintaining safety", "They require manual control", "They only work during daytime"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Which factor is MOST important when evaluating the true cost of a lighting system?", options: ["Purchase price only", "Total cost of ownership: purchase price + energy costs + maintenance + lifespan", "Bulb weight", "How bright it looks initially"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "How might understanding human circadian rhythms inform lighting design in homes and workplaces?", options: ["Light doesn't affect humans", "Light exposure timing and spectrum influence sleep-wake cycles; tunable white lighting can support health and productivity", "All light has the same effect", "Only darkness affects sleep"], correct: 1, topic: "Uses of light" },
+            { level: 4, question: "Which approach BEST addresses equity in access to modern lighting?", options: ["Focusing only on urban areas", "Designing affordable, maintainable, appropriate-technology solutions with community involvement for underserved areas", "Using only the most advanced technology everywhere", "Waiting for market forces to solve access"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "In designing lighting for a classroom, which combination BEST supports learning?", options: ["Only bright overhead lights", "Layered lighting: adequate ambient light, adjustable task lighting, daylight integration, and glare control to reduce eye strain and support focus", "Only natural light regardless of weather", "Dim lighting to reduce distraction"], correct: 1, topic: "Uses of light" },
+            { level: 4, question: "How does the principle of 'right light, right place, right time' apply to sustainable lighting?", options: ["It doesn't apply", "Using appropriate light intensity, spectrum, and timing for each task/location minimizes energy waste and negative impacts while meeting needs", "More light is always better", "Lighting should be uniform everywhere"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "Which experimental result would BEST support that light intensity affects photosynthesis rate?", options: ["All plants grow the same under any light", "Plants under higher (but not excessive) light intensity show higher oxygen production or growth up to a saturation point", "Plants grow better in darkness", "Light intensity only affects flower color"], correct: 1, topic: "Uses of light" },
+            { level: 4, question: "How might understanding light-matter interactions help in developing new solar cell technologies?", options: ["Light doesn't interact with matter", "Researching how different materials absorb, reflect, or transmit light can lead to more efficient photovoltaic materials and cell designs", "All materials absorb light equally", "Solar cells don't use light"], correct: 1, topic: "Sources of light" },
+            { level: 4, question: "Which approach demonstrates precautionary principle in adopting new lighting technologies?", options: ["Adopting all new technologies immediately", "Evaluating potential benefits and risks (e.g., blue light effects, e-waste) before widespread deployment, with monitoring and adaptive management", "Rejecting all new technologies", "Only using traditional technologies"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "How does the concept of 'embodied energy' relate to sustainable lighting choices?", options: ["Embodied energy doesn't matter", "The total energy used to produce, transport, install, and dispose of lighting products should be considered alongside operational energy for true sustainability", "Only operational energy matters", "Embodied energy is always negligible"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "Which statement BEST reflects a holistic view of lighting in human-centered design?", options: ["Lighting is only about visibility", "Effective lighting considers visual performance, comfort, health, aesthetics, energy use, and environmental impact as interconnected factors", "Brightness is the only important factor", "Lighting doesn't affect well-being"], correct: 1, topic: "Uses of light" },
+            { level: 4, question: "In a resource-constrained setting, which lighting solution BEST balances immediate needs and long-term sustainability?", options: ["Most expensive high-tech solution", "Appropriate technology: efficient, durable, maintainable with local capacity, affordable lifecycle cost, and community ownership", "Cheapest option regardless of efficiency or lifespan", "Waiting for external funding for perfect solution"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "How might understanding light polarization be useful in practical applications?", options: ["Polarization doesn't have uses", "Polarized sunglasses reduce glare; LCD screens use polarization; scientific instruments use it for material analysis", "Polarization only matters in labs", "All light is polarized"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Which approach BEST integrates indigenous knowledge and modern science in sustainable lighting solutions?", options: ["Ignoring traditional practices", "Respectfully collaborating with communities to combine local materials, practices, and needs with efficient technologies for culturally appropriate, sustainable solutions", "Only using imported high-tech solutions", "Assuming traditional knowledge is outdated"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 4, question: "How does the concept of 'light as a service' (rather than selling bulbs) promote sustainability?", options: ["It doesn't promote sustainability", "Providers maintain efficient systems and are incentivized to minimize energy use and waste, while customers pay for light output, not hardware", "It increases product waste", "It only benefits manufacturers"], correct: 1, topic: "Applications of light" },
+            { level: 4, question: "Which research question BEST exemplifies interdisciplinary study of light for sustainability?", options: ["What color is sunlight?", "How can we co-design with communities to develop lighting solutions that improve health, education, and livelihoods while minimizing environmental impact and promoting equity?", "How many lumens does a candle produce?", "What is the speed of light?"], correct: 1, topic: "Applications of light" },
+            
+            // LEVEL 5: Critical thinking, synthesis, and future-oriented questions
+            { level: 5, question: "In designing a net-zero energy community, how should lighting be integrated into the overall energy strategy?", options: ["Lighting is separate from energy strategy", "Lighting should use ultra-efficient fixtures, smart controls, daylight integration, and be powered by on-site renewables with storage, minimizing grid dependence", "Use only grid electricity with efficient bulbs", "Focus only on reducing lighting use"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 5, question: "Which approach BEST addresses the challenge of providing quality lighting while minimizing light pollution and ecological disruption?", options: ["Using the brightest lights possible everywhere", "Implementing dark-sky principles: shielded fixtures, appropriate intensity/color, timers, and community education to protect ecosystems and human health while meeting needs", "Removing all outdoor lighting", "Using only white light regardless of spectrum"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "How might advances in quantum dot or perovskite solar cells transform sustainable lighting access?", options: ["They won't transform anything", "Higher efficiency, lower cost, flexible solar cells could enable affordable, high-performance solar lighting for remote areas and integrated building applications", "They only work in laboratories", "They increase solar panel weight"], correct: 1, topic: "Sources of light" },
+            { level: 5, question: "Which statement BEST reflects a systems view of light in the context of planetary boundaries?", options: ["Lighting has no planetary impact", "Lighting choices affect climate change (energy use), biodiversity (light pollution), and resource use; sustainable lighting operates within ecological limits while meeting human needs", "Only energy use matters for lighting", "Planetary boundaries don't apply to technology"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "In a future with advanced AI and IoT, how could lighting systems become more adaptive and human-centered?", options: ["AI makes lighting less adaptable", "Context-aware systems could learn preferences, adjust to circadian needs, optimize energy use in real-time, and integrate with health/well-being monitoring", "AI only controls brightness", "Human preferences don't matter for lighting"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "Which approach BEST demonstrates intergenerational equity in lighting infrastructure planning?", options: ["Focusing only on short-term cost savings", "Choosing durable, maintainable, upgradable systems with low lifecycle environmental impact so future generations inherit flexible, sustainable infrastructure", "Using the cheapest materials regardless of lifespan", "Planning only for current technology"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 5, question: "How might understanding light-matter interactions at the nanoscale lead to breakthroughs in lighting technology?", options: ["Nanoscale doesn't affect light", "Nanostructures could enable ultra-efficient LEDs, novel light sources, advanced solar cells, and smart materials that dynamically control light for energy savings", "Nanotechnology only works for medicine", "Light behaves the same at all scales"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "Which scenario BEST illustrates the precautionary principle in deploying new light-based technologies (e.g., intense blue-rich LEDs)?", options: ["Deploy first, study later", "Conducting thorough research on potential health/ecological impacts, implementing monitoring, and adapting designs based on evidence before widespread adoption", "Rejecting all new technologies", "Assuming all new technologies are safe"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "How could lighting design contribute to climate change adaptation in vulnerable communities?", options: ["Lighting doesn't help adaptation", "Resilient, renewable-powered lighting supports emergency response, extends productive hours, improves safety during extreme weather, and reduces dependence on vulnerable grid infrastructure", "Only grid lighting is reliable", "Adaptation doesn't need lighting"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "Which approach BEST integrates circular economy principles into lighting product design and use?", options: ["Design for disposal", "Designing for durability, repairability, upgradability, and material recovery; implementing take-back systems to minimize waste and resource extraction", "Using only virgin materials", "Focusing only on initial performance"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 5, question: "How might understanding human perception of light inform more effective and efficient lighting design?", options: ["Perception doesn't matter", "Designing for visual comfort, task performance, and well-being with appropriate intensity, spectrum, and distribution can achieve goals with less energy than brute-force bright lighting", "Brighter is always better", "Human eyes adapt to any lighting"], correct: 1, topic: "Uses of light" },
+            { level: 5, question: "Which research direction holds MOST promise for breakthroughs in sustainable lighting?", options: ["Only incremental efficiency improvements", "Interdisciplinary research combining materials science, biology, social science, and design to create context-appropriate, human-centered, ecologically integrated lighting solutions", "Focusing only on cost reduction", "Ignoring user needs"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "In a world of increasing energy demands, how can lighting contribute to energy justice?", options: ["Energy justice doesn't relate to lighting", "Ensuring affordable, reliable, sustainable lighting access for all while minimizing environmental burdens on vulnerable communities through inclusive planning and appropriate technology", "Focusing only on wealthy communities", "Assuming markets will ensure access"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 5, question: "Which statement BEST captures the essence of 'regenerative lighting design'?", options: ["Lighting that only meets minimum standards", "Design that actively restores ecosystems (e.g., reducing light pollution), enhances human health, and contributes to community resilience beyond just minimizing harm", "Lighting that uses renewable energy only", "Design focused only on aesthetics"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "How might bio-inspired design (biomimicry) lead to innovative lighting solutions?", options: ["Nature doesn't inspire technology", "Studying efficient light production in fireflies, structural color in butterflies, or light-harvesting in plants could inspire ultra-efficient LEDs, novel optical materials, or adaptive lighting systems", "Biomimicry only works for architecture", "All efficient designs are already known"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "Which approach BEST demonstrates transformative learning in lighting education for sustainability?", options: ["Memorizing bulb types", "Engaging learners in critical reflection on lighting's social, environmental, and ethical dimensions; hands-on projects designing context-appropriate solutions; and action for change", "Only lecturing about physics of light", "Avoiding controversial topics"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "In accelerating technological change, why is fostering 'adaptive capacity' in lighting systems and institutions crucial?", options: ["Change is not happening", "Systems with modular design, open standards, learning organizations, and inclusive governance can better navigate uncertainty, incorporate innovations, and shape desirable futures", "Only rigid systems survive", "Adaptation is only needed for biology"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 5, question: "Which statement BEST reflects the 'One Health' perspective linking lighting, human health, and ecosystem health?", options: ["Health domains are separate", "Lighting affects human circadian health, mental well-being, wildlife behavior, and plant ecosystems; integrated policies can optimize outcomes across domains", "Only human health matters", "Lighting has no health impacts"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "How could lighting design contribute to achieving multiple Sustainable Development Goals simultaneously?", options: ["Lighting only relates to energy", "Well-designed lighting can advance SDG 7 (energy), 3 (health), 4 (education), 11 (cities), 13 (climate), 15 (life on land) through integrated, context-appropriate solutions", "SDGs are unrelated to technology", "Only economic goals matter"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "Which evaluation framework BEST assesses lighting solutions for sustainability?", options: ["Cost only", "Multi-criteria assessment: energy use, lifecycle impacts, health effects, equity, cultural appropriateness, resilience, and cost across time and scales", "Brightness only", "Initial purchase price only"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 5, question: "How might understanding light as both a physical phenomenon and a social/cultural construct inform better lighting design?", options: ["Light is only physical", "Recognizing that light has technical properties AND shapes human experience, social interactions, and cultural practices can lead to more holistic, effective, and equitable designs", "Social aspects don't matter for engineering", "Culture is irrelevant to technology"], correct: 1, topic: "Uses of light" },
+            { level: 5, question: "Which approach BEST embodies 'planetary health' in lighting decisions?", options: ["Focusing only on human needs", "Recognizing that human health and civilization depend on thriving natural systems; lighting choices should protect ecosystems, climate stability, and biodiversity while meeting human needs", "Only economic factors matter", "Nature can absorb any impact"], correct: 1, topic: "Applications of light" },
+            { level: 5, question: "In a complex, uncertain future, why is 'robust decision-making' important for lighting infrastructure?", options: ["Uncertainty doesn't exist", "Choosing flexible, adaptable strategies that perform well across multiple plausible futures (e.g., climate scenarios, technology pathways) rather than optimizing for a single prediction", "Only short-term decisions matter", "Predictions are always accurate"], correct: 1, topic: "Ways of lighting a house" },
+            { level: 5, question: "Which statement BEST captures the transformative potential of lighting in sustainable development?", options: ["Lighting is just a utility", "When designed thoughtfully, lighting can be a catalyst for health, education, economic opportunity, environmental protection, and social equity—illuminating pathways to sustainable futures", "Only high-tech solutions matter", "Development doesn't need lighting"], correct: 1, topic: "Applications of light" }
+        ];
+
+        // Event Listeners
+        startBtn.addEventListener('click', startGame);
+        submitBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        nextLevelBtn.addEventListener('click', startNextLevel);
+        retryLevelBtn.addEventListener('click', retryLevel);
+        mainMenuBtn.addEventListener('click', showStartScreen);
+        restartBtn.addEventListener('click', restartGame);
+
+        function startGame() {
+            gameState.currentLevel = 1;
+            gameState.totalScore = 0;
+            showScreen(gameScreen);
+            loadLevel();
+        }
+
+        function loadLevel() {
+            // Filter questions for current level
+            gameState.levelQuestions = allQuestions.filter(q => q.level === gameState.currentLevel);
+            // Shuffle questions
+            gameState.levelQuestions = shuffleArray(gameState.levelQuestions);
+            
+            gameState.currentQuestion = 0;
+            gameState.levelScore = 0;
+            gameState.timeRemaining = 150; // 2:30 per level
+            gameState.answered = false;
+            
+            // Update UI
+            levelDisplay.textContent = gameState.currentLevel;
+            updateTimerDisplay();
+            updateScoreDisplay();
+            updateProgress();
+            
+            // Start timer
+            if (gameState.timer) clearInterval(gameState.timer);
+            gameState.timer = setInterval(updateTimer, 1000);
+            
+            // Load first question
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (gameState.currentQuestion >= gameState.levelQuestions.length) {
+                endLevel();
+                return;
+            }
+            
+            const q = gameState.levelQuestions[gameState.currentQuestion];
+            questionContainer.textContent = q.question;
+            optionsContainer.innerHTML = '';
+            feedback.className = '';
+            feedback.style.display = 'none';
+            submitBtn.style.display = 'none';
+            submitBtn.disabled = true;
+            nextBtn.style.display = 'none';
+            gameState.answered = false;
+            gameState.selectedOption = null;
+            
+            // Update question counter and progress
+            questionCounter.textContent = gameState.currentQuestion + 1;
+            updateProgress();
+            
+            // Create option buttons
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span class="option-letter">${String.fromCharCode(65 + index)}</span> ${option}`;
+                btn.addEventListener('click', () => selectOption(index, btn));
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(index, btn) {
+            if (gameState.answered) return;
+            
+            // Deselect previous
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            
+            // Select current
+            btn.classList.add('selected');
+            gameState.selectedOption = index;
+            submitBtn.style.display = 'inline-block';
+            submitBtn.disabled = false;
+        }
+
+        function checkAnswer() {
+            if (gameState.answered || gameState.selectedOption === null) return;
+            
+            gameState.answered = true;
+            const q = gameState.levelQuestions[gameState.currentQuestion];
+            const isCorrect = gameState.selectedOption === q.correct;
+            
+            // Show feedback
+            feedback.style.display = 'block';
+            if (isCorrect) {
+                feedback.textContent = '✅ Excellent! That\'s correct!';
+                feedback.className = 'feedback-correct';
+                gameState.levelScore++;
+                gameState.totalScore++;
+                
+                // Highlight correct answer with light beam effect
+                document.querySelectorAll('.option-btn')[q.correct].classList.add('correct');
+                createLightBeam();
+            } else {
+                feedback.textContent = `❌ Not quite. The correct answer is: ${q.options[q.correct]}`;
+                feedback.className = 'feedback-incorrect';
+                
+                // Highlight selected (wrong) and correct answers
+                document.querySelectorAll('.option-btn')[gameState.selectedOption].classList.add('incorrect');
+                document.querySelectorAll('.option-btn')[q.correct].classList.add('correct');
+            }
+            
+            // Update score display
+            updateScoreDisplay();
+            
+            // Hide submit, show next button
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-block';
+            
+            // Disable all option buttons
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.style.cursor = 'not-allowed';
+            });
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            if (gameState.currentQuestion < gameState.levelQuestions.length) {
+                loadQuestion();
+            } else {
+                endLevel();
+            }
+        }
+
+        function updateTimer() {
+            gameState.timeRemaining--;
+            updateTimerDisplay();
+            
+            // Warning when time is low
+            if (gameState.timeRemaining <= 30) {
+                timerDisplay.classList.add('timer-warning');
+            }
+            
+            // Time's up
+            if (gameState.timeRemaining <= 0) {
+                clearInterval(gameState.timer);
+                endLevel();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(gameState.timeRemaining / 60);
+            const secs = gameState.timeRemaining % 60;
+            timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = gameState.totalScore;
+        }
+
+        function updateProgress() {
+            const progress = ((gameState.currentQuestion) / 30) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        function endLevel() {
+            clearInterval(gameState.timer);
+            
+            // Calculate percentage
+            const percentage = Math.round((gameState.levelScore / 30) * 100);
+            
+            // Update level complete screen
+            completedLevelDisplay.textContent = gameState.currentLevel;
+            levelScoreDisplay.textContent = gameState.levelScore;
+            percentageDisplay.textContent = `${percentage}%`;
+            
+            // Show stars based on score
+            const stars = document.querySelectorAll('#level-complete-screen .star');
+            stars.forEach((star, index) => {
+                if (index < Math.ceil(percentage / 33.33)) {
+                    star.classList.add('earned');
+                } else {
+                    star.classList.remove('earned');
+                }
+            });
+            
+            // Show pass/fail message and buttons
+            if (percentage >= 80) {
+                passFailMessage.textContent = '🎉 Amazing! You passed with flying colors!';
+                passFailMessage.className = 'pass-message';
+                nextLevelBtn.classList.remove('hidden');
+                retryLevelBtn.classList.add('hidden');
+                
+                // Create confetti effect
+                createConfetti();
+                
+                // Show level transition effect
+                showLevelTransition();
+            } else {
+                passFailMessage.textContent = '💪 Keep practicing! You need 80% to advance.';
+                passFailMessage.className = 'fail-message';
+                nextLevelBtn.classList.add('hidden');
+                retryLevelBtn.classList.remove('hidden');
+            }
+            
+            showScreen(levelCompleteScreen);
+        }
+
+        function showLevelTransition() {
+            const transition = document.createElement('div');
+            transition.className = 'level-transition';
+            transition.innerHTML = `<div class="level-transition-text">✨ Level ${gameState.currentLevel + 1} Unlocked! ✨</div>`;
+            document.body.appendChild(transition);
+            
+            // Remove after animation
+            setTimeout(() => {
+                transition.remove();
+            }, 1600);
+        }
+
+        function startNextLevel() {
+            if (gameState.currentLevel < 5) {
+                gameState.currentLevel++;
+                showScreen(gameScreen);
+                loadLevel();
+            } else {
+                // Game completed!
+                showFinalScreen();
+            }
+        }
+
+        function retryLevel() {
+            showScreen(gameScreen);
+            loadLevel();
+        }
+
+        function showFinalScreen() {
+            // Calculate final stats
+            const finalPercentage = Math.round((gameState.totalScore / 150) * 100);
+            finalScoreDisplay.textContent = gameState.totalScore;
+            finalPercentageDisplay.textContent = finalPercentage;
+            
+            // Create celebratory confetti
+            for (let i = 0; i < 150; i++) {
+                setTimeout(createConfettiPiece, i * 20);
+            }
+            
+            showScreen(finalScreen);
+        }
+
+        function restartGame() {
+            gameState.currentLevel = 1;
+            gameState.totalScore = 0;
+            showStartScreen();
+        }
+
+        function showStartScreen() {
+            showScreen(startScreen);
+        }
+
+        function showScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            screen.classList.add('active');
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function createConfetti() {
+            const colors = ['#ffcc00', '#ff9900', '#00d4aa', '#4da6ff', '#ff6b6b', '#cc66ff'];
+            const container = document.getElementById('game-container');
+            
+            for (let i = 0; i < 75; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    confetti.style.opacity = Math.random();
+                    container.appendChild(confetti);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, i * 40);
+            }
+        }
+
+        function createConfettiPiece() {
+            const colors = ['#ffcc00', '#ff9900', '#00d4aa', '#4da6ff', '#ff6b6b', '#cc66ff', '#ffffff'];
+            const container = document.getElementById('game-container');
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = `${Math.random() * 100}%`;
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = `${Math.random() * 10 + 5}px`;
+            confetti.style.height = confetti.style.width;
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            confetti.style.opacity = Math.random();
+            confetti.style.animationDuration = `${Math.random() * 3 + 3}s`;
+            container.appendChild(confetti);
+            
+            // Remove after animation
+            setTimeout(() => {
+                confetti.remove();
+            }, 6000);
+        }
+
+        function createLightBeam() {
+            const beam = document.createElement('div');
+            beam.className = 'light-beam';
+            document.body.appendChild(beam);
+            
+            // Remove after animation
+            setTimeout(() => {
+                beam.remove();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

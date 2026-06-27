@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Bobo's World - Grade 1 CBC English | Home, Time & Weather, Environment</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* smooth interface, input remains editable */
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2d6a4f 0%, #1b4d3a 100%);
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 70px 70px 80px 80px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #ffb84d;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #e09d32;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2e241f;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #ffecb3;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #5a3e2e, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            background: #9b4b1f;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .story-area {
+            background: #fff1df;
+            padding: 25px 20px 15px 20px;
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #2c5f8a;
+            border-bottom: 3px dashed #f7d98c;
+            min-height: 130px;
+        }
+
+        .question-area {
+            padding: 25px 20px 20px;
+            background: #fff9ef;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .speaker-btn {
+            background: #2c7a47;
+            border: none;
+            font-size: 1.6rem;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 3px 0 #1a5a34;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speaker-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1a5a34;
+        }
+
+        .narrative-question {
+            background: #f5ebd2;
+            border-radius: 60px;
+            padding: 20px 18px;
+            font-size: 1.6rem;
+            text-align: center;
+            color: #2c4727;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.05);
+            font-weight: bold;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .answer-input-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            flex: 3;
+            min-width: 180px;
+            padding: 16px 20px;
+            font-size: 1.3rem;
+            font-family: inherit;
+            border-radius: 60px;
+            border: 3px solid #c8b27a;
+            background: white;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        #answerInput:focus {
+            border-color: #f3a712;
+            box-shadow: 0 0 0 3px rgba(243,167,18,0.3);
+        }
+
+        .btn-check {
+            background: #f3a712;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c2416;
+            cursor: pointer;
+            transition: 0.1s linear;
+            font-family: inherit;
+            box-shadow: 0 5px 0 #b4621a;
+        }
+
+        .btn-check:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b4621a;
+        }
+
+        .feedback {
+            background: #e9e0cb;
+            border-radius: 50px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            min-height: 85px;
+            font-weight: bold;
+        }
+
+        .next-level-msg {
+            background: #cae3b5;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 550px) {
+            .narrative-question { font-size: 1.3rem; }
+            .story-area { font-size: 1.2rem; }
+            .level-badge, .score-badge, .timer-box { font-size: 0.9rem; padding: 5px 12px; }
+            .btn-check { padding: 10px 18px; font-size: 1.1rem; }
+            .speaker-btn { font-size: 1.3rem; padding: 6px 12px; }
+            #answerInput { font-size: 1rem; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level: 1</div>
+        <div class="score-badge" id="scoreDisplay">Score: 0 / 40</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="story-area" id="storyArea">
+        🏠🌤️🌿 Bobo's Adventure! Learn about Home, Time & Weather, and Our Environment.
+    </div>
+    <div class="question-area">
+        <div class="question-header">
+            <div class="narrative-question" id="questionText">
+                Question will appear here...
+            </div>
+            <button class="speaker-btn" id="speakQuestionBtn">🔊 Read Question</button>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" placeholder="Write your answer here..." autocomplete="off">
+            <button class="btn-check" id="submitBtn">✅ Check Answer</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">
+            🎤 Bobo will help you! Type the correct word. Click speaker to hear the question.
+        </div>
+        <div id="nextLevelMsg" class="next-level-msg"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- ENGLISH VOICE OUTPUT (all feedback in English) ----------
+    function speakEnglish(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Read current question aloud
+    function readCurrentQuestion() {
+        if (!allowAnswer) {
+            speakEnglish("Wait, this question is already answered. Next question coming soon.");
+            return;
+        }
+        const qData = currentQuestions[currentQuestionIndex];
+        if (qData) {
+            speakEnglish(qData.text);
+        } else {
+            speakEnglish("No question at the moment.");
+        }
+    }
+
+    // ---------- QUESTION BANK: HOME, TIME & WEATHER, OUR ENVIRONMENT ----------
+    // Generate 40 unique narrative questions per level (5 levels, each with 40 questions)
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        const topics = ['home', 'timeweather', 'environment'];
+        
+        // HOME vocabulary bank
+        const homeBank = [
+            { q: "The room where you sleep is called a ______.", a: "bedroom" },
+            { q: "You cook food in the ______.", a: "kitchen" },
+            { q: "You sit on a ______ in the living room.", a: "sofa" },
+            { q: "The place where you wash your body is the ______.", a: "bathroom" },
+            { q: "You eat dinner on a ______.", a: "table" },
+            { q: "The top of a house that protects from rain is the ______.", a: "roof" },
+            { q: "A building where a family lives is a ______.", a: "house" },
+            { q: "You open and close the ______ to go inside.", a: "door" },
+            { q: "You look outside through the ______.", a: "window" },
+            { q: "The floor covering that is soft is a ______.", a: "carpet" }
+        ];
+        
+        // TIME & WEATHER vocabulary bank
+        const timeWeatherBank = [
+            { q: "The time of day when the sun rises is ______.", a: "morning" },
+            { q: "When the sun is very high, it is ______.", a: "afternoon" },
+            { q: "The time when the sun goes down is ______.", a: "evening" },
+            { q: "The dark time when we sleep is ______.", a: "night" },
+            { q: "When there is water falling from clouds, it is ______.", a: "rain" },
+            { q: "When the sun shines brightly, it is ______.", a: "sunny" },
+            { q: "When there are many clouds, it is ______.", a: "cloudy" },
+            { q: "The instrument that shows time is a ______.", a: "clock" },
+            { q: "The day after Monday is ______.", a: "tuesday" },
+            { q: "The month when Christmas is celebrated is ______.", a: "december" }
+        ];
+        
+        // OUR ENVIRONMENT vocabulary bank
+        const environmentBank = [
+            { q: "A large area with many trees is a ______.", a: "forest" },
+            { q: "A flowing body of water is a ______.", a: "river" },
+            { q: "A large area of salt water is an ______.", a: "ocean" },
+            { q: "The green plants that cover the ground are ______.", a: "grass" },
+            { q: "The air that moves is called ______.", a: "wind" },
+            { q: "A tall plant with a trunk and leaves is a ______.", a: "tree" },
+            { q: "A beautiful colored part of a plant is a ______.", a: "flower" },
+            { q: "We should keep our environment ______.", a: "clean" },
+            { q: "Animals and plants live in their natural ______.", a: "habitat" },
+            { q: "The planet we live on is called ______.", a: "earth" }
+        ];
+        
+        for (let i = 1; i <= 40; i++) {
+            let topic = topics[(i + level) % 3];
+            let qText = "";
+            let correctAnswer = "";
+            
+            if (topic === 'home') {
+                let idx = (i * level) % homeBank.length;
+                let item = homeBank[idx];
+                qText = item.q;
+                correctAnswer = item.a;
+                if (i % 7 === 0) qText = "The room where you watch TV with family is the ______ room.", correctAnswer = "living";
+                if (i % 9 === 0) qText = "You keep your clothes in a ______.", correctAnswer = "wardrobe";
+            } 
+            else if (topic === 'timeweather') {
+                let idx = (i * (level+1)) % timeWeatherBank.length;
+                let item = timeWeatherBank[idx];
+                qText = item.q;
+                correctAnswer = item.a;
+                if (i % 6 === 0) qText = "When the sky is clear and bright, we say it is ______.", correctAnswer = "sunny";
+                if (i % 8 === 0) qText = "The season with snow and cold is ______.", correctAnswer = "winter";
+            } 
+            else {
+                let idx = (i * (level+2)) % environmentBank.length;
+                let item = environmentBank[idx];
+                qText = item.q;
+                correctAnswer = item.a;
+                if (i % 5 === 0) qText = "We should plant ______ to make the air fresh.", correctAnswer = "trees";
+                if (i % 11 === 0) qText = "A mountain that erupts with lava is a ______.", correctAnswer = "volcano";
+            }
+            questions.push({ text: qText, answer: correctAnswer.trim().toLowerCase() });
+        }
+        return questions.slice(0,40);
+    }
+    
+    // Preload 5 levels
+    const levelsData = {
+        1: generateQuestionsForLevel(1),
+        2: generateQuestionsForLevel(2),
+        3: generateQuestionsForLevel(3),
+        4: generateQuestionsForLevel(4),
+        5: generateQuestionsForLevel(5)
+    };
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let currentQuestions = [...levelsData[1]];
+    let scoreCorrect = 0;
+    let totalQuestionsInLevel = 40;
+    let timerInterval = null;
+    let timeLeft = 40;          // 40 seconds per question
+    let isWaitingForNext = false;
+    let allowAnswer = true;
+    let nextLevelUnlocked = false;
+    
+    // DOM elements
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const storyAreaDiv = document.getElementById('storyArea');
+    const questionTextDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextLevelMsgDiv = document.getElementById('nextLevelMsg');
+    const speakBtn = document.getElementById('speakQuestionBtn');
+    
+    function updateScoreUI() {
+        scoreDisplay.innerText = `Score: ${scoreCorrect} / ${totalQuestionsInLevel}`;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        stopTimer();
+        if (!allowAnswer) return;
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+        timerInterval = setInterval(() => {
+            if (!allowAnswer) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (allowAnswer) {
+                    allowAnswer = false;
+                    timerDisplaySpan.innerText = `⏱️ 0s`;
+                    const correctAns = currentQuestions[currentQuestionIndex].answer;
+                    speakEnglish(`Time is up! The correct answer is ${correctAns}.`);
+                    feedbackMsgDiv.innerHTML = `⏰ Time's up! Correct answer: <strong>${correctAns}</strong>. Moving to next question.`;
+                    moveToNextQuestionAfterDelay();
+                }
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+            }
+        }, 1000);
+    }
+    
+    function moveToNextQuestionAfterDelay() {
+        if (isWaitingForNext) return;
+        isWaitingForNext = true;
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestionsInLevel) {
+                resetForNewQuestion();
+            } else {
+                endOfLevel();
+            }
+        }, 2000);
+    }
+    
+    function resetForNewQuestion() {
+        isWaitingForNext = false;
+        allowAnswer = true;
+        stopTimer();
+        const qData = currentQuestions[currentQuestionIndex];
+        questionTextDiv.innerText = qData.text;
+        answerInput.value = '';
+        feedbackMsgDiv.innerHTML = "🎤 Write your answer! Click speaker to hear the question again.";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answerInput.focus();
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        startTimer();
+        updateStoryNarrative();
+    }
+    
+    function updateStoryNarrative() {
+        let levelDesc = "";
+        if (currentLevel === 1) levelDesc = "Level 1: Home sweet home! Learn about rooms, time, weather, and our planet.";
+        else if (currentLevel === 2) levelDesc = "Level 2: More about houses, the clock, sunny days, and trees.";
+        else if (currentLevel === 3) levelDesc = "Level 3: Bobo needs you! Identify parts of the house, weather words, and nature.";
+        else if (currentLevel === 4) levelDesc = "Level 4: Almost an expert! Answer carefully about environment and time.";
+        else levelDesc = "Level 5: Final challenge! Show you are a Grade 1 champion of Home, Time & Weather, and Environment!";
+        const reqPass = Math.ceil(totalQuestionsInLevel * 0.8);
+        storyAreaDiv.innerHTML = `📘 ${levelDesc} | Question ${currentQuestionIndex+1}/${totalQuestionsInLevel}. Need at least ${reqPass} correct to proceed. ⏱️ 40s each.`;
+    }
+    
+    function endOfLevel() {
+        stopTimer();
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        const required = Math.ceil(totalQuestionsInLevel * 0.8);
+        const passed = (scoreCorrect >= required);
+        
+        if (passed) {
+            if (currentLevel === 5) {
+                feedbackMsgDiv.innerHTML = "🎉🏆 AMAZING! You completed all 5 levels! Bobo gives you a Super Star! 🌟🏆🎉";
+                speakEnglish("Congratulations! You finished all five levels! You are a Grade 1 champion of Home, Time, Weather and Environment!");
+                storyAreaDiv.innerHTML = "🏁 GAME COMPLETE! Bobo is so proud. You know about home, time, weather and nature! 🌿⏰🏠";
+                nextLevelMsgDiv.innerHTML = "✨ YOU WIN! Refresh the page to play again ✨";
+                return;
+            } else {
+                nextLevelUnlocked = true;
+                feedbackMsgDiv.innerHTML = `🎉 You passed! Score: ${scoreCorrect}/${totalQuestionsInLevel} (≥${required}). Moving to Level ${currentLevel+1}! 🎉`;
+                speakEnglish(`Congratulations! You passed level ${currentLevel}. Now moving to level ${currentLevel+1}. Keep going!`);
+                nextLevelMsgDiv.innerHTML = "";
+                const nextBtn = document.createElement('button');
+                nextBtn.innerText = `🔓 Go to Level ${currentLevel+1}`;
+                nextBtn.className = "btn-check";
+                nextBtn.style.background = "#4caf50";
+                nextBtn.style.marginTop = "10px";
+                nextBtn.onclick = () => {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                };
+                nextLevelMsgDiv.appendChild(nextBtn);
+                return;
+            }
+        } else {
+            feedbackMsgDiv.innerHTML = `😭 Oops! You didn't reach 80%. Score: ${scoreCorrect}/${totalQuestionsInLevel}. Need ${required}. Try Level ${currentLevel} again.`;
+            speakEnglish(`Oh no! You need at least 80 percent to proceed. You have ${scoreCorrect} out of ${totalQuestionsInLevel}. Please try level ${currentLevel} again.`);
+            nextLevelMsgDiv.innerHTML = "";
+            const retryBtn = document.createElement('button');
+            retryBtn.innerText = `🔄 Retry Level ${currentLevel}`;
+            retryBtn.className = "btn-check";
+            retryBtn.style.background = "#ff9800";
+            retryBtn.onclick = () => {
+                loadLevel(currentLevel);
+            };
+            nextLevelMsgDiv.appendChild(retryBtn);
+            return;
+        }
+    }
+    
+    function loadLevel(level) {
+        currentLevel = level;
+        currentQuestions = [...levelsData[level]];
+        currentQuestionIndex = 0;
+        scoreCorrect = 0;
+        totalQuestionsInLevel = 40;
+        allowAnswer = true;
+        nextLevelUnlocked = false;
+        isWaitingForNext = false;
+        stopTimer();
+        levelDisplay.innerText = `Level: ${currentLevel}`;
+        updateScoreUI();
+        const firstQ = currentQuestions[0];
+        questionTextDiv.innerText = firstQ.text;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        feedbackMsgDiv.innerHTML = "🎤 Bobo is waiting! Type your answer. Click speaker to hear the question.";
+        nextLevelMsgDiv.innerHTML = "";
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        updateStoryNarrative();
+        startTimer();
+    }
+    
+    function checkAnswer() {
+        if (!allowAnswer) return;
+        const userAnswerRaw = answerInput.value.trim().toLowerCase();
+        if (userAnswerRaw === "") {
+            feedbackMsgDiv.innerHTML = "🔊 Please write an answer! Bobo is waiting.";
+            speakEnglish("Please write your answer.");
+            return;
+        }
+        const currentQ = currentQuestions[currentQuestionIndex];
+        const correctAns = currentQ.answer.toLowerCase();
+        const normalizedUser = userAnswerRaw.replace(/\s+/g, ' ').trim();
+        const normalizedCorrect = correctAns.replace(/\s+/g, ' ').trim();
+        let isCorrect = (normalizedUser === normalizedCorrect);
+        
+        // Kid-friendly forgiving variations
+        if (!isCorrect) {
+            const commonVariants = {
+                "bedroom": ["bed room", "bedroom"],
+                "living": ["living room", "lounge"],
+                "kitchen": ["kitchen room"],
+                "sunny": ["sun", "sunshine"],
+                "rain": ["raining", "rainy"],
+                "tree": ["trees"],
+                "clock": ["watch", "timepiece"],
+                "morning": ["dawn"],
+                "evening": ["dusk"],
+                "clean": ["tidy"]
+            };
+            for (let key in commonVariants) {
+                if (normalizedCorrect === key && commonVariants[key].includes(normalizedUser)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            scoreCorrect++;
+            updateScoreUI();
+            feedbackMsgDiv.innerHTML = `✅ Correct! "${currentQ.answer}" is right! +1 point ✅`;
+            speakEnglish(`Correct! The answer is ${currentQ.answer}. You earned a point!`);
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Not correct. The right answer is: "${currentQ.answer}". Keep learning! ❌`;
+            speakEnglish(`Not correct. The correct answer is ${currentQ.answer}. Don't give up!`);
+        }
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        moveToNextQuestionAfterDelay();
+    }
+    
+    // Event listeners
+    submitBtn.addEventListener('click', checkAnswer);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && allowAnswer) {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    // Initial load
+    loadLevel(1);
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            speakEnglish("Welcome to Bobo's World! Learn about Home, Time and Weather, and Our Environment. You have 40 seconds for each question. Click the speaker to hear the question. Type your answer in the box. Let's begin!");
+        }, 500);
+    });
+</script>
+</body>
+</html>

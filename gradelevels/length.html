@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>📏 Grade 1 Length Explorer | Compare + Measure</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1e2a3a 0%, #0f1724 100%);
+      font-family: 'Nunito', 'Comic Neue', 'Segoe UI Emoji', cursive, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    /* main game container */
+    .master-container {
+      max-width: 560px;
+      width: 100%;
+      background: #FFFEF7;
+      border-radius: 60px 60px 70px 70px;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,220,0.8);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    /* HUD */
+    .game-hud {
+      background: #4DB6AC;
+      padding: 16px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 5px solid #00897B;
+    }
+
+    .hud-badge {
+      background: #00695C;
+      padding: 7px 18px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 800;
+      font-size: 1.2rem;
+      box-shadow: inset 0 -2px 0 #004D40, 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .hud-score {
+      background: #FFB74D;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #3E2723;
+    }
+
+    .timer-panel {
+      background: #1f2f3a;
+      border-radius: 60px;
+      padding: 5px 18px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .timer-digits {
+      background: #000000cc;
+      font-family: monospace;
+      font-size: 1.7rem;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 50px;
+      letter-spacing: 2px;
+    }
+
+    /* progress bar */
+    .progress-section {
+      padding: 16px 22px 6px;
+    }
+    .progress-bg {
+      background: #E0E0E0;
+      border-radius: 25px;
+      height: 12px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #FFA726, #FF9800);
+      width: 0%;
+      height: 100%;
+      border-radius: 25px;
+      transition: width 0.3s ease;
+    }
+    .q-counter {
+      text-align: center;
+      font-weight: 800;
+      color: #5D4037;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    /* question area */
+    .question-area {
+      padding: 18px 22px 16px;
+      text-align: center;
+    }
+
+    .question-card {
+      background: #FFF3E0;
+      border-radius: 56px;
+      padding: 26px 16px;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.02), 0 12px 20px rgba(0,0,0,0.1);
+      border: 3px solid #FFCF9A;
+      margin-bottom: 16px;
+    }
+
+    .question-text {
+      font-size: 1.55rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #3E2723;
+      margin-bottom: 12px;
+    }
+
+    .visual-hint-area {
+      background: #FFECB3;
+      border-radius: 50px;
+      padding: 14px 12px;
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #5D4037;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 85px;
+      transition: 0.2s;
+    }
+
+    /* length comparison styles (merged from both versions) */
+    .length-compare {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 8px 0;
+    }
+    .length-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .length-label {
+      font-weight: 800;
+      min-width: 80px;
+      font-size: 0.95rem;
+      color: #37474F;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .length-bar {
+      height: 32px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      color: white;
+      font-weight: 800;
+      font-size: 0.9rem;
+      transition: width 0.3s ease;
+      background: linear-gradient(90deg, #009688, #26A69A);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .length-bar.short {
+      background: linear-gradient(90deg, #4CAF50, #81C784);
+    }
+
+    /* ruler style */
+    .measure-ruler {
+      width: 90%;
+      height: 70px;
+      position: relative;
+      margin: 8px auto;
+      background: #FFF9C4;
+      border: 3px solid #FBC02D;
+      border-radius: 14px;
+      overflow: visible;
+    }
+    .measure-ruler::before {
+      content: '0  1  2  3  4  5  6  7  8  9  10  11  12';
+      position: absolute;
+      top: 2px;
+      left: 8px;
+      font-size: 0.7rem;
+      color: #B26A00;
+      letter-spacing: 7px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .measure-ruler::after {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #FBC02D;
+      box-shadow: 0 6px #FBC02D, 0 12px #FBC02D, 0 18px #FBC02D, 0 24px #FBC02D;
+    }
+    .measure-obj {
+      position: absolute;
+      top: 12px;
+      height: 32px;
+      border-radius: 10px;
+      border: 2px solid #6D4C41;
+      background: #FFA726;
+    }
+
+    /* action buttons */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 16px 0 10px;
+    }
+    .action-btn {
+      border: none;
+      font-weight: 800;
+      border-radius: 60px;
+      padding: 12px 26px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: 0.06s linear;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+    }
+    .action-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+    }
+    .btn-check {
+      background: #4CAF50;
+      color: white;
+    }
+    .btn-voice {
+      background: #FFB74D;
+      color: #3E2723;
+    }
+    .btn-next {
+      background: #2196F3;
+      color: white;
+    }
+    button:disabled {
+      opacity: 0.6;
+      transform: none;
+      cursor: not-allowed;
+    }
+
+    #studentAnswer {
+      flex: 2;
+      min-width: 180px;
+      font-size: 1.3rem;
+      padding: 14px 20px;
+      border-radius: 60px;
+      border: 3px solid #FFB465;
+      font-family: inherit;
+      text-align: center;
+      font-weight: 700;
+      background: white;
+      outline: none;
+    }
+
+    .feedback-msg {
+      margin: 12px 0 8px;
+      padding: 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    /* level overlay */
+    .level-overlay {
+      background: #FFF8E7;
+      border-radius: 56px;
+      padding: 32px 20px;
+      text-align: center;
+      margin: 16px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    .level-overlay.hide {
+      display: none;
+    }
+    .final-badge {
+      font-size: 4rem;
+    }
+    .stars-reward {
+      font-size: 2.4rem;
+      letter-spacing: 8px;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @media (max-width: 520px) {
+      .question-text { font-size: 1.3rem; }
+      .length-label { min-width: 70px; font-size: 0.85rem; }
+      .length-bar { height: 26px; font-size: 0.8rem; }
+      .action-btn { padding: 8px 20px; font-size: 0.9rem; }
+      #studentAnswer { font-size: 1.1rem; padding: 12px 16px; }
+      .timer-digits { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="master-container" id="appRoot"></div>
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+  (function() {
+    // ----------------------------- SPEECH SETUP -------------------------
+    let synth = window.speechSynthesis;
+    let voiceReady = false;
+    function loadVoices() { try { if(synth?.getVoices) voiceReady = true; } catch(e) {} }
+    if(synth?.onvoiceschanged) synth.onvoiceschanged = loadVoices;
+    setTimeout(loadVoices, 300);
+    function speak(txt) {
+      if(!synth) return;
+      synth.cancel();
+      try {
+        let utterance = new SpeechSynthesisUtterance(txt);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        utterance.pitch = 1.1;
+        synth.speak(utterance);
+      } catch(e) {}
+    }
+
+    // ----------------------------- MERGED QUESTION BANK -----------------
+    // Combined from both "Length Quest" files: topics -> IDENTIFY/LONGER/SHORTER (first) + SAME_AS/MEASURE (second)
+    // We merge into 3 main categories: COMPARE (longer/shorter), SAME_AS, MEASURE (units)
+    // Grade-1 friendly, 30 questions per level, 5 levels, 80% to pass.
+    
+    const OBJECTS = [
+      {n:'Pencil', e:'✏️'}, {n:'Ruler', e:'📏'}, {n:'Crayon', e:'🖍️'}, {n:'Book', e:'📚'},
+      {n:'Stick', e:'🪵'}, {n:'Rope', e:'🪢'}, {n:'Spoon', e:'🥄'}, {n:'Fork', e:'🍴'}
+    ];
+    
+    let globalUsed = new Set();
+    function resetUsed() { globalUsed.clear(); }
+    function norm(str) { return String(str).trim().toLowerCase().replace(/[^\w]/g, ''); }
+    const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+    const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+    const shuffle = (arr) => { for(let i=arr.length-1;i>0;i--){ const j=rand(0,i); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; };
+    
+    // ---------- 1) LONGER / SHORTER (first game style) ----------
+    function genCompareLonger() {
+      let o1 = pick(OBJECTS);
+      let o2 = pick(OBJECTS.filter(x => x.n !== o1.n));
+      let len1 = rand(3, 9);
+      let len2 = rand(3, 9);
+      while(len1 === len2) len2 = len2 === 9 ? 8 : len2+1;
+      const isLonger = len1 > len2;
+      const id = `LONGER_${o1.n}_${o2.n}_${len1}_${len2}`;
+      if(globalUsed.has(id)) return null;
+      globalUsed.add(id);
+      const percent1 = Math.min(90, len1 * 9);
+      const percent2 = Math.min(90, len2 * 9);
+      return {
+        text: `Which is longer, the ${o1.n} or the ${o2.n}?`,
+        correct: isLonger ? o1.n : o2.n,
+        visual: `<div class="length-compare">
+          <div class="length-row"><div class="length-label">${o1.e} ${o1.n}</div><div class="length-bar" style="width:${percent1}%;">${len1}</div></div>
+          <div class="length-row"><div class="length-label">${o2.e} ${o2.n}</div><div class="length-bar" style="width:${percent2}%;">${len2}</div></div>
+        </div>`,
+        spk: `Which is longer, the ${o1.n} or the ${o2.n}?`,
+        hints: [`Look at the longer bar`, `The bigger number means longer`, `Answer: ${isLonger ? o1.n : o2.n}`],
+        topic: "compare"
+      };
+    }
+    
+    function genCompareShorter() {
+      let o1 = pick(OBJECTS);
+      let o2 = pick(OBJECTS.filter(x => x.n !== o1.n));
+      let len1 = rand(3, 9);
+      let len2 = rand(3, 9);
+      while(len1 === len2) len2 = len2 === 9 ? 8 : len2+1;
+      const isShorter = len1 < len2;
+      const id = `SHORTER_${o1.n}_${o2.n}_${len1}_${len2}`;
+      if(globalUsed.has(id)) return null;
+      globalUsed.add(id);
+      const percent1 = Math.min(90, len1 * 9);
+      const percent2 = Math.min(90, len2 * 9);
+      return {
+        text: `Which is shorter, the ${o1.n} or the ${o2.n}?`,
+        correct: isShorter ? o1.n : o2.n,
+        visual: `<div class="length-compare">
+          <div class="length-row"><div class="length-label">${o1.e} ${o1.n}</div><div class="length-bar ${isShorter ? '' : 'short'}" style="width:${percent1}%;">${len1}</div></div>
+          <div class="length-row"><div class="length-label">${o2.e} ${o2.n}</div><div class="length-bar ${isShorter ? 'short' : ''}" style="width:${percent2}%;">${len2}</div></div>
+        </div>`,
+        spk: `Which is shorter, the ${o1.n} or the ${o2.n}?`,
+        hints: [`Find the smaller bar`, `Shorter means less length`, `Answer: ${isShorter ? o1.n : o2.n}`],
+        topic: "compare"
+      };
+    }
+    
+    // ---------- 2) SAME AS (second game) ----------
+    function genSameAs() {
+      let o1 = pick(OBJECTS);
+      let o2 = pick(OBJECTS.filter(x => x.n !== o1.n));
+      let len = rand(4, 9);
+      const id = `SAME_${o1.n}_${o2.n}_${len}`;
+      if(globalUsed.has(id)) return null;
+      globalUsed.add(id);
+      const width = Math.min(90, len * 8.5);
+      return {
+        text: `The ${o1.n} and the ${o2.n} are _______ length.`,
+        correct: "same",
+        visual: `<div class="length-compare">
+          <div class="length-row"><div class="length-label">${o1.e} ${o1.n}</div><div class="length-bar" style="width:${width}%;"></div></div>
+          <div class="length-row"><div class="length-label">${o2.e} ${o2.n}</div><div class="length-bar" style="width:${width}%;"></div></div>
+        </div>`,
+        spk: `The ${o1.n} and the ${o2.n} are same length. Are they same or different?`,
+        hints: [`Both bars end at the same point`, `They have equal length`, `Answer: same`],
+        topic: "same"
+      };
+    }
+    
+    // ---------- 3) MEASURE (second game ruler style) ----------
+    function genMeasure() {
+      let obj = pick(OBJECTS);
+      let units = rand(3, 11);
+      const id = `MEASURE_${obj.n}_${units}`;
+      if(globalUsed.has(id)) return null;
+      globalUsed.add(id);
+      const objWidth = units * 18;  // visual representation
+      return {
+        text: `How many units long is the ${obj.e} ${obj.n}?`,
+        correct: String(units),
+        visual: `<div class="measure-ruler"><div class="measure-obj" style="left:12px; width:${objWidth}px;"></div></div><div style="margin-top:6px; font-size:0.8rem;">📏 each mark = 1 unit</div>`,
+        spk: `How many units long is the ${obj.n}?`,
+        hints: [`Count the marks from zero`, `Look at the end of the coloured bar`, `Answer: ${units}`],
+        topic: "measure"
+      };
+    }
+    
+    // -------- generate 30 unique questions per level (balanced: 10 longer, 10 shorter, 5 same, 5 measure) --------
+    function generateLevelQuestions() {
+      resetUsed();
+      let questions = [];
+      const generators = [genCompareLonger, genCompareShorter, genSameAs, genMeasure];
+      // we need approx distribution: longer(10), shorter(10), same(5), measure(5) => total 30
+      let targets = [10, 10, 5, 5];
+      for(let i=0; i<generators.length; i++) {
+        let count = 0, attempts = 0;
+        while(count < targets[i] && attempts < 60) {
+          attempts++;
+          let q = generators[i]();
+          if(q) { questions.push(q); count++; }
+          if(attempts > 40 && generators[i] === genSameAs && count < targets[i]) {
+            // fallback: force by clearing used
+            globalUsed.clear();
+            let force = generators[i]();
+            if(force) questions.push(force);
+          }
+        }
+      }
+      // if still missing any, fill with extra compare
+      while(questions.length < 30) {
+        let filler = genCompareLonger() || genCompareShorter();
+        if(filler) questions.push(filler);
+      }
+      return shuffle(questions.slice(0,30));
+    }
+    
+    // ----------------------------- GAME STATE ---------------------------
+    let currentLevel = 0;        // 0-indexed 0..4
+    let currentQuestions = [];
+    let qIndex = 0;
+    let correctCount = 0;
+    let answeredCount = 0;
+    let timeLeft = 40;
+    let timerInterval = null;
+    let waitingForAnswer = true;
+    let answerSubmitted = false;
+    let gameActive = true;
+    let levelTransition = false;
+    let currentQObj = null;
+    
+    // DOM elements (dynamic)
+    const root = document.getElementById('appRoot');
+    let elements = {};
+    
+    function renderUI() {
+      root.innerHTML = `
+        <div class="game-hud">
+          <div class="hud-badge" id="levelBadge">📏 LEVEL ${currentLevel+1}/5</div>
+          <div class="hud-score" id="scoreBadge">✅ SCORE: 0 / 0</div>
+          <div class="timer-panel">⏱️ <span class="timer-digits" id="timerVal">40</span></div>
+        </div>
+        <div class="progress-section">
+          <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="q-counter" id="qCounter">Question 1 / 30</div>
+        </div>
+        <div class="question-area">
+          <div class="question-card">
+            <div class="question-text" id="questionTxt">Loading...</div>
+            <div class="visual-hint-area" id="visualHint">✨ 📏 Compare & measure ✨</div>
+          </div>
+          <div class="action-row">
+            <input type="text" id="studentAnswer" placeholder="Type answer..." autocomplete="off">
+            <button class="action-btn btn-check" id="checkBtn">✔️ CHECK</button>
+            <button class="action-btn btn-voice" id="readBtn">🔊 READ</button>
+            <button class="action-btn btn-next" id="nextBtn">⏩ NEXT</button>
+          </div>
+          <div class="feedback-msg" id="feedbackMsg">🌟 Compare lengths, type "longer", "shorter" or the object name!</div>
+        </div>
+        <div id="levelOverlay" class="level-overlay hide">
+          <div class="final-badge" id="endEmoji">🏆</div>
+          <h2 id="endTitle">Level Complete!</h2>
+          <div class="stars-reward" id="starsReward">⭐⭐⭐</div>
+          <div id="endInfo">Score: 0/30</div>
+          <p id="endMessage" style="margin:12px 0; font-weight:bold;"></p>
+          <button class="action-btn btn-check" id="continueBtn" style="background:#FF9800;">➡️ Next Level</button>
+          <button class="action-btn btn-voice" id="retryBtn" style="background:#F44336; color:white;">🔄 Try Again</button>
+        </div>
+      `;
+      elements = {
+        levelBadge: document.getElementById('levelBadge'),
+        scoreBadge: document.getElementById('scoreBadge'),
+        timerVal: document.getElementById('timerVal'),
+        progressFill: document.getElementById('progressFill'),
+        qCounter: document.getElementById('qCounter'),
+        questionTxt: document.getElementById('questionTxt'),
+        visualHint: document.getElementById('visualHint'),
+        studentAnswer: document.getElementById('studentAnswer'),
+        checkBtn: document.getElementById('checkBtn'),
+        readBtn: document.getElementById('readBtn'),
+        nextBtn: document.getElementById('nextBtn'),
+        feedbackMsg: document.getElementById('feedbackMsg'),
+        levelOverlay: document.getElementById('levelOverlay'),
+        endEmoji: document.getElementById('endEmoji'),
+        endTitle: document.getElementById('endTitle'),
+        starsReward: document.getElementById('starsReward'),
+        endInfo: document.getElementById('endInfo'),
+        endMessage: document.getElementById('endMessage'),
+        continueBtn: document.getElementById('continueBtn'),
+        retryBtn: document.getElementById('retryBtn')
+      };
+      attachEvents();
+    }
+    
+    function attachEvents() {
+      elements.checkBtn.onclick = () => checkAnswer();
+      elements.readBtn.onclick = () => { if(currentQObj && !levelTransition) speak(currentQObj.spk || currentQObj.text); };
+      elements.nextBtn.onclick = () => manualNext();
+      elements.continueBtn.onclick = () => nextLevelProceed();
+      elements.retryBtn.onclick = () => restartCurrentLevel();
+      elements.studentAnswer.addEventListener('keypress', (e) => { if(e.key === 'Enter' && !answerSubmitted && waitingForAnswer) checkAnswer(); });
+    }
+    
+    function updateHUD() {
+      elements.scoreBadge.innerText = `✅ SCORE: ${correctCount} / ${answeredCount}`;
+      elements.qCounter.innerText = `Question ${answeredCount+1} / ${currentQuestions.length}`;
+      let percent = (answeredCount / currentQuestions.length) * 100;
+      elements.progressFill.style.width = `${percent}%`;
+    }
+    
+    function stopTimer() { if(timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+    
+    function startTimer() {
+      if(timerInterval) stopTimer();
+      timeLeft = 40;
+      elements.timerVal.innerText = timeLeft;
+      updateHintByTime(timeLeft);
+      timerInterval = setInterval(() => {
+        if(!waitingForAnswer || levelTransition || !gameActive || answerSubmitted) return;
+        if(timeLeft <= 1) {
+          stopTimer();
+          if(waitingForAnswer && !answerSubmitted) {
+            speak("Time is up!");
+            waitingForAnswer = false;
+            answerSubmitted = true;
+            elements.feedbackMsg.innerHTML = "⏰ TIME'S UP! Moving to next question.";
+            elements.feedbackMsg.style.background = "#FFCCBB";
+            setTimeout(() => { if(!levelTransition) moveToNext(); }, 1500);
+          }
+        } else {
+          timeLeft--;
+          elements.timerVal.innerText = timeLeft;
+          updateHintByTime(timeLeft);
+        }
+      }, 1000);
+    }
+    
+    function updateHintByTime(sec) {
+      if(!currentQObj) return;
+      if(sec > 28) elements.visualHint.innerHTML = `💡 ${currentQObj.visual || "📏 Compare the bars!"} <span style="font-size:0.8rem;">🔍 Topic: ${currentQObj.topic}</span>`;
+      else if(sec > 15) elements.visualHint.innerHTML = `🔎 Hint: ${currentQObj.hints[0] || "Look carefully!"}`;
+      else if(sec > 5) elements.visualHint.innerHTML = `✨ Strong hint: ${currentQObj.hints[1] || "Check which is longer/shorter."}`;
+      else elements.visualHint.innerHTML = `⚡ Last seconds! Answer: ${currentQObj.correct} ⚡`;
+    }
+    
+    function checkAnswer() {
+      if(!waitingForAnswer || levelTransition || !gameActive || answerSubmitted) {
+        elements.feedbackMsg.innerHTML = "⚠️ Already answered! Wait.";
+        return;
+      }
+      let raw = norm(elements.studentAnswer.value);
+      if(raw === "") { speak("Please type an answer."); elements.feedbackMsg.innerHTML = "✏️ Type your answer!"; return; }
+      
+      let expected = norm(String(currentQObj.correct));
+      let isCorrect = false;
+      // flexible for object name
+      if(currentQObj.topic === "compare") {
+        let objMatch = norm(currentQObj.correct);
+        if(raw === objMatch) isCorrect = true;
+        else if(raw.includes(objMatch) || objMatch.includes(raw)) isCorrect = true;
+        else if((raw === "longer" && currentQObj.text.includes("longer")) || (raw === "shorter" && currentQObj.text.includes("shorter"))) isCorrect = false; // not valid
+      }
+      else if(currentQObj.topic === "same") {
+        if(raw === "same" || raw === "equal") isCorrect = true;
+      }
+      else if(currentQObj.topic === "measure") {
+        if(raw === expected || parseInt(raw) === parseInt(expected)) isCorrect = true;
+      }
+      else {
+        isCorrect = (raw === expected);
+      }
+      
+      answerSubmitted = true;
+      waitingForAnswer = false;
+      stopTimer();
+      if(isCorrect) {
+        correctCount++;
+        speak("Correct! Great!");
+        elements.feedbackMsg.innerHTML = "🎉 CORRECT! +1 point 🎉";
+        elements.feedbackMsg.style.background = "#C8E6C9";
+        fireConfetti(20);
+      } else {
+        speak(`Incorrect. The answer is ${currentQObj.correct}.`);
+        elements.feedbackMsg.innerHTML = `❌ INCORRECT! Right answer: "${currentQObj.correct}". Keep practicing!`;
+        elements.feedbackMsg.style.background = "#FFCDD2";
+      }
+      answeredCount++;
+      updateHUD();
+      elements.checkBtn.disabled = true;
+      elements.studentAnswer.disabled = true;
+    }
+    
+    function moveToNext() {
+      if(levelTransition) return;
+      if(answeredCount >= currentQuestions.length) { finishLevel(); return; }
+      qIndex++;
+      loadQuestion(qIndex);
+    }
+    
+    function manualNext() {
+      if(levelTransition || !gameActive) { elements.feedbackMsg.innerHTML = "Level finishing..."; return; }
+      if(!answerSubmitted && waitingForAnswer) {
+        elements.feedbackMsg.innerHTML = "⚠️ Please check your answer first!";
+        speak("Please answer before moving.");
+        return;
+      }
+      if(answerSubmitted && !waitingForAnswer) { stopTimer(); moveToNext(); }
+    }
+    
+    function loadQuestion(index) {
+      if(index >= currentQuestions.length) { finishLevel(); return; }
+      currentQObj = currentQuestions[index];
+      elements.questionTxt.innerText = currentQObj.text;
+      elements.visualHint.innerHTML = currentQObj.visual || "📏 Compare lengths";
+      waitingForAnswer = true;
+      answerSubmitted = false;
+      elements.checkBtn.disabled = false;
+      elements.studentAnswer.disabled = false;
+      elements.studentAnswer.value = "";
+      elements.studentAnswer.focus();
+      elements.feedbackMsg.innerHTML = "📐 Type answer and click CHECK!";
+      elements.feedbackMsg.style.background = "#FFF3E0";
+      updateHUD();
+      stopTimer();
+      startTimer();
+    }
+    
+    function finishLevel() {
+      levelTransition = true;
+      stopTimer();
+      const percent = (correctCount / currentQuestions.length) * 100;
+      const pass = percent >= 80;
+      elements.levelOverlay.classList.remove('hide');
+      if(pass) {
+        elements.endEmoji.innerHTML = "🏆🎉";
+        elements.endTitle.innerText = `Level ${currentLevel+1} COMPLETE!`;
+        let stars = Math.min(5, Math.floor(percent/20));
+        elements.starsReward.innerHTML = "⭐".repeat(stars);
+        elements.endInfo.innerHTML = `Score: ${correctCount}/${currentQuestions.length} (${Math.floor(percent)}%)`;
+        elements.endMessage.innerHTML = "Amazing! Next level unlocked!";
+        elements.continueBtn.style.display = "inline-block";
+        elements.retryBtn.style.display = "none";
+        if(currentLevel+1 >= 5) elements.continueBtn.innerText = "🏁 GRAND FINISH 🏁";
+        fireConfetti(80);
+      } else {
+        elements.endEmoji.innerHTML = "📚💪";
+        elements.endTitle.innerText = `Level ${currentLevel+1} - Try Again`;
+        elements.starsReward.innerHTML = "⭐";
+        elements.endInfo.innerHTML = `Score: ${correctCount}/${currentQuestions.length} (${Math.floor(percent)}%) need 80%`;
+        elements.endMessage.innerHTML = "Keep going! Retry this level with new questions!";
+        elements.continueBtn.style.display = "none";
+        elements.retryBtn.style.display = "inline-block";
+      }
+    }
+    
+    function nextLevelProceed() {
+      if(currentLevel+1 >= 5) {
+        elements.levelOverlay.classList.add('hide');
+        elements.feedbackMsg.innerHTML = "🏆🏆🏆 LENGTH MASTER! You finished all levels! 🏆🏆🏆";
+        elements.feedbackMsg.style.background = "#FFF176";
+        elements.checkBtn.disabled = true;
+        elements.nextBtn.disabled = true;
+        elements.readBtn.disabled = true;
+        elements.studentAnswer.disabled = true;
+        gameActive = false;
+        speak("Congratulations! You are a Length Master!");
+        return;
+      }
+      currentLevel++;
+      startNewLevel();
+    }
+    
+    function restartCurrentLevel() { startNewLevel(); }
+    
+    function startNewLevel() {
+      levelTransition = false;
+      gameActive = true;
+      currentQuestions = generateLevelQuestions();
+      qIndex = 0;
+      correctCount = 0;
+      answeredCount = 0;
+      answerSubmitted = false;
+      waitingForAnswer = true;
+      elements.levelOverlay.classList.add('hide');
+      elements.levelBadge.innerText = `📏 LEVEL ${currentLevel+1}/5`;
+      updateHUD();
+      loadQuestion(0);
+    }
+    
+    // confetti system
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas?.getContext('2d');
+    let particles = [], rafId = 0;
+    const confColors = ['#009688','#FF9800','#4CAF50','#2196F3','#E91E63'];
+    function resizeCanvas() { if(canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    function fireConfetti(n) {
+      if(!ctx) return;
+      for(let i=0;i<n;i++) particles.push({
+        x: canvas.width/2 + (Math.random()-0.5)*300, y: canvas.height/2,
+        vx: (Math.random()-0.5)*15, vy: (Math.random()-1)*15 - 4,
+        c: pick(confColors), sz: rand(5,10), r: 0, life: 1
+      });
+      if(!rafId) animateConfetti();
+    }
+    function animateConfetti() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy; p.vy+=0.45; p.r+=0.12; p.life-=0.018;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz);
+        ctx.restore();
+      });
+      particles = particles.filter(p=>p.life>0);
+      if(particles.length>0) rafId = requestAnimationFrame(animateConfetti);
+      else rafId = 0;
+    }
+    
+    // start game
+    renderUI();
+    startNewLevel();
+  })();
+</script>
+</body>
+</html>

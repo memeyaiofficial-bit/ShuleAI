@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBC Grade 1 Mathematics Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #FF6584;
+            --success: #43B581;
+            --warning: #FFC107;
+            --danger: #FF4B4B;
+            --blue: #4D9FFF;
+            --blue-light: #E3F0FF;
+            --orange: #FF6B35;
+            --orange-light: #FFE8DD;
+            --green: #06D6A0;
+            --green-light: #D4F8EE;
+            --purple: #9B72CF;
+            --purple-light: #F3EEFF;
+            --dark: #1A1A2E;
+            --shadow: 0 8px 20px rgba(0,0,0,0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Nunito', 'Comic Neue', cursive, sans-serif;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        #main-container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        #main-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--warning), var(--green));
+            border-radius: 6px 6px 0 0;
+            z-index: 10;
+        }
+
+        #home-screen { text-align: center; padding: 30px 20px 20px; animation: fadeIn 0.5s ease; display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .home-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--warning); color: var(--dark); font-weight: 800;
+            font-size: clamp(0.75rem, 2vw, 0.9rem); padding: 6px 18px;
+            border-radius: 30px; margin-bottom: 20px;
+            animation: popIn 0.6s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.8rem); margin: 15px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; line-height: 1.2;
+        }
+
+        .subtitle { font-size: clamp(1rem, 2.5vw, 1.3rem); color: #555; margin: 10px 0 25px; font-weight: 600; }
+
+        .game-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 10px; max-width: 650px; margin: 0 auto; }
+
+        .game-card {
+            background: white; border-radius: 24px; padding: 30px 20px; box-shadow: var(--shadow);
+            cursor: pointer; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); border: 3px solid transparent;
+            position: relative; overflow: hidden;
+        }
+        .game-card:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+        .game-card.card1 { border-color: var(--primary); background: linear-gradient(145deg, #f0edff, #e0dbff); }
+        .game-card.card2 { border-color: var(--orange); background: linear-gradient(145deg, #fff5f0, #ffe8dd); }
+        .game-card .card-emoji { font-size: clamp(3rem, 8vw, 4.5rem); display: block; margin-bottom: 15px; animation: floatEmoji 3s ease-in-out infinite; }
+        @keyframes floatEmoji { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .game-card .card-title { font-family: 'Fredoka One', cursive; font-size: clamp(1.3rem, 3vw, 1.8rem); color: var(--dark); margin-bottom: 8px; }
+        .game-card .card-desc { font-size: clamp(0.85rem, 2vw, 1rem); color: #666; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
+        .card-badge { display: inline-block; font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; }
+        .card1 .card-badge { background: var(--blue-light); color: #1A5EAB; }
+        .card2 .card-badge { background: var(--orange-light); color: #C0392B; }
+        .footer-note { text-align: center; margin-top: 30px; color: #999; font-size: 0.85rem; font-weight: 600; }
+
+        /* Game Wrapper */
+        .game-wrapper { display: none; animation: fadeIn 0.4s ease; }
+        .game-wrapper.active { display: block; }
+
+        .back-btn {
+            position: absolute; top: 15px; left: 20px; z-index: 20; background: white; border: none;
+            padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: var(--transition); color: var(--dark);
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+
+        /* Game 1: Math Quest Styles */
+        .g1-container { background: #ffffff; border-radius: 25px; box-shadow: var(--shadow); padding: 15px; position: relative; }
+        .g1-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 5px 5px 0 0; }
+        .g1-hud { display: flex; justify-content: space-between; padding: 10px 0; font-weight: bold; font-size: 0.95rem; flex-wrap: wrap; gap: 8px; }
+        .g1-hud span { color: var(--primary); }
+        .g1-progress { width: 100%; height: 8px; background: #eee; border-radius: 10px; margin: 8px 0; overflow: hidden; }
+        .g1-progress-fill { height: 100%; background: var(--warning); transition: width 0.4s; border-radius: 10px; }
+        .g1-qbox { background: #f8f9fa; border-radius: 16px; padding: 20px; text-align: center; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border: 2px solid #e9ecef; margin: 10px 0; }
+        .g1-timer { position: absolute; top: -12px; right: -12px; width: 55px; height: 55px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .g1-timer.warn { background: var(--danger); color: white; }
+        .g1-qtext { font-size: clamp(1.15rem, 2.5vw, 1.4rem); font-weight: 600; line-height: 1.4; }
+        .g1-qobj { font-size: 2rem; letter-spacing: 4px; margin: 8px 0; }
+        .g1-input { width: 100%; padding: 14px; font-size: 1.3rem; text-align: center; border: 3px solid #ddd; border-radius: 12px; margin: 10px 0; outline: none; font-family: inherit; }
+        .g1-input:focus { border-color: var(--primary); }
+        .g1-hint { background: #fff8e1; color: #b07600; padding: 10px; border-radius: 10px; margin: 8px 0; font-size: 0.95rem; display: none; border: 1px solid #ffe082; }
+        .g1-btn { background: var(--primary); color: white; border: none; padding: 12px 24px; font-size: 1rem; font-weight: 600; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 12px rgba(108,99,255,0.3); transition: all 0.2s; margin: 5px; font-family: inherit; }
+        .g1-btn:hover { transform: translateY(-2px); }
+        .g1-btn:active { transform: scale(0.96); }
+        .g1-btn.alt { background: var(--secondary); box-shadow: 0 4px 12px rgba(255,101,132,0.3); }
+        .g1-btn.green { background: var(--success); }
+        .g1-fb { text-align: center; font-weight: bold; font-size: 1.1rem; margin: 8px 0; padding: 8px; border-radius: 10px; }
+
+        /* Game 2: Whole Numbers Styles */
+        .g2-container { background: #fffef7; border-radius: 25px; box-shadow: var(--shadow); padding: 15px; position: relative; }
+        .g2-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--orange), var(--warning)); border-radius: 5px 5px 0 0; }
+        .g2-header { display: flex; justify-content: space-between; padding: 10px 0; font-weight: bold; font-size: 0.95rem; flex-wrap: wrap; gap: 8px; background: #fffef7; }
+        .g2-header span { color: var(--orange); }
+        .g2-qbox { background: #fff2df; border-radius: 50px; padding: 20px; text-align: center; font-weight: bold; font-size: clamp(1.2rem, 3vw, 1.5rem); margin: 15px 0; border: 3px solid #ffcf9a; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .g2-input { width: 100%; padding: 14px; font-size: 1.3rem; text-align: center; border: 3px solid #ffb465; border-radius: 60px; margin: 10px 0; outline: none; font-family: inherit; background: white; }
+        .g2-input:focus { border-color: var(--orange); }
+        .g2-hint { background: #ffcd94; padding: 10px 20px; border-radius: 60px; font-weight: bold; font-size: 1rem; color: #3b2a1f; margin: 8px 0; min-height: 50px; text-align: center; }
+        .g2-btn { background: #4caf50; border: none; font-size: 1.1rem; font-weight: bold; padding: 10px 24px; border-radius: 60px; color: white; cursor: pointer; box-shadow: 0 5px 0 #2e6b2f; transition: 0.05s linear; margin: 5px; font-family: inherit; }
+        .g2-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #2e6b2f; }
+        .g2-btn.voice { background: #ffe0b5; box-shadow: 0 4px 0 #b97f3a; color: #3b2a1f; }
+        .g2-btn.next { background: #66bb6a; box-shadow: 0 4px 0 #2e6b2f; }
+        .g2-fb { text-align: center; font-weight: bold; font-size: 1.1rem; margin: 8px 0; padding: 10px; border-radius: 50px; }
+
+        @media (max-width: 600px) {
+            #main-container { border-radius: 20px; }
+            .game-cards { grid-template-columns: 1fr; gap: 15px; }
+            .game-card { padding: 20px 15px; }
+            .g1-hud { flex-direction: column; align-items: center; }
+            .g2-header { flex-direction: column; text-align: center; }
+            .back-btn { top: 10px; left: 10px; font-size: 0.8rem; padding: 6px 12px; }
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 1.5rem; }
+            .game-card .card-emoji { font-size: 2.5rem; }
+            .game-card .card-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-container">
+        <!-- HOME SCREEN -->
+        <div id="home-screen">
+            <div class="home-badge">🔢 Grade 1 CBC Mathematics Games</div>
+            <h1>Choose Your<br>Math Adventure!</h1>
+            <p class="subtitle">Two exciting games to master Grade 1 Mathematics</p>
+            <div class="game-cards">
+                <div class="game-card card1" onclick="startGame1()">
+                    <span class="card-emoji">🧮🚀</span>
+                    <div class="card-title">Math Quest<br>Challenge</div>
+                    <p class="card-desc">Counting, patterns, reading & writing numbers through fun challenges!</p>
+                    <span class="card-badge">🌟 Grade 1</span>
+                </div>
+                <div class="game-card card2" onclick="startGame2()">
+                    <span class="card-emoji">🔢📚</span>
+                    <div class="card-title">Whole Numbers<br>Adventure</div>
+                    <p class="card-desc">Counting forward, number symbols, words & number patterns!</p>
+                    <span class="card-badge">🌟 Grade 1</span>
+                </div>
+            </div>
+            <div class="footer-note">📱 Works on all devices · CBC Aligned · Fun Learning!</div>
+        </div>
+
+        <!-- GAME 1 WRAPPER -->
+        <div id="game1-wrapper" class="game-wrapper">
+            <button class="back-btn" onclick="goHome()">← Home</button>
+            <div class="g1-container" id="g1App">
+                <div class="g1-hud">
+                    <div>Lvl: <span id="g1lvl">1</span>/5</div>
+                    <div>Score: <span id="g1score">0</span>/24</div>
+                    <div>Q: <span id="g1qnum">1</span>/30</div>
+                </div>
+                <div class="g1-progress"><div class="g1-progress-fill" id="g1pbar" style="width:0%"></div></div>
+                <div class="g1-qbox" id="g1qbox">
+                    <div class="g1-timer" id="g1tmr">40</div>
+                    <div class="g1-qobj" id="g1qobj"></div>
+                    <div class="g1-qtext" id="g1qtxt"></div>
+                    <button class="g1-btn alt" id="g1replay" style="margin-top:10px;">🔊 Replay</button>
+                </div>
+                <div class="g1-hint" id="g1hint"></div>
+                <input type="text" class="g1-input" id="g1ans" placeholder="Type your answer..." autocomplete="off">
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    <button class="g1-btn" id="g1check">✓ Check Answer</button>
+                </div>
+                <div class="g1-fb" id="g1fb"></div>
+            </div>
+        </div>
+
+        <!-- GAME 2 WRAPPER -->
+        <div id="game2-wrapper" class="game-wrapper">
+            <button class="back-btn" onclick="goHome()">← Home</button>
+            <div class="g2-container" id="g2App">
+                <div class="g2-header">
+                    <div>🔢 LEVEL <span id="g2lvl">1</span></div>
+                    <div>✅ SCORE: <span id="g2score">0</span> / <span id="g2answered">0</span></div>
+                    <div>⏱️ <span id="g2tmr">40</span>s</div>
+                </div>
+                <div class="g2-qbox" id="g2qtxt">Loading fun challenge...</div>
+                <div class="g2-hint" id="g2hint">💡 Hint will appear here as time goes</div>
+                <input type="text" class="g2-input" id="g2ans" placeholder="Type your answer..." autocomplete="off">
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    <button class="g2-btn voice" id="g2read">🔊 READ</button>
+                    <button class="g2-btn next" id="g2next">⏩ NEXT</button>
+                    <button class="g2-btn" id="g2check">✔️ CHECK</button>
+                </div>
+                <div class="g2-fb" id="g2fb">🔢 Answer each question! 80% needed to level up.</div>
+                <div style="text-align:center; margin-top:8px; font-size:0.9rem; color:#7b5a3b;" id="g2prog">Question 1 / 30</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================== NAVIGATION ======================
+        function goHome() {
+            document.getElementById('game1-wrapper').classList.remove('active');
+            document.getElementById('game2-wrapper').classList.remove('active');
+            document.getElementById('home-screen').style.display = 'block';
+            if (g1timer) clearInterval(g1timer);
+            if (g2timer) clearInterval(g2timer);
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+        function startGame1() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('game1-wrapper').classList.add('active');
+            document.getElementById('game2-wrapper').classList.remove('active');
+            if (!g1init) { initG1(); g1init = true; }
+            startG1Level();
+        }
+        function startGame2() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('game1-wrapper').classList.remove('active');
+            document.getElementById('game2-wrapper').classList.add('active');
+            if (!g2init) { initG2(); g2init = true; }
+            loadG2Level(0);
+        }
+
+        // ====================== SPEECH ======================
+        function speak(txt, rate=0.9, pitch=1.1) {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(txt);
+            u.lang = 'en-US'; u.rate = rate; u.pitch = pitch;
+            window.speechSynthesis.speak(u);
+        }
+
+        // ====================== GAME 1: MATH QUEST ======================
+        let g1init = false, g1timer = null, g1timeLeft = 40, g1active = true;
+        let g1level = 1, g1qIdx = 0, g1score = 0, g1hintsShown = 0;
+        let g1qs = [], g1current = null;
+
+        const WORDS = ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+        const EMOJIS = ['🍎','🍊','🍌','🍉','🍇','🍓','🌟','🔵','🔺','🟡','🦋','🐟','🐞','🍄','🌸'];
+        const TOPICS = ['FWD','BWD','OBJ','READ','WRITE','WORDS','PATT'];
+        const DIST = [4,4,5,4,4,4,5];
+
+        function rand(a,b) { return Math.floor(Math.random()*(b-a+1))+a; }
+        function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+
+        function genG1Q(topic) {
+            let q = { topic: '', p1: 0, p2: '', ans: '', spk: '', txt: '', hints: ["","",""] };
+            let retries = 0;
+            do {
+                q.topic = topic; retries++;
+                switch(topic) {
+                    case 'FWD': q.p1=rand(0,18); q.ans=String(q.p1+1); q.txt=`What number comes after ${q.p1}?`; q.spk=q.txt; q.hints=[`Count: ${q.p1}...`,`Next is one more`,`Answer: ${q.ans}`]; break;
+                    case 'BWD': q.p1=rand(3,15); q.ans=String(q.p1-1); q.txt=`Count backward: ${q.p1}, __. What's next?`; q.spk=q.txt; q.hints=[`Think: ${q.p1}...`,`One less than ${q.p1}`,`Answer: ${q.ans}`]; break;
+                    case 'OBJ': q.p1=rand(1,15); q.p2=pick(EMOJIS); q.ans=String(q.p1); q.txt=`How many ${q.p2} do you see?`; q.spk=`How many objects do you see?`; q.hints=[`Count slowly`,`Group by 2 or 5`,`Answer: ${q.ans}`]; break;
+                    case 'READ': q.p1=rand(1,20); q.ans=String(q.p1); q.txt=`What number is this: ${q.p1}?`; q.spk=q.txt; q.hints=[`Look carefully`,`Say it out loud`,`Answer: ${q.ans}`]; break;
+                    case 'WRITE': q.p1=rand(1,20); q.ans=String(q.p1); q.txt=`Write the number for: ${WORDS[q.p1]}`; q.spk=q.txt; q.hints=[`Sound it out`,`Use digits`,`Answer: ${q.ans}`]; break;
+                    case 'WORDS': q.p1=rand(1,5); q.ans=String(q.p1); q.txt=`Which number is spelled: "${WORDS[q.p1]}"?`; q.spk=q.txt; q.hints=[`1 is one, 2 is two...`,`Match the word`,`Answer: ${q.ans}`]; break;
+                    case 'PATT': const step=pick([1,2]); const start=rand(1,8); q.p1=start; q.p2=step; q.ans=String(start+(step*3)); const seq=[start,start+step,start+step*2,"__"]; q.txt=`Pattern: ${seq.join(', ')}`; q.spk=`Complete the pattern: ${seq.slice(0,3).join(', ')}`; q.hints=[`Check the jump`,`+${step} each time`,`Answer: ${q.ans}`]; break;
+                }
+            } while(retries < 50);
+            return q;
+        }
+
+        function buildG1Level() {
+            let pool = [];
+            TOPICS.forEach((t,i) => { for(let j=0; j<DIST[i]; j++) pool.push(genG1Q(t)); });
+            for(let i=pool.length-1; i>0; i--){ const j=rand(0,i); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+            return pool;
+        }
+
+        function initG1() {
+            document.getElementById('g1check').addEventListener('click', g1check);
+            document.getElementById('g1replay').addEventListener('click', ()=>speak(g1current.spk));
+            document.getElementById('g1ans').addEventListener('keydown', e=>{ if(e.key==='Enter') g1check(); });
+        }
+
+        function startG1Level() {
+            g1level = 1; g1qIdx = 0; g1score = 0; g1qs = buildG1Level();
+            document.getElementById('g1lvl').textContent = g1level;
+            loadG1Q();
+        }
+
+        function loadG1Q() {
+            if(g1qIdx >= 30) { g1finishLevel(); return; }
+            g1current = g1qs[g1qIdx]; g1timeLeft = 40; g1hintsShown = 0; g1active = true;
+            document.getElementById('g1qnum').textContent = g1qIdx + 1;
+            document.getElementById('g1score').textContent = g1score;
+            document.getElementById('g1pbar').style.width = `${(g1qIdx/30)*100}%`;
+            document.getElementById('g1qobj').textContent = g1current.p2 ? g1current.p2.repeat(g1current.p1) : '';
+            document.getElementById('g1qtxt').textContent = g1current.txt;
+            document.getElementById('g1ans').value = ''; document.getElementById('g1hint').style.display = 'none';
+            document.getElementById('g1tmr').textContent = g1timeLeft;
+            document.getElementById('g1tmr').classList.remove('warn');
+            document.getElementById('g1fb').textContent = '';
+            document.getElementById('g1ans').focus();
+            speak(g1current.spk);
+            if(g1timer) clearInterval(g1timer);
+            g1timer = setInterval(() => {
+                if(!g1active) return;
+                g1timeLeft--; document.getElementById('g1tmr').textContent = g1timeLeft;
+                if(g1timeLeft <= 10) document.getElementById('g1tmr').classList.add('warn');
+                if(g1timeLeft === 25 || g1timeLeft === 15 || g1timeLeft === 5) showG1Hint();
+                if(g1timeLeft <= 0) { g1active = false; clearInterval(g1timer); speak("Time is up!", 1.1, 1); document.getElementById('g1fb').textContent = '⏰ Time is up!'; document.getElementById('g1fb').style.color = 'var(--danger)'; setTimeout(nextG1Q, 1800); }
+            }, 1000);
+        }
+
+        function showG1Hint() {
+            if(g1hintsShown < 3 && g1current.hints[g1hintsShown]) {
+                document.getElementById('g1hint').textContent = `💡 ${g1current.hints[g1hintsShown]}`;
+                document.getElementById('g1hint').style.display = 'block';
+                g1hintsShown++;
+            }
+        }
+
+        function g1check() {
+            if(!g1active) return;
+            const raw = document.getElementById('g1ans').value.trim().toLowerCase();
+            if(!raw) return;
+            g1active = false; clearInterval(g1timer);
+            const correct = raw === g1current.ans || raw === WORDS[parseInt(g1current.ans)];
+            if(correct) { g1score++; document.getElementById('g1score').textContent = g1score; document.getElementById('g1fb').textContent = '✅ Correct!'; document.getElementById('g1fb').style.color = 'var(--success)'; speak("Correct!"); }
+            else { document.getElementById('g1fb').textContent = `❌ Answer: ${g1current.ans}`; document.getElementById('g1fb').style.color = 'var(--danger)'; speak(`The answer is ${g1current.ans}`); }
+            setTimeout(nextG1Q, 1400);
+        }
+
+        function nextG1Q() { g1qIdx++; loadG1Q(); }
+
+        function g1finishLevel() {
+            clearInterval(g1timer);
+            const pct = (g1score/30)*100;
+            document.getElementById('g1fb').textContent = pct >= 80 ? `🎉 Level Complete! ${Math.round(pct)}%` : `💪 ${Math.round(pct)}% - Need 80%. Restarting...`;
+            document.getElementById('g1fb').style.color = pct >= 80 ? 'var(--success)' : 'var(--danger)';
+            if(pct >= 80 && g1level < 5) { g1level++; document.getElementById('g1lvl').textContent = g1level; setTimeout(()=>{ g1qIdx=0; g1score=0; g1qs=buildG1Level(); loadG1Q(); }, 2000); }
+            else if(pct >= 80 && g1level >= 5) { document.getElementById('g1fb').textContent = '🏆 All 5 Levels Complete!'; speak("Congratulations! You finished all levels!"); }
+            else { setTimeout(()=>{ g1qIdx=0; g1score=0; g1qs=buildG1Level(); loadG1Q(); }, 2000); }
+        }
+
+        // ====================== GAME 2: WHOLE NUMBERS ======================
+        let g2init = false, g2timer = null, g2timeLeft = 40, g2waiting = true, g2submitted = false;
+        let g2level = 0, g2qIdx = 0, g2correct = 0, g2answered = 0, g2locked = false, g2active = true;
+        let g2questions = [], g2current = null;
+
+        const g2bank = [
+            // Counting Forward (15)
+            { text: "What number comes after 5 when counting forward?", correct: "6", alt: "six", topic: "Counting Forward" },
+            { text: "What number comes after 9?", correct: "10", alt: "ten", topic: "Counting Forward" },
+            { text: "What number comes after 15?", correct: "16", alt: "sixteen", topic: "Counting Forward" },
+            { text: "What number comes after 20?", correct: "21", alt: "twenty-one", topic: "Counting Forward" },
+            { text: "Count forward from 3: 3, 4, ___", correct: "5", alt: "five", topic: "Counting Forward" },
+            { text: "Count forward from 7: 7, 8, 9, ___", correct: "10", alt: "ten", topic: "Counting Forward" },
+            { text: "What number comes after 12?", correct: "13", alt: "thirteen", topic: "Counting Forward" },
+            { text: "What number comes after 18?", correct: "19", alt: "nineteen", topic: "Counting Forward" },
+            { text: "Count forward: 1, 2, 3, 4, ___", correct: "5", alt: "five", topic: "Counting Forward" },
+            { text: "What comes after 25?", correct: "26", alt: "twenty-six", topic: "Counting Forward" },
+            { text: "Count forward from 30: 30, 31, ___", correct: "32", alt: "thirty-two", topic: "Counting Forward" },
+            { text: "What number is one more than 14?", correct: "15", alt: "fifteen", topic: "Counting Forward" },
+            { text: "What number is one more than 28?", correct: "29", alt: "twenty-nine", topic: "Counting Forward" },
+            { text: "Count forward from 10: 10, 11, 12, ___", correct: "13", alt: "thirteen", topic: "Counting Forward" },
+            { text: "What number comes after 45?", correct: "46", alt: "forty-six", topic: "Counting Forward" },
+            // Representing Numbers (15)
+            { text: "How many objects are in a group of 5?", correct: "5", alt: "five", topic: "Representing Numbers" },
+            { text: "How many stars are in a group of 3?", correct: "3", alt: "three", topic: "Representing Numbers" },
+            { text: "If you see 4 circles, what number is that?", correct: "4", alt: "four", topic: "Representing Numbers" },
+            { text: "How many tally marks: |||| (4 lines)", correct: "4", alt: "four", topic: "Representing Numbers" },
+            { text: "How many tally marks: || (2 lines)", correct: "2", alt: "two", topic: "Representing Numbers" },
+            { text: "How many tally marks: ||||| (5 lines)", correct: "5", alt: "five", topic: "Representing Numbers" },
+            { text: "How many fingers on one hand?", correct: "5", alt: "five", topic: "Representing Numbers" },
+            { text: "How many sides does a triangle have?", correct: "3", alt: "three", topic: "Representing Numbers" },
+            { text: "How many legs does a dog have?", correct: "4", alt: "four", topic: "Representing Numbers" },
+            { text: "How many wheels on a bicycle?", correct: "2", alt: "two", topic: "Representing Numbers" },
+            { text: "How many eyes do you have?", correct: "2", alt: "two", topic: "Representing Numbers" },
+            { text: "How many days are in a week?", correct: "7", alt: "seven", topic: "Representing Numbers" },
+            { text: "How many colors in a rainbow?", correct: "7", alt: "seven", topic: "Representing Numbers" },
+            { text: "How many eggs in a dozen?", correct: "12", alt: "twelve", topic: "Representing Numbers" },
+            { text: "How many months in a year?", correct: "12", alt: "twelve", topic: "Representing Numbers" },
+            // Read Number Symbols (15)
+            { text: "What is this number? 8", correct: "8", alt: "eight", topic: "Read Number Symbols" },
+            { text: "What is this number? 12", correct: "12", alt: "twelve", topic: "Read Number Symbols" },
+            { text: "What is this number? 3", correct: "3", alt: "three", topic: "Read Number Symbols" },
+            { text: "What is this number? 20", correct: "20", alt: "twenty", topic: "Read Number Symbols" },
+            { text: "What is this number? 15", correct: "15", alt: "fifteen", topic: "Read Number Symbols" },
+            { text: "What is this number? 7", correct: "7", alt: "seven", topic: "Read Number Symbols" },
+            { text: "What is this number? 11", correct: "11", alt: "eleven", topic: "Read Number Symbols" },
+            { text: "What is this number? 25", correct: "25", alt: "twenty-five", topic: "Read Number Symbols" },
+            { text: "What is this number? 9", correct: "9", alt: "nine", topic: "Read Number Symbols" },
+            { text: "What is this number? 16", correct: "16", alt: "sixteen", topic: "Read Number Symbols" },
+            { text: "What is this number? 30", correct: "30", alt: "thirty", topic: "Read Number Symbols" },
+            { text: "What is this number? 50", correct: "50", alt: "fifty", topic: "Read Number Symbols" },
+            { text: "What is this number? 10", correct: "10", alt: "ten", topic: "Read Number Symbols" },
+            { text: "What is this number? 100", correct: "100", alt: "one hundred", topic: "Read Number Symbols" },
+            { text: "What is this number? 99", correct: "99", alt: "ninety-nine", topic: "Read Number Symbols" },
+            // Write Number Symbols (15)
+            { text: "Write the number for: six", correct: "6", topic: "Write Number Symbols" },
+            { text: "Write the number for: ten", correct: "10", topic: "Write Number Symbols" },
+            { text: "Write the number for: twelve", correct: "12", topic: "Write Number Symbols" },
+            { text: "Write the number for: twenty", correct: "20", topic: "Write Number Symbols" },
+            { text: "Write the number for: four", correct: "4", topic: "Write Number Symbols" },
+            { text: "Write the number for: fifteen", correct: "15", topic: "Write Number Symbols" },
+            { text: "Write the number for: eight", correct: "8", topic: "Write Number Symbols" },
+            { text: "Write the number for: twenty-five", correct: "25", topic: "Write Number Symbols" },
+            { text: "Write the number for: three", correct: "3", topic: "Write Number Symbols" },
+            { text: "Write the number for: thirty", correct: "30", topic: "Write Number Symbols" },
+            { text: "Write the number for: one hundred", correct: "100", topic: "Write Number Symbols" },
+            { text: "Write the number for: fifty", correct: "50", topic: "Write Number Symbols" },
+            { text: "Write the number for: nine", correct: "9", topic: "Write Number Symbols" },
+            { text: "Write the number for: eighteen", correct: "18", topic: "Write Number Symbols" },
+            { text: "Write the number for: forty", correct: "40", topic: "Write Number Symbols" },
+            // Number Words (15)
+            { text: "How do you write the number 5 in words?", correct: "five", topic: "Number Words" },
+            { text: "How do you write the number 2 in words?", correct: "two", topic: "Number Words" },
+            { text: "How do you write the number 10 in words?", correct: "ten", topic: "Number Words" },
+            { text: "How do you write the number 3 in words?", correct: "three", topic: "Number Words" },
+            { text: "How do you write the number 7 in words?", correct: "seven", topic: "Number Words" },
+            { text: "How do you write the number 11 in words?", correct: "eleven", topic: "Number Words" },
+            { text: "How do you write the number 20 in words?", correct: "twenty", topic: "Number Words" },
+            { text: "How do you write the number 15 in words?", correct: "fifteen", topic: "Number Words" },
+            { text: "How do you write the number 9 in words?", correct: "nine", topic: "Number Words" },
+            { text: "How do you write the number 12 in words?", correct: "twelve", topic: "Number Words" },
+            { text: "How do you write the number 1 in words?", correct: "one", topic: "Number Words" },
+            { text: "How do you write the number 4 in words?", correct: "four", topic: "Number Words" },
+            { text: "How do you write the number 6 in words?", correct: "six", topic: "Number Words" },
+            { text: "How do you write the number 8 in words?", correct: "eight", topic: "Number Words" },
+            { text: "How do you write the number 30 in words?", correct: "thirty", topic: "Number Words" },
+            // Number Patterns (15)
+            { text: "What comes next? 2, 4, 6, ___", correct: "8", alt: "eight", topic: "Number Patterns" },
+            { text: "What comes next? 5, 10, 15, ___", correct: "20", alt: "twenty", topic: "Number Patterns" },
+            { text: "What comes next? 1, 3, 5, ___", correct: "7", alt: "seven", topic: "Number Patterns" },
+            { text: "What comes next? 10, 20, 30, ___", correct: "40", alt: "forty", topic: "Number Patterns" },
+            { text: "What comes next? 3, 6, 9, ___", correct: "12", alt: "twelve", topic: "Number Patterns" },
+            { text: "What comes next? 4, 8, 12, ___", correct: "16", alt: "sixteen", topic: "Number Patterns" },
+            { text: "What comes next? 7, 14, 21, ___", correct: "28", alt: "twenty-eight", topic: "Number Patterns" },
+            { text: "What comes next? 1, 2, 3, 4, ___", correct: "5", alt: "five", topic: "Number Patterns" },
+            { text: "What comes next? 10, 9, 8, 7, ___", correct: "6", alt: "six", topic: "Number Patterns" },
+            { text: "What comes next? 20, 18, 16, ___", correct: "14", alt: "fourteen", topic: "Number Patterns" },
+            { text: "What is the pattern? 2, 4, 6, 8: adding ___ each time", correct: "2", alt: "two", topic: "Number Patterns" },
+            { text: "What is the pattern? 5, 10, 15: adding ___ each time", correct: "5", alt: "five", topic: "Number Patterns" },
+            { text: "Complete: 1, 4, 7, 10, ___", correct: "13", alt: "thirteen", topic: "Number Patterns" },
+            { text: "Complete: 100, 90, 80, 70, ___", correct: "60", alt: "sixty", topic: "Number Patterns" },
+            { text: "Complete: 2, 5, 8, 11, ___", correct: "14", alt: "fourteen", topic: "Number Patterns" }
+        ];
+
+        function genG2Level() {
+            const s = [...g2bank].sort(() => Math.random() - 0.5);
+            const cf = s.filter(q=>q.topic==="Counting Forward").slice(0,5);
+            const rn = s.filter(q=>q.topic==="Representing Numbers").slice(0,5);
+            const rs = s.filter(q=>q.topic==="Read Number Symbols").slice(0,5);
+            const ws = s.filter(q=>q.topic==="Write Number Symbols").slice(0,5);
+            const nw = s.filter(q=>q.topic==="Number Words").slice(0,5);
+            const np = s.filter(q=>q.topic==="Number Patterns").slice(0,5);
+            return [...cf,...rn,...rs,...ws,...nw,...np].sort(() => Math.random() - 0.5);
+        }
+
+        function initG2() {
+            document.getElementById('g2check').addEventListener('click', g2check);
+            document.getElementById('g2read').addEventListener('click', ()=>{ if(g2current) speak(g2current.text); });
+            document.getElementById('g2next').addEventListener('click', g2nextManual);
+            document.getElementById('g2ans').addEventListener('keypress', e=>{ if(e.key==='Enter' && !g2submitted && g2waiting) g2check(); });
+        }
+
+        function loadG2Level(lvl) {
+            g2locked = false; g2active = true; g2level = lvl; g2qIdx = 0; g2correct = 0; g2answered = 0;
+            g2questions = genG2Level();
+            document.getElementById('g2lvl').textContent = g2level + 1;
+            loadG2Q(0);
+        }
+
+        function loadG2Q(idx) {
+            if(idx >= g2questions.length) { finishG2Level(); return; }
+            g2current = g2questions[idx]; g2waiting = true; g2submitted = false;
+            document.getElementById('g2qtxt').textContent = g2current.text;
+            document.getElementById('g2ans').value = ''; document.getElementById('g2ans').disabled = false; document.getElementById('g2ans').focus();
+            document.getElementById('g2check').disabled = false;
+            document.getElementById('g2fb').textContent = '🔢 Type your answer and click CHECK!';
+            document.getElementById('g2fb').style.background = '#fff3e0';
+            document.getElementById('g2prog').textContent = `Question ${g2answered+1} / ${g2questions.length}`;
+            document.getElementById('g2score').textContent = g2correct;
+            document.getElementById('g2answered').textContent = g2answered;
+            document.getElementById('g2hint').textContent = '💡 Hint will appear here as time goes';
+            if(g2timer) clearInterval(g2timer);
+            g2timeLeft = 40; document.getElementById('g2tmr').textContent = g2timeLeft;
+            g2timer = setInterval(() => {
+                if(!g2waiting || g2locked || !g2active || g2submitted) return;
+                if(g2timeLeft <= 1) { clearInterval(g2timer); g2timeUp(); }
+                else { g2timeLeft--; document.getElementById('g2tmr').textContent = g2timeLeft; updateG2Hint(); }
+            }, 1000);
+        }
+
+        function updateG2Hint() {
+            const hb = document.getElementById('g2hint');
+            if(!g2current) return;
+            if(g2timeLeft > 28) hb.textContent = `💡 Topic: ${g2current.topic}. Think about numbers!`;
+            else if(g2timeLeft > 18) hb.textContent = `🔎 Hint: The answer starts with "${g2current.correct[0]}"...`;
+            else if(g2timeLeft > 8) hb.textContent = `✨ Hint: The answer is "${g2current.correct}".`;
+            else hb.textContent = `🚀 Last chance! Answer: "${g2current.correct}". Hurry!`;
+        }
+
+        function g2timeUp() {
+            speak("Time is up!", 1.1, 1); g2waiting = false; g2submitted = true;
+            document.getElementById('g2fb').textContent = '⏰ TIME IS UP! Moving to next question.';
+            document.getElementById('g2fb').style.background = '#ffccbb';
+            document.getElementById('g2ans').disabled = true; document.getElementById('g2check').disabled = true;
+            setTimeout(() => { if(!g2locked) g2moveNext(); }, 1500);
+        }
+
+        function g2check() {
+            if(!g2waiting || g2locked || !g2active || g2submitted) return;
+            const ua = document.getElementById('g2ans').value.trim().toLowerCase();
+            if(!ua) { speak("Please type an answer."); return; }
+            const c = g2current.correct.toLowerCase(), a = g2current.alt ? g2current.alt.toLowerCase() : "";
+            const ok = (ua === c) || (a && ua === a);
+            g2submitted = true; g2waiting = false; clearInterval(g2timer);
+            if(ok) { g2correct++; speak("Correct!"); document.getElementById('g2fb').textContent = '🎉 CORRECT! +1 point 🎉'; document.getElementById('g2fb').style.background = '#c8e6c9'; }
+            else { speak(`The answer is ${g2current.correct}.`); document.getElementById('g2fb').textContent = `❌ INCORRECT! Answer: "${g2current.correct}"`; document.getElementById('g2fb').style.background = '#ffcdd2'; }
+            g2answered++;
+            document.getElementById('g2score').textContent = g2correct;
+            document.getElementById('g2answered').textContent = g2answered;
+            document.getElementById('g2ans').disabled = true; document.getElementById('g2check').disabled = true;
+        }
+
+        function g2nextManual() {
+            if(g2locked) return;
+            if(g2waiting && !g2submitted) { document.getElementById('g2fb').textContent = '⚠️ Please answer first!'; speak("Please check your answer first."); return; }
+            if(g2submitted && !g2waiting) { clearInterval(g2timer); g2moveNext(); }
+        }
+
+        function g2moveNext() {
+            if(g2locked) return;
+            if(g2answered >= g2questions.length) { finishG2Level(); return; }
+            g2qIdx++; loadG2Q(g2qIdx);
+        }
+
+        function finishG2Level() {
+            const pct = (g2correct / g2questions.length) * 100;
+            if(pct >= 80 && g2level + 1 < 5) {
+                speak(`Excellent! Moving to level ${g2level+2}.`);
+                document.getElementById('g2fb').textContent = `🎊 LEVEL UP! ${g2correct}/${g2questions.length} (${Math.round(pct)}%) → Next Level!`;
+                document.getElementById('g2fb').style.background = '#ffecb3';
+                g2level++; setTimeout(() => loadG2Level(g2level), 2000);
+            } else if(pct >= 80 && g2level + 1 >= 5) {
+                g2locked = true; clearInterval(g2timer);
+                document.getElementById('g2fb').textContent = '🏆 CHAMPION! All 5 levels complete! 🏆';
+                document.getElementById('g2fb').style.background = '#ffecb3';
+                speak("Congratulations! You finished all levels!");
+            } else {
+                document.getElementById('g2fb').textContent = `⚠️ ${Math.round(pct)}% - Need 80%. Restarting...`;
+                document.getElementById('g2fb').style.background = '#ffb3ba';
+                speak(`Need 80 percent. Restarting level ${g2level+1}.`);
+                setTimeout(() => loadG2Level(g2level), 2000);
+            }
+        }
+
+        // ====================== INITIALIZATION ======================
+        window.addEventListener('load', () => { document.getElementById('home-screen').style.display = 'block'; });
+    </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PP1 Learning Adventure | 30 Unique Questions Per Subject</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --math: #FF6B6B; --math2: #FF8E8E; --math-light: #FFF0F0;
+    --eng: #4ECDC4; --eng2: #7EDDD7; --eng-light: #F0FFFE;
+    --kis: #45B7D1; --kis2: #6EC9DE; --kis-light: #F0FAFD;
+    --sci: #96CEB4; --sci2: #B5DCC9; --sci-light: #F2FAF6;
+    --soc: #FFEAA7; --soc2: #FFD166; --soc-light: #FFFDF0;
+    --cre: #DDA0DD; --cre2: #E8B4E8; --cre-light: #FDF5FD;
+    --art: #FFA07A; --art2: #FFB899; --art-light: #FFF6F2;
+    --bg: #667eea; --bg2: #764ba2;
+    --correct: #00C9A7; --wrong: #FF6B6B;
+    --gold: #FFD700; --silver: #C0C0C0;
+    --card: #fff;
+    --shadow: 0 8px 32px rgba(0,0,0,0.15);
+    --shadow-sm: 0 4px 16px rgba(0,0,0,0.10);
+    --radius: 24px;
+    --radius-sm: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+  }
+  .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star { position: absolute; background: rgba(255,255,255,0.6); border-radius: 50%; animation: twinkle 3s infinite alternate; }
+  @keyframes twinkle { 0%{opacity:0.2;transform:scale(0.8)} 100%{opacity:1;transform:scale(1.2)} }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  @keyframes pop { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-10px)} 40%,80%{transform:translateX(10px)} }
+  @keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0);opacity:1} 100%{transform:translateY(600px) rotate(720deg);opacity:0} }
+  @keyframes slideIn { 0%{transform:translateY(40px);opacity:0} 100%{transform:translateY(0);opacity:1} }
+  .screen { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+  #welcome { justify-content: center; padding: 20px; text-align: center; }
+  .welcome-card { background: white; border-radius: 32px; padding: 40px 30px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: pop 0.6s ease; }
+  .welcome-logo { font-size: clamp(60px, 15vw, 90px); animation: float 3s ease-in-out infinite; display: block; margin-bottom: 10px; }
+  .welcome-title { font-family: 'Fredoka One', cursive; font-size: clamp(28px, 7vw, 42px); background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .name-input { width: 100%; padding: 14px 20px; border: 3px solid #e0e0e0; border-radius: var(--radius-sm); font-size: 18px; font-family: 'Nunito', sans-serif; font-weight: 700; text-align: center; margin-top: 10px; outline: none; }
+  .name-input:focus { border-color: var(--bg); }
+  .start-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: var(--radius-sm); font-family: 'Fredoka One', cursive; font-size: 24px; cursor: pointer; margin-top: 20px; transition: transform 0.15s; }
+  .start-btn:active { transform: scale(0.97); }
+  .subject-preview { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 24px; }
+  .subj-icon { background: #f5f5f5; border-radius: 12px; padding: 8px 4px; font-size: 26px; text-align: center; }
+  .subj-icon span { display: block; font-size: 9px; font-weight: 700; color: #888; }
+  #subject-select { padding: 20px 16px; width: 100%; max-width: 600px; margin: 0 auto; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 14px 20px; background: rgba(255,255,255,0.15); border-radius: var(--radius-sm); backdrop-filter: blur(8px); }
+  .player-name, .total-score span { color: white; font-weight: 800; }
+  .total-score { display: flex; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 100px; align-items: center; }
+  .select-title { font-family: 'Fredoka One', cursive; color: white; font-size: clamp(22px, 6vw, 34px); text-align: center; margin-bottom: 20px; }
+  .subjects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (min-width: 600px) { .subjects-grid { grid-template-columns: repeat(3, 1fr); } }
+  .subject-card { background: white; border-radius: var(--radius); padding: 22px 16px; cursor: pointer; transition: transform 0.2s; box-shadow: var(--shadow-sm); text-align: center; position: relative; overflow: hidden; }
+  .subject-card:active { transform: scale(0.96); }
+  .subj-emoji { font-size: clamp(36px, 9vw, 52px); display: block; margin-bottom: 8px; }
+  .subj-name { font-family: 'Fredoka One', cursive; font-size: 19px; color: #333; }
+  .subj-progress { font-size: 12px; color: #999; font-weight: 600; margin-top: 4px; }
+  .subj-badge { position: absolute; top: 10px; right: 10px; background: var(--gold); color: #333; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 100px; }
+  #quiz { padding: 16px; width: 100%; max-width: 600px; margin: 0 auto; }
+  .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .back-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+  .quiz-subject-info { flex:1; display: flex; align-items: center; gap: 8px; color: white; font-family: 'Fredoka One', cursive; }
+  .quiz-score-badge { background: var(--gold); color: #333; font-weight: 800; padding: 6px 14px; border-radius: 100px; }
+  .progress-wrap { margin-bottom: 14px; }
+  .progress-text { display: flex; justify-content: space-between; color: white; font-weight: 700; margin-bottom: 6px; }
+  .progress-bar { height: 10px; background: rgba(255,255,255,0.2); border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 100px; transition: width 0.3s; }
+  .question-card { background: white; border-radius: var(--radius); padding: 24px 20px; margin-bottom: 14px; box-shadow: var(--shadow); animation: slideIn 0.3s ease; }
+  .q-text { font-family: 'Fredoka One', cursive; font-size: clamp(18px, 5vw, 26px); color: #333; margin-bottom: 16px; line-height: 1.4; }
+  .q-emoji { font-size: clamp(50px, 13vw, 80px); text-align: center; display: block; margin: 10px 0; animation: float 2s ease-in-out infinite; }
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .option-btn { padding: 14px 12px; border: 3px solid #e8e8e8; border-radius: var(--radius-sm); background: white; font-weight: 800; font-size: clamp(14px, 3.8vw, 17px); cursor: pointer; transition: all 0.2s; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .option-btn:hover:not(:disabled) { border-color: #667eea; transform: translateY(-2px); }
+  .option-btn.correct { background: #e6fff5; border-color: var(--correct); color: #006644; animation: bounce 0.4s; }
+  .option-btn.wrong { background: #fff0f0; border-color: var(--wrong); color: #aa0000; animation: shake 0.4s; }
+  .option-btn.reveal-correct { background: #e6fff5; border-color: var(--correct); color: #006644; }
+  .option-btn:disabled { cursor: default; }
+  .feedback-banner { border-radius: var(--radius-sm); padding: 14px 20px; margin-bottom: 14px; display: none; align-items: center; gap: 10px; animation: slideIn 0.2s; }
+  .feedback-banner.show { display: flex; }
+  .feedback-banner.correct-fb { background: #e6fff5; border: 2px solid var(--correct); }
+  .feedback-banner.wrong-fb { background: #fff0f0; border: 2px solid var(--wrong); }
+  .next-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: var(--radius-sm); font-family: 'Fredoka One', cursive; font-size: 20px; cursor: pointer; display: none; }
+  .next-btn.show { display: block; animation: pop 0.3s; }
+  .lives-wrap { display: flex; gap: 4px; }
+  .heart.lost { filter: grayscale(1); opacity: 0.4; transform: scale(0.8); }
+  .timer-circle { width: 44px; height: 44px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One', cursive; font-weight: bold; position: relative; }
+  .timer-circle.warning { color: #FF6B6B; animation: pulse 0.6s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255,107,107,0.4)} 100%{box-shadow:0 0 0 8px rgba(255,107,107,0)} }
+  #result { justify-content: center; padding: 20px; text-align: center; }
+  .result-card { background: white; border-radius: 32px; padding: 36px 28px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: pop 0.5s; }
+  .score-big { font-family: 'Fredoka One', cursive; font-size: 64px; color: #667eea; }
+  .stars-row { font-size: 32px; margin: 10px 0; }
+  .result-stats { display: flex; gap: 15px; justify-content: center; margin: 16px 0; }
+  .stat-box { background: #f8f8f8; border-radius: 14px; padding: 12px; min-width: 80px; }
+  .result-btn { flex:1; padding: 15px; border: none; border-radius: var(--radius-sm); font-family: 'Fredoka One', cursive; cursor: pointer; margin: 0 5px; }
+  .result-btn.primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+  .result-btn.secondary { background: #f0f0f0; color: #555; }
+  .confetti-piece { position: fixed; width: 10px; height: 14px; border-radius: 2px; animation: confetti-fall 2.5s ease-in forwards; pointer-events: none; z-index: 200; }
+  .streak-badge { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--gold); color: #333; font-family: 'Fredoka One', cursive; font-size: 28px; padding: 16px 28px; border-radius: 100px; z-index: 201; display: none; white-space: nowrap; animation: pop 0.3s; }
+  @media (max-width: 380px) { .options-grid { grid-template-columns: 1fr; } }
+  .fb-fact { font-size: 12px; color: #555; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="streak-badge" id="streak-badge">🔥 Streak!</div>
+
+<div class="screen active" id="welcome">
+  <div class="welcome-card">
+    <span class="welcome-logo">🌟</span>
+    <h1 class="welcome-title">PP1 Learning Adventure!<br>30 Questions Each</h1>
+    <p style="color:#888; margin:8px 0;">CBC · 7 Subjects · 30 UNIQUE questions per subject</p>
+    <input type="text" id="playerName" class="name-input" placeholder="Your name, superstar!" maxlength="20">
+    <button class="start-btn" onclick="startGame()">🚀 Begin Adventure!</button>
+    <div class="subject-preview">
+      <div class="subj-icon">🔢<span>Maths</span></div><div class="subj-icon">📖<span>English</span></div><div class="subj-icon">🗣️<span>Kisw.</span></div>
+      <div class="subj-icon">🔬<span>Science</span></div><div class="subj-icon">🌍<span>Social</span></div><div class="subj-icon">✝️<span>CRE</span></div><div class="subj-icon">🎨<span>Arts</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="subject-select">
+  <div style="width:100%;max-width:600px;padding:16px;">
+    <div class="top-bar"><div class="player-name" id="display-name">👋 Learner</div><div class="total-score">⭐ <span id="total-points">0</span> pts</div></div>
+    <h2 class="select-title">Pick a Subject → 30 Questions!</h2>
+    <div class="subjects-grid" id="subjects-grid"></div>
+  </div>
+</div>
+
+<div class="screen" id="quiz">
+  <div style="width:100%;max-width:600px;padding:16px;">
+    <div class="quiz-header"><button class="back-btn" onclick="goBack()">←</button><div class="quiz-subject-info"><span id="q-emoji-h">🔢</span><span id="q-subj-name">Maths</span></div><div class="lives-wrap" id="lives-wrap"></div><div class="quiz-score-badge">⭐ <span id="q-score">0</span></div></div>
+    <div class="progress-wrap"><div class="progress-text"><span id="q-num-text">Question 1 of 30</span><div class="timer-circle" id="timer-circle"><span id="timer-num">15</span></div></div><div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div></div>
+    <div class="question-card"><span class="q-emoji" id="q-big-emoji"></span><div class="q-text" id="q-text"></div><div class="options-grid" id="options-grid"></div></div>
+    <div class="feedback-banner" id="feedback-banner"><span class="fb-emoji" id="fb-emoji">✅</span><div><div class="fb-text" id="fb-text"></div><div class="fb-fact" id="fb-fact"></div></div></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next →</button>
+  </div>
+</div>
+
+<div class="screen" id="result">
+  <div class="result-card"><span class="result-trophy" id="result-trophy">🏆</span><h2 class="result-title" id="result-title">Great Job!</h2><p class="result-subtitle" id="result-subtitle"></p>
+  <div class="score-display"><div class="score-big" id="res-score">0</div><div class="score-label">POINTS</div></div>
+  <div class="stars-row" id="res-stars">⭐⭐⭐</div><div class="result-stats"><div class="stat-box"><div class="stat-num" id="res-correct">0</div><div class="stat-lbl">Correct</div></div><div class="stat-box"><div class="stat-num" id="res-wrong">0</div><div class="stat-lbl">Wrong</div></div><div class="stat-box"><div class="stat-num" id="res-pct">0%</div><div class="stat-lbl">Score</div></div></div>
+  <div class="result-msg" id="result-msg" style="margin:12px 0;"></div><div class="result-btns" style="display:flex; gap:10px;"><button class="result-btn secondary" onclick="showSubjectSelect()">📚 Subjects</button><button class="result-btn primary" onclick="retrySubject()">🔄 Try Again</button></div></div>
+</div>
+
+<script>
+// ============================================================
+// 30 UNIQUE QUESTIONS PER SUBJECT - NO REPETITIONS
+// Each subject has exactly 30 distinct questions with unique content
+// ============================================================
+
+const SUBJECTS_DATA = [
+  { id: 'math', name: 'Maths', emoji: '🔢', class: 'math', color: '#FF6B6B',
+    questions: [
+      {q:"How many fingers do you have on ONE hand?", e:"✋", opts:["3","5","4","6"], ans:1, fact:"Each hand has 5 fingers!"},
+      {q:"What comes after number 5?", e:"🔢", opts:["4","7","6","8"], ans:2, fact:"5 + 1 = 6!"},
+      {q:"Count the apples: 🍎🍎🍎. How many?", e:"🍎", opts:["2","4","3","1"], ans:2, fact:"1,2,3 — three apples!"},
+      {q:"What is 2 + 2?", e:"➕", opts:["3","5","4","6"], ans:2, fact:"2+2=4!"},
+      {q:"Which number is BIGGEST?", e:"📊", opts:["3","9","5","7"], ans:1, fact:"9 is biggest!"},
+      {q:"How many wheels does a bicycle have?", e:"🚲", opts:["4","3","2","1"], ans:2, fact:"Bicycle has 2 wheels!"},
+      {q:"What shape has 3 sides?", e:"🔺", opts:["Square","Circle","Triangle","Rectangle"], ans:2, fact:"Triangle has 3 sides!"},
+      {q:"What is 1 + 1?", e:"➕", opts:["3","2","1","4"], ans:1, fact:"1+1=2!"},
+      {q:"How many legs does a dog have?", e:"🐕", opts:["2","6","4","8"], ans:2, fact:"Dogs have 4 legs!"},
+      {q:"Which number comes before 4?", e:"🔢", opts:["5","2","3","6"], ans:2, fact:"3 comes before 4!"},
+      {q:"What is 5 - 2?", e:"➖", opts:["4","2","3","1"], ans:2, fact:"5-2=3!"},
+      {q:"How many days are in ONE week?", e:"📅", opts:["5","8","7","6"], ans:2, fact:"7 days in a week!"},
+      {q:"What shape is a ball?", e:"⚽", opts:["Square","Circle","Triangle","Rectangle"], ans:1, fact:"A ball is a circle/sphere!"},
+      {q:"What is 3 + 1?", e:"➕", opts:["5","3","4","2"], ans:2, fact:"3+1=4!"},
+      {q:"How many sides does a square have?", e:"🟦", opts:["3","5","4","6"], ans:2, fact:"Square has 4 sides!"},
+      {q:"Which is SMALLEST? 2, 8, 5, 1", e:"🔢", opts:["2","8","5","1"], ans:3, fact:"1 is smallest!"},
+      {q:"How many months in a year?", e:"📆", opts:["10","12","11","13"], ans:1, fact:"12 months!"},
+      {q:"What is 4 + 3?", e:"➕", opts:["6","8","7","9"], ans:2, fact:"4+3=7!"},
+      {q:"How many eggs in half a dozen?", e:"🥚", opts:["3","8","6","4"], ans:2, fact:"Half dozen = 6 eggs!"},
+      {q:"What is 10 - 3?", e:"➖", opts:["5","7","6","8"], ans:1, fact:"10-3=7!"},
+      {q:"How many corners does a triangle have?", e:"🔺", opts:["2","4","3","5"], ans:2, fact:"Triangle has 3 corners!"},
+      {q:"What number is missing: 2,4,6,___,10", e:"🔢", opts:["5","7","8","9"], ans:1, fact:"8 comes after 6!"},
+      {q:"How many hands do you have?", e:"🖐️", opts:["1","3","2","4"], ans:2, fact:"You have 2 hands!"},
+      {q:"What is 6 + 2?", e:"➕", opts:["9","7","8","10"], ans:2, fact:"6+2=8!"},
+      {q:"How many eyes does a person have?", e:"👀", opts:["1","3","2","4"], ans:2, fact:"2 eyes!"},
+      {q:"What comes after 9?", e:"🔢", opts:["8","7","10","11"], ans:2, fact:"10 comes after 9!"},
+      {q:"What is 0 + 5?", e:"➕", opts:["4","6","5","7"], ans:2, fact:"0+5=5!"},
+      {q:"How many legs on a spider?", e:"🕷️", opts:["6","4","8","10"], ans:2, fact:"Spiders have 8 legs!"},
+      {q:"Which is more: 7 or 4?", e:"📊", opts:["4","7","Same","Both"], ans:1, fact:"7 is more than 4!"},
+      {q:"What is 8 - 4?", e:"➖", opts:["5","3","4","2"], ans:2, fact:"8-4=4!"}
+    ]},
+  { id: 'eng', name: 'English', emoji: '📖', class: 'eng', color: '#4ECDC4',
+    questions: [
+      {q:"Which letter comes FIRST in the alphabet?", e:"🔤", opts:["B","Z","A","C"], ans:2, fact:"A is first!"},
+      {q:"Which word rhymes with CAT?", e:"🐱", opts:["Dog","Bat","Run","Sun"], ans:1, fact:"Cat and bat rhyme!"},
+      {q:"How many letters in DOG?", e:"🐶", opts:["2","4","3","5"], ans:2, fact:"D-O-G = 3 letters!"},
+      {q:"Which is a COLOUR word?", e:"🎨", opts:["Jump","Big","Red","Run"], ans:2, fact:"Red is a colour!"},
+      {q:"What ends a sentence?", e:"📝", opts:["Comma","Full stop","Question mark","All"], ans:1, fact:"Full stop (.) ends a sentence!"},
+      {q:"Opposite of big?", e:"📏", opts:["Huge","Large","Small","Tall"], ans:2, fact:"Small is opposite!"},
+      {q:"'SUN' begins with which letter?", e:"☀️", opts:["M","S","T","B"], ans:1, fact:"S for Sun!"},
+      {q:"Which is an ANIMAL word?", e:"🦁", opts:["Table","Chair","Lion","Book"], ans:2, fact:"Lion is an animal!"},
+      {q:"Word that rhymes with BALL?", e:"⚽", opts:["Ship","Tall","Fell","Bus"], ans:1, fact:"Ball and tall rhyme!"},
+      {q:"How many vowels in 'APPLE'?", e:"🍎", opts:["1","3","2","4"], ans:1, fact:"A and E — 2 vowels!"},
+      {q:"Baby cat is called?", e:"🐱", opts:["Puppy","Calf","Kitten","Foal"], ans:2, fact:"A baby cat is a kitten!"},
+      {q:"Which is a NUMBER word?", e:"🔢", opts:["Blue","Seven","Happy","Tall"], ans:1, fact:"Seven is a number!"},
+      {q:"Last letter of alphabet?", e:"🔤", opts:["X","W","Z","Y"], ans:2, fact:"Z is last!"},
+      {q:"Missing letter: C_T", e:"🐈", opts:["A","O","E","I"], ans:0, fact:"CAT — A is missing!"},
+      {q:"Which is a GREETING?", e:"👋", opts:["Goodbye","Hello","Thank you","Sorry"], ans:1, fact:"Hello is a greeting!"},
+      {q:"Question sentence ends with?", e:"❓", opts:["Full stop","Exclamation","Question mark","Comma"], ans:2, fact:"Question mark (?)"},
+      {q:"Which is a BODY PART?", e:"🫀", opts:["Flower","Nose","Table","Sky"], ans:1, fact:"Nose is a body part!"},
+      {q:"How many letters in 'MAN'?", e:"👨", opts:["2","4","3","5"], ans:2, fact:"M-A-N = 3 letters!"},
+      {q:"Rhymes with HEN?", e:"🐔", opts:["Dog","Cat","Ten","Pig"], ans:2, fact:"Hen and ten rhyme!"},
+      {q:"What is the opposite of 'hot'?", e:"🔥", opts:["Warm","Cold","Spicy","Sweet"], ans:1, fact:"Cold is opposite!"},
+      {q:"Which word has the 'sh' sound?", e:"🔊", opts:["Cat","Ship","Dog","Sun"], ans:1, fact:"Ship has 'sh' sound!"},
+      {q:"What is the plural of 'cat'?", e:"🐱", opts:["Cat","Cats","Caties","Cates"], ans:1, fact:"Cats — add 's'!"},
+      {q:"Which is a doing word (verb)?", e:"🏃", opts:["Red","Run","Big","Happy"], ans:1, fact:"Run is an action!"},
+      {q:"What is the first word in 'The dog ran'?", e:"📖", opts:["dog","ran","The","the"], ans:2, fact:"'The' is first!"},
+      {q:"Which letter is in 'ball' but not in 'cat'?", e:"🔤", opts:["A","L","C","T"], ans:1, fact:"L is in ball!"},
+      {q:"What does 'UP' mean?", e:"⬆️", opts:["Down","Below","Higher","Under"], ans:2, fact:"Up means higher!"},
+      {q:"Which word is a feeling?", e:"😊", opts:["Table","Happy","Run","Blue"], ans:1, fact:"Happy is a feeling!"},
+      {q:"How many syllables in 'butterfly'?", e:"🦋", opts:["2","3","4","5"], ans:1, fact:"But-ter-fly = 3 syllables!"},
+      {q:"What is the opposite of 'fast'?", e:"🐢", opts:["Quick","Slow","Rapid","Swift"], ans:1, fact:"Slow is opposite!"},
+      {q:"Which word starts with the same sound as 'fish'?", e:"🐟", opts:["Goat","Fox","House","Ball"], ans:1, fact:"Fox starts with F too!"}
+    ]},
+  { id: 'kis', name: 'Kiswahili', emoji: '🗣️', class: 'kis', color: '#45B7D1',
+    questions: [
+      {q:"'Habari' means?", e:"👋", opts:["Goodbye","Hello/News","Thank you","Sorry"], ans:1, fact:"Habari means news/greeting!"},
+      {q:"Water in Kiswahili?", e:"💧", opts:["Moto","Maji","Chakula","Nyumba"], ans:1, fact:"Maji means water!"},
+      {q:"'Asante' means?", e:"🙏", opts:["Please","Sorry","Thank you","Welcome"], ans:2, fact:"Asante = thank you!"},
+      {q:"'Mama' means?", e:"👩", opts:["Father","Sister","Mother","Brother"], ans:2, fact:"Mama = mother!"},
+      {q:"School in Kiswahili?", e:"🏫", opts:["Nyumba","Shule","Hospitali","Duka"], ans:1, fact:"Shule = school!"},
+      {q:"'Simba' means?", e:"🦁", opts:["Elephant","Giraffe","Lion","Zebra"], ans:2, fact:"Simba = lion!"},
+      {q:"'Pole pole' means?", e:"🐢", opts:["Very fast","Slowly slowly","Come here","Go away"], ans:1, fact:"Pole pole = slowly!"},
+      {q:"'Kula' means?", e:"🍽️", opts:["Sleep","Sing","Eat","Play"], ans:2, fact:"Kula = to eat!"},
+      {q:"'Nyumba' means?", e:"🏠", opts:["School","Shop","Hospital","House"], ans:3, fact:"Nyumba = house!"},
+      {q:"'Ndiyo' means?", e:"✅", opts:["No","Maybe","Yes","Stop"], ans:2, fact:"Ndiyo = yes!"},
+      {q:"'Kubwa' means?", e:"📏", opts:["Small","Big","Good","Bad"], ans:1, fact:"Kubwa = big!"},
+      {q:"'Chakula' means?", e:"🍛", opts:["Water","Food","Clothes","Book"], ans:1, fact:"Chakula = food!"},
+      {q:"'Mwalimu' means?", e:"👩‍🏫", opts:["Student","Parent","Teacher","Doctor"], ans:2, fact:"Mwalimu = teacher!"},
+      {q:"Book in Kiswahili?", e:"📚", opts:["Penseli","Daftari","Kitabu","Kalamu"], ans:2, fact:"Kitabu = book!"},
+      {q:"'Haraka' means?", e:"⚡", opts:["Slowly","Quickly","Quietly","Loudly"], ans:1, fact:"Haraka = hurry!"},
+      {q:"'Mtu' means?", e:"🧑", opts:["Animal","Tree","Person","River"], ans:2, fact:"Mtu = person!"},
+      {q:"'Kesho' means?", e:"📅", opts:["Yesterday","Today","Tomorrow","Week"], ans:2, fact:"Kesho = tomorrow!"},
+      {q:"'Ndege' means?", e:"🦜", opts:["Fish","Bird","Insect","Animal"], ans:1, fact:"Ndege = bird!"},
+      {q:"'Lala' means?", e:"😴", opts:["Play","Eat","Sleep","Dance"], ans:2, fact:"Lala = sleep!"},
+      {q:"'Jina' means?", e:"📛", opts:["Name","Age","School","Home"], ans:0, fact:"Jina = name!"},
+      {q:"'Mzuri' means?", e:"👍", opts:["Bad","Good/Ugly","Beautiful","Old"], ans:1, fact:"Mzuri = good/beautiful!"},
+      {q:"'Mbuzi' means?", e:"🐐", opts:["Cow","Goat","Sheep","Chicken"], ans:1, fact:"Mbuzi = goat!"},
+      {q:"'Safari' means?", e:"🚗", opts:["Rest","Journey","Sleep","Eat"], ans:1, fact:"Safari = journey!"},
+      {q:"'Karibu' means?", e:"🚪", opts:["Go away","Welcome","Thank you","Sorry"], ans:1, fact:"Karibu = welcome!"},
+      {q:"'Samaki' means?", e:"🐟", opts:["Bird","Fish","Cow","Snake"], ans:1, fact:"Samaki = fish!"},
+      {q:"'Nani' means?", e:"❓", opts:["What","Where","Who","When"], ans:2, fact:"Nani = who?"},
+      {q:"'Pesa' means?", e:"💰", opts:["Food","Water","Money","House"], ans:2, fact:"Pesa = money!"},
+      {q:"'Moto' means?", e:"🔥", opts:["Water","Fire","Cold","Wind"], ans:1, fact:"Moto = fire!"},
+      {q:"'Rafiki' means?", e:"👫", opts:["Enemy","Teacher","Friend","Parent"], ans:2, fact:"Rafiki = friend!"},
+      {q:"'Hapana' means?", e:"❌", opts:["Yes","Maybe","No","Please"], ans:2, fact:"Hapana = no!"}
+    ]},
+  { id: 'sci', name: 'Science', emoji: '🔬', class: 'sci', color: '#96CEB4',
+    questions: [
+      {q:"What do plants need to grow?", e:"🌱", opts:["Ice cream","Sunlight & water","Toys","Music"], ans:1, fact:"Sunlight and water!"},
+      {q:"Which animal gives us MILK?", e:"🥛", opts:["Dog","Bird","Cow","Fish"], ans:2, fact:"Cows give milk!"},
+      {q:"What do we use EYES for?", e:"👀", opts:["Hearing","Smelling","Seeing","Tasting"], ans:2, fact:"Eyes are for seeing!"},
+      {q:"Which is a FRUIT?", e:"🍊", opts:["Carrot","Potato","Orange","Cabbage"], ans:2, fact:"Orange is a fruit!"},
+      {q:"What do caterpillars turn into?", e:"🦋", opts:["Birds","Butterflies","Frogs","Bees"], ans:1, fact:"Caterpillar → butterfly!"},
+      {q:"Where does the sun GO at night?", e:"🌙", opts:["Hides underground","Earth rotates","Flies away","Burns out"], ans:1, fact:"Earth spins making night!"},
+      {q:"Which body part do we BREATHE with?", e:"🫁", opts:["Heart","Lungs","Stomach","Brain"], ans:1, fact:"Lungs help us breathe!"},
+      {q:"What is frozen water?", e:"🧊", opts:["Steam","Rain","Ice","Cloud"], ans:2, fact:"Ice is frozen water!"},
+      {q:"Which is a MAMMAL?", e:"🐘", opts:["Crocodile","Frog","Elephant","Parrot"], ans:2, fact:"Elephants are mammals!"},
+      {q:"What does a seed grow into?", e:"🌿", opts:["Rock","Cloud","Plant","Animal"], ans:2, fact:"Seeds grow into plants!"},
+      {q:"Which animal lays EGGS?", e:"🥚", opts:["Cow","Dog","Hen","Cat"], ans:2, fact:"Hens lay eggs!"},
+      {q:"Biggest planet?", e:"🪐", opts:["Earth","Mars","Jupiter","Saturn"], ans:2, fact:"Jupiter is biggest!"},
+      {q:"What makes food in plants?", e:"🍃", opts:["Roots","Stem","Leaves","Flower"], ans:2, fact:"Leaves make food!"},
+      {q:"What keeps us HEALTHY?", e:"💪", opts:["Junk food","Exercise & good food","No sleep","No water"], ans:1, fact:"Exercise and healthy food!"},
+      {q:"Animal that lives in water AND land?", e:"🐸", opts:["Lion","Frog","Eagle","Snake"], ans:1, fact:"Frogs are amphibians!"},
+      {q:"What colour is healthy grass?", e:"🌿", opts:["Red","Blue","Green","Yellow"], ans:2, fact:"Grass is green!"},
+      {q:"Which is a VEGETABLE?", e:"🥕", opts:["Mango","Banana","Carrot","Apple"], ans:2, fact:"Carrot is a vegetable!"},
+      {q:"What do fish use to breathe?", e:"🐟", opts:["Lungs","Gills","Skin","Fins"], ans:1, fact:"Fish have gills!"},
+      {q:"Which sense uses the NOSE?", e:"👃", opts:["Taste","Hearing","Smell","Sight"], ans:2, fact:"Nose is for smell!"},
+      {q:"What is rain made of?", e:"🌧️", opts:["Milk","Sand","Water","Juice"], ans:2, fact:"Rain is water!"},
+      {q:"What do bees make?", e:"🐝", opts:["Milk","Honey","Butter","Jam"], ans:1, fact:"Bees make honey!"},
+      {q:"What is the sun?", e:"☀️", opts:["Planet","Star","Moon","Asteroid"], ans:1, fact:"Sun is a star!"},
+      {q:"Which animal has a trunk?", e:"🐘", opts:["Giraffe","Elephant","Lion","Zebra"], ans:1, fact:"Elephants have trunks!"},
+      {q:"What does a chick hatch from?", e:"🐣", opts:["Nest","Egg","Tree","Water"], ans:1, fact:"Chicks hatch from eggs!"},
+      {q:"Which part of the body pumps blood?", e:"❤️", opts:["Brain","Lungs","Heart","Stomach"], ans:2, fact:"Heart pumps blood!"},
+      {q:"What is a baby frog called?", e:"🐸", opts:["Caterpillar","Tadpole","Puppy","Calf"], ans:1, fact:"Baby frog = tadpole!"},
+      {q:"Which planet do we live on?", e:"🌍", opts:["Mars","Jupiter","Earth","Venus"], ans:2, fact:"We live on Earth!"},
+      {q:"What do trees produce for us to breathe?", e:"🌳", opts:["Carbon dioxide","Oxygen","Nitrogen","Water"], ans:1, fact:"Trees make oxygen!"},
+      {q:"Which animal is known as 'ship of the desert'?", e:"🐫", opts:["Horse","Camel","Donkey","Elephant"], ans:1, fact:"Camel is ship of desert!"},
+      {q:"What is the hardest substance in the body?", e:"🦷", opts:["Bone","Tooth enamel","Skin","Hair"], ans:1, fact:"Tooth enamel is hardest!"}
+    ]},
+  { id: 'soc', name: 'Social Studies', emoji: '🌍', class: 'soc', color: '#FFD166',
+    questions: [
+      {q:"Capital of Kenya?", e:"🇰🇪", opts:["Mombasa","Nakuru","Nairobi","Kisumu"], ans:2, fact:"Nairobi is capital!"},
+      {q:"Leader of our school?", e:"🏫", opts:["Doctor","Headteacher","Nurse","Pilot"], ans:1, fact:"Headteacher leads school!"},
+      {q:"Kenya's national flag colours?", e:"🚩", opts:["Only red","Black,red,green,white","Only green","Blue,white"], ans:1, fact:"Black, red, green, white!"},
+      {q:"People in our community?", e:"🏘️", opts:["Tourists","Neighbours","Strangers","Robots"], ans:1, fact:"Neighbours are community!"},
+      {q:"Largest lake in East Africa?", e:"🌊", opts:["River Tana","Lake Nakuru","Lake Victoria","Ocean"], ans:2, fact:"Lake Victoria!"},
+      {q:"Kenya's national animal?", e:"🦁", opts:["Elephant","Giraffe","Lion","Zebra"], ans:2, fact:"Lion is national animal!"},
+      {q:"What does a DOCTOR do?", e:"👨‍⚕️", opts:["Builds houses","Teaches","Treats sick","Grows food"], ans:2, fact:"Doctors treat sick people!"},
+      {q:"Where does the sun RISE?", e:"🌅", opts:["West","North","East","South"], ans:2, fact:"Sun rises in east!"},
+      {q:"Head of family?", e:"👨‍👩‍👧‍👦", opts:["Baby","Parents","Cat","Teacher"], ans:1, fact:"Parents head the family!"},
+      {q:"What do FARMERS do?", e:"🌾", opts:["Catch fish","Build roads","Grow food","Fix cars"], ans:2, fact:"Farmers grow food!"},
+      {q:"Name of our COUNTRY?", e:"🇰🇪", opts:["Uganda","Tanzania","Ethiopia","Kenya"], ans:3, fact:"We live in Kenya!"},
+      {q:"What is MONEY used for?", e:"💰", opts:["Eating","To buy things","Playing","Sleeping"], ans:1, fact:"Money buys things!"},
+      {q:"Pedestrians should use?", e:"🚶", opts:["Walk anywhere","Pavement","Road middle","Ignore signs"], ans:1, fact:"Use the pavement!"},
+      {q:"POLICE OFFICER's job?", e:"👮", opts:["Teach","Fly planes","Keep us safe","Sell food"], ans:2, fact:"Police keep us safe!"},
+      {q:"Shape of a GLOBE?", e:"🌐", opts:["Flat","Round/sphere","Triangle","Rectangle"], ans:1, fact:"Earth is round!"},
+      {q:"Which is NOT transport?", e:"🚗", opts:["Bicycle","Car","Table","Aeroplane"], ans:2, fact:"Table is furniture!"},
+      {q:"Where go when SICK?", e:"🏥", opts:["Market","Hospital","School","Park"], ans:1, fact:"Hospital for sick!"},
+      {q:"Where to put WASTE?", e:"🗑️", opts:["River","Ground","Dustbin","Road"], ans:2, fact:"Put waste in dustbin!"},
+      {q:"Kenya's national language?", e:"🗣️", opts:["English only","French","Kiswahili","Arabic"], ans:2, fact:"Kiswahili is national language!"},
+      {q:"What is FAMILY?", e:"👨‍👩‍👧", opts:["Friends","People related to us","Strangers","Neighbours"], ans:1, fact:"Family are relatives!"},
+      {q:"Who helps put out fires?", e:"🚒", opts:["Doctor","Teacher","Firefighter","Pilot"], ans:2, fact:"Firefighters!"},
+      {q:"What do we call the place we live?", e:"🏠", opts:["School","Home","Shop","Hospital"], ans:1, fact:"Home is where we live!"},
+      {q:"Which is a means of water transport?", e:"⛵", opts:["Car","Train","Boat","Bicycle"], ans:2, fact:"Boat travels on water!"},
+      {q:"What does a pilot fly?", e:"✈️", opts:["Car","Train","Aeroplane","Ship"], ans:2, fact:"Pilot flies aeroplane!"},
+      {q:"Who grows crops?", e:"👨‍🌾", opts:["Teacher","Doctor","Farmer","Policeman"], ans:2, fact:"Farmer grows crops!"},
+      {q:"What do we call the day of rest?", e:"😴", opts:["Monday","Friday","Sunday","Wednesday"], ans:2, fact:"Sunday is rest day!"},
+      {q:"Which is a celebration in Kenya?", e:"🎉", opts:["Jamhuri Day","Easter only","Christmas only","All"], ans:3, fact:"Many celebrations!"},
+      {q:"What is a map?", e:"🗺️", opts:["Book","Drawing of places","Song","Dance"], ans:1, fact:"Map shows places!"},
+      {q:"Who delivers letters?", e:"📬", opts:["Teacher","Postman","Doctor","Pilot"], ans:1, fact:"Postman delivers mail!"},
+      {q:"What do we call the person who leads the country?", e:"👨‍💼", opts:["Governor","President","Mayor","Chief"], ans:1, fact:"President leads Kenya!"}
+    ]},
+  { id: 'cre', name: 'C.R.E', emoji: '✝️', class: 'cre', color: '#DDA0DD',
+    questions: [
+      {q:"Who made the world?", e:"🌍", opts:["Animals","People","God","Trees"], ans:2, fact:"God created the world!"},
+      {q:"Holy book of Christians?", e:"📖", opts:["Quran","Torah","Bible","Vedas"], ans:2, fact:"The Bible!"},
+      {q:"Where was Jesus born?", e:"👶", opts:["Jerusalem","Nazareth","Bethlehem","Cairo"], ans:2, fact:"Bethlehem!"},
+      {q:"What do Christians do at church?", e:"⛪", opts:["Buy food","Watch TV","Worship God","Play"], ans:2, fact:"Worship God!"},
+      {q:"Jesus's mother?", e:"🌹", opts:["Elizabeth","Ruth","Mary","Sarah"], ans:2, fact:"Mary was Jesus' mother!"},
+      {q:"What is PRAYER?", e:"🙏", opts:["Singing","Talking to God","Reading","Playing"], ans:1, fact:"Prayer is talking to God!"},
+      {q:"How many days to create world?", e:"🌅", opts:["3","5","6","10"], ans:2, fact:"6 days, rested 7th!"},
+      {q:"Golden Rule?", e:"💛", opts:["Be rich","Love others","Be best","Win"], ans:1, fact:"Love your neighbour!"},
+      {q:"Who helped the hurt man?", e:"🤝", opts:["Priest","Levite","Good Samaritan","Soldier"], ans:2, fact:"Good Samaritan!"},
+      {q:"When did God rest?", e:"😴", opts:["Day5","Day6","Day7","Day4"], ans:2, fact:"7th day — Sabbath!"},
+      {q:"What is Christmas about?", e:"🎄", opts:["New year","Jesus' birth","Easter","Harvest"], ans:1, fact:"Jesus' birthday!"},
+      {q:"Who built the ark?", e:"⛵", opts:["Moses","David","Noah","Abraham"], ans:2, fact:"Noah built the ark!"},
+      {q:"Where did Jesus grow up?", e:"🏘️", opts:["Bethlehem","Jerusalem","Nazareth","Egypt"], ans:2, fact:"Nazareth!"},
+      {q:"What is Easter about?", e:"🐣", opts:["Jesus' birth","Jesus rose from dead","End of year","Angels"], ans:1, fact:"Jesus rose from dead!"},
+      {q:"First book of Bible?", e:"📜", opts:["Exodus","Psalms","Genesis","Matthew"], ans:2, fact:"Genesis means beginning!"},
+      {q:"Who was swallowed by a fish?", e:"🐋", opts:["David","Moses","Jonah","Elijah"], ans:2, fact:"Jonah and the fish!"},
+      {q:"Fruit of the Spirit?", e:"🍎", opts:["Money","Love, joy, peace","Fast cars","Good food"], ans:1, fact:"Love, joy, peace!"},
+      {q:"What does AMEN mean?", e:"🙏", opts:["Goodbye","Finish","So be it","Start"], ans:2, fact:"So be it / I agree!"},
+      {q:"Who was the shepherd boy who became king?", e:"👑", opts:["Solomon","David","Samuel","Saul"], ans:1, fact:"David!"},
+      {q:"What did Jesus turn water into?", e:"🍷", opts:["Juice","Milk","Wine","Oil"], ans:2, fact:"Water into wine!"},
+      {q:"How many disciples did Jesus have?", e:"👥", opts:["10","12","14","8"], ans:1, fact:"12 disciples!"},
+      {q:"Who betrayed Jesus?", e:"😔", opts:["Peter","John","Judas","James"], ans:2, fact:"Judas betrayed Jesus!"},
+      {q:"What is the Lord's Prayer?", e:"🙏", opts:["Song","Prayer Jesus taught","Story","Commandment"], ans:1, fact:"Prayer Jesus taught!"},
+      {q:"Who led Israelites out of Egypt?", e:"🏜️", opts:["Abraham","Moses","Joshua","David"], ans:1, fact:"Moses!"},
+      {q:"What did God give Moses on Mount Sinai?", e:"📜", opts:["Food","Water","Ten Commandments","Map"], ans:2, fact:"Ten Commandments!"},
+      {q:"Who was the first man?", e:"👨", opts:["Jesus","Moses","Adam","Abraham"], ans:2, fact:"Adam!"},
+      {q:"Who was the first woman?", e:"👩", opts:["Eve","Mary","Sarah","Ruth"], ans:0, fact:"Eve!"},
+      {q:"What animal spoke to Balaam?", e:"🐴", opts:["Donkey","Horse","Camel","Sheep"], ans:0, fact:"Donkey spoke!"},
+      {q:"Who was thrown into the lions' den?", e:"🦁", opts:["David","Daniel","Joseph","Samuel"], ans:1, fact:"Daniel!"},
+      {q:"What is grace?", e:"✨", opts:["Money","God's free gift","Food","House"], ans:1, fact:"God's undeserved favour!"}
+    ]},
+  { id: 'art', name: 'Creative Arts', emoji: '🎨', class: 'art', color: '#FFA07A',
+    questions: [
+      {q:"PRIMARY colours?", e:"🎨", opts:["Green,orange,purple","Red,blue,yellow","Black,white,grey","Pink,brown,gold"], ans:1, fact:"Red, blue, yellow!"},
+      {q:"What draws a straight line?", e:"📏", opts:["Pencil only","Ruler","Eraser","Crayon"], ans:1, fact:"A ruler helps!"},
+      {q:"Instrument that BANGS?", e:"🥁", opts:["Flute","Guitar","Drum","Violin"], ans:2, fact:"Drum — percussion!"},
+      {q:"Red + Blue = ?", e:"🔵", opts:["Green","Orange","Purple","Brown"], ans:2, fact:"Red+Blue=Purple!"},
+      {q:"What is CLAY for?", e:"🏺", opts:["Drawing","Painting","Moulding","Cutting"], ans:2, fact:"Clay for 3D art!"},
+      {q:"Musical instrument?", e:"🎵", opts:["Pencil","Paintbrush","Piano","Scissors"], ans:2, fact:"Piano makes music!"},
+      {q:"What does a SCULPTOR make?", e:"🗿", opts:["Paintings","Poems","3D art","Songs"], ans:2, fact:"Sculptor makes 3D art!"},
+      {q:"Red + Yellow = ?", e:"🍊", opts:["Purple","Green","Orange","Brown"], ans:2, fact:"Red+Yellow=Orange!"},
+      {q:"Moving to MUSIC is called?", e:"💃", opts:["Drawing","Singing","Dancing","Painting"], ans:2, fact:"Dancing!"},
+      {q:"Blue + Yellow = ?", e:"🟢", opts:["Purple","Orange","Green","Brown"], ans:2, fact:"Blue+Yellow=Green!"},
+      {q:"CANVAS is used for?", e:"🖼️", opts:["Writing maths","Painting on","Making music","Cooking"], ans:1, fact:"Painting on canvas!"},
+      {q:"What ERASES pencil marks?", e:"✏️", opts:["Ruler","Pen","Eraser","Scissors"], ans:2, fact:"Eraser removes marks!"},
+      {q:"What is COLLAGE art?", e:"🗞️", opts:["Singing","Pasting materials","Dancing","Clay"], ans:1, fact:"Collage = pasting!"},
+      {q:"Someone who SINGS is a?", e:"🎤", opts:["Painter","Sculptor","Singer","Dancer"], ans:2, fact:"Singer uses voice!"},
+      {q:"Black + White = ?", e:"⬜", opts:["Brown","Grey","Purple","Blue"], ans:1, fact:"Black+White=Grey!"},
+      {q:"Traditional African bead craft?", e:"📿", opts:["Origami","Beadwork","Mosaic","Weaving"], ans:1, fact:"Beadwork is African!"},
+      {q:"What makes a hole in paper?", e:"📌", opts:["Pencil","Scissors","Hole puncher","Ruler"], ans:2, fact:"Hole puncher!"},
+      {q:"Warm colour?", e:"🔥", opts:["Blue","Green","Red","Purple"], ans:2, fact:"Red is warm!"},
+      {q:"Cool colour?", e:"❄️", opts:["Red","Orange","Blue","Yellow"], ans:2, fact:"Blue is cool!"},
+      {q:"What do we call a drawing of a person?", e:"👤", opts:["Landscape","Portrait","Still life","Abstract"], ans:1, fact:"Portrait!"},
+      {q:"What is a self-portrait?", e:"🤳", opts:["Drawing of another","Drawing of yourself","Drawing of house","Drawing of animal"], ans:1, fact:"Your own picture!"},
+      {q:"Which tool is used for painting?", e:"🖌️", opts:["Ruler","Scissors","Paintbrush","Eraser"], ans:2, fact:"Paintbrush!"},
+      {q:"What is weaving?", e:"🧶", opts:["Painting","Interlacing threads","Singing","Dancing"], ans:1, fact:"Weaving = interlacing!"},
+      {q:"What does a potter make?", e:"🏺", opts:["Paintings","Songs","Pots from clay","Drawings"], ans:2, fact:"Potter makes pots!"},
+      {q:"Which is a secondary colour?", e:"🟣", opts:["Red","Blue","Green","Yellow"], ans:2, fact:"Green is secondary!"},
+      {q:"What does 'texture' mean in art?", e:"🧵", opts:["Colour","How surface feels","Shape","Size"], ans:1, fact:"Texture = feel!"},
+      {q:"What is a mural?", e:"🧱", opts:["Small drawing","Wall painting","Clay pot","Bead necklace"], ans:1, fact:"Mural is wall painting!"},
+      {q:"What is the background in art?", e:"🖼️", opts:["Front objects","Back area of scene","Main subject","Colour only"], ans:1, fact:"Background is back area!"},
+      {q:"What instrument has black and white keys?", e:"🎹", opts:["Guitar","Drum","Piano","Flute"], ans:2, fact:"Piano has keys!"},
+      {q:"What is drama?", e:"🎭", opts:["Painting","Acting a story","Singing song","Drawing"], ans:1, fact:"Drama is acting!"}
+    ]}
+];
+
+// Ensure each subject has exactly 30 questions (they already do)
+SUBJECTS_DATA.forEach(s => {
+  if (s.questions.length !== 30) console.warn(`${s.name} has ${s.questions.length} questions`);
+  // Shuffle questions for variety but keep them unique
+  s.questions = s.questions.sort(() => Math.random() - 0.5);
+});
+
+// GAME STATE
+let playerName = '', totalPoints = 0, subjectScores = {}, subjectStars = {}, currentSubject = null, currentQuestions = [], currentQIndex = 0, currentScore = 0, correctCount = 0, wrongCount = 0, answered = false, lives = 3, streak = 0, timerInterval = null, timeLeft = 15;
+const Q_PER_SESSION = 30;
+
+function createStars() { for(let i=0;i<30;i++){let s=document.createElement('div');s.className='star';s.style.cssText=`width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s`;document.getElementById('stars').appendChild(s);} }
+function startGame(){ playerName = document.getElementById('playerName').value.trim() || 'Star Learner'; showScreen('subject-select'); document.getElementById('display-name').textContent = `👋 ${playerName}`; document.getElementById('total-points').textContent = totalPoints; renderSubjectGrid(); }
+function renderSubjectGrid(){ const grid=document.getElementById('subjects-grid'); grid.innerHTML=''; SUBJECTS_DATA.forEach(s=>{ const stars=subjectStars[s.id]||0; const score=subjectScores[s.id]||0; const card=document.createElement('div'); card.className=`subject-card ${s.class}`; card.innerHTML=`${score>0?`<div class="subj-badge">${score}pts</div>`:''}<span class="subj-emoji">${s.emoji}</span><div class="subj-name">${s.name}</div><div class="subj-progress">30 questions</div><div>${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>`; card.onclick=()=>startSubject(s.id); grid.appendChild(card); }); }
+function startSubject(id){ currentSubject = SUBJECTS_DATA.find(s=>s.id===id); currentQuestions = [...currentSubject.questions]; currentQIndex=0; currentScore=0; correctCount=0; wrongCount=0; lives=3; streak=0; answered=false; document.getElementById('q-emoji-h').textContent=currentSubject.emoji; document.getElementById('q-subj-name').textContent=currentSubject.name; showScreen('quiz'); renderLives(); loadQuestion(); }
+function renderLives(){ const wrap=document.getElementById('lives-wrap'); wrap.innerHTML=''; for(let i=0;i<3;i++){ let h=document.createElement('span'); h.className='heart'+(i>=lives?' lost':''); h.textContent='❤️'; wrap.appendChild(h);} }
+function loadQuestion(){ if(currentQIndex>=currentQuestions.length){ showResult(); return; } const q=currentQuestions[currentQIndex]; answered=false; document.getElementById('q-num-text').textContent=`Question ${currentQIndex+1} of ${Q_PER_SESSION}`; document.getElementById('progress-fill').style.width=`${((currentQIndex)/Q_PER_SESSION)*100}%`; document.getElementById('q-score').textContent=currentScore; document.getElementById('q-big-emoji').textContent=q.e||'📚'; document.getElementById('q-text').textContent=q.q; const opts = q.opts.map((o,i)=>({text:o, isCorrect:i===q.ans})); const shuffled = [...opts].sort(()=>Math.random()-0.5); const grid=document.getElementById('options-grid'); grid.innerHTML=''; shuffled.forEach(opt=>{ const btn=document.createElement('button'); btn.className='option-btn'; btn.innerHTML=opt.text; btn.dataset.correct=opt.isCorrect; btn.onclick=()=>handleAnswer(btn,opt.isCorrect,q); grid.appendChild(btn); }); startTimer(); }
+function startTimer(){ clearInterval(timerInterval); timeLeft=15; updateTimer(); timerInterval=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0 && !answered) timeUp(); },1000); }
+function updateTimer(){ document.getElementById('timer-num').textContent=timeLeft; if(timeLeft<=5) document.getElementById('timer-circle').classList.add('warning'); else document.getElementById('timer-circle').classList.remove('warning'); }
+function timeUp(){ if(answered) return; answered=true; clearInterval(timerInterval); wrongCount++; lives--; renderLives(); const btns=document.querySelectorAll('.option-btn'); btns.forEach(b=>{b.disabled=true; if(b.dataset.correct==='true') b.classList.add('reveal-correct');}); showFeedback(false,`⏰ Time's up!`,currentQuestions[currentQIndex].fact); if(lives<=0) setTimeout(()=>showResult(),1500); else document.getElementById('next-btn').classList.add('show'); }
+function handleAnswer(btn,isCorrect,q){ if(answered) return; answered=true; clearInterval(timerInterval); const btns=document.querySelectorAll('.option-btn'); btns.forEach(b=>b.disabled=true); if(isCorrect){ btn.classList.add('correct'); correctCount++; streak++; let points=10+Math.floor(timeLeft*2)+(streak>=3?5:0); currentScore+=points; totalPoints+=points; document.getElementById('q-score').textContent=currentScore; document.getElementById('total-points').textContent=totalPoints; showFeedback(true,`Correct! +${points} pts ${streak>=3?'🔥 Streak!':''}`,q.fact); if(streak===3||streak===5) showStreakBadge(streak); } else { btn.classList.add('wrong'); wrongCount++; streak=0; lives--; renderLives(); showFeedback(false,`Oops! The correct answer is ${q.opts[q.ans]}`,q.fact); if(lives<=0){ setTimeout(()=>showResult(),1500); return; } } document.getElementById('next-btn').classList.add('show'); }
+function showFeedback(isCorrect,msg,fact){ const fb=document.getElementById('feedback-banner'); fb.className=`feedback-banner ${isCorrect?'correct-fb':'wrong-fb'} show`; document.getElementById('fb-emoji').textContent=isCorrect?'🎉✨':'📚💡'; document.getElementById('fb-text').textContent=msg; document.getElementById('fb-fact').textContent=fact; }
+function nextQuestion(){ currentQIndex++; loadQuestion(); document.getElementById('next-btn').classList.remove('show'); document.getElementById('feedback-banner').classList.remove('show'); }
+function showResult(){ clearInterval(timerInterval); const pct=Math.round((correctCount/Q_PER_SESSION)*100); const stars=pct>=80?3:pct>=50?2:1; subjectScores[currentSubject.id]=Math.max(subjectScores[currentSubject.id]||0,currentScore); subjectStars[currentSubject.id]=Math.max(subjectStars[currentSubject.id]||0,stars); document.getElementById('res-score').textContent=currentScore; document.getElementById('res-correct').textContent=correctCount; document.getElementById('res-wrong').textContent=wrongCount; document.getElementById('res-pct').textContent=pct+'%'; document.getElementById('res-stars').innerHTML='⭐'.repeat(stars)+'☆'.repeat(3-stars); document.getElementById('result-subtitle').textContent=`Completed ${currentSubject.name} (30 questions)!`; document.getElementById('result-msg').innerHTML=stars===3?'🌟 Amazing! Perfect score! 🌟':'Great effort! Keep practising!'; if(stars===3) launchConfetti(); showScreen('result'); }
+function launchConfetti(){ for(let i=0;i<60;i++){ let c=document.createElement('div'); c.className='confetti-piece'; c.style.cssText=`left:${Math.random()*100}vw;top:-20px;background:${['#FFD700','#FF6B6B','#4ECDC4','#667eea'][i%4]};animation-duration:${2+Math.random()}s`; document.body.appendChild(c); setTimeout(()=>c.remove(),3500);} }
+function showStreakBadge(n){ const b=document.getElementById('streak-badge'); b.textContent=`🔥 ${n} in a row!`; b.style.display='block'; setTimeout(()=>b.style.display='none',1300); }
+function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+function showSubjectSelect(){ renderSubjectGrid(); showScreen('subject-select'); document.getElementById('total-points').textContent=totalPoints; }
+function retrySubject(){ if(currentSubject) startSubject(currentSubject.id); }
+function goBack(){ clearInterval(timerInterval); showSubjectSelect(); }
+createStars();
+</script>
+</body>
+</html>

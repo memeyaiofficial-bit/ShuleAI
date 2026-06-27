@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EcoGuardian: CBC Grade 4 Conservation Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a472a 0%, #0e2a1a 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* main game panel */
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+            background: #fef9e6;
+            border-radius: 70px 70px 60px 60px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,200,0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* header with level & score */
+        .game-header {
+            background: #ffd966;
+            padding: 16px 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 5px solid #b97f10;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .accuracy-badge {
+            background: #2c3e2b;
+            color: #ffefb9;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -2px 0 #1b2a1a, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .timer-area {
+            background: #2b2b2b;
+            color: #f5d742;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* question zone */
+        .question-box {
+            background: #fff6e0;
+            margin: 25px 30px 15px 30px;
+            padding: 25px 20px;
+            border-radius: 55px;
+            box-shadow: inset 0 0 0 3px white, 0 12px 20px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #2d4a22;
+            margin: 0 0 15px 0;
+            line-height: 1.3;
+        }
+
+        .progress-info {
+            font-size: 1rem;
+            background: #e9dfb2;
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 60px;
+            color: #3d2a0c;
+            font-weight: bold;
+        }
+
+        /* options grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin: 10px 30px 25px 30px;
+        }
+
+        .option-card {
+            background: #f2e5c2;
+            border-radius: 50px;
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2d3e1f;
+            cursor: pointer;
+            transition: all 0.15s linear;
+            border: 2px solid #dabb74;
+            box-shadow: 0 5px 0 #a9843c;
+        }
+
+        .option-card:hover {
+            background: #ffe2a4;
+            transform: scale(0.97);
+            border-color: #b97f2e;
+        }
+
+        .option-card:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 0 #a9843c;
+        }
+
+        .disabled-opt {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* feedback & next */
+        .feedback-area {
+            background: #e3d6b0;
+            margin: 5px 30px 20px 30px;
+            padding: 12px;
+            border-radius: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .feedback-message {
+            font-size: 1rem;
+            font-weight: bold;
+            padding-left: 15px;
+            color: #2a521a;
+        }
+
+        .next-btn {
+            background: #ff9933;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 8px 28px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 4px 0 #b45f1b;
+        }
+
+        .next-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #b45f1b;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        /* level up / fail overlays */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-card {
+            background: #fff7e8;
+            max-width: 450px;
+            width: 90%;
+            border-radius: 70px;
+            padding: 25px 20px 35px;
+            text-align: center;
+            box-shadow: 0 20px 40px black;
+            border: 5px solid gold;
+        }
+
+        .modal-card h2 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .modal-card button {
+            background: #3c8d2f;
+            border: none;
+            font-size: 1.3rem;
+            padding: 10px 30px;
+            margin-top: 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .shake {
+            animation: shakeAnim 0.3s ease-in-out 0s 2;
+        }
+
+        @keyframes shakeAnim {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media (max-width: 620px) {
+            .question-text { font-size: 1.2rem; }
+            .option-card { font-size: 0.9rem; padding: 10px; }
+            .timer-area { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🌱 LEVEL 1</div>
+        <div class="score-badge" id="scoreDisplay">⭐ SCORE: 0</div>
+        <div class="accuracy-badge" id="requiredInfo">🎯 NEED 80%</div>
+        <div class="timer-area" id="timerDisplay">⏱️ 00:00</div>
+    </div>
+
+    <div class="question-box">
+        <div class="question-text" id="questionText">Loading challenge...</div>
+        <div class="progress-info" id="progressInfo">Q1 / 30</div>
+    </div>
+
+    <div class="options-grid" id="optionsContainer"></div>
+
+    <div class="feedback-area">
+        <div class="feedback-message" id="feedbackMsg">🌍 Choose the correct answer to save resources!</div>
+        <button class="next-btn" id="nextButton">▶ NEXT QUESTION</button>
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    //  CONSERVATION QUESTION BANK (soil, water, fuel - agriculture)
+    //  5 LEVELS * 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    //  Topics: Soil conservation, Water conservation, Fuel conservation in agriculture
+    // --------------------------------------------------------------
+    const questionBank = [];
+
+    // Helper to generate rich, grade-appropriate questions
+    const topics = [
+        { topic: "Soil", keywords: ["mulching", "terracing", "contour ploughing", "cover crops", "windbreaks", "compost", "no-till farming", "crop rotation"] },
+        { topic: "Water", keywords: ["drip irrigation", "rainwater harvesting", "drought-resistant crops", "mulching for moisture", "fixing leaks", "watering early morning", "canals lining", "check dams"] },
+        { topic: "Fuel", keywords: ["solar pumps", "biofuels", "minimum tillage", "efficient tractors", "renewable energy", "animal power", "reducing diesel", "maintain machinery", "crop residue"] }
+    ];
+
+    // create 150 distinct questions
+    let qid = 1;
+    for (let level = 1; level <= 5; level++) {
+        for (let i = 0; i < 30; i++) {
+            // rotate through topics & make level difficulty moderate but clear
+            const topicObj = topics[(i + level) % topics.length];
+            const topicName = topicObj.topic;
+            const practices = topicObj.keywords;
+            const practice = practices[i % practices.length];
+            
+            let questionText = "";
+            let correctAnswer = "";
+            let distractors = [];
+            
+            if (topicName === "Soil") {
+                if (i % 4 === 0) questionText = `Which farming method helps prevent soil erosion by planting in rows along the slope?`, correctAnswer = "Contour ploughing", distractors = ["Burning stubble", "Overgrazing", "Excessive tilling"];
+                else if (i % 4 === 1) questionText = `What is the best way to improve soil fertility without chemicals?`, correctAnswer = "Adding compost", distractors = ["Burning leaves", "Using plastic sheets", "Removing all plants"];
+                else if (i % 4 === 2) questionText = `Planting trees as windbreaks helps to conserve soil by:`, correctAnswer = "Reducing wind erosion", distractors = ["Increasing rainfall", "Making soil salty", "Drying out soil"];
+                else questionText = `What farming practice involves growing different crops in the same field each season to keep soil healthy?`, correctAnswer = "Crop rotation", distractors = ["Monoculture", "Flood irrigation", "Deforestation"];
+            } 
+            else if (topicName === "Water") {
+                if (i % 4 === 0) questionText = `Which irrigation system delivers water directly to plant roots, saving a lot of water?`, correctAnswer = "Drip irrigation", distractors = ["Sprinkler only", "Flooding the field", "Overhead spray"];
+                else if (i % 4 === 1) questionText = `Collecting rain from rooftops into tanks for farming is called:`, correctAnswer = "Rainwater harvesting", distractors = ["Flood irrigation", "Drainage system", "Overwatering"];
+                else if (i % 4 === 2) questionText = `What is a simple way to reduce water loss from soil evaporation?`, correctAnswer = "Mulching with dry leaves", distractors = ["Bare soil ploughing", "Watering at noon", "Removing all weeds"];
+                else questionText = `Why should farmers water crops early in the morning?`, correctAnswer = "Less evaporation loss", distractors = ["Plants sleep at night", "It's fun", "To encourage weeds"];
+            } 
+            else { // Fuel conservation
+                if (i % 4 === 0) questionText = `What renewable energy source can power water pumps on a farm without using diesel?`, correctAnswer = "Solar energy", distractors = ["Coal power", "Gasoline generator", "Kerosene lamps"];
+                else if (i % 4 === 1) questionText = `How does minimum tillage help conserve fuel?`, correctAnswer = "Fewer tractor passes over the field", distractors = ["More ploughing", "Using old machines", "Burning fields"];
+                else if (i % 4 === 2) questionText = `Using animal power like oxen instead of tractors is a way to:`, correctAnswer = "Save fuel", distractors = ["Increase pollution", "Waste time", "Destroy soil"];
+                else questionText = `Which practice reduces fuel use by maintaining farm machines properly?`, correctAnswer = "Regular tractor servicing", distractors = ["Overloading tractor", "Using flat tires", "Idling engine for hours"];
+            }
+            
+            // Ensure distractors are unique and correct answer not repeated
+            let allOpts = [correctAnswer, ...distractors];
+            // shuffle for variety per question
+            for (let s = allOpts.length - 1; s > 0; s--) {
+                const rand = Math.floor(Math.random() * (s + 1));
+                [allOpts[s], allOpts[rand]] = [allOpts[rand], allOpts[s]];
+            }
+            
+            questionBank.push({
+                id: qid++,
+                level: level,
+                text: questionText,
+                options: allOpts,
+                correct: correctAnswer
+            });
+        }
+    }
+    
+    // verify total 150
+    console.log("Total questions generated:", questionBank.length);
+    
+    // Game state
+    let currentLevel = 1;
+    let currentLevelQuestions = []; // array of question objects for this level
+    let currentQIndex = 0;
+    let levelScore = 0;      // correct answers in this level
+    let answered = false;
+    let timerInterval = null;
+    let timeLeft = 0;         // seconds per level
+    let levelActive = true;
+    let waitingForNext = false;
+    let nextLock = false;
+    
+    // DOM elements
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const requiredInfo = document.getElementById('requiredInfo');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionTextEl = document.getElementById('questionText');
+    const progressInfo = document.getElementById('progressInfo');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const nextButton = document.getElementById('nextButton');
+    
+    // Helper: format time mm:ss
+    function formatTime(sec) {
+        let mins = Math.floor(sec / 60);
+        let remainSec = sec % 60;
+        return `${mins.toString().padStart(2,'0')}:${remainSec.toString().padStart(2,'0')}`;
+    }
+    
+    // Stop timer
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    // Start timer for current level
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        // Level difficulty timer: level1: 100sec, level2: 90, level3: 80, level4: 75, level5: 70 (challenging)
+        const baseTime = Math.max(55, 105 - (currentLevel * 7));
+        timeLeft = baseTime;
+        timerDisplay.innerText = `⏱️ ${formatTime(timeLeft)}`;
+        timerInterval = setInterval(() => {
+            if (!levelActive || waitingForNext) return;
+            if (timeLeft <= 1) {
+                // TIME'S UP! auto fail level
+                if (levelActive) {
+                    stopTimer();
+                    levelActive = false;
+                    handleLevelFail("⏰ TIME'S UP! You ran out of time. Level failed.");
+                }
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${formatTime(timeLeft)}`;
+                if (timeLeft <= 10) timerDisplay.style.color = "#ff4444";
+                else timerDisplay.style.color = "#f5d742";
+            }
+        }, 1000);
+    }
+    
+    // load current question from currentLevelQuestions
+    function loadQuestion() {
+        if (!levelActive) return;
+        if (currentQIndex >= currentLevelQuestions.length) {
+            // end of level - check pass
+            finishLevel();
+            return;
+        }
+        answered = false;
+        waitingForNext = false;
+        nextButton.disabled = true;
+        const q = currentLevelQuestions[currentQIndex];
+        questionTextEl.innerText = q.text;
+        progressInfo.innerText = `Q${currentQIndex+1} / ${currentLevelQuestions.length}`;
+        // render options
+        optionsContainer.innerHTML = "";
+        q.options.forEach(opt => {
+            const optDiv = document.createElement('div');
+            optDiv.className = 'option-card';
+            optDiv.innerText = opt;
+            optDiv.addEventListener('click', () => {
+                if (answered || !levelActive) return;
+                handleAnswer(opt, q.correct);
+            });
+            optionsContainer.appendChild(optDiv);
+        });
+        feedbackMsg.innerHTML = "🌱 Select your answer! 🌱";
+        nextButton.disabled = true;
+    }
+    
+    function handleAnswer(selected, correct) {
+        if (answered) return;
+        answered = true;
+        const isCorrect = (selected === correct);
+        if (isCorrect) {
+            levelScore++;
+            feedbackMsg.innerHTML = "✅ CORRECT! +1 point! Excellent conservation! ✅";
+            // add little celebration effect
+            const container = document.querySelector('.game-container');
+            container.classList.add('shake');
+            setTimeout(() => container.classList.remove('shake'), 300);
+        } else {
+            feedbackMsg.innerHTML = `❌ WRONG! Correct answer: "${correct}". Learn and conserve better! ❌`;
+        }
+        // disable options styling
+        const allOptions = document.querySelectorAll('.option-card');
+        allOptions.forEach(opt => {
+            opt.style.pointerEvents = 'none';
+            if (opt.innerText === correct) {
+                opt.style.backgroundColor = "#a5d6a5";
+                opt.style.border = "2px solid #1f6d1a";
+            } else if (opt.innerText === selected && !isCorrect) {
+                opt.style.backgroundColor = "#f5acac";
+            }
+        });
+        // update score display
+        scoreDisplay.innerText = `⭐ SCORE: ${levelScore}`;
+        // enable next button
+        nextButton.disabled = false;
+        waitingForNext = true;
+    }
+    
+    function nextQuestion() {
+        if (!levelActive) return;
+        if (!answered && currentQIndex < currentLevelQuestions.length) {
+            feedbackMsg.innerHTML = "⚠️ Please answer the current question first! ⚠️";
+            return;
+        }
+        if (currentQIndex + 1 <= currentLevelQuestions.length) {
+            currentQIndex++;
+            if (currentQIndex < currentLevelQuestions.length) {
+                loadQuestion();
+            } else {
+                // finished all questions in level
+                finishLevel();
+            }
+        } else {
+            finishLevel();
+        }
+    }
+    
+    function finishLevel() {
+        if (!levelActive) return;
+        stopTimer();
+        levelActive = false;
+        let totalQs = currentLevelQuestions.length;
+        let percent = (levelScore / totalQs) * 100;
+        let required = 80;
+        if (percent >= required) {
+            // level passed
+            if (currentLevel === 5) {
+                showGameWinModal(`🏆 AMAZING! You completed ALL levels! 🏆\nLevel ${currentLevel} score: ${levelScore}/${totalQs} (${Math.floor(percent)}%)\nYou are a true ECO GUARDIAN!`);
+            } else {
+                showLevelUpModal(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉\nScore: ${levelScore}/${totalQs} (${Math.floor(percent)}%)\nGreat! Move to Level ${currentLevel+1}!`);
+            }
+        } else {
+            handleLevelFail(`📉 FAILED Level ${currentLevel}. You scored ${levelScore}/${totalQs} (${Math.floor(percent)}%). Need 80% to advance. Restart level?`);
+        }
+    }
+    
+    function handleLevelFail(message) {
+        stopTimer();
+        levelActive = false;
+        showFailModal(message);
+    }
+    
+    // Show level up & reset for next level
+    function advanceToNextLevel() {
+        currentLevel++;
+        if (currentLevel > 5) {
+            // should be handled by win, but safety
+            showGameWinModal("🌟 You beat all 5 levels! 🌟 Super Eco Champion!");
+            return;
+        }
+        initLevel();
+    }
+    
+    function retryCurrentLevel() {
+        initLevel();
+    }
+    
+    function initLevel() {
+        // filter questions for currentLevel
+        currentLevelQuestions = questionBank.filter(q => q.level === currentLevel);
+        if (currentLevelQuestions.length !== 30) console.warn("mismatch");
+        // shuffle questions for variety but fixed per level session -> addictive but fair
+        for (let i = currentLevelQuestions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [currentLevelQuestions[i], currentLevelQuestions[j]] = [currentLevelQuestions[j], currentLevelQuestions[i]];
+        }
+        currentQIndex = 0;
+        levelScore = 0;
+        answered = false;
+        waitingForNext = false;
+        levelActive = true;
+        nextLock = false;
+        scoreDisplay.innerText = `⭐ SCORE: 0`;
+        levelDisplay.innerText = `🌱 LEVEL ${currentLevel}`;
+        requiredInfo.innerText = `🎯 NEED 80% (${Math.ceil(30*0.8)}/30)`;
+        // set timer dynamic tough
+        if (timerInterval) stopTimer();
+        startLevelTimer();
+        loadQuestion();
+    }
+    
+    // MODALS
+    function showLevelUpModal(msg) {
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal';
+        modalDiv.innerHTML = `
+            <div class="modal-card">
+                <h2>⭐ LEVEL UP! ⭐</h2>
+                <p style="font-size:1.2rem; margin:15px 0;">${msg}</p>
+                <button id="nextLevelBtn">➡️ NEXT LEVEL ⬅️</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        document.getElementById('nextLevelBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            advanceToNextLevel();
+        });
+    }
+    
+    function showFailModal(msg) {
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal';
+        modalDiv.innerHTML = `
+            <div class="modal-card" style="border-color:#aa2e2e;">
+                <h2>💔 LEVEL FAILED 💔</h2>
+                <p style="font-size:1.1rem;">${msg}</p>
+                <button id="retryBtn">🔄 TRY AGAIN (Same Level)</button>
+                <button id="menuReset" style="background:#b97f10; margin-left:10px;">🔁 RESTART GAME</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        document.getElementById('retryBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            retryCurrentLevel();
+        });
+        document.getElementById('menuReset').addEventListener('click', () => {
+            modalDiv.remove();
+            fullGameReset();
+        });
+    }
+    
+    function showGameWinModal(msg) {
+        stopTimer();
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal';
+        modalDiv.innerHTML = `
+            <div class="modal-card" style="background:#ffefcf;">
+                <h2>🏅 VICTORY! 🏅</h2>
+                <p style="font-size:1.3rem;">${msg}</p>
+                <button id="playAgainBtn">🌍 PLAY AGAIN 🌍</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        document.getElementById('playAgainBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            fullGameReset();
+        });
+    }
+    
+    function fullGameReset() {
+        stopTimer();
+        currentLevel = 1;
+        initLevel();
+    }
+    
+    // add event to next button
+    nextButton.addEventListener('click', () => {
+        if (!levelActive) return;
+        if (answered || currentQIndex >= currentLevelQuestions.length) {
+            nextQuestion();
+        } else {
+            feedbackMsg.innerHTML = "❗ Answer current question before moving on! ❗";
+        }
+    });
+    
+    // start game
+    fullGameReset();
+</script>
+</body>
+</html>

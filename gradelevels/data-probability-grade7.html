@@ -1,0 +1,3036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBC Mathematics Challenge - Grade 7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gradient: linear-gradient(135deg, #4f46e5, #7c3aed, #0ea5e9);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --data-blue: #3b82f6;
+            --prob-purple: #8b5cf6;
+            --math-teal: #14b8a6;
+        }
+        
+        body {
+            background: var(--gradient);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background-attachment: fixed;
+            line-height: 1.5;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 28px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 95vh;
+        }
+        
+        .header {
+            background: var(--gradient);
+            color: white;
+            padding: 20px 25px;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .header h1 {
+            font-size: 1.7rem;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .header p {
+            opacity: 0.95;
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        .level-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .level-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .level-dot.active {
+            background: white;
+            transform: scale(1.3);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.6);
+            z-index: 2;
+        }
+        
+        .level-dot.completed {
+            background: #4ade80;
+            box-shadow: 0 0 0 2px white;
+        }
+        
+        .level-dot::after {
+            content: attr(data-level);
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: white;
+            opacity: 0.9;
+            white-space: nowrap;
+        }
+        
+        .game-area {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .start-screen {
+            text-align: center;
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .start-screen h2 {
+            font-size: 2rem;
+            margin: 15px 0;
+            color: var(--secondary);
+            background: linear-gradient(to right, var(--data-blue), var(--prob-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+        
+        .start-screen p {
+            margin: 12px 0;
+            line-height: 1.6;
+            color: var(--dark);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .topic-card {
+            background: white;
+            border-radius: 18px;
+            padding: 14px 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 100px;
+            justify-content: center;
+        }
+        
+        .topic-card:hover, .topic-card.selected {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.25);
+            background: rgba(79, 70, 229, 0.05);
+        }
+        
+        .topic-card i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--data-blue);
+        }
+        
+        .topic-card span {
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: block;
+            line-height: 1.3;
+        }
+        
+        .btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 12px 0;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 350px;
+            align-self: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(79, 70, 229, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(79, 70, 229, 0.1);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #059669);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #d97706);
+        }
+        
+        .question-container {
+            margin: 10px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .timer-container {
+            background: white;
+            border-radius: 50px;
+            padding: 6px 18px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 110px;
+            justify-content: center;
+            border: 2px solid var(--warning);
+            position: relative;
+        }
+        
+        .timer-bar {
+            height: 7px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .timer-progress {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 4px;
+            width: 100%;
+            transition: width 0.3s linear;
+        }
+        
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin: 10px 0 15px;
+            color: var(--dark);
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+        }
+        
+        .speak-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: var(--transition);
+            flex-shrink: 0;
+            align-self: flex-start;
+            margin-top: 3px;
+        }
+        
+        .speak-btn:hover {
+            transform: scale(1.1);
+            background: #0da271;
+        }
+        
+        .speak-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .answer-section {
+            margin: 15px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .answer-input-container {
+            position: relative;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 3px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            transition: var(--transition);
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        
+        .answer-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        
+        .answer-input.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            animation: pulse 0.4s;
+        }
+        
+        .answer-input.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            animation: shake 0.4s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        
+        .hint-container {
+            background: rgba(79, 70, 229, 0.08);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-size: 1.05rem;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .hint-container.show {
+            display: block;
+        }
+        
+        .hint-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .feedback {
+            min-height: 50px;
+            margin: 15px 0;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 500;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .feedback.correct {
+            background: rgba(16, 185, 129, 0.2);
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+        
+        .feedback.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .progress-text {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: rgba(79, 70, 229, 0.1);
+            padding: 10px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        
+        .level-complete {
+            text-align: center;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .level-complete h2 {
+            font-size: 2.1rem;
+            margin: 10px 0;
+            color: var(--secondary);
+            line-height: 1.3;
+        }
+        
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            color: white;
+            font-size: 2.3rem;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .score-circle::before {
+            content: "";
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .score-circle span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .result-message {
+            font-size: 1.3rem;
+            margin: 15px 0;
+            min-height: 50px;
+            font-weight: 600;
+            text-align: center;
+            padding: 0 10px;
+            flex-shrink: 0;
+        }
+        
+        .result-message.success {
+            color: #166534;
+        }
+        
+        .result-message.fail {
+            color: #991b1b;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            flex-shrink: 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 15px 10px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .stat-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 8px 0;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+            opacity: 0.85;
+            font-weight: 500;
+        }
+        
+        .final-screen {
+            text-align: center;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .final-screen h2 {
+            font-size: 2.2rem;
+            margin: 15px 0;
+            background: linear-gradient(to right, var(--data-blue), var(--prob-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+        
+        .final-screen p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--dark);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #f00;
+            border-radius: 0;
+            animation: confetti-fall 4s ease-in-out forwards;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            25% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .voice-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: var(--transition);
+            z-index: 10;
+            color: var(--primary);
+        }
+        
+        .voice-toggle.muted {
+            background: #fecaca;
+            color: var(--danger);
+        }
+        
+        .voice-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .topic-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        
+        .instructions {
+            background: rgba(79, 70, 229, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: 0 12px 12px 0;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            flex-shrink: 0;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-top: 6px;
+        }
+        
+        .instructions li {
+            margin: 4px 0;
+        }
+        
+        .math-illustration {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 3.5rem;
+            flex-shrink: 0;
+        }
+        
+        .skill-meter {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .skill-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .skill-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .skill-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--data-blue), var(--prob-purple));
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .skill-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+        
+        .submit-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 280px;
+            align-self: center;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+        }
+        
+        .submit-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .answer-status {
+            text-align: center;
+            font-weight: 500;
+            margin: 8px 0;
+            min-height: 24px;
+            font-size: 1.05rem;
+        }
+        
+        .answer-status.correct {
+            color: var(--success);
+            animation: pulse 0.4s;
+        }
+        
+        .answer-status.incorrect {
+            color: var(--danger);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.95rem;
+            }
+            
+            .game-area {
+                padding: 15px;
+            }
+            
+            .question-text {
+                font-size: 1.25rem;
+                min-height: 65px;
+            }
+            
+            .answer-input {
+                padding: 14px 18px;
+                font-size: 1.05rem;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 1.05rem;
+                max-width: 300px;
+            }
+            
+            .score-circle {
+                width: 140px;
+                height: 140px;
+                font-size: 2rem;
+            }
+            
+            .level-indicator {
+                gap: 4px;
+            }
+            
+            .level-dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .level-dot::after {
+                font-size: 0.65rem;
+                bottom: -18px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-value {
+                font-size: 1.7rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px 12px;
+            }
+            
+            .header h1 {
+                font-size: 1.35rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .game-area {
+                padding: 12px;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-bottom: 10px;
+            }
+            
+            .timer-container {
+                width: 100%;
+                justify-content: center;
+                padding: 5px 15px;
+                font-size: 1.15rem;
+            }
+            
+            .question-text {
+                font-size: 1.15rem;
+                min-height: 60px;
+            }
+            
+            .answer-input {
+                padding: 12px 16px;
+                font-size: 1rem;
+            }
+            
+            .submit-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+                max-width: 260px;
+            }
+            
+            .score-circle {
+                width: 120px;
+                height: 120px;
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 11px 20px;
+                font-size: 1rem;
+                max-width: 280px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .math-illustration {
+                font-size: 2.8rem;
+            }
+            
+            .hint-container {
+                font-size: 0.95rem;
+                padding: 10px 15px;
+            }
+        }
+        
+        /* Animation for question transition */
+        .question-slide {
+            animation: slideIn 0.35s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Floating elements for visual appeal */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+        
+        /* Focus states for accessibility */
+        button:focus, .answer-input:focus {
+            outline: 3px solid #a5b4fc;
+            outline-offset: 2px;
+        }
+        
+        /* Hide visually but keep accessible */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .loading::after {
+            content: "";
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(79, 70, 229, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            margin-left: 12px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Success animation for level up */
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .celebrate {
+            animation: celebrate 0.4s ease;
+        }
+        
+        /* Math animation for correct answers */
+        @keyframes equationSolve {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1) rotate(2deg); }
+            100% { transform: scale(1); }
+        }
+        
+        .math-correct {
+            animation: equationSolve 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="voiceToggle" class="voice-toggle" aria-label="Toggle voice output">
+            🔊
+        </button>
+        
+        <div class="header">
+            <h1>📊🎲 CBC Mathematics Challenge</h1>
+            <p>Grade 7 • Data Handling & Probability</p>
+            <div class="header-badge">Analyze • Calculate • Predict</div>
+            <div class="level-indicator" id="levelIndicator">
+                <div class="level-dot active" data-level="1"></div>
+                <div class="level-dot" data-level="2"></div>
+                <div class="level-dot" data-level="3"></div>
+                <div class="level-dot" data-level="4"></div>
+                <div class="level-dot" data-level="5"></div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <!-- Start Screen -->
+            <div id="startScreen" class="screen active">
+                <div class="start-screen">
+                    <div class="math-illustration floating">📈📊🎲</div>
+                    <h2>Ready to Master Data & Probability?</h2>
+                    <p>Test your skills in Data Handling and Probability through 5 exciting levels!</p>
+                    
+                    <div class="topics-grid">
+                        <div class="topic-card selected" data-topic="all">
+                            <i>🎯</i>
+                            <span>All Topics</span>
+                        </div>
+                        <div class="topic-card" data-topic="data">
+                            <i>📊</i>
+                            <span>Data Handling</span>
+                        </div>
+                        <div class="topic-card" data-topic="probability">
+                            <i>🎲</i>
+                            <span>Probability</span>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <strong>How to Play:</strong>
+                        <ul>
+                            <li>5 levels with 30 questions each (150 total)</li>
+                            <li>Type your answer - no multiple choice!</li>
+                            <li>Score 80% or higher to advance to next level</li>
+                            <li>40 seconds per question with progressive hints</li>
+                            <li>Voice support: questions read aloud + feedback</li>
+                            <li>Hints appear as time runs out to help you learn</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="skill-meter">
+                        <div class="skill-title">🧮 Math Skills Progress</div>
+                        <div class="skill-bar">
+                            <div class="skill-fill" id="skillFill"></div>
+                        </div>
+                        <div class="skill-value" id="skillValue">0%</div>
+                    </div>
+                    
+                    <button id="startBtn" class="btn">
+                        <span>🚀</span> Start Math Challenge
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Question Screen -->
+            <div id="questionScreen" class="screen">
+                <div class="question-container">
+                    <div class="question-header">
+                        <div>
+                            <span class="topic-badge" id="topicBadge">All Topics</span>
+                            <div>Question <span id="questionNumber">1</span> of 30</div>
+                        </div>
+                        <div class="timer-container">
+                            <span>⏱️</span>
+                            <span id="timer">40</span>s
+                        </div>
+                    </div>
+                    <div class="timer-bar">
+                        <div class="timer-progress" id="timerProgress"></div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: flex-start; margin: 15px 0; gap: 8px;">
+                        <div class="question-text" id="questionText">Loading question...</div>
+                        <button class="speak-btn" id="speakQuestionBtn" aria-label="Read question aloud">🔊</button>
+                    </div>
+                    
+                    <div class="answer-section">
+                        <div class="answer-input-container">
+                            <input type="text" class="answer-input" id="answerInput" placeholder="Type your answer here..." autocomplete="off">
+                        </div>
+                        
+                        <div class="hint-container" id="hintContainer">
+                            <div class="hint-title">💡 Hint:</div>
+                            <div id="hintText"></div>
+                        </div>
+                        
+                        <div class="answer-status" id="answerStatus"></div>
+                        
+                        <button class="submit-btn" id="submitBtn">
+                            ✓ Submit Answer
+                        </button>
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-text">
+                            <span>Level Progress</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-display">
+                        Score: <span id="currentScore">0</span>/<span id="totalQuestions">30</span> • 
+                        Target: <span id="targetScore">24</span> (80%)
+                    </div>
+                    
+                    <button id="nextBtn" class="btn" style="display: none;">
+                        Next Question →
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Level Complete Screen -->
+            <div id="levelCompleteScreen" class="screen">
+                <div class="level-complete">
+                    <h2>🎉 Level <span id="completedLevel">1</span> Complete!</h2>
+                    <div class="score-circle celebrate">
+                        <span id="levelScore">0%</span>
+                    </div>
+                    <div class="result-message" id="levelResult">Great effort! Keep building your math skills!</div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="correctCount">0</div>
+                            <div class="stat-label">Correct Answers</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="incorrectCount">0</div>
+                            <div class="stat-label">To Improve</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="timeTaken">0s</div>
+                            <div class="stat-label">Time Taken</div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-meter">
+                        <div class="skill-title">📊 Data & Probability Skills Gained</div>
+                        <div class="skill-bar">
+                            <div class="skill-fill" id="levelSkillFill"></div>
+                        </div>
+                        <div class="skill-value" id="levelSkillValue">0%</div>
+                    </div>
+                    
+                    <button id="nextLevelBtn" class="btn btn-success" style="display: none;">
+                        Next Level → Advance Your Math Skills!
+                    </button>
+                    <button id="retryLevelBtn" class="btn btn-warning">
+                        ↻ Retry Level & Improve
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Final Screen -->
+            <div id="finalScreen" class="screen">
+                <div class="final-screen">
+                    <div class="math-illustration">🏆✨</div>
+                    <h2>🌟 Math Champion!</h2>
+                    <p>You've mastered all 5 levels of Data Handling & Probability!</p>
+                    
+                    <div class="score-circle floating">
+                        <span id="finalScore">0%</span>
+                    </div>
+                    
+                    <div class="result-message success" id="finalMessage">
+                        Outstanding! You're ready to analyze data and predict outcomes!
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalCorrect">0</div>
+                            <div class="stat-label">Total Correct</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalQuestionsFinal">150</div>
+                            <div class="stat-label">Questions Answered</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="levelsCompleted">5</div>
+                            <div class="stat-label">Levels Mastered</div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-meter">
+                        <div class="skill-title">🧮 Overall Math Proficiency</div>
+                        <div class="skill-bar">
+                            <div class="skill-fill" id="finalSkillFill"></div>
+                        </div>
+                        <div class="skill-value" id="finalSkillValue">0%</div>
+                    </div>
+                    
+                    <button id="restartBtn" class="btn">
+                        🔄 Start New Challenge
+                    </button>
+                    <button id="shareBtn" class="btn btn-outline">
+                        📤 Share My Achievement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentLevel: 1,
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 30,
+            timePerQuestion: 40, // Increased to 40 seconds as requested
+            timer: null,
+            timeLeft: 40,
+            questions: [],
+            askedQuestions: new Set(),
+            voiceEnabled: true,
+            selectedTopic: 'all',
+            levelScores: [],
+            startTime: null,
+            levelStartTime: null,
+            totalSkills: 0,
+            currentHintLevel: 0,
+            hintTimer: null
+        };
+
+        // DOM Elements
+        const elements = {
+            startScreen: document.getElementById('startScreen'),
+            questionScreen: document.getElementById('questionScreen'),
+            levelCompleteScreen: document.getElementById('levelCompleteScreen'),
+            finalScreen: document.getElementById('finalScreen'),
+            startBtn: document.getElementById('startBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            nextLevelBtn: document.getElementById('nextLevelBtn'),
+            retryLevelBtn: document.getElementById('retryLevelBtn'),
+            restartBtn: document.getElementById('restartBtn'),
+            shareBtn: document.getElementById('shareBtn'),
+            voiceToggle: document.getElementById('voiceToggle'),
+            speakQuestionBtn: document.getElementById('speakQuestionBtn'),
+            topicCards: document.querySelectorAll('.topic-card'),
+            questionText: document.getElementById('questionText'),
+            answerInput: document.getElementById('answerInput'),
+            submitBtn: document.getElementById('submitBtn'),
+            hintContainer: document.getElementById('hintContainer'),
+            hintText: document.getElementById('hintText'),
+            answerStatus: document.getElementById('answerStatus'),
+            timerDisplay: document.getElementById('timer'),
+            timerProgress: document.getElementById('timerProgress'),
+            questionNumber: document.getElementById('questionNumber'),
+            totalQuestions: document.getElementById('totalQuestions'),
+            currentScore: document.getElementById('currentScore'),
+            targetScore: document.getElementById('targetScore'),
+            progressFill: document.getElementById('progressFill'),
+            progressPercent: document.getElementById('progressPercent'),
+            feedback: document.getElementById('feedback'),
+            topicBadge: document.getElementById('topicBadge'),
+            levelIndicator: document.getElementById('levelIndicator'),
+            completedLevel: document.getElementById('completedLevel'),
+            levelScore: document.getElementById('levelScore'),
+            levelResult: document.getElementById('levelResult'),
+            correctCount: document.getElementById('correctCount'),
+            incorrectCount: document.getElementById('incorrectCount'),
+            timeTaken: document.getElementById('timeTaken'),
+            finalScore: document.getElementById('finalScore'),
+            finalMessage: document.getElementById('finalMessage'),
+            totalCorrect: document.getElementById('totalCorrect'),
+            totalQuestionsFinal: document.getElementById('totalQuestionsFinal'),
+            levelsCompleted: document.getElementById('levelsCompleted'),
+            skillFill: document.getElementById('skillFill'),
+            skillValue: document.getElementById('skillValue'),
+            levelSkillFill: document.getElementById('levelSkillFill'),
+            levelSkillValue: document.getElementById('levelSkillValue'),
+            finalSkillFill: document.getElementById('finalSkillFill'),
+            finalSkillValue: document.getElementById('finalSkillValue')
+        };
+
+        // Question Bank - 150 questions across 5 levels and 2 topics for Mathematics
+        // Format: { question, answers: [array of acceptable answers], hints: [3 hint levels], topic, level }
+        const questionBank = {
+            data: [
+                { 
+                    level: 1, 
+                    question: "What is data?", 
+                    answers: ["facts and statistics", "information", "collected facts", "numerical information"], 
+                    hints: [
+                        "It's information that can be analyzed...",
+                        "Can be numbers, words, or observations...",
+                        "Used to make decisions and draw conclusions"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is a tally mark used for?", 
+                    answers: ["counting", "recording data", "keeping score", "tracking frequency"], 
+                    hints: [
+                        "It's a simple way to count items...",
+                        "Groups of five with a diagonal line...",
+                        "Helps organize data collection"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is a frequency table?", 
+                    answers: ["table showing how often values occur", "data organization chart", "count display table"], 
+                    hints: [
+                        "It lists values and how many times each appears...",
+                        "Has two columns: value and frequency...",
+                        "Helps summarize collected data"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the mean of a data set?", 
+                    answers: ["average", "sum divided by count", "arithmetic mean"], 
+                    hints: [
+                        "Add all values and divide by number of values...",
+                        "Also called the average...",
+                        "A measure of central tendency"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the mode of a data set?", 
+                    answers: ["most frequent value", "value that appears most", "commonest value"], 
+                    hints: [
+                        "It's the value that occurs most often...",
+                        "A data set can have one, more, or no mode...",
+                        "Another measure of central tendency"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the median of a data set?", 
+                    answers: ["middle value", "center value when ordered", "50th percentile"], 
+                    hints: [
+                        "Arrange values in order and find the middle...",
+                        "If even number of values, average the two middle...",
+                        "Not affected by extreme values"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is a bar graph used for?", 
+                    answers: ["comparing categories", "showing categorical data", "visual comparison"], 
+                    hints: [
+                        "Uses rectangular bars to represent data...",
+                        "Height or length shows value...",
+                        "Good for comparing different groups"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is a pictograph?", 
+                    answers: ["graph using pictures or symbols", "picture chart", "symbol-based graph"], 
+                    hints: [
+                        "Uses images to represent data values...",
+                        "Each picture represents a certain quantity...",
+                        "Makes data visually appealing and easy to understand"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the range of a data set?", 
+                    answers: ["difference between highest and lowest", "max minus min", "spread of data"], 
+                    hints: [
+                        "Subtract the smallest value from the largest...",
+                        "Shows how spread out the data is...",
+                        "A simple measure of variability"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is data collection?", 
+                    answers: ["gathering information", "collecting facts and figures", "acquiring data"], 
+                    hints: [
+                        "The process of obtaining information...",
+                        "Can be done through surveys, observations, or experiments...",
+                        "First step in data handling"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is a pie chart used for?", 
+                    answers: ["showing parts of a whole", "displaying percentages", "proportional representation"], 
+                    hints: [
+                        "Circular graph divided into sectors...",
+                        "Each sector represents a proportion of the total...",
+                        "Good for showing percentages or fractions"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the formula for mean?", 
+                    answers: ["sum divided by number of values", "total/n", "Σx/n"], 
+                    hints: [
+                        "Add all values together...",
+                        "Then divide by how many values there are...",
+                        "Written as mean = Σx ÷ n"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "How do you find the median of an even number of values?", 
+                    answers: ["average the two middle values", "mean of middle two", "add middle two and divide by two"], 
+                    hints: [
+                        "First arrange values in order...",
+                        "Find the two values in the middle...",
+                        "Calculate their average"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is a line graph used for?", 
+                    answers: ["showing changes over time", "trend display", "time series data"], 
+                    hints: [
+                        "Uses points connected by lines...",
+                        "X-axis usually represents time...",
+                        "Good for showing trends and patterns"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is raw data?", 
+                    answers: ["unprocessed data", "original collected information", "unorganized data"], 
+                    hints: [
+                        "Data as first collected, before organizing...",
+                        "May be messy or unstructured...",
+                        "Needs to be processed for analysis"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is a histogram?", 
+                    answers: ["bar graph for continuous data", "frequency distribution graph", "grouped data chart"], 
+                    hints: [
+                        "Similar to bar graph but for continuous data...",
+                        "Bars touch each other...",
+                        "Shows frequency distribution of intervals"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is an outlier in data?", 
+                    answers: ["value far from others", "extreme value", "unusual data point"], 
+                    hints: [
+                        "A value that is much higher or lower than others...",
+                        "Can affect mean but not median...",
+                        "May indicate error or interesting phenomenon"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is data interpretation?", 
+                    answers: ["explaining meaning of data", "analyzing results", "drawing conclusions"], 
+                    hints: [
+                        "Making sense of collected and organized data...",
+                        "Identifying patterns and relationships...",
+                        "Using data to answer questions or make decisions"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is a stem-and-leaf plot?", 
+                    answers: ["data display showing distribution", "organized data chart", "place value graph"], 
+                    hints: [
+                        "Shows individual data values while displaying distribution...",
+                        "Stem is leading digit(s), leaf is trailing digit...",
+                        "Helps see shape of data distribution"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the mode if all values appear once?", 
+                    answers: ["no mode", "none", "no modal value"], 
+                    hints: [
+                        "If no value repeats...",
+                        "The data set has no mode...",
+                        "Some data sets don't have a mode"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is cumulative frequency?", 
+                    answers: ["running total of frequencies", "accumulated frequency count", "progressive frequency sum"], 
+                    hints: [
+                        "Add frequencies as you go down the table...",
+                        "Shows total up to that point...",
+                        "Useful for finding percentiles and medians"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is a box plot (box-and-whisker plot)?", 
+                    answers: ["graph showing five-number summary", "distribution display", "quartile graph"], 
+                    hints: [
+                        "Shows minimum, Q1, median, Q3, and maximum...",
+                        "Box represents middle 50% of data...",
+                        "Good for comparing distributions"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the interquartile range (IQR)?", 
+                    answers: ["q3 minus q1", "middle 50% range", "difference between quartiles"], 
+                    hints: [
+                        "Subtract first quartile from third quartile...",
+                        "Measures spread of middle half of data...",
+                        "Not affected by outliers"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is standard deviation?", 
+                    answers: ["measure of data spread", "average distance from mean", "variability measure"], 
+                    hints: [
+                        "Shows how spread out data is from the mean...",
+                        "Low SD means data clustered near mean...",
+                        "High SD means data more spread out"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is a scatter plot used for?", 
+                    answers: ["showing relationship between two variables", "correlation display", "bivariate data graph"], 
+                    hints: [
+                        "Plots points for two variables...",
+                        "Shows if variables are related...",
+                        "Can show positive, negative, or no correlation"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is correlation in data?", 
+                    answers: ["relationship between variables", "how variables change together", "association measure"], 
+                    hints: [
+                        "Describes how two variables relate...",
+                        "Can be positive, negative, or none...",
+                        "Does not imply causation"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is a biased sample?", 
+                    answers: ["sample not representing population", "unrepresentative data collection", "skewed sample"], 
+                    hints: [
+                        "When some groups are over or under represented...",
+                        "Can lead to incorrect conclusions...",
+                        "Important to use random sampling to avoid bias"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the difference between discrete and continuous data?", 
+                    answers: ["discrete is countable, continuous is measurable", "whole numbers vs decimals", "counted vs measured"], 
+                    hints: [
+                        "Discrete: distinct separate values (like number of students)...",
+                        "Continuous: can take any value in a range (like height)...",
+                        "Affects which graphs and analyses to use"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is a frequency polygon?", 
+                    answers: ["line graph of frequency distribution", "connected frequency points", "frequency line chart"], 
+                    hints: [
+                        "Plots frequencies at class midpoints...",
+                        "Connects points with straight lines...",
+                        "Similar to histogram but with lines"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is data normalization?", 
+                    answers: ["scaling data to common range", "standardizing values", "adjusting data for comparison"], 
+                    hints: [
+                        "Transforming data to have same scale...",
+                        "Allows fair comparison of different variables...",
+                        "Common in statistical analysis"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the coefficient of variation?", 
+                    answers: ["standard deviation divided by mean", "relative variability measure", "cv formula"], 
+                    hints: [
+                        "Expresses standard deviation as percentage of mean...",
+                        "Allows comparison of variability across different scales...",
+                        "Formula: CV = (SD / mean) × 100%"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is regression analysis?", 
+                    answers: ["modeling relationship between variables", "predictive data analysis", "equation fitting"], 
+                    hints: [
+                        "Finds equation that best fits data points...",
+                        "Used to predict one variable from another...",
+                        "Simple linear regression: y = mx + b"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is a confidence interval?", 
+                    answers: ["range estimating population parameter", "statistical uncertainty range", "parameter estimate range"], 
+                    hints: [
+                        "Range likely to contain true population value...",
+                        "Expressed with confidence level (e.g., 95%)...",
+                        "Wider interval means more uncertainty"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is hypothesis testing?", 
+                    answers: ["statistical decision making process", "testing claims with data", "inferential statistics method"], 
+                    hints: [
+                        "Process of testing if data supports a claim...",
+                        "Involves null and alternative hypotheses...",
+                        "Uses p-values to make decisions"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the central limit theorem?", 
+                    answers: ["sample means approach normal distribution", "sampling distribution theorem", "large sample normality"], 
+                    hints: [
+                        "As sample size increases, sample means become normally distributed...",
+                        "True regardless of population distribution...",
+                        "Foundation for many statistical methods"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is skewness in data?", 
+                    answers: ["asymmetry of distribution", "lack of symmetry", "distribution tail direction"], 
+                    hints: [
+                        "Measures if distribution is symmetric or lopsided...",
+                        "Positive skew: tail to right, negative: tail to left...",
+                        "Affects choice of measures of center"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is kurtosis?", 
+                    answers: ["measure of distribution peakedness", "tail heaviness measure", "distribution shape characteristic"], 
+                    hints: [
+                        "Describes how heavy or light the tails are...",
+                        "High kurtosis: heavy tails, more outliers...",
+                        "Low kurtosis: light tails, fewer outliers"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is a z-score?", 
+                    answers: ["standardized value showing distance from mean", "standard score", "number of standard deviations from mean"], 
+                    hints: [
+                        "Shows how many standard deviations a value is from mean...",
+                        "Formula: z = (x - mean) / SD...",
+                        "Allows comparison across different distributions"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the difference between population and sample?", 
+                    answers: ["population is entire group, sample is subset", "all vs part", "complete set vs representative part"], 
+                    hints: [
+                        "Population: entire group of interest...",
+                        "Sample: smaller group selected from population...",
+                        "We use samples to make inferences about populations"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is sampling error?", 
+                    answers: ["difference between sample and population values", "random variation in sampling", "estimation error"], 
+                    hints: [
+                        "Natural variation when using sample instead of population...",
+                        "Decreases with larger sample sizes...",
+                        "Different from bias or measurement error"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is Bayesian statistics?", 
+                    answers: ["probability as degree of belief", "updating beliefs with data", "prior and posterior probabilities"], 
+                    hints: [
+                        "Treats probability as subjective belief...",
+                        "Updates prior beliefs with new data to get posterior...",
+                        "Uses Bayes' theorem: P(A|B) = P(B|A)P(A)/P(B)"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the law of large numbers?", 
+                    answers: ["sample mean approaches population mean as n increases", "convergence of averages", "large sample stability"], 
+                    hints: [
+                        "As sample size grows, sample statistics get closer to population parameters...",
+                        "Explains why larger samples give more reliable estimates...",
+                        "Foundation for statistical inference"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is multivariate analysis?", 
+                    answers: ["analyzing multiple variables simultaneously", "multiple variable statistics", "complex data analysis"], 
+                    hints: [
+                        "Examines relationships among three or more variables...",
+                        "Includes techniques like multiple regression, factor analysis...",
+                        "Used when outcomes depend on many factors"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is data mining?", 
+                    answers: ["discovering patterns in large datasets", "extracting knowledge from data", "pattern recognition in big data"], 
+                    hints: [
+                        "Process of finding useful patterns in large amounts of data...",
+                        "Uses statistics, machine learning, and database systems...",
+                        "Applications in business, science, and research"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the difference between descriptive and inferential statistics?", 
+                    answers: ["descriptive summarizes data, inferential makes predictions", "summary vs prediction", "data description vs population inference"], 
+                    hints: [
+                        "Descriptive: summarizes and describes data (mean, graphs)...",
+                        "Inferential: uses sample data to make conclusions about population...",
+                        "Both are important in data analysis"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is a p-value?", 
+                    answers: ["probability of observed result if null hypothesis true", "significance measure", "evidence against null hypothesis"], 
+                    hints: [
+                        "Small p-value (typically <0.05) suggests evidence against null hypothesis...",
+                        "Not the probability that hypothesis is true...",
+                        "Used in hypothesis testing to make decisions"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is effect size?", 
+                    answers: ["magnitude of difference or relationship", "practical significance measure", "strength of effect"], 
+                    hints: [
+                        "Measures how large a difference or relationship is...",
+                        "Different from statistical significance (p-value)...",
+                        "Important for understanding practical importance"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the difference between correlation and causation?", 
+                    answers: ["correlation is association, causation is cause-effect", "relationship vs cause", "association does not imply causation"], 
+                    hints: [
+                        "Correlation: variables change together...",
+                        "Causation: one variable directly affects another...",
+                        "Correlation alone doesn't prove causation - need controlled experiments"
+                    ], 
+                    topic: "data" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is statistical power?", 
+                    answers: ["probability of detecting effect if it exists", "test sensitivity", "ability to find true effects"], 
+                    hints: [
+                        "Power = 1 - probability of Type II error...",
+                        "Higher power means more likely to detect real effects...",
+                        "Increased by larger sample size, larger effect size, or higher significance level"
+                    ], 
+                    topic: "data" 
+                }
+            ],
+            probability: [
+                { 
+                    level: 1, 
+                    question: "What is probability?", 
+                    answers: ["chance of event happening", "likelihood measure", "possibility of outcome"], 
+                    hints: [
+                        "It's a number between 0 and 1...",
+                        "0 means impossible, 1 means certain...",
+                        "Used to predict uncertain events"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the probability of flipping heads on a fair coin?", 
+                    answers: ["1/2", "0.5", "50%", "one half"], 
+                    hints: [
+                        "A fair coin has two equally likely outcomes...",
+                        "Heads or tails, each with same chance...",
+                        "Probability = favorable outcomes / total outcomes"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the probability of rolling a 3 on a fair six-sided die?", 
+                    answers: ["1/6", "one sixth", "0.1667", "16.67%"], 
+                    hints: [
+                        "A fair die has six equally likely outcomes...",
+                        "Only one face shows a 3...",
+                        "Probability = 1 favorable / 6 total"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is an outcome in probability?", 
+                    answers: ["possible result of experiment", "single result", "event result"], 
+                    hints: [
+                        "Each possible result of a probability experiment...",
+                        "For a coin flip: heads or tails are outcomes...",
+                        "All possible outcomes make up the sample space"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is a sample space?", 
+                    answers: ["set of all possible outcomes", "all possible results", "complete outcome list"], 
+                    hints: [
+                        "Lists every possible result of an experiment...",
+                        "For a die: {1,2,3,4,5,6}...",
+                        "Used to calculate probabilities"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is an event in probability?", 
+                    answers: ["set of one or more outcomes", "collection of results", "subset of sample space"], 
+                    hints: [
+                        "A specific result or group of results we're interested in...",
+                        "For a die: 'rolling an even number' is an event...",
+                        "Events can be simple (one outcome) or compound (multiple)"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the probability of an impossible event?", 
+                    answers: ["0", "zero", "0%"], 
+                    hints: [
+                        "An event that cannot happen...",
+                        "Probability scale goes from 0 to 1...",
+                        "0 means no chance of occurring"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the probability of a certain event?", 
+                    answers: ["1", "one", "100%"], 
+                    hints: [
+                        "An event that will definitely happen...",
+                        "Probability scale goes from 0 to 1...",
+                        "1 means guaranteed to occur"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What does it mean if two events are mutually exclusive?", 
+                    answers: ["they cannot happen at same time", "no overlap", "disjoint events"], 
+                    hints: [
+                        "If one happens, the other cannot...",
+                        "For a coin: heads and tails are mutually exclusive...",
+                        "P(A and B) = 0 for mutually exclusive events"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is experimental probability?", 
+                    answers: ["probability based on actual experiments", "empirical probability", "observed frequency probability"], 
+                    hints: [
+                        "Calculated from actual trials or experiments...",
+                        "Formula: number of times event occurred / total trials...",
+                        "Gets closer to theoretical probability with more trials"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is theoretical probability?", 
+                    answers: ["probability based on reasoning", "calculated probability", "expected probability"], 
+                    hints: [
+                        "Calculated using knowledge of the situation...",
+                        "Formula: favorable outcomes / total possible outcomes...",
+                        "Assumes all outcomes equally likely"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the probability of rolling an even number on a fair die?", 
+                    answers: ["1/2", "0.5", "50%", "three sixths"], 
+                    hints: [
+                        "Even numbers on a die: 2, 4, 6 (three outcomes)...",
+                        "Total possible outcomes: 6...",
+                        "Probability = 3/6 = 1/2"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the complement of an event?", 
+                    answers: ["event not happening", "opposite event", "all outcomes not in event"], 
+                    hints: [
+                        "All outcomes in sample space except those in the event...",
+                        "P(complement) = 1 - P(event)...",
+                        "For 'rolling a 3', complement is 'not rolling a 3'"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the addition rule for mutually exclusive events?", 
+                    answers: ["p(a or b) = p(a) + p(b)", "add probabilities", "sum of individual probabilities"], 
+                    hints: [
+                        "For events that can't happen together...",
+                        "Probability of either happening is sum of probabilities...",
+                        "Only works for mutually exclusive events"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the multiplication rule for independent events?", 
+                    answers: ["p(a and b) = p(a) × p(b)", "multiply probabilities", "product of individual probabilities"], 
+                    hints: [
+                        "For events that don't affect each other...",
+                        "Probability of both happening is product of probabilities...",
+                        "Example: P(heads and 6) = P(heads) × P(6) = 1/2 × 1/6 = 1/12"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What does it mean if two events are independent?", 
+                    answers: ["occurrence of one doesn't affect other", "no influence between events", "statistically unrelated"], 
+                    hints: [
+                        "Knowing one happened doesn't change probability of other...",
+                        "Coin flips are independent: previous flips don't affect next...",
+                        "P(A|B) = P(A) for independent events"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is a tree diagram used for in probability?", 
+                    answers: ["showing all possible outcomes", "visualizing probability paths", "mapping event sequences"], 
+                    hints: [
+                        "Branches show possible outcomes at each stage...",
+                        "Probabilities written on branches...",
+                        "Multiply along branches to find probability of sequence"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the probability of drawing a heart from a standard deck of cards?", 
+                    answers: ["1/4", "0.25", "25%", "13/52"], 
+                    hints: [
+                        "Standard deck has 52 cards...",
+                        "13 cards are hearts...",
+                        "Probability = 13/52 = 1/4"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is conditional probability?", 
+                    answers: ["probability given another event occurred", "p(a given b)", "dependent probability"], 
+                    hints: [
+                        "Probability of event A given that event B has occurred...",
+                        "Written as P(A|B)...",
+                        "Formula: P(A and B) / P(B)"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the probability of getting two heads when flipping two fair coins?", 
+                    answers: ["1/4", "0.25", "25%", "one fourth"], 
+                    hints: [
+                        "Possible outcomes: HH, HT, TH, TT (four total)...",
+                        "Only one outcome is HH...",
+                        "Or use multiplication: P(H) × P(H) = 1/2 × 1/2 = 1/4"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the formula for conditional probability?", 
+                    answers: ["p(a|b) = p(a and b) / p(b)", "p(ab)/p(b)", "joint over marginal"], 
+                    hints: [
+                        "Probability of A given B equals probability of both divided by probability of B...",
+                        "Only valid if P(B) > 0...",
+                        "Foundation for Bayes' theorem"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is Bayes' theorem?", 
+                    answers: ["p(a|b) = p(b|a)p(a)/p(b)", "updating probabilities with evidence", "inverse probability formula"], 
+                    hints: [
+                        "Relates conditional probabilities in reverse...",
+                        "Used to update beliefs with new evidence...",
+                        "Important in statistics, machine learning, and decision making"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the expected value of a probability distribution?", 
+                    answers: ["weighted average of outcomes", "long-run average", "mean of random variable"], 
+                    hints: [
+                        "Sum of each outcome multiplied by its probability...",
+                        "Formula: E(X) = Σ [x × P(x)]...",
+                        "Represents average result over many trials"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is a random variable?", 
+                    answers: ["variable whose value depends on chance", "numerical outcome of random process", "probability variable"], 
+                    hints: [
+                        "Takes different values based on random outcomes...",
+                        "Can be discrete (countable) or continuous (measurable)...",
+                        "Described by probability distribution"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the difference between discrete and continuous random variables?", 
+                    answers: ["discrete has countable values, continuous has measurable values", "counted vs measured", "separate vs range values"], 
+                    hints: [
+                        "Discrete: distinct separate values (like number of heads)...",
+                        "Continuous: can take any value in interval (like time)...",
+                        "Affects which probability functions to use"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is a probability distribution?", 
+                    answers: ["function showing probabilities of all outcomes", "probability assignment to outcomes", "outcome probability mapping"], 
+                    hints: [
+                        "Lists all possible values and their probabilities...",
+                        "For discrete: probability mass function...",
+                        "For continuous: probability density function"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the binomial probability formula?", 
+                    answers: ["p(x) = nCx p^x (1-p)^(n-x)", "binomial distribution formula", "success probability formula"], 
+                    hints: [
+                        "Used for fixed number of independent trials...",
+                        "Each trial has two outcomes: success or failure...",
+                        "n = trials, x = successes, p = probability of success"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the normal distribution?", 
+                    answers: ["bell-shaped probability distribution", "gaussian distribution", "symmetric continuous distribution"], 
+                    hints: [
+                        "Symmetric bell-shaped curve...",
+                        "Defined by mean and standard deviation...",
+                        "Many natural phenomena follow this distribution"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the law of total probability?", 
+                    answers: ["p(a) = sum of p(a and bi) for partition bi", "total probability formula", "partition-based probability"], 
+                    hints: [
+                        "If events B1, B2, ... partition sample space...",
+                        "P(A) = Σ P(A|Bi) × P(Bi)...",
+                        "Useful for complex probability calculations"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the difference between permutations and combinations?", 
+                    answers: ["permutations consider order, combinations don't", "ordered vs unordered selections", "arrangements vs groups"], 
+                    hints: [
+                        "Permutations: order matters (ABC different from BAC)...",
+                        "Combinations: order doesn't matter (ABC same as BAC)...",
+                        "Used in counting problems for probability"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the central limit theorem in probability?", 
+                    answers: ["sample means approach normal distribution", "sampling distribution normality", "large sample convergence"], 
+                    hints: [
+                        "As sample size increases, distribution of sample means becomes normal...",
+                        "True regardless of population distribution shape...",
+                        "Foundation for many statistical inference methods"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is Markov chain?", 
+                    answers: ["stochastic process with memoryless property", "state transition probability model", "markov process"], 
+                    hints: [
+                        "Future state depends only on current state, not history...",
+                        "Used in modeling random processes over time...",
+                        "Applications in finance, biology, computer science"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the Poisson distribution used for?", 
+                    answers: ["modeling rare events over time/space", "count data probability", "event frequency distribution"], 
+                    hints: [
+                        "Probability of given number of events in fixed interval...",
+                        "Events occur independently at constant average rate...",
+                        "Formula: P(x) = (λ^x e^-λ) / x!"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is covariance in probability?", 
+                    answers: ["measure of how two variables change together", "joint variability measure", "relationship strength indicator"], 
+                    hints: [
+                        "Positive: variables tend to increase together...",
+                        "Negative: one increases as other decreases...",
+                        "Formula: Cov(X,Y) = E[(X-μx)(Y-μy)]"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is correlation coefficient?", 
+                    answers: ["standardized measure of linear relationship", "pearson's r", "normalized covariance"], 
+                    hints: [
+                        "Ranges from -1 to +1...",
+                        "Measures strength and direction of linear relationship...",
+                        "Formula: r = Cov(X,Y) / (σx σy)"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the difference between joint, marginal, and conditional probability?", 
+                    answers: ["joint: both events, marginal: single event, conditional: given another", "p(ab), p(a), p(a|b)", "combined vs individual vs dependent"], 
+                    hints: [
+                        "Joint: P(A and B) - probability both occur...",
+                        "Marginal: P(A) - probability of A regardless of B...",
+                        "Conditional: P(A|B) - probability of A given B occurred"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the moment generating function?", 
+                    answers: ["function encoding all moments of distribution", "mgf", "probability transform function"], 
+                    hints: [
+                        "M(t) = E[e^(tX)] for random variable X...",
+                        "Derivatives at t=0 give moments (mean, variance, etc.)...",
+                        "Useful for proving distribution properties"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is Chebyshev's inequality?", 
+                    answers: ["bound on probability of deviation from mean", "probability tail bound", "variance-based probability limit"], 
+                    hints: [
+                        "For any distribution with finite variance...",
+                        "P(|X-μ| ≥ kσ) ≤ 1/k²...",
+                        "Guarantees minimum probability within k standard deviations"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the memoryless property of exponential distribution?", 
+                    answers: ["p(x>s+t | x>s) = p(x>t)", "future independent of past", "no aging property"], 
+                    hints: [
+                        "Probability of waiting additional time doesn't depend on how long already waited...",
+                        "Unique to exponential distribution among continuous distributions...",
+                        "Important in reliability and queuing theory"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the difference between probability and likelihood?", 
+                    answers: ["probability: fixed parameters, variable data; likelihood: fixed data, variable parameters", "p(data|params) vs l(params|data)", "forward vs inverse probability"], 
+                    hints: [
+                        "Probability: P(data | parameters) - chance of data given model...",
+                        "Likelihood: L(parameters | data) - support for parameters given data...",
+                        "Key distinction in statistical inference"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the Monty Hall problem?", 
+                    answers: ["probability puzzle with counterintuitive solution", "game show probability problem", "switching doors advantage"], 
+                    hints: [
+                        "Contestant chooses door, host reveals goat behind another...",
+                        "Should contestant switch doors? Yes, probability increases from 1/3 to 2/3...",
+                        "Demonstrates importance of conditional probability"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the birthday paradox?", 
+                    answers: ["surprisingly high probability of shared birthdays", "collision probability phenomenon", "counterintuitive probability result"], 
+                    hints: [
+                        "In group of 23 people, >50% chance two share birthday...",
+                        "Seems surprising because we think of specific matches...",
+                        "Actually about any match among many possible pairs"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is stochastic process?", 
+                    answers: ["collection of random variables indexed by time", "random process over time", "probability evolution model"], 
+                    hints: [
+                        "Sequence of random variables representing system evolution...",
+                        "Examples: stock prices, weather patterns, queue lengths...",
+                        "Studied using probability theory and statistics"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is martingale in probability?", 
+                    answers: ["fair game stochastic process", "conditional expectation property", "no predictable profit process"], 
+                    hints: [
+                        "E[X_{n+1} | X_1,...,X_n] = X_n...",
+                        "Expected future value equals current value given history...",
+                        "Important in finance, gambling theory, and stochastic calculus"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the difference between frequentist and Bayesian probability?", 
+                    answers: ["frequentist: long-run frequency, bayesian: degree of belief", "objective vs subjective probability", "frequency vs belief interpretation"], 
+                    hints: [
+                        "Frequentist: probability as limit of relative frequency in repeated trials...",
+                        "Bayesian: probability as degree of belief, updated with evidence...",
+                        "Different philosophical approaches to statistical inference"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is entropy in information theory?", 
+                    answers: ["measure of uncertainty or information content", "average information per outcome", "shannon entropy"], 
+                    hints: [
+                        "H(X) = -Σ P(x) log P(x) for discrete variable...",
+                        "Higher entropy = more uncertainty or information...",
+                        "Fundamental concept in data compression and communication"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the law of large numbers?", 
+                    answers: ["sample mean converges to population mean as n increases", "convergence of averages", "large sample stability"], 
+                    hints: [
+                        "As number of trials increases, sample average approaches expected value...",
+                        "Explains why probabilities stabilize with more data...",
+                        "Foundation for statistical estimation and inference"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the difference between almost sure convergence and convergence in probability?", 
+                    answers: ["almost sure: with probability 1, in probability: probability approaches 1", "strong vs weak convergence", "pointwise vs probabilistic convergence"], 
+                    hints: [
+                        "Almost sure: sequence converges for almost all outcomes...",
+                        "In probability: probability of being far from limit goes to zero...",
+                        "Almost sure convergence implies convergence in probability, but not vice versa"
+                    ], 
+                    topic: "probability" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the central limit theorem's importance?", 
+                    answers: ["justifies normal approximation for sums/averages", "foundation for inference", "universal distribution convergence"], 
+                    hints: [
+                        "Explains why many statistics are approximately normal...",
+                        "Allows use of normal-based methods even when population isn't normal...",
+                        "Critical for confidence intervals, hypothesis tests, and regression"
+                    ], 
+                    topic: "probability" 
+                }
+            ]
+        };
+
+        // Initialize the game
+        function initGame() {
+            // Event listeners
+            elements.startBtn.addEventListener('click', startGame);
+            elements.nextBtn.addEventListener('click', nextQuestion);
+            elements.nextLevelBtn.addEventListener('click', startNextLevel);
+            elements.retryLevelBtn.addEventListener('click', retryLevel);
+            elements.restartBtn.addEventListener('click', restartGame);
+            elements.shareBtn.addEventListener('click', shareAchievement);
+            elements.voiceToggle.addEventListener('click', toggleVoice);
+            elements.speakQuestionBtn.addEventListener('click', speakQuestion);
+            elements.submitBtn.addEventListener('click', submitAnswer);
+            elements.answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !elements.submitBtn.disabled) {
+                    submitAnswer();
+                }
+            });
+            
+            // Topic selection
+            elements.topicCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    elements.topicCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    gameState.selectedTopic = card.dataset.topic;
+                });
+            });
+            
+            // Initialize speech synthesis
+            initSpeech();
+            
+            // Set total questions display
+            elements.totalQuestions.textContent = gameState.totalQuestions;
+            elements.totalQuestionsFinal.textContent = gameState.totalQuestions * 5;
+            elements.targetScore.textContent = Math.round(gameState.totalQuestions * 0.8);
+            
+            // Initialize skill meter
+            updateSkillMeter(0);
+        }
+
+        // Initialize speech synthesis
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                // Check if voices are loaded
+                if (speechSynthesis.getVoices().length === 0) {
+                    speechSynthesis.onvoiceschanged = () => {
+                        // Voices loaded
+                    };
+                }
+            } else {
+                elements.voiceToggle.style.display = 'none';
+                elements.speakQuestionBtn.style.display = 'none';
+                gameState.voiceEnabled = false;
+            }
+        }
+
+        // Toggle voice output
+        function toggleVoice() {
+            gameState.voiceEnabled = !gameState.voiceEnabled;
+            elements.voiceToggle.textContent = gameState.voiceEnabled ? '🔊' : '🔇';
+            elements.voiceToggle.classList.toggle('muted', !gameState.voiceEnabled);
+            speakText(gameState.voiceEnabled ? "Voice output enabled" : "Voice output disabled");
+        }
+
+        // Speak text using Web Speech API
+        function speakText(text, onEnd = null) {
+            if (!gameState.voiceEnabled || !('speechSynthesis' in window)) return;
+            
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; // Slightly slower for clarity
+            
+            if (onEnd) {
+                utterance.onend = onEnd;
+            }
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // Speak the current question
+        function speakQuestion() {
+            if (gameState.questions[gameState.currentQuestion]) {
+                speakText(gameState.questions[gameState.currentQuestion].question);
+            }
+        }
+
+        // Update skill meter display
+        function updateSkillMeter(percentage) {
+            const fill = elements.skillFill;
+            const value = elements.skillValue;
+            
+            fill.style.width = `${percentage}%`;
+            value.textContent = `${percentage}%`;
+            
+            // Color gradient based on skill level
+            if (percentage < 33) {
+                fill.style.background = 'linear-gradient(to right, #fbbf24, #f59e0b)';
+            } else if (percentage < 66) {
+                fill.style.background = 'linear-gradient(to right, #3b82f6, #8b5cf6)';
+            } else {
+                fill.style.background = 'linear-gradient(to right, #10b981, #14b8a6)';
+            }
+        }
+
+        // Start the game
+        function startGame() {
+            gameState.currentLevel = 1;
+            gameState.levelScores = [];
+            gameState.totalSkills = 0;
+            updateLevelIndicator();
+            loadLevelQuestions();
+            showScreen('questionScreen');
+            startLevel();
+        }
+
+        // Load questions for current level and topic
+        function loadLevelQuestions() {
+            let allQuestions = [];
+            
+            // Collect questions for current level and selected topic
+            Object.values(questionBank).forEach(topicQuestions => {
+                topicQuestions.forEach(q => {
+                    if (q.level === gameState.currentLevel && 
+                        (gameState.selectedTopic === 'all' || q.topic === gameState.selectedTopic)) {
+                        // Create unique ID from question text first 30 chars
+                        const qid = `${q.topic}-${q.level}-${q.question.substring(0, 30).replace(/\s+/g, '-')}`;
+                        allQuestions.push({...q, id: qid});
+                    }
+                });
+            });
+            
+            // Shuffle and select 30 questions (or all if less)
+            gameState.questions = shuffleArray(allQuestions).slice(0, gameState.totalQuestions);
+            gameState.askedQuestions = new Set();
+        }
+
+        // Start a level
+        function startLevel() {
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.levelStartTime = Date.now();
+            elements.currentScore.textContent = '0';
+            elements.questionNumber.textContent = '1';
+            elements.progressFill.style.width = '0%';
+            elements.progressPercent.textContent = '0%';
+            elements.topicBadge.textContent = gameState.selectedTopic === 'all' ? 'All Topics' : 
+                gameState.selectedTopic.charAt(0).toUpperCase() + gameState.selectedTopic.slice(1);
+            loadQuestion();
+        }
+
+        // Load a question
+        function loadQuestion() {
+            if (gameState.currentQuestion >= gameState.questions.length) {
+                endLevel();
+                return;
+            }
+            
+            const question = gameState.questions[gameState.currentQuestion];
+            elements.questionText.textContent = question.question;
+            elements.answerInput.value = '';
+            elements.answerInput.className = 'answer-input';
+            elements.answerInput.disabled = false;
+            elements.answerInput.placeholder = 'Type your answer here...';
+            elements.hintContainer.classList.remove('show');
+            elements.hintText.textContent = '';
+            elements.answerStatus.textContent = '';
+            elements.answerStatus.className = 'answer-status';
+            elements.feedback.className = 'feedback';
+            elements.feedback.textContent = '';
+            elements.submitBtn.disabled = false;
+            elements.nextBtn.style.display = 'none';
+            gameState.currentHintLevel = 0;
+            
+            // Reset timer
+            resetTimer();
+            
+            // Add slide animation
+            elements.questionScreen.querySelector('.question-container').classList.add('question-slide');
+            setTimeout(() => {
+                elements.questionScreen.querySelector('.question-container').classList.remove('question-slide');
+            }, 350);
+            
+            // Focus on answer input
+            elements.answerInput.focus();
+        }
+
+        // Reset timer for question
+        function resetTimer() {
+            clearInterval(gameState.timer);
+            clearInterval(gameState.hintTimer);
+            gameState.timeLeft = gameState.timePerQuestion;
+            elements.timerDisplay.textContent = gameState.timeLeft;
+            elements.timerProgress.style.width = '100%';
+            elements.timerDisplay.style.color = '';
+            elements.timerProgress.style.background = 'var(--gradient)';
+            
+            // Update timer display every second
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                elements.timerDisplay.textContent = gameState.timeLeft;
+                elements.timerProgress.style.width = `${(gameState.timeLeft / gameState.timePerQuestion) * 100}%`;
+                
+                // Warning color when time is low
+                if (gameState.timeLeft <= 10) {
+                    elements.timerDisplay.style.color = '#ef4444';
+                    elements.timerProgress.style.background = 'linear-gradient(to right, #ef4444, #f97316)';
+                } else if (gameState.timeLeft <= 20) {
+                    elements.timerDisplay.style.color = '#f59e0b';
+                    elements.timerProgress.style.background = 'linear-gradient(to right, #f59e0b, #eab308)';
+                }
+                
+                // Provide hints at specific time intervals (as requested)
+                if (gameState.timeLeft === 30 && gameState.currentHintLevel === 0) {
+                    showHint(0);
+                    gameState.currentHintLevel = 1;
+                } else if (gameState.timeLeft === 20 && gameState.currentHintLevel === 1) {
+                    showHint(1);
+                    gameState.currentHintLevel = 2;
+                } else if (gameState.timeLeft === 10 && gameState.currentHintLevel === 2) {
+                    showHint(2);
+                    gameState.currentHintLevel = 3;
+                }
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        // Show progressive hint based on time remaining
+        function showHint(hintIndex) {
+            const question = gameState.questions[gameState.currentQuestion];
+            if (question.hints && question.hints[hintIndex]) {
+                elements.hintText.textContent = question.hints[hintIndex];
+                elements.hintContainer.classList.add('show');
+                speakText(`Hint: ${question.hints[hintIndex]}`);
+            }
+        }
+
+        // Handle time up
+        function timeUp() {
+            // Disable input and submit
+            elements.answerInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            
+            // Show correct answer in feedback
+            const question = gameState.questions[gameState.currentQuestion];
+            const correctAnswer = question.answers[0]; // Show first acceptable answer
+            
+            showFeedback(false, `⏰ Time's up! The answer was: ${correctAnswer}`);
+            speakText(`Time's up! The correct answer was: ${correctAnswer}`);
+            
+            // Mark as incorrect
+            elements.answerInput.classList.add('incorrect');
+            elements.answerStatus.textContent = 'Incorrect - Time expired';
+            elements.answerStatus.className = 'answer-status incorrect';
+            
+            elements.nextBtn.style.display = 'inline-flex';
+        }
+
+        // Submit answer
+        function submitAnswer() {
+            const userAnswer = elements.answerInput.value.trim().toLowerCase();
+            const question = gameState.questions[gameState.currentQuestion];
+            
+            // Check if answer matches any acceptable answer (case-insensitive, flexible matching)
+            const isCorrect = checkAnswer(userAnswer, question.answers);
+            
+            // Stop timer and hint timer
+            clearInterval(gameState.timer);
+            clearInterval(gameState.hintTimer);
+            
+            // Disable input and submit
+            elements.answerInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            
+            // Show feedback
+            if (isCorrect) {
+                elements.answerInput.classList.add('correct');
+                elements.answerStatus.textContent = '✓ Correct!';
+                elements.answerStatus.className = 'answer-status correct';
+                showFeedback(true, "✨ Excellent! That's correct! Great math skills!");
+                speakText("Excellent! That's correct!");
+                gameState.score++;
+                elements.currentScore.textContent = gameState.score;
+                
+                // Add skill boost for correct answer
+                const skillBoost = Math.round(100 / (gameState.totalQuestions * 5));
+                gameState.totalSkills = Math.min(100, gameState.totalSkills + skillBoost);
+                updateSkillMeter(gameState.totalSkills);
+            } else {
+                elements.answerInput.classList.add('incorrect');
+                elements.answerStatus.textContent = '✗ Incorrect';
+                elements.answerStatus.className = 'answer-status incorrect';
+                const correctAnswer = question.answers[0]; // Show first acceptable answer
+                showFeedback(false, `💡 Not quite. The answer was: ${correctAnswer}`);
+                speakText(`Not quite. The correct answer was: ${correctAnswer}`);
+            }
+            
+            // Update progress
+            const progress = ((gameState.currentQuestion + 1) / gameState.totalQuestions) * 100;
+            elements.progressFill.style.width = `${progress}%`;
+            elements.progressPercent.textContent = `${Math.round(progress)}%`;
+            
+            // Enable next button
+            elements.nextBtn.style.display = 'inline-flex';
+        }
+
+        // Check if user answer matches any acceptable answer
+        function checkAnswer(userAnswer, acceptableAnswers) {
+            // Simple matching: check if user answer is included in any acceptable answer or vice versa
+            // Also handles common variations and synonyms
+            return acceptableAnswers.some(accept => {
+                const acceptLower = accept.toLowerCase().trim();
+                // Exact match or substring match in either direction
+                if (userAnswer === acceptLower || acceptLower.includes(userAnswer) || userAnswer.includes(acceptLower)) {
+                    return true;
+                }
+                // Handle common mathematical notations and variations
+                if (acceptLower.includes('1/2') && (userAnswer.includes('0.5') || userAnswer.includes('50%') || userAnswer.includes('one half'))) return true;
+                if (acceptLower.includes('1/6') && (userAnswer.includes('0.1667') || userAnswer.includes('16.67%') || userAnswer.includes('one sixth'))) return true;
+                if (acceptLower.includes('1/4') && (userAnswer.includes('0.25') || userAnswer.includes('25%') || userAnswer.includes('one fourth') || userAnswer.includes('one quarter'))) return true;
+                if (acceptLower.includes('p(a or b)') && userAnswer.includes('p(a) + p(b)')) return true;
+                if (acceptLower.includes('p(a and b)') && userAnswer.includes('p(a) * p(b)')) return true;
+                if (acceptLower.includes('standard deviation') && userAnswer.includes('sd')) return true;
+                if (acceptLower.includes('interquartile range') && userAnswer.includes('iqr')) return true;
+                if (acceptLower.includes('coefficient of variation') && userAnswer.includes('cv')) return true;
+                return false;
+            });
+        }
+
+        // Show feedback message
+        function showFeedback(isCorrect, message) {
+            elements.feedback.textContent = message;
+            elements.feedback.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+        }
+
+        // Go to next question
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            
+            if (gameState.currentQuestion < gameState.totalQuestions) {
+                elements.questionNumber.textContent = gameState.currentQuestion + 1;
+                loadQuestion();
+            } else {
+                endLevel();
+            }
+        }
+
+        // End current level
+        function endLevel() {
+            clearInterval(gameState.timer);
+            clearInterval(gameState.hintTimer);
+            const levelTime = Math.round((Date.now() - gameState.levelStartTime) / 1000);
+            const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
+            
+            // Save level score
+            gameState.levelScores.push({
+                level: gameState.currentLevel,
+                score: gameState.score,
+                percentage: percentage,
+                time: levelTime
+            });
+            
+            // Update level complete screen
+            elements.completedLevel.textContent = gameState.currentLevel;
+            elements.levelScore.textContent = `${percentage}%`;
+            elements.correctCount.textContent = gameState.score;
+            elements.incorrectCount.textContent = gameState.totalQuestions - gameState.score;
+            elements.timeTaken.textContent = `${levelTime}s`;
+            
+            // Update level skill meter
+            const levelSkill = Math.min(100, Math.round(percentage * 0.8));
+            elements.levelSkillFill.style.width = `${levelSkill}%`;
+            elements.levelSkillValue.textContent = `${levelSkill}%`;
+            
+            // Determine result message
+            if (percentage >= 80) {
+                elements.levelResult.textContent = "🌟 Outstanding! You've mastered this level! Ready for more advanced math!";
+                elements.levelResult.className = "result-message success";
+                elements.nextLevelBtn.style.display = 'inline-flex';
+                elements.retryLevelBtn.style.display = 'none';
+                
+                // Show confetti for success
+                if (gameState.currentLevel < 5) {
+                    createConfetti(40);
+                }
+            } else {
+                elements.levelResult.textContent = "💪 Keep practicing! Math skills grow with effort. Try again!";
+                elements.levelResult.className = "result-message fail";
+                elements.nextLevelBtn.style.display = 'none';
+                elements.retryLevelBtn.style.display = 'inline-flex';
+            }
+            
+            // Speak result
+            speakText(percentage >= 80 ? 
+                `Congratulations! You scored ${percentage}% and passed level ${gameState.currentLevel}!` : 
+                `You scored ${percentage}%. You need 80% to advance. Let's practice and grow your math skills!`);
+            
+            showScreen('levelCompleteScreen');
+        }
+
+        // Start next level
+        function startNextLevel() {
+            gameState.currentLevel++;
+            updateLevelIndicator();
+            
+            if (gameState.currentLevel > 5) {
+                showFinalScreen();
+            } else {
+                loadLevelQuestions();
+                showScreen('questionScreen');
+                startLevel();
+            }
+        }
+
+        // Retry current level
+        function retryLevel() {
+            loadLevelQuestions();
+            showScreen('questionScreen');
+            startLevel();
+        }
+
+        // Show final screen
+        function showFinalScreen() {
+            const totalCorrect = gameState.levelScores.reduce((sum, level) => sum + level.score, 0);
+            const totalPossible = gameState.totalQuestions * 5;
+            const finalPercentage = Math.round((totalCorrect / totalPossible) * 100);
+            
+            elements.finalScore.textContent = `${finalPercentage}%`;
+            elements.totalCorrect.textContent = totalCorrect;
+            elements.levelsCompleted.textContent = '5';
+            
+            // Update final skill meter
+            elements.finalSkillFill.style.width = `${Math.min(100, finalPercentage)}%`;
+            elements.finalSkillValue.textContent = `${Math.min(100, finalPercentage)}%`;
+            
+            // Personalized message
+            let message = "";
+            if (finalPercentage >= 95) {
+                message = "🌟 Perfect mastery! You're a Data & Probability Expert!";
+            } else if (finalPercentage >= 85) {
+                message = "🏆 Exceptional! You understand data analysis and prediction!";
+            } else if (finalPercentage >= 75) {
+                message = "👏 Great job! You've built strong math foundations!";
+            } else {
+                message = "🌱 Well done for completing the challenge! Keep practicing your math skills!";
+            }
+            
+            elements.finalMessage.textContent = message;
+            elements.finalMessage.className = `result-message ${finalPercentage >= 75 ? 'success' : ''}`;
+            
+            // Speak final message
+            speakText(`Challenge complete! You scored ${finalPercentage}% overall. ${message}`);
+            
+            showScreen('finalScreen');
+            
+            // Final confetti celebration
+            createConfetti(80);
+        }
+
+        // Restart game
+        function restartGame() {
+            gameState.currentLevel = 1;
+            gameState.levelScores = [];
+            gameState.totalSkills = 0;
+            gameState.selectedTopic = 'all';
+            elements.topicCards.forEach(c => c.classList.remove('selected'));
+            elements.topicCards[0].classList.add('selected');
+            updateLevelIndicator();
+            updateSkillMeter(0);
+            showScreen('startScreen');
+        }
+
+        // Share achievement
+        function shareAchievement() {
+            const totalCorrect = gameState.levelScores.reduce((sum, level) => sum + level.score, 0);
+            const totalPossible = gameState.totalQuestions * 5;
+            const percentage = Math.round((totalCorrect / totalPossible) * 100);
+            
+            const text = `I just completed the CBC Mathematics Challenge for Grade 7! 📊🎲\nScored ${percentage}% across 5 levels and 150 questions on Data Handling & Probability!\n#CBCKenya #Mathematics #DataScience #Probability #Grade7 #MathEducation`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'CBC Mathematics Challenge',
+                    text: text,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Achievement copied to clipboard! Share your math journey with friends! 🚀');
+                });
+            }
+        }
+
+        // Update level indicator dots
+        function updateLevelIndicator() {
+            document.querySelectorAll('.level-dot').forEach(dot => {
+                const level = parseInt(dot.dataset.level);
+                dot.classList.remove('active', 'completed');
+                
+                if (level === gameState.currentLevel) {
+                    dot.classList.add('active');
+                } else if (level < gameState.currentLevel) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
+        // Show specific screen
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Shuffle array (Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Create confetti effect
+        function createConfetti(count = 30) {
+            const colors = ['#4f46e5', '#7c3aed', '#0ea5e9', '#f59e0b', '#ef4444', '#10b981'];
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confetti.style.animationDelay = `${Math.random() * 1.5}s`;
+                confetti.style.width = `${Math.random() * 8 + 4}px`;
+                confetti.style.height = confetti.style.width;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                container.appendChild(confetti);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000);
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

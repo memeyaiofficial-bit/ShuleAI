@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Geometry Master | Grade 4 CBC | Position, Direction, Angles & Plane Figures</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #2c3e66, #1a2a4a);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffef7;
+            border-radius: 60px;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #2c3e66, #1e2f4a);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: white;
+        }
+
+        .level-badge {
+            background: #f39c12;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #1e2f4a;
+        }
+
+        .timer-area {
+            background: #000000aa;
+            backdrop-filter: blur(4px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .timer-number {
+            color: #f1c40f;
+            background: #000;
+            padding: 4px 14px;
+            border-radius: 40px;
+            margin-left: 10px;
+            font-size: 2rem;
+        }
+
+        .score-progress {
+            background: #f8f3e0;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #e0c8a0;
+            font-weight: bold;
+        }
+
+        .score-text, .required-text {
+            background: #2c3e66;
+            padding: 5px 18px;
+            border-radius: 40px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            padding: 30px 25px 25px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: #ecf0f1;
+            padding: 30px 20px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            color: #1e2f4a;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.1);
+            line-height: 1.3;
+        }
+
+        .answer-input {
+            width: 85%;
+            font-size: 2rem;
+            padding: 15px 20px;
+            text-align: center;
+            font-family: monospace;
+            font-weight: bold;
+            border: 4px solid #f39c12;
+            border-radius: 60px;
+            background: white;
+            outline: none;
+        }
+
+        .answer-input:focus {
+            border-color: #e67e22;
+            box-shadow: 0 0 0 3px #f39c1255;
+        }
+
+        .submit-btn {
+            background: #27ae60;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 35px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 6px 0 #1e8449;
+            transition: 0.05s linear;
+            width: 85%;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #1e8449;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #2c3e66;
+            color: #f1c40f;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .restart-btn {
+            background: #e67e22;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .next-area {
+            margin-top: 10px;
+        }
+
+        .next-btn {
+            background: #3498db;
+            font-size: 1.4rem;
+            font-weight: bold;
+            padding: 10px 40px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #1f618d;
+            transition: 0.05s linear;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #1f618d;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.3rem; }
+            .answer-input { font-size: 1.5rem; width: 95%; }
+            .submit-btn { width: 95%; font-size: 1.3rem; }
+        }
+
+        .timer-critical {
+            color: #ff6b6b;
+            text-shadow: 0 0 3px red;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge">📐 LEVEL <span id="levelNum">1</span></div>
+        <div class="timer-area">⏱️ TIME <span class="timer-number" id="timerDisplay">00</span>s</div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">⭐ SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 NEED 80% → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading geometry challenge...</div>
+        <div class="flex-col">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer" autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✓ CHECK ANSWER ✓</button>
+            <div class="next-area">
+                <button id="nextBtn" class="next-btn" disabled>➡️ NEXT QUESTION ⬅️</button>
+            </div>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">📐 GEOMETRY MASTER! Type answers for Position, Direction, Angles & Plane Figures. Timer is RUNNING!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC MATHEMATICS: GEOMETRY
+    // Topics: Position and Direction (compass points, coordinates, turns)
+    // Angles (right angles, acute, obtuse, degrees)
+    // Plane Figures (square, rectangle, triangle, circle, properties)
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // Student must type answer (numbers, words, directions)
+    // 80% to pass each level. Timed per level.
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Generate 30 unique geometry questions per level
+    function generateGeometryQuestions(level, count = 30) {
+        const questions = [];
+        const topics = ["position", "direction", "angles", "plane"];
+        
+        for (let i = 0; i < count; i++) {
+            let topic = topics[i % topics.length];
+            let q = null;
+            let diff = level; // 1-5
+            
+            if (topic === "position") {
+                if (diff <= 2) {
+                    let gridX = rand(1, 5);
+                    let gridY = rand(1, 5);
+                    q = { text: `A point is at (${gridX}, ${gridY}) on a grid. If you move 2 steps right and 1 step up, what are the new coordinates? (Write as x,y)`, answer: `${gridX+2},${gridY+1}` };
+                } else if (diff <= 4) {
+                    let start = rand(1, 8);
+                    let moves = rand(1, 4);
+                    q = { text: `Start at position ${start} on a number line. Move ${moves} steps left. New position?`, answer: start - moves };
+                } else {
+                    let col = rand(1, 7);
+                    let row = rand(1, 6);
+                    q = { text: `On a chessboard, column ${col}, row ${row}. Write the coordinate as (column, row)`, answer: `(${col},${row})` };
+                }
+            }
+            else if (topic === "direction") {
+                const directions = ["North", "East", "South", "West"];
+                const turns = ["quarter turn", "half turn", "three-quarter turn", "full turn"];
+                if (diff <= 2) {
+                    let startDir = directions[rand(0,3)];
+                    let turn = rand(0,1) === 0 ? "quarter turn clockwise" : "half turn clockwise";
+                    let mapping = {
+                        "North,quarter turn clockwise": "East", "North,half turn clockwise": "South",
+                        "East,quarter turn clockwise": "South", "East,half turn clockwise": "West",
+                        "South,quarter turn clockwise": "West", "South,half turn clockwise": "North",
+                        "West,quarter turn clockwise": "North", "West,half turn clockwise": "East"
+                    };
+                    let key = `${startDir},${turn}`;
+                    q = { text: `Facing ${startDir}. You turn ${turn}. Which direction are you facing now?`, answer: mapping[key] || "East" };
+                } else if (diff <= 4) {
+                    let start = rand(0,3);
+                    let turnSteps = rand(1,3);
+                    let newIdx = (start + turnSteps) % 4;
+                    q = { text: `Facing ${directions[start]}. Turn ${turnSteps * 90}° clockwise. New direction?`, answer: directions[newIdx] };
+                } else {
+                    let start = rand(0,3);
+                    let anticlock = rand(1,2);
+                    let newIdx = (start - anticlock + 4) % 4;
+                    q = { text: `Facing ${directions[start]}. Turn ${anticlock * 90}° anticlockwise. Direction?`, answer: directions[newIdx] };
+                }
+            }
+            else if (topic === "angles") {
+                if (diff <= 2) {
+                    let angle = rand(30, 89);
+                    q = { text: `An angle of ${angle}° is called? (acute, right, obtuse, straight)`, answer: "acute" };
+                } else if (diff <= 4) {
+                    let types = ["acute", "right", "obtuse"];
+                    let values = [45, 90, 120];
+                    let idx = rand(0,2);
+                    q = { text: `What type of angle is ${values[idx]}°?`, answer: types[idx] };
+                } else {
+                    let a = rand(10, 80);
+                    let b = 90 - a;
+                    q = { text: `Two angles are complementary. One is ${a}°. What is the other?`, answer: b };
+                }
+            }
+            else if (topic === "plane") {
+                if (diff <= 2) {
+                    let shapes = ["square", "rectangle", "triangle", "circle"];
+                    let props = {
+                        square: "4 equal sides", rectangle: "4 sides, opposite equal",
+                        triangle: "3 sides", circle: "no sides, curved"
+                    };
+                    let shape = shapes[rand(0,3)];
+                    if (shape === "square") q = { text: `How many equal sides does a square have?`, answer: 4 };
+                    else if (shape === "rectangle") q = { text: `How many pairs of equal sides in a rectangle?`, answer: 2 };
+                    else if (shape === "triangle") q = { text: `How many vertices (corners) in a triangle?`, answer: 3 };
+                    else q = { text: `How many sides does a circle have?`, answer: 0 };
+                } else if (diff <= 4) {
+                    let shapes2 = ["square", "rectangle", "triangle"];
+                    let shape2 = shapes2[rand(0,2)];
+                    if (shape2 === "square") q = { text: `Area of a square with side 5 cm = ? cm²`, answer: 25 };
+                    else if (shape2 === "rectangle") q = { text: `Rectangle: length 8 cm, width 3 cm. Area = ? cm²`, answer: 24 };
+                    else q = { text: `Triangle with base 6 cm and height 4 cm. Area = ? cm² (half base × height)`, answer: 12 };
+                } else {
+                    let polygon = rand(5, 8);
+                    q = { text: `A regular polygon has ${polygon} sides. How many diagonals from one vertex? (n-3)`, answer: polygon - 3 };
+                }
+            }
+            
+            if (q) {
+                questions.push(q);
+            } else {
+                questions.push({ text: `How many degrees in a right angle?`, answer: 90 });
+            }
+        }
+        return shuffleArray(questions);
+    }
+
+    let levelsData = [];
+    for (let lvl = 1; lvl <= 5; lvl++) {
+        levelsData.push(generateGeometryQuestions(lvl, 30));
+    }
+
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+
+    let levelTimerSec = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const messageDiv = document.getElementById('gameMessage');
+
+    function updateScoreUI() {
+        scoreSpan.innerText = levelScore;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        const timeMap = {1: 95, 2: 85, 3: 75, 4: 65, 5: 55};
+        levelTimerSec = timeMap[currentLevel];
+        timerDisplaySpan.innerText = levelTimerSec;
+        timerDisplaySpan.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelFinished) return;
+            if (levelTimerSec <= 1) {
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableInputs();
+                messageDiv.innerHTML = `⏰💀 TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to master geometry! 💀⏰`;
+                showRestartButton();
+            } else {
+                levelTimerSec--;
+                timerDisplaySpan.innerText = levelTimerSec;
+                if (levelTimerSec <= 10) {
+                    timerDisplaySpan.classList.add('timer-critical');
+                } else {
+                    timerDisplaySpan.classList.remove('timer-critical');
+                }
+                if (levelTimerSec === 15) {
+                    messageDiv.innerHTML = `⚠️ ${levelTimerSec} SECONDS LEFT! Think angles and shapes! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+
+    function disableInputs() {
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        nextBtn.disabled = true;
+    }
+
+    function showRestartButton() {
+        let existing = document.querySelector('.restart-custom');
+        if (existing) existing.remove();
+        const restartBtn = document.createElement('button');
+        restartBtn.innerText = '📐 RESTART GEOMETRY CHALLENGE 📐';
+        restartBtn.className = 'restart-btn restart-custom';
+        restartBtn.onclick = () => location.reload();
+        messageDiv.appendChild(restartBtn);
+    }
+
+    // Normalize answer (trim, lowercase, handle variations like "north", "N", "North")
+    function normalizeAnswer(userAns, correctAns) {
+        userAns = userAns.trim().toLowerCase().replace(/\s/g, '');
+        let correctStr = correctAns.toString().toLowerCase().replace(/\s/g, '');
+        
+        // Direction synonyms: "north" vs "n"
+        const dirMap = { "north": "n", "east": "e", "south": "s", "west": "w" };
+        if (dirMap[userAns]) userAns = dirMap[userAns];
+        if (dirMap[correctStr]) correctStr = dirMap[correctStr];
+        
+        // Coordinates like "3,4" vs "(3,4)" vs "3,4"
+        let coordMatch = userAns.match(/\(?(\d+),(\d+)\)?/);
+        let correctCoord = correctStr.match(/\(?(\d+),(\d+)\)?/);
+        if (coordMatch && correctCoord) {
+            return coordMatch[1] === correctCoord[1] && coordMatch[2] === correctCoord[2];
+        }
+        
+        // numeric comparison
+        let userNum = parseFloat(userAns);
+        let correctNum = parseFloat(correctStr);
+        if (!isNaN(userNum) && !isNaN(correctNum)) {
+            return Math.abs(userNum - correctNum) < 0.01;
+        }
+        return userAns === correctStr;
+    }
+
+    function checkAnswer() {
+        if (answerLocked || waitingForNext || !gameActive || levelFinished) {
+            messageDiv.innerHTML = "⏳ Please wait for next question!";
+            return;
+        }
+        let userAnswer = answerInput.value;
+        if (userAnswer === "") {
+            messageDiv.innerHTML = "❓ Type your geometry answer first! ❓";
+            return;
+        }
+        const currentQ = levelsData[currentLevel-1][currentQIndex];
+        let isCorrect = normalizeAnswer(userAnswer, currentQ.answer);
+        
+        answerLocked = true;
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            messageDiv.innerHTML = `✅ CORRECT! +1 point! (${levelScore}/${TOTAL_QS}) Time left: ${levelTimerSec}s ✅`;
+            answerInput.value = "";
+        } else {
+            messageDiv.innerHTML = `❌ WRONG! Correct answer: ${currentQ.answer}. Your answer: ${userAnswer}. Keep learning geometry! ❌`;
+            answerInput.value = "";
+        }
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        waitingForNext = true;
+        nextBtn.disabled = false;
+        nextBtn.focus();
+    }
+
+    function loadQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const qData = levelsData[currentLevel-1][currentQIndex];
+        questionDiv.innerText = qData.text;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        waitingForNext = false;
+        answerLocked = false;
+        nextBtn.disabled = true;
+        answerInput.focus();
+        messageDiv.innerHTML = `📐 Q${currentQIndex+1}/${TOTAL_QS} • Geometry challenge! Timer: ${levelTimerSec}s left`;
+    }
+
+    function nextQuestion() {
+        if (!waitingForNext) return;
+        if (levelFinished) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                messageDiv.innerHTML = `🏆📐🔷 AMAZING! You've mastered Position, Direction, Angles & Plane Figures! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). GEOMETRY MASTER! 🔷📐🏆`;
+                disableInputs();
+                gameActive = false;
+                return;
+            } else {
+                messageDiv.innerHTML = `🎉 LEVEL ${currentLevel} COMPLETE! 🎉 ${levelScore}/${TOTAL_QS} PASS! Moving to LEVEL ${currentLevel+1}... 📐🔷`;
+                disableInputs();
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelFinished = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableInputs();
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to become a Geometry Master! 😭`;
+            showRestartButton();
+        }
+    }
+
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelFinished = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadQuestion();
+        submitBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !submitBtn.disabled && !waitingForNext && gameActive && !answerLocked) {
+                checkAnswer();
+            }
+        });
+    }
+
+    initGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geology Expedition: Earth Explorer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #5d4037 0%,
+          #8d6e63 30%,
+          #a1887f 60%,
+          #bcaaa4 100%
+        );
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in;
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+        background: linear-gradient(45deg, #ffab91, #ffcc80, #c5e1a5, #80deea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .header p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        color: #f5f5f5;
+      }
+
+      .game-area {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 25px;
+        margin-bottom: 20px;
+      }
+
+      .expedition-area {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .control-panel {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #795548 0%, #6d4c41 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 25px rgba(121, 85, 72, 0.4);
+      }
+
+      .stat-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #ffcc80;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .terrain-view {
+        width: 100%;
+        height: 450px;
+        background: linear-gradient(
+          135deg,
+          #87ceeb 0%,
+          #98fb98 30%,
+          #daa520 70%,
+          #8b4513 100%
+        );
+        border-radius: 15px;
+        position: relative;
+        border: 3px solid #795548;
+        margin-bottom: 25px;
+        overflow: hidden;
+      }
+
+      .geological-feature {
+        position: absolute;
+        transition: all 0.5s ease;
+        cursor: pointer;
+        text-align: center;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+      }
+
+      .geological-feature:hover {
+        transform: scale(1.1);
+        z-index: 10;
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 5px;
+      }
+
+      .feature-label {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+
+      .rock-sample {
+        top: 70%;
+        left: 25%;
+      }
+      .mineral-vein {
+        top: 40%;
+        left: 60%;
+      }
+      .fossil-bed {
+        top: 50%;
+        left: 40%;
+      }
+      .crystal-formation {
+        top: 30%;
+        left: 20%;
+      }
+      .volcanic-rock {
+        top: 20%;
+        left: 70%;
+      }
+
+      .expedition-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .btn {
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #795548 0%, #6d4c41 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        color: white;
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .location-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .location-option {
+        background: #f5f5f5;
+        border: 3px solid transparent;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .location-option:hover {
+        background: #e8f5e9;
+        transform: scale(1.05);
+      }
+
+      .location-option.selected {
+        border-color: #795548;
+        background: #efebe9;
+        box-shadow: 0 5px 20px rgba(121, 85, 72, 0.3);
+      }
+
+      .location-icon {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+      }
+
+      .info-section {
+        background: #efebe9;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 5px solid #795548;
+      }
+
+      .info-title {
+        color: #5d4037;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .info-content {
+        line-height: 1.7;
+        color: #555;
+        font-size: 1rem;
+      }
+
+      .geological-data {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .data-point {
+        background: rgba(121, 85, 72, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #795548;
+      }
+
+      .data-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #795548;
+        margin-bottom: 5px;
+      }
+
+      .data-label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .collection-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .collection-card {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .collection-card.collected {
+        border-color: #795548;
+        background: #efebe9;
+      }
+
+      .collection-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+
+      .expedition-log {
+        background: #efebe9;
+        border-radius: 10px;
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #795548;
+        margin-top: 20px;
+      }
+
+      .log-entry {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background: rgba(121, 85, 72, 0.1);
+        border-radius: 8px;
+        border-left: 3px solid #795548;
+        font-size: 0.9rem;
+      }
+
+      .achievement {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(121, 85, 72, 0.1);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #795548;
+      }
+
+      .achievement.locked {
+        opacity: 0.4;
+      }
+
+      .achievement-icon {
+        font-size: 1.8rem;
+      }
+
+      .weather-effects {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+      }
+
+      .cloud {
+        position: absolute;
+        font-size: 3rem;
+        opacity: 0.7;
+        animation: float 20s linear infinite;
+      }
+
+      .sun {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 4rem;
+        animation: rotate 20s linear infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateX(-100px);
+        }
+        100% {
+          transform: translateX(1200px);
+        }
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        max-width: 350px;
+        border-left: 5px solid #795548;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-color: #795548;
+      }
+
+      .notification.warning {
+        border-color: #ff9800;
+      }
+
+      .notification.error {
+        border-color: #f44336;
+      }
+
+      .tool-indicator {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: #795548;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .energy-level {
+        width: 100%;
+        height: 20px;
+        background: rgba(121, 85, 72, 0.3);
+        border-radius: 10px;
+        margin: 20px 0;
+        overflow: hidden;
+        border: 1px solid #795548;
+      }
+
+      .energy-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #795548, #8d6e63, #a1887f);
+        transition: width 0.5s ease;
+        box-shadow: 0 0 20px rgba(121, 85, 72, 0.5);
+      }
+
+      @media (max-width: 768px) {
+        .game-area {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .expedition-controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>⛰️ Geology Expedition: Earth Explorer</h1>
+        <p>
+          Discover rocks, minerals, and the fascinating history of our planet!
+        </p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-value" id="geologyPoints">0</div>
+          <div class="stat-label">🪨 Geology Points</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="specimensFound">0</div>
+          <div class="stat-label">🔍 Specimens Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="expeditionEnergy">100%</div>
+          <div class="stat-label">⚡ Expedition Energy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="discoveryRate">0%</div>
+          <div class="stat-label">🎯 Discovery Rate</div>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="expedition-area">
+          <div class="tool-indicator" id="toolIndicator">🔨 Rock Hammer</div>
+          <div class="terrain-view" id="terrainView">
+            <div class="sun">☀️</div>
+            <div class="weather-effects"></div>
+            <!-- Geological features will be dynamically added here -->
+          </div>
+
+          <div class="energy-level">
+            <div class="energy-fill" id="energyFill" style="width: 100%"></div>
+          </div>
+
+          <div class="expedition-controls">
+            <button class="btn btn-primary" onclick="exploreSite()">
+              🔍 Explore Site
+            </button>
+            <button class="btn btn-secondary" onclick="collectSample()">
+              ⛏️ Collect Sample
+            </button>
+            <button class="btn btn-warning" onclick="analyzeFindings()">
+              🔬 Analyze Findings
+            </button>
+          </div>
+
+          <div class="location-selector">
+            <div
+              class="location-option selected"
+              onclick="selectLocation('canyon')"
+            >
+              <div class="location-icon">🏞️</div>
+              <div>Grand Canyon</div>
+            </div>
+            <div class="location-option" onclick="selectLocation('volcano')">
+              <div class="location-icon">🌋</div>
+              <div>Volcanic Range</div>
+            </div>
+            <div class="location-option" onclick="selectLocation('cave')">
+              <div class="location-icon">🕳️</div>
+              <div>Crystal Cave</div>
+            </div>
+          </div>
+
+          <div class="expedition-log" id="expeditionLog">
+            <div class="log-entry">
+              ⛰️ Geology expedition initialized. Ready to explore Earth's
+              wonders!
+            </div>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <div class="info-section">
+            <div class="info-title">
+              <span id="selectedLocationIcon">🏞️</span>
+              <span id="selectedLocationName">Grand Canyon</span>
+            </div>
+            <div class="info-content" id="locationInfo">
+              Welcome to the Grand Canyon! This magnificent geological formation
+              reveals nearly two billion years of Earth's history in its rock
+              layers. Perfect for studying sedimentary rocks and fossils.
+            </div>
+            <div class="geological-data">
+              <div class="data-point">
+                <div class="data-value" id="rockAge">-</div>
+                <div class="data-label">Rock Age</div>
+              </div>
+              <div class="data-point">
+                <div class="data-value" id="formationType">-</div>
+                <div class="data-label">Formation Type</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">💎 Mineral Collection</div>
+            <div class="collection-grid" id="collectionGrid">
+              <!-- Collection cards will be dynamically added here -->
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🏆 Expedition Achievements</div>
+            <div id="achievementsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      <div id="notificationText"></div>
+    </div>
+
+    <script>
+      // Geological locations and specimens
+      const locations = {
+        canyon: {
+          name: "Grand Canyon",
+          icon: "🏞️",
+          description:
+            "Massive canyon revealing nearly 2 billion years of geological history through exposed rock layers.",
+          specimens: [
+            {
+              name: "Sandstone",
+              icon: "🪨",
+              type: "sedimentary",
+              discovered: false,
+              age: "250M years",
+              hardness: "6-7",
+              info: "Formed from compressed sand grains. Shows beautiful cross-bedding patterns.",
+              fact: "The Redwall Limestone in Grand Canyon is actually gray - it appears red due to iron oxide from above!",
+              value: 50,
+            },
+            {
+              name: "Limestone",
+              icon: "💎",
+              type: "sedimentary",
+              discovered: false,
+              age: "340M years",
+              hardness: "3-4",
+              info: "Formed from marine organisms' shells and skeletons. Reacts with acid.",
+              fact: "Grand Canyon limestone contains fossils of ancient sea creatures!",
+              value: 60,
+            },
+            {
+              name: "Trilobite Fossil",
+              icon: "🦴",
+              type: "fossil",
+              discovered: false,
+              age: "500M years",
+              era: "Paleozoic",
+              info: "Ancient marine arthropod that lived during the Paleozoic era.",
+              fact: "Trilobites were among the first animals to have complex eyes!",
+              value: 100,
+            },
+            {
+              name: "Shale",
+              icon: "🪨",
+              type: "sedimentary",
+              discovered: false,
+              age: "300M years",
+              hardness: "2-3",
+              info: "Fine-grained sedimentary rock that splits into thin layers.",
+              fact: "Shale can contain up to 80% of the world's organic carbon!",
+              value: 45,
+            },
+          ],
+        },
+        volcano: {
+          name: "Volcanic Range",
+          icon: "🌋",
+          description:
+            "Active volcanic region with recent lava flows and diverse igneous rocks.",
+          specimens: [
+            {
+              name: "Basalt",
+              icon: "🌋",
+              type: "igneous",
+              discovered: false,
+              age: "10K years",
+              hardness: "6",
+              info: "Dark, fine-grained volcanic rock. Most common rock in Earth's crust.",
+              fact: "The ocean floor is mostly basalt - it covers 70% of Earth's surface!",
+              value: 55,
+            },
+            {
+              name: "Obsidian",
+              icon: "🔮",
+              type: "igneous",
+              discovered: false,
+              age: "1K years",
+              hardness: "5-6",
+              info: "Natural volcanic glass formed from rapidly cooling lava.",
+              fact: "Obsidian can be sharper than surgical steel when fractured properly!",
+              value: 80,
+            },
+            {
+              name: "Pumice",
+              icon: "🧽",
+              type: "igneous",
+              discovered: false,
+              age: "5K years",
+              hardness: "6",
+              info: "Light, porous volcanic rock that floats on water.",
+              fact: "Pumice is the only rock that can float on water!",
+              value: 65,
+            },
+            {
+              name: "Olivine Crystal",
+              icon: "💚",
+              type: "mineral",
+              discovered: false,
+              composition: "(Mg,Fe)₂SiO₄",
+              hardness: "6.5-7",
+              info: "Green mineral common in basaltic rocks and Earth's mantle.",
+              fact: "Olivine is one of the first minerals to crystallize from magma!",
+              value: 90,
+            },
+          ],
+        },
+        cave: {
+          name: "Crystal Cave",
+          icon: "🕳️",
+          description:
+            "Underground cavern system filled with magnificent crystal formations.",
+          specimens: [
+            {
+              name: "Quartz Crystal",
+              icon: "✨",
+              type: "mineral",
+              discovered: false,
+              composition: "SiO₂",
+              hardness: "7",
+              info: "One of the most common minerals. Forms beautiful hexagonal crystals.",
+              fact: "Quartz crystals are piezoelectric - they generate electricity under pressure!",
+              value: 70,
+            },
+            {
+              name: "Calcite",
+              icon: "💠",
+              type: "mineral",
+              discovered: false,
+              composition: "CaCO₃",
+              hardness: "3",
+              info: "Common carbonate mineral that exhibits double refraction.",
+              fact: "Calcite is the primary mineral in limestone and marble!",
+              value: 60,
+            },
+            {
+              name: "Gypsum",
+              icon: "⛏️",
+              type: "mineral",
+              discovered: false,
+              composition: "CaSO₄·2H₂O",
+              hardness: "2",
+              info: "Soft sulfate mineral used in plaster and drywall.",
+              fact: "Gypsum is so soft you can scratch it with your fingernail!",
+              value: 50,
+            },
+            {
+              name: "Stalactite",
+              icon: "🧊",
+              type: "formation",
+              discovered: false,
+              composition: "CaCO₃",
+              growth: "0.1mm/year",
+              info: "Icicle-shaped formation hanging from cave ceilings.",
+              fact: "Stalactites grow downward, while stalagmites grow upward!",
+              value: 85,
+            },
+            {
+              name: "Fluorite",
+              icon: "🌈",
+              type: "mineral",
+              discovered: false,
+              composition: "CaF₂",
+              hardness: "4",
+              info: "Colorful mineral that fluoresces under ultraviolet light.",
+              fact: "The word 'fluorescence' comes from fluorite!",
+              value: 75,
+            },
+          ],
+        },
+      };
+
+      // Geological tools
+      const tools = [
+        {
+          name: "Rock Hammer",
+          icon: "🔨",
+          description: "Basic tool for breaking rocks and collecting samples",
+          efficiency: 1.0,
+        },
+        {
+          name: "Geological Pick",
+          icon: "⛏️",
+          description: "Specialized tool for precise sample extraction",
+          efficiency: 1.3,
+        },
+        {
+          name: "Core Drill",
+          icon: "🔄",
+          description: "Advanced equipment for deep rock sampling",
+          efficiency: 1.7,
+        },
+        {
+          name: "Laser Scanner",
+          icon: "📡",
+          description: "High-tech device for mineral identification",
+          efficiency: 2.0,
+        },
+      ];
+
+      // Achievements
+      const achievements = [
+        {
+          id: 1,
+          name: "First Discovery",
+          icon: "🔍",
+          description: "Find your first geological specimen",
+          earned: false,
+        },
+        {
+          id: 2,
+          name: "Rock Hound",
+          icon: "🪨",
+          description: "Collect 10 different rock specimens",
+          earned: false,
+        },
+        {
+          id: 3,
+          name: "Mineral Master",
+          icon: "💎",
+          description: "Discover all mineral types",
+          earned: false,
+        },
+        {
+          id: 4,
+          name: "Fossil Finder",
+          icon: "🦴",
+          description: "Uncover 3 different fossils",
+          earned: false,
+        },
+        {
+          id: 5,
+          name: "Master Geologist",
+          icon: "🏆",
+          description: "Reach 1000 geology points",
+          earned: false,
+        },
+      ];
+
+      // Game state
+      let currentLocation = "canyon";
+      let geologyPoints = 0;
+      let specimensFound = 0;
+      let expeditionEnergy = 100;
+      let discoveryRate = 0;
+      let totalSpecimensFound = 0;
+      let currentTool = 0;
+      let fossilsFound = 0;
+      let mineralsFound = 0;
+
+      function initGame() {
+        generateTerrain();
+        updateStats();
+        updateAchievements();
+        updateCollectionGrid();
+        startWeatherEffects();
+        startEnergyRecharge();
+      }
+
+      function generateTerrain() {
+        const view = document.getElementById("terrainView");
+        const location = locations[currentLocation];
+
+        // Clear existing features
+        const existingFeatures = view.querySelectorAll(".geological-feature");
+        existingFeatures.forEach((el) => el.remove());
+
+        // Add location-specific features
+        location.specimens.forEach((specimen) => {
+          if (specimen.discovered || Math.random() < 0.4) {
+            const feature = document.createElement("div");
+            feature.className = `geological-feature ${specimen.type}`;
+            feature.innerHTML = `
+                        <div class="feature-icon">${
+                          specimen.discovered ? specimen.icon : "❓"
+                        }</div>
+                        <div class="feature-label">${
+                          specimen.discovered ? specimen.name : "Unknown"
+                        }</div>
+                    `;
+
+            // Position based on type
+            let left, top;
+            switch (specimen.type) {
+              case "sedimentary":
+                left = 20 + Math.random() * 30;
+                top = 60 + Math.random() * 20;
+                break;
+              case "igneous":
+                left = 60 + Math.random() * 30;
+                top = 20 + Math.random() * 30;
+                break;
+              case "mineral":
+                left = 30 + Math.random() * 40;
+                top = 40 + Math.random() * 30;
+                break;
+              case "fossil":
+                left = 40 + Math.random() * 30;
+                top = 50 + Math.random() * 20;
+                break;
+              case "formation":
+                left = 50 + Math.random() * 20;
+                top = 30 + Math.random() * 40;
+                break;
+              default:
+                left = 25 + Math.random() * 50;
+                top = 25 + Math.random() * 50;
+            }
+
+            feature.style.left = `${left}%`;
+            feature.style.top = `${top}%`;
+
+            feature.onclick = () => selectSpecimen(specimen);
+            view.appendChild(feature);
+          }
+        });
+
+        document.getElementById("selectedLocationName").textContent =
+          location.name;
+        document.getElementById("selectedLocationIcon").textContent =
+          location.icon;
+        document.getElementById("locationInfo").textContent =
+          location.description;
+      }
+
+      function selectSpecimen(specimen) {
+        if (!specimen.discovered) {
+          showNotification(
+            "warning",
+            "🔍 This specimen hasn't been identified yet! Use Explore Site."
+          );
+          return;
+        }
+
+        document.getElementById("selectedLocationName").textContent =
+          specimen.name;
+        document.getElementById("selectedLocationIcon").textContent =
+          specimen.icon;
+
+        let infoText = specimen.info;
+        if (specimen.age) infoText += `\n\nAge: ${specimen.age}`;
+        if (specimen.hardness) infoText += `\nHardness: ${specimen.hardness}`;
+        if (specimen.composition)
+          infoText += `\nComposition: ${specimen.composition}`;
+        if (specimen.fact) infoText += `\n\nFun Fact: ${specimen.fact}`;
+
+        document.getElementById("locationInfo").textContent = infoText;
+        document.getElementById("rockAge").textContent = specimen.age || "-";
+        document.getElementById("formationType").textContent =
+          specimen.type.charAt(0).toUpperCase() + specimen.type.slice(1);
+      }
+
+      function selectLocation(location) {
+        // Update UI
+        document
+          .querySelectorAll(".location-option")
+          .forEach((el) => el.classList.remove("selected"));
+        event.target.closest(".location-option").classList.add("selected");
+
+        currentLocation = location;
+        generateTerrain();
+        updateStats();
+        updateCollectionGrid();
+      }
+
+      function exploreSite() {
+        if (expeditionEnergy < 15) {
+          showNotification("warning", "⚠️ Not enough expedition energy!");
+          return;
+        }
+
+        expeditionEnergy -= 15;
+        const location = locations[currentLocation];
+        const undiscovered = location.specimens.filter((s) => !s.discovered);
+
+        if (undiscovered.length === 0) {
+          showNotification(
+            "warning",
+            "All specimens in this location have been discovered!"
+          );
+          updateStats();
+          return;
+        }
+
+        // Chance to discover based on tool efficiency
+        const toolEfficiency = tools[currentTool].efficiency;
+        const discoveryChance = 0.3 * toolEfficiency;
+
+        if (Math.random() < discoveryChance) {
+          const specimen =
+            undiscovered[Math.floor(Math.random() * undiscovered.length)];
+          specimen.discovered = true;
+          specimensFound++;
+          totalSpecimensFound++;
+
+          if (specimen.type === "fossil") fossilsFound++;
+          if (specimen.type === "mineral") mineralsFound++;
+
+          geologyPoints += specimen.value;
+
+          showNotification(
+            "success",
+            `🔍 Discovered ${specimen.name}! +${specimen.value} points`
+          );
+          addLogEntry(`🪨 New discovery: ${specimen.name} - ${specimen.fact}`);
+
+          generateTerrain();
+          updateCollectionGrid();
+        } else {
+          showNotification(
+            "error",
+            "🔍 Exploration found nothing new this time."
+          );
+          addLogEntry("🏔️ Site exploration: No new specimens identified.");
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function collectSample() {
+        if (expeditionEnergy < 25) {
+          showNotification(
+            "warning",
+            "⚠️ Not enough energy for sample collection!"
+          );
+          return;
+        }
+
+        expeditionEnergy -= 25;
+        const location = locations[currentLocation];
+        const undiscovered = location.specimens.filter((s) => !s.discovered);
+
+        if (undiscovered.length === 0) {
+          showNotification(
+            "warning",
+            "No unidentified specimens remain in this location!"
+          );
+          updateStats();
+          return;
+        }
+
+        // Higher chance with sample collection
+        const toolEfficiency = tools[currentTool].efficiency;
+        if (Math.random() < 0.6 * toolEfficiency) {
+          const specimen =
+            undiscovered[Math.floor(Math.random() * undiscovered.length)];
+          specimen.discovered = true;
+          specimensFound++;
+          totalSpecimensFound++;
+
+          if (specimen.type === "fossil") fossilsFound++;
+          if (specimen.type === "mineral") mineralsFound++;
+
+          const bonusPoints = Math.floor(specimen.value * 1.5);
+          geologyPoints += bonusPoints;
+
+          showNotification(
+            "success",
+            `⛏️ Collected ${specimen.name} sample! +${bonusPoints} points`
+          );
+          addLogEntry(
+            `💎 Sample collection: ${specimen.name} - Excellent specimen quality`
+          );
+
+          generateTerrain();
+          updateCollectionGrid();
+        } else {
+          showNotification(
+            "error",
+            "⛏️ Sample collection failed! Specimen was damaged."
+          );
+          addLogEntry(
+            "⛏️ Sample collection: Specimen fractured during extraction."
+          );
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function analyzeFindings() {
+        if (geologyPoints < 50) {
+          showNotification(
+            "warning",
+            "❌ Need at least 50 geology points to conduct analysis!"
+          );
+          return;
+        }
+
+        const analysisGain = 40 + Math.floor(Math.random() * 30);
+        geologyPoints += analysisGain;
+        expeditionEnergy = Math.min(100, expeditionEnergy + 15);
+
+        showNotification(
+          "success",
+          `🔬 Analysis complete! +${analysisGain} geology points`
+        );
+        addLogEntry(
+          "📊 Geological analysis: New insights gained from collected data."
+        );
+
+        // Chance to upgrade tool
+        if (Math.random() < 0.25 && currentTool < tools.length - 1) {
+          currentTool++;
+          const tool = tools[currentTool];
+          document.getElementById(
+            "toolIndicator"
+          ).textContent = `${tool.icon} ${tool.name}`;
+          showNotification(
+            "success",
+            `🛠️ Tool upgraded: ${tool.name}! ${tool.description}`
+          );
+          addLogEntry(`🔧 New equipment: ${tool.name} - ${tool.description}`);
+        }
+
+        // Chance for bonus discovery
+        if (Math.random() < 0.2) {
+          const location = locations[currentLocation];
+          const undiscovered = location.specimens.filter((s) => !s.discovered);
+          if (undiscovered.length > 0) {
+            const specimen =
+              undiscovered[Math.floor(Math.random() * undiscovered.length)];
+            specimen.discovered = true;
+            specimensFound++;
+            totalSpecimensFound++;
+
+            if (specimen.type === "fossil") fossilsFound++;
+            if (specimen.type === "mineral") mineralsFound++;
+
+            geologyPoints += specimen.value;
+
+            showNotification(
+              "success",
+              `🎯 Analysis identified ${specimen.name}!`
+            );
+            addLogEntry(
+              `🔍 Analytical discovery: ${specimen.name} detected through lab analysis`
+            );
+
+            generateTerrain();
+            updateCollectionGrid();
+          }
+        }
+
+        updateStats();
+        checkAchievements();
+      }
+
+      function addLogEntry(message) {
+        const log = document.getElementById("expeditionLog");
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.textContent = message;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function updateStats() {
+        document.getElementById("geologyPoints").textContent = geologyPoints;
+        document.getElementById("specimensFound").textContent = specimensFound;
+        document.getElementById("expeditionEnergy").textContent =
+          Math.round(expeditionEnergy) + "%";
+
+        // Update discovery rate
+        const location = locations[currentLocation];
+        const discovered = location.specimens.filter(
+          (s) => s.discovered
+        ).length;
+        const total = location.specimens.length;
+        discoveryRate = Math.round((discovered / total) * 100);
+        document.getElementById("discoveryRate").textContent =
+          discoveryRate + "%";
+
+        // Update energy bar
+        document.getElementById("energyFill").style.width =
+          expeditionEnergy + "%";
+      }
+
+      function updateCollectionGrid() {
+        const grid = document.getElementById("collectionGrid");
+        const location = locations[currentLocation];
+
+        let html = "";
+        location.specimens.forEach((specimen) => {
+          html += `
+                    <div class="collection-card ${
+                      specimen.discovered ? "collected" : ""
+                    }">
+                        <div class="collection-icon">${
+                          specimen.discovered ? specimen.icon : "❓"
+                        }</div>
+                        <div style="font-size: 0.8rem; font-weight: bold;">${
+                          specimen.discovered ? specimen.name : "???"
+                        }</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">${
+                          specimen.discovered ? specimen.type : "?"
+                        }</div>
+                    </div>
+                `;
+        });
+
+        grid.innerHTML = html;
+      }
+
+      function updateAchievements() {
+        const achievementsList = document.getElementById("achievementsList");
+        achievementsList.innerHTML = achievements
+          .map(
+            (achievement) => `
+                    <div class="achievement ${
+                      achievement.earned ? "" : "locked"
+                    }">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div>
+                            <div style="font-weight: bold;">${
+                              achievement.name
+                            }</div>
+                            <div style="font-size: 0.8rem; color: #666;">${
+                              achievement.description
+                            }</div>
+                        </div>
+                    </div>
+                `
+          )
+          .join("");
+      }
+
+      function checkAchievements() {
+        // First Discovery
+        if (specimensFound >= 1 && !achievements[0].earned) {
+          achievements[0].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: First Discovery!"
+          );
+        }
+
+        // Rock Hound
+        if (totalSpecimensFound >= 10 && !achievements[1].earned) {
+          achievements[1].earned = true;
+          showNotification("success", "🏆 Achievement Unlocked: Rock Hound!");
+        }
+
+        // Mineral Master
+        if (mineralsFound >= 5 && !achievements[2].earned) {
+          achievements[2].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Mineral Master!"
+          );
+        }
+
+        // Fossil Finder
+        if (fossilsFound >= 3 && !achievements[3].earned) {
+          achievements[3].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Fossil Finder!"
+          );
+        }
+
+        // Master Geologist
+        if (geologyPoints >= 1000 && !achievements[4].earned) {
+          achievements[4].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Master Geologist!"
+          );
+        }
+
+        updateAchievements();
+      }
+
+      function startWeatherEffects() {
+        setInterval(() => {
+          if (Math.random() < 0.2) {
+            createCloud();
+          }
+        }, 5000);
+      }
+
+      function createCloud() {
+        const effects = document.querySelector(".weather-effects");
+        const cloud = document.createElement("div");
+        cloud.className = "cloud";
+        cloud.textContent = "☁️";
+        cloud.style.top = `${10 + Math.random() * 30}%`;
+        cloud.style.animationDuration = `${15 + Math.random() * 20}s`;
+        effects.appendChild(cloud);
+
+        setTimeout(() => {
+          if (cloud.parentNode) {
+            cloud.parentNode.removeChild(cloud);
+          }
+        }, 30000);
+      }
+
+      function startEnergyRecharge() {
+        setInterval(() => {
+          if (expeditionEnergy < 100) {
+            expeditionEnergy = Math.min(100, expeditionEnergy + 0.3);
+            updateStats();
+          }
+        }, 1000);
+      }
+
+      function showNotification(type, message) {
+        const notification = document.getElementById("notification");
+        notification.className = `notification ${type} show`;
+        document.getElementById("notificationText").textContent = message;
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 4000);
+      }
+
+      // Initialize the game
+      initGame();
+    </script>
+  </body>
+</html>

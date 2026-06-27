@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Kenya Social Studies Master | CBC Grade 4-6 | People, Population & Community</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #1e3c2c 0%, #0f2618 50%, #0d2a3a 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1100px;
+            width: 100%;
+            background: #fffef5;
+            border-radius: 3rem 2rem 3rem 2rem;
+            box-shadow: 0 30px 45px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 2px solid #fbbf24;
+        }
+
+        /* Mode Tabs */
+        .mode-tabs {
+            display: flex;
+            background: #1e3a2f;
+            border-bottom: 3px solid #fbbf24;
+            gap: 2px;
+        }
+        .tab-btn {
+            flex: 1;
+            background: #2d5a44;
+            color: #fef9e0;
+            border: none;
+            padding: 16px 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #d96c2b, #f39c12);
+            color: white;
+            text-shadow: 0 1px 0 #7c3a1e;
+            box-shadow: inset 0 -3px 0 #fde047;
+        }
+        .tab-btn:active { transform: scale(0.98); }
+
+        /* Common Header */
+        .game-header {
+            background: linear-gradient(105deg, #2c7a47, #3e9e65);
+            padding: 1rem 1.5rem;
+            color: white;
+            text-shadow: 2px 2px 0 #0a3a22;
+            border-bottom: 4px solid #ffdf8c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .level-badge, .score-badge, .timer-area {
+            background: #1e3a2a;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .timer-area {
+            background: #4a2a1a;
+            font-family: monospace;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            color: #ffea9e;
+        }
+        .score-progress {
+            background: #e8ddc5;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #b89a6e;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 1rem;
+            color: #2c5a2a;
+        }
+
+        /* Question Card */
+        .question-card {
+            padding: 1.5rem 1.8rem;
+            background: #fffaf0;
+        }
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: #eef5e5;
+            padding: 20px;
+            border-radius: 48px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #1e3a1e;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 14px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #aa8e6c;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+        .option-prefix {
+            background: #3c7e5a;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        .option-btn:hover:not(:disabled) { background: #ffefcf; transform: scale(0.97); }
+        .option-btn.correct-highlight { background: #2e7d32; color: white; box-shadow: 0 3px 0 #1b5e1f; }
+        .option-btn.correct-highlight .option-prefix { background: #1b5e20; }
+        .option-btn.wrong-highlight { background: #c62828; color: white; text-decoration: line-through; box-shadow: 0 3px 0 #7f2a2a; }
+        .option-btn.wrong-highlight .option-prefix { background: #8b2a2a; }
+        .option-btn:disabled { cursor: default; opacity: 0.85; }
+
+        .next-area { text-align: center; padding-bottom: 20px; }
+        .next-btn {
+            background: #f4a261;
+            font-size: 1.4rem;
+            font-weight: bold;
+            padding: 10px 40px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #c45c1a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+        .next-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #c45c1a; }
+        .next-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .message-area {
+            background: #2c4a2a;
+            color: #e8f5e0;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-top: 2px solid #f5bc70;
+        }
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 12px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.1rem; }
+            .tab-btn { font-size: 0.7rem; padding: 12px 6px; }
+            .game-header { flex-direction: column; align-items: stretch; }
+        }
+
+        .timer-critical { background: #8b0000 !important; color: #ffcc44 !important; animation: pulse 0.6s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+        .restart-custom { margin-top: 8px; }
+        .fun-fact {
+            background: #fef3c7;
+            border-left: 5px solid #f59e0b;
+            padding: 12px 16px;
+            margin: 15px 0 5px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            color: #92400e;
+        }
+        .topic-tag {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="mode-tabs">
+        <button class="tab-btn active" id="tabInterdependence">🤝 Interdependence & Population</button>
+        <button class="tab-btn" id="TabCommunity">🏘️ Community Champions</button>
+    </div>
+    <div class="game-header">
+        <div class="level-badge">⭐ LEVEL <span id="levelNum">1</span></div>
+        <div class="score-badge">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="timer-area">⏱️ <span id="timerDisplay">00</span> sec</div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">📊 SCORE: <span id="scoreSpan">0</span></div>
+        <div class="required-text">🎯 NEED 80% → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Select a mode above and start exploring!</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">✨ Choose a subject above. Answer multiple-choice questions. Timer runs — pass 80% to unlock next level! ✨</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // MERGED CBC SOCIAL STUDIES: 2 GAMES IN ONE
+    // MODE 1: Interdependence & Population (Grade 4)
+    // MODE 2: Community Champions (Language Groups, Culture, School)
+    // Each mode: 5 levels × 30 questions = 150 unique Q per mode
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) { for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]} return arr; }
+
+    // ======================= MODE A: INTERDEPENDENCE & POPULATION =======================
+    const interdependenceBank = [
+        { q: "What does 'interdependence' mean in social studies?", correct: "People relying on each other for goods and services", options: ["People living alone", "People relying on each other", "Competition only", "Fighting"] },
+        { q: "A farmer depends on a trader to:", correct: "Sell his farm produce", options: ["Plough land", "Sell farm produce", "Build house", "Teach children"] },
+        { q: "Why do families in a community depend on each other?", correct: "For support during celebrations and emergencies", options: ["To avoid work", "For support", "To share clothes", "To compete"] },
+        { q: "A bricklayer depends on a baker for:", correct: "Food", options: ["Bricks", "Food", "Tools", "Land"] },
+        { q: "When two communities trade goods, this shows:", correct: "Economic interdependence", options: ["War", "Economic interdependence", "Isolation", "Selfishness"] },
+        { q: "What does 'population' mean?", correct: "Total number of people living in an area", options: ["Number of houses", "Total number of people", "Number of schools", "Total animals"] },
+        { q: "The most populated county in Kenya is:", correct: "Nairobi", options: ["Kisumu", "Mombasa", "Nairobi", "Nakuru"] },
+        { q: "A high population in a county leads to:", correct: "More demand for housing and schools", options: ["Less traffic", "More demand", "Lower food prices", "More forests"] },
+        { q: "What is rural-urban migration?", correct: "Moving from villages to cities", options: ["Cities to villages", "Villages to cities", "Holiday travel", "School change"] },
+        { q: "Overpopulation can lead to:", correct: "Shortage of resources", options: ["More resources", "Shortage of resources", "Less pollution", "More forests"] },
+        { q: "Barter trade means exchanging:", correct: "Goods for goods", options: ["Money for goods", "Goods for goods", "Services for money", "Gifts only"] },
+        { q: "Why do people from different counties trade?", correct: "To get goods not available locally", options: ["To show off", "To get unavailable goods", "To avoid work", "To waste time"] },
+        { q: "In Kenyan extended family, interdependence means:", correct: "Relatives help each other", options: ["Living alone", "Relatives helping", "No visits", "Only nuclear family"] },
+        { q: "Harambee (community self-help) shows:", correct: "People coming together to solve problems", options: ["Greed", "People coming together", "Individualism", "Competition"] },
+        { q: "During a drought, farmers depend on government for:", correct: "Relief food and water", options: ["New cars", "Relief food", "Movies", "Sports equipment"] }
+    ];
+    // Level builder for mode A
+    function buildInterdependenceLevel(level) {
+        let arr = [];
+        for(let i=0;i<30;i++) {
+            let base = interdependenceBank[i % interdependenceBank.length];
+            let newQ = { ...base };
+            if(level>=3) newQ.q = "🤝 " + newQ.q;
+            if(level>=4) newQ.q = "⭐ " + newQ.q + " ⭐";
+            arr.push(newQ);
+        }
+        return shuffleArray(arr);
+    }
+
+    // ======================= MODE B: COMMUNITY CHAMPIONS (Language, Culture, School) =======================
+    const communityBank = [
+        { q: "What are the three main language groups found in Eastern Africa?", correct: "Bantu Nilotic Cushitic", options: ["Bantu Nilotic Cushitic", "Kikuyu Luo Maasai", "English Swahili Arabic", "French German Portuguese"] },
+        { q: "Why is English used as a common language in Kenya?", correct: "Official language for communication", options: ["Because it's easy", "Official language", "Colonial heritage", "Everyone speaks it"] },
+        { q: "Why is it important to learn your mother tongue?", correct: "To preserve cultural identity", options: ["To get a job", "Preserve culture", "Travel abroad", "Make friends"] },
+        { q: "What natural feature often attracts higher population density?", correct: "Water source", options: ["Desert", "Water source", "Mountain top", "Swamp"] },
+        { q: "Why do many people move to cities like Nairobi?", correct: "For jobs and opportunities", options: ["For fresh air", "For jobs", "To farm", "To avoid people"] },
+        { q: "What is one challenge of overpopulation?", correct: "Overcrowding", options: ["More forests", "Overcrowding", "Cleaner air", "More farmland"] },
+        { q: "In many Kenyan communities, what term describes the extended family system?", correct: "Extended family", options: ["Nuclear family", "Extended family", "Single parent", "Clan"] },
+        { q: "What is the name of the Kenyan tradition where community members come together to help?", correct: "Harambee", options: ["Harambee", "Safari", "Nyama Choma", "Jamboree"] },
+        { q: "Why is showing respect to elders important?", correct: "They have wisdom and experience", options: ["They are scary", "Wisdom and experience", "They give money", "They are young"] },
+        { q: "What is one responsibility of a Grade 6 student in school?", correct: "Follow rules and respect others", options: ["Skip classes", "Follow rules", "Fight", "Ignore teachers"] },
+        { q: "How can young people improve their local community?", correct: "Volunteer and help clean up", options: ["Ignore problems", "Volunteer and clean", "Stay indoors", "Complain only"] },
+        { q: "What document outlines rights of Kenyan citizens?", correct: "Constitution", options: ["Passport", "Constitution", "ID card", "School diary"] },
+        { q: "What is a peaceful way to resolve disagreements?", correct: "Talk it out", options: ["Fight", "Talk it out", "Run away", "Ignore it"] },
+        { q: "What does 'census' mean?", correct: "Official count of people", options: ["Health survey", "Official count of people", "School exam", "Road count"] },
+        { q: "What is one advantage of rural living?", correct: "More space and cleaner air", options: ["More space and clean air", "Heavy traffic", "Noise pollution", "High rent"] }
+    ];
+    function buildCommunityLevel(level) {
+        let arr = [];
+        for(let i=0;i<30;i++) {
+            let base = communityBank[i % communityBank.length];
+            let newQ = { ...base };
+            if(level>=3) newQ.q = "🏘️ " + newQ.q;
+            if(level>=4) newQ.q = "🌟 " + newQ.q;
+            arr.push(newQ);
+        }
+        return shuffleArray(arr);
+    }
+
+    const modeBuilders = {
+        interdependence: (level) => buildInterdependenceLevel(level),
+        community: (level) => buildCommunityLevel(level)
+    };
+
+    // Global state
+    let currentMode = "interdependence";
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelQuestions = [];
+    let levelScore = 0;
+    let totalQuestions = 30;
+    let passPercent = 80;
+    let requiredCorrect = Math.ceil(totalQuestions * passPercent / 100);
+    let timerInterval = null;
+    let timeLeft = 0;
+    let answeringLock = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+    let gameActive = true;
+
+    // DOM elements
+    const levelNumSpan = document.getElementById('levelNum');
+    const currentScoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const questionTextDiv = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const gameMessageDiv = document.getElementById('gameMessage');
+    const scoreSpan = document.getElementById('scoreSpan');
+
+    function updateUI() {
+        currentScoreSpan.innerText = levelScore;
+        scoreSpan.innerText = levelScore;
+        levelNumSpan.innerText = currentLevel;
+        passMarkSpan.innerText = requiredCorrect;
+        totalQSpan.innerText = totalQuestions;
+    }
+
+    function stopTimer() { if(timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+
+    function startTimer() {
+        if(timerInterval) stopTimer();
+        const timeMap = {1:92, 2:82, 3:72, 4:62, 5:52};
+        timeLeft = timeMap[currentLevel] || 70;
+        timerDisplaySpan.innerText = timeLeft;
+        timerDisplaySpan.classList.remove('timer-critical');
+        timerInterval = setInterval(() => {
+            if(!gameActive || levelFinished || answeringLock || waitingForNext) return;
+            if(timeLeft <= 1) {
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableOptions();
+                nextBtn.disabled = true;
+                gameMessageDiv.innerHTML = `⏰ TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${totalQuestions} (need ${requiredCorrect}). Restart or change mode.`;
+                showRestart();
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = timeLeft;
+                if(timeLeft <= 10) timerDisplaySpan.classList.add('timer-critical');
+                else timerDisplaySpan.classList.remove('timer-critical');
+                if(timeLeft === 15) gameMessageDiv.innerHTML = `⚠️ ${timeLeft} seconds left! Answer quickly! ⚠️`;
+            }
+        }, 1000);
+    }
+
+    function disableOptions() {
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+    }
+
+    function showRestart() {
+        let existing = document.querySelector('.restart-custom');
+        if(existing) existing.remove();
+        const btn = document.createElement('button');
+        btn.innerText = '🔄 RESTART LEVEL 🔄';
+        btn.className = 'restart-btn restart-custom';
+        btn.onclick = () => initMode(currentMode);
+        gameMessageDiv.appendChild(btn);
+    }
+
+    function highlightCorrect(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            let raw = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if(raw === correctText) btn.classList.add('correct-highlight');
+        });
+    }
+
+    function handleAnswer(selected, correct, btnEl) {
+        if(answeringLock || waitingForNext || !gameActive || levelFinished) return;
+        answeringLock = true;
+        const isCorrect = (selected === correct);
+        if(isCorrect) {
+            levelScore++;
+            updateUI();
+            btnEl.classList.add('correct-highlight');
+            gameMessageDiv.innerHTML = `✅ CORRECT! +1 point (${levelScore}/${totalQuestions}) | Time left: ${timeLeft}s`;
+        } else {
+            btnEl.classList.add('wrong-highlight');
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(btn => {
+                btn.disabled = true;
+                let txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if(txt === correct) btn.classList.add('correct-highlight');
+            });
+            gameMessageDiv.innerHTML = `❌ WRONG! Correct: "${correct}". Score: ${levelScore}/${totalQuestions}`;
+        }
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+
+    function loadQuestion() {
+        if(!gameActive) return;
+        if(currentQIndex >= totalQuestions) { finishLevel(); return; }
+        const q = levelQuestions[currentQIndex];
+        questionTextDiv.innerText = q.q;
+        optionsContainer.innerHTML = '';
+        const shuffled = shuffleArray([...q.options]);
+        const prefixes = ['A','B','C','D'];
+        shuffled.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, q.correct, btn));
+            optionsContainer.appendChild(btn);
+        });
+        answeringLock = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        const modeName = currentMode === 'interdependence' ? 'Interdependence & Population' : 'Community Champions';
+        gameMessageDiv.innerHTML = `📖 Level ${currentLevel} • Q${currentQIndex+1}/${totalQuestions} • ${modeName} mode. Timer running!`;
+    }
+
+    function nextQuestion() {
+        if(!waitingForNext) return;
+        if(levelFinished) return;
+        currentQIndex++;
+        if(currentQIndex < totalQuestions) loadQuestion();
+        else finishLevel();
+    }
+
+    function finishLevel() {
+        if(levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if(passed) {
+            if(currentLevel === 5) {
+                gameMessageDiv.innerHTML = `🏆✨ AMAZING! You mastered ALL levels in ${currentMode.toUpperCase()}! Final Score: ${levelScore}/${totalQuestions} (${Math.round(levelScore/totalQuestions*100)}%). Champion! ✨🏆`;
+                disableOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                gameMessageDiv.innerHTML = `🎉 LEVEL ${currentLevel} COMPLETE! 🎉 ${levelScore}/${totalQuestions} PASS! Moving to LEVEL ${currentLevel+1}...`;
+                disableOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(totalQuestions * passPercent / 100);
+                updateUI();
+                levelFinished = false;
+                gameActive = true;
+                answeringLock = false;
+                waitingForNext = false;
+                levelQuestions = modeBuilders[currentMode](currentLevel);
+                levelQuestions = shuffleArray(levelQuestions).slice(0,totalQuestions);
+                stopTimer();
+                startTimer();
+                loadQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableOptions();
+            nextBtn.disabled = true;
+            gameMessageDiv.innerHTML = `💔 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${totalQuestions} (need ${requiredCorrect}). Restart or switch mode. 💔`;
+            showRestart();
+        }
+    }
+
+    function initMode(mode) {
+        stopTimer();
+        currentMode = mode;
+        currentLevel = 1;
+        currentQIndex = 0;
+        levelScore = 0;
+        requiredCorrect = Math.ceil(totalQuestions * passPercent / 100);
+        gameActive = true;
+        levelFinished = false;
+        answeringLock = false;
+        waitingForNext = false;
+        levelQuestions = modeBuilders[currentMode](currentLevel);
+        levelQuestions = shuffleArray(levelQuestions).slice(0,totalQuestions);
+        updateUI();
+        startTimer();
+        loadQuestion();
+        const modeDisplay = mode === 'interdependence' ? 'INTERDEPENDENCE & POPULATION' : 'COMMUNITY CHAMPIONS';
+        gameMessageDiv.innerHTML = `🌍 ${modeDisplay} MODE • Level 1 • Answer all questions, pass 80% to advance!`;
+        document.getElementById('tabInterdependence').classList.toggle('active', mode==='interdependence');
+        document.getElementById('TabCommunity').classList.toggle('active', mode==='community');
+    }
+
+    // Event listeners
+    document.getElementById('tabInterdependence').addEventListener('click', () => initMode('interdependence'));
+    document.getElementById('TabCommunity').addEventListener('click', () => initMode('community'));
+    nextBtn.addEventListener('click', nextQuestion);
+
+    // start with interdependence mode
+    initMode('interdependence');
+</script>
+</body>
+</html>

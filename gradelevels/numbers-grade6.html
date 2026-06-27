@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>📖 NUMBER QUEST: Math Chronicles | Grade 6 CBC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1e2b2c 0%, #0f1a1b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+            padding: 20px;
+        }
+
+        /* main game book style */
+        .game-book {
+            max-width: 850px;
+            width: 100%;
+            background: #fef7e0;
+            border-radius: 48px 32px 48px 32px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255, 250, 210, 0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* header */
+        .quest-header {
+            background: linear-gradient(135deg, #3b2a1f, #2c1e12);
+            padding: 18px 20px;
+            text-align: center;
+            border-bottom: 5px solid #f5b042;
+        }
+
+        .quest-header h1 {
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            color: #ffebc2;
+            text-shadow: 3px 3px 0 #6b3e1a;
+        }
+
+        .stats-panel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 14px;
+            background: #271f16;
+            padding: 10px 18px;
+            border-radius: 60px;
+        }
+
+        .level-badge, .score-badge, .percent-badge {
+            background: #d98f2b;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #2e241a;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: inset 0 -1px 0 #b56f1a;
+        }
+
+        .score-badge { background: #4b7b5e; color: white; }
+        .percent-badge { background: #2d5f7e; color: white; }
+
+        /* timer and progress */
+        .timer-section {
+            background: #2a2219;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid #dbb66c;
+        }
+        .timer-clock {
+            background: #090c0a;
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #f5bc70;
+            letter-spacing: 3px;
+        }
+        .q-track {
+            font-weight: bold;
+            background: #efdba1;
+            padding: 5px 14px;
+            border-radius: 30px;
+            color: #2c3a2b;
+        }
+        .progress-bar-bg {
+            background: #c9b684;
+            border-radius: 20px;
+            height: 12px;
+            flex: 1;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #f5a623;
+            width: 0%;
+            height: 100%;
+            transition: width 0.2s;
+        }
+
+        /* narrative box */
+        .narrative-box {
+            background: #fff5e6;
+            margin: 20px 25px 10px;
+            padding: 18px 20px;
+            border-radius: 48px;
+            border-left: 12px solid #f3b33d;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .story-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #2b4a2f;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .question-challenge {
+            font-size: 1.7rem;
+            font-weight: 800;
+            text-align: center;
+            background: #f2e5cf;
+            padding: 20px 12px;
+            border-radius: 40px;
+            margin-top: 8px;
+            color: #2c3e2b;
+            word-break: break-word;
+        }
+
+        /* answer input area */
+        .answer-area {
+            padding: 10px 25px 20px;
+        }
+        .answer-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+        .answer-input {
+            flex: 2;
+            min-width: 180px;
+            padding: 16px 20px;
+            font-size: 1.3rem;
+            border-radius: 60px;
+            border: 2px solid #cfb26a;
+            background: #fff9ef;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            font-family: monospace;
+        }
+        .submit-btn {
+            background: #f0a500;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 5px 0 #9b5e1a;
+        }
+        .submit-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #9b5e1a; }
+        
+        .feedback-message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 60px;
+            background: #eadfc6;
+        }
+
+        .next-level-btn, .restart-btn {
+            background: #3e7a5c;
+            border: none;
+            padding: 12px 25px;
+            margin: 10px auto 20px;
+            display: block;
+            width: 70%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: 0.1s;
+            text-align: center;
+        }
+        .next-level-btn { background: #2b6b46; }
+        .restart-btn { background: #8b5a2b; width: 50%; }
+
+        .hidden { display: none; }
+
+        footer {
+            background: #e6dabc;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.7rem;
+            color: #352812;
+        }
+
+        @media (max-width: 550px) {
+            .question-challenge { font-size: 1.3rem; }
+            .story-text { font-size: 1rem; }
+            .timer-clock { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-book" id="gameApp">
+    <div class="quest-header">
+        <h1>📜 NUMBER QUEST ⚔️</h1>
+        <div class="stats-panel">
+            <span class="level-badge" id="levelDisplay">Level 1</span>
+            <span class="score-badge" id="scoreDisplay">🏆 Score: 0</span>
+            <span class="percent-badge" id="percentDisplay">📊 0%</span>
+        </div>
+    </div>
+    <div class="timer-section">
+        <div class="timer-clock" id="timerClock">00:00</div>
+        <div class="q-track" id="questionCounter">Q1 / 40</div>
+        <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    
+    <div class="narrative-box">
+        <div class="story-text" id="storyNarrative">✨ The Math Guardian appears...</div>
+        <div class="question-challenge" id="questionText">Loading challenge...</div>
+    </div>
+
+    <div class="answer-area">
+        <div class="answer-input-group">
+            <input type="number" id="answerInput" class="answer-input" placeholder="Type your answer here..." step="any">
+            <button id="submitBtn" class="submit-btn">⚡ SUBMIT ANSWER</button>
+        </div>
+        <div class="feedback-message" id="feedbackMsg">⚔️ Solve the riddle, young hero!</div>
+    </div>
+
+    <button id="nextLevelBtn" class="next-level-btn hidden">🌟 PROCEED TO NEXT LEVEL 🌟</button>
+    <button id="restartGameBtn" class="restart-btn">🔄 RESTART ADVENTURE</button>
+    <footer>🏅 Grade 6 CBC | Whole Numbers, ×, ÷, Fractions, Decimals | 5 Levels, 40 Q each | Need 80% to advance</footer>
+</div>
+
+<script>
+    // ---------- GAME CONFIGURATION ----------
+    // Levels: 5 levels (1 to 5). Each level has 40 unique narrative-driven math problems.
+    // Topics: Whole numbers, Multiplication, Division, Fractions, Decimals (mixed within levels, difficulty increases)
+    // Requirements: student must answer at least 80% (32/40) to proceed to next level.
+    // Timer: counts down per question? Actually better: timer per question (time limit to answer) to make it challenging and addictive.
+    // Each question has a timer (e.g., 20 seconds). If time runs out -> wrong + auto next.
+    // Also allow typing answer (no A,B,C,D).
+    
+    let currentLevel = 1;         // 1..5
+    let currentQuestions = [];     // array of { text, answer (number or simplified fraction string), narrative }
+    let currentQIndex = 0;
+    let correctCount = 0;          // correct answers in current level
+    let answered = false;
+    let timerInterval = null;
+    let timeLeft = 0;
+    const QUESTION_TIME = 22;      // 22 seconds per question (challenging but fair)
+    let waitingForNext = false;
+    let levelLocked = false;       // prevents answering after level complete
+    
+    // DOM elements
+    const levelDisplay = document.getElementById("levelDisplay");
+    const scoreDisplaySpan = document.getElementById("scoreDisplay");
+    const percentDisplaySpan = document.getElementById("percentDisplay");
+    const timerClockDiv = document.getElementById("timerClock");
+    const questionCounterSpan = document.getElementById("questionCounter");
+    const progressFillDiv = document.getElementById("progressFill");
+    const storyNarrativeDiv = document.getElementById("storyNarrative");
+    const questionTextDiv = document.getElementById("questionText");
+    const answerInput = document.getElementById("answerInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const nextLevelBtn = document.getElementById("nextLevelBtn");
+    const restartGameBtn = document.getElementById("restartGameBtn");
+    
+    // ------------------- QUESTION GENERATOR (narrative + math) --------------------
+    // Generate 40 questions per level (mixed topics)
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        const totalNeeded = 40;
+        // difficulty scaling
+        const maxWhole = [100, 500, 1200, 5000, 20000][level-1];
+        const maxMultFactor = [12, 25, 40, 70, 120][level-1];
+        
+        for (let i = 0; i < totalNeeded; i++) {
+            let qType = (i % 5); // 0 whole,1 multiplication,2 division,3 fraction,4 decimal
+            let text = "";
+            let correctAnswer = "";
+            let narrative = "";
+            
+            // richer narratives
+            const heroes = ["the Math Warrior", "a curious scholar", "Guardian of Numbers", "young sage", "calculator mage"];
+            const items = ["magic gems", "ancient coins", "crystal shards", "runestones", "golden tablets"];
+            
+            if (qType === 0) { // Whole numbers: addition/subtraction/comparison
+                let a = Math.floor(Math.random() * maxWhole) + 10;
+                let b = Math.floor(Math.random() * (maxWhole/2)) + 5;
+                let op = i % 3;
+                if (op === 0) {
+                    correctAnswer = String(a + b);
+                    text = `${a} + ${b}`;
+                    narrative = `📖 ${heroes[i%heroes.length]} finds ${a} ${items[i%items.length]} and then discovers ${b} more. How many in total?`;
+                } else if (op === 1) {
+                    correctAnswer = String(a - b);
+                    text = `${a} - ${b}`;
+                    narrative = `🏰 Out of ${a} legendary coins, ${b} are stolen by shadows. How many remain?`;
+                } else {
+                    let product = a * (Math.floor(Math.random() * 8) + 2);
+                    correctAnswer = String(product);
+                    text = `${a} × ${product/a}`;
+                    narrative = `✨ Each enchanted chest holds ${a} stars, and there are ${product/a} chests. Total stars?`;
+                }
+            } 
+            else if (qType === 1) { // Multiplication
+                let a = Math.floor(Math.random() * (maxMultFactor/2)) + 3;
+                let b = Math.floor(Math.random() * (maxMultFactor)) + 4;
+                if(level >= 4) { a = Math.floor(Math.random() * 50) + 12; b = Math.floor(Math.random() * 35) + 6; }
+                correctAnswer = String(a * b);
+                text = `${a} × ${b}`;
+                narrative = `⚔️ ${heroes[i%heroes.length]} trains ${a} hours daily for ${b} days. Total training hours?`;
+            } 
+            else if (qType === 2) { // Division
+                let divisor = Math.floor(Math.random() * 12) + 2;
+                let quotient = Math.floor(Math.random() * (maxWhole/divisor)) + 2;
+                let dividend = divisor * quotient;
+                if(level>=3) { divisor = Math.floor(Math.random() * 25) + 3; quotient = Math.floor(Math.random() * 50) + 2; dividend = divisor * quotient; }
+                correctAnswer = String(quotient);
+                text = `${dividend} ÷ ${divisor}`;
+                narrative = `📦 ${dividend} magical ${items[i%items.length]} are shared equally among ${divisor} temples. How many per temple?`;
+            }
+            else if (qType === 3) { // Fractions (simplify or add)
+                let num = Math.floor(Math.random() * (level*4 + 5)) + 2;
+                let den = num * (Math.floor(Math.random() * 4) + 2);
+                if (i % 2 === 0) {
+                    // simplify fraction
+                    let gcdVal = (a,b) => b === 0 ? a : gcdVal(b, a % b);
+                    let g = gcdVal(num, den);
+                    let simpNum = num/g, simpDen = den/g;
+                    correctAnswer = simpDen === 1 ? `${simpNum}` : `${simpNum}/${simpDen}`;
+                    text = `Simplify ${num}/${den}`;
+                    narrative = `🧙 A wizard says the fraction ${num}/${den} represents a portion of the relic. Write simplest form.`;
+                } else {
+                    // add two fractions with same denominator
+                    let denom = Math.floor(Math.random() * 12) + 3;
+                    let n1 = Math.floor(Math.random() * (denom-1)) + 1;
+                    let n2 = Math.floor(Math.random() * (denom-1)) + 1;
+                    let sumNum = n1 + n2;
+                    let g = (a,b) => b === 0 ? a : g(b, a % b);
+                    let gcdSum = g(sumNum, denom);
+                    let simpSumNum = sumNum/gcdSum;
+                    let simpSumDen = denom/gcdSum;
+                    correctAnswer = simpSumDen === 1 ? `${simpSumNum}` : `${simpSumNum}/${simpSumDen}`;
+                    text = `${n1}/${denom} + ${n2}/${denom}`;
+                    narrative = `🥧 You have ${n1}/${denom} of a pie and receive another ${n2}/${denom}. Total fraction?`;
+                }
+            } 
+            else { // Decimals: addition, subtraction, multiplication
+                let dec1 = (Math.random() * (level * 15 + 5)).toFixed(2);
+                let dec2 = (Math.random() * (level * 8 + 2)).toFixed(2);
+                let op = i % 3;
+                if (op === 0) {
+                    let sum = (parseFloat(dec1) + parseFloat(dec2)).toFixed(2);
+                    correctAnswer = sum;
+                    text = `${dec1} + ${dec2}`;
+                    narrative = `💎 A merchant has ${dec1} gold bars and gains ${dec2} more. Total gold?`;
+                } else if (op === 1) {
+                    let diff = (parseFloat(dec1) - parseFloat(dec2)).toFixed(2);
+                    correctAnswer = diff;
+                    text = `${dec1} - ${dec2}`;
+                    narrative = `⛵ A ship sails ${dec1} km then goes back ${dec2} km. Net distance?`;
+                } else {
+                    let mult = (parseFloat(dec1) * parseFloat(dec2)).toFixed(2);
+                    correctAnswer = mult;
+                    text = `${dec1} × ${dec2}`;
+                    narrative = `🔮 Magic energy multiplies: ${dec1} orbs × ${dec2} power = ?`;
+                }
+            }
+            
+            questions.push({
+                text: text,
+                correct: correctAnswer,
+                narrative: narrative || `⚡ Solve: ${text}`
+            });
+        }
+        return questions;
+    }
+    
+    // Helper GCD for fraction simplification
+    function gcd(a,b) { return b === 0 ? a : gcd(b, a % b); }
+    
+    // ----- Game State Management -----
+    async function loadLevel(level) {
+        clearTimer();
+        answered = false;
+        waitingForNext = false;
+        levelLocked = false;
+        currentQuestions = generateQuestionsForLevel(level);
+        currentQIndex = 0;
+        correctCount = 0;
+        updateLevelUI();
+        updateScoreUI();
+        nextLevelBtn.classList.add("hidden");
+        submitBtn.disabled = false;
+        answerInput.disabled = false;
+        answerInput.value = "";
+        feedbackMsgDiv.innerHTML = "🌟 A new chapter begins! Solve the riddle within the time!";
+        renderCurrentQuestion();
+        startTimerForCurrent();
+    }
+    
+    function renderCurrentQuestion() {
+        if (currentQIndex >= currentQuestions.length) {
+            finishLevel();
+            return;
+        }
+        const q = currentQuestions[currentQIndex];
+        storyNarrativeDiv.innerHTML = q.narrative;
+        questionTextDiv.innerHTML = `❓ ${q.text} = ?`;
+        questionCounterSpan.innerText = `Q${currentQIndex+1} / 40`;
+        updateProgressBar();
+        answerInput.value = "";
+        answerInput.focus();
+        // reset answered flag
+        answered = false;
+        if (timerInterval) clearInterval(timerInterval);
+        startTimerForCurrent();
+    }
+    
+    function updateProgressBar() {
+        let percentLevel = ((currentQIndex) / 40) * 100;
+        progressFillDiv.style.width = `${percentLevel}%`;
+    }
+    
+    function updateLevelUI() {
+        levelDisplay.innerText = `Level ${currentLevel}`;
+        let required = 32;
+        let currentCorrectPercent = Math.floor((correctCount / currentQIndex) * 100);
+        if(currentQIndex === 0) currentCorrectPercent = 0;
+        percentDisplaySpan.innerText = `📊 ${correctCount}/40 (${Math.floor((correctCount/40)*100)}%)`;
+    }
+    
+    function updateScoreUI() {
+        percentDisplaySpan.innerText = `📊 ${correctCount}/40 (${Math.floor((correctCount/40)*100)}%)`;
+        scoreDisplaySpan.innerText = `🏆 Score: ${correctCount}/40`;
+    }
+    
+    function startTimerForCurrent() {
+        if (waitingForNext || levelLocked) return;
+        timeLeft = QUESTION_TIME;
+        updateTimerDisplay();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (answered || waitingForNext || levelLocked) return;
+            if (timeLeft <= 1) {
+                // time's up -> mark as wrong and auto move
+                clearTimer();
+                if (!answered && !waitingForNext && !levelLocked) {
+                    answered = true;
+                    handleTimeout();
+                }
+            } else {
+                timeLeft--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        // time ran out -> answer considered wrong
+        feedbackMsgDiv.innerHTML = "⏰ TIME'S UP! The magic fades... No points for this question.";
+        // mark wrong (no increment)
+        // move to next after delay
+        waitingForNext = true;
+        clearTimer();
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+        setTimeout(() => {
+            moveToNextQuestion();
+        }, 1500);
+    }
+    
+    function clearTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function updateTimerDisplay() {
+        let seconds = timeLeft;
+        let formatted = `00:${seconds < 10 ? '0'+seconds : seconds}`;
+        timerClockDiv.innerText = formatted;
+        if(timeLeft <= 5) timerClockDiv.style.color = "#ff9460";
+        else timerClockDiv.style.color = "#f5bc70";
+    }
+    
+    async function submitAnswer() {
+        if (answered || waitingForNext || levelLocked) {
+            feedbackMsgDiv.innerHTML = "⏳ Already answered or level completed! Wait a moment.";
+            return;
+        }
+        let userAnswerRaw = answerInput.value.trim();
+        if (userAnswerRaw === "") {
+            feedbackMsgDiv.innerHTML = "📝 Write your answer in the runestone field!";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        let isCorrect = false;
+        let userNorm = userAnswerRaw.toLowerCase().replace(/\s/g, '');
+        let correctNorm = String(currentQ.correct).toLowerCase().replace(/\s/g, '');
+        // compare numeric or fraction
+        if (!isNaN(parseFloat(userNorm)) && isFinite(userNorm) && !isNaN(parseFloat(correctNorm)) && isFinite(correctNorm)) {
+            if (Math.abs(parseFloat(userNorm) - parseFloat(correctNorm)) < 0.001) isCorrect = true;
+        } else if (userNorm === correctNorm) {
+            isCorrect = true;
+        } else {
+            // fraction check (e.g., "3/4")
+            let parts = userNorm.split('/');
+            let correctParts = correctNorm.split('/');
+            if(parts.length === 2 && correctParts.length === 2) {
+                let val1 = parseFloat(parts[0])/parseFloat(parts[1]);
+                let val2 = parseFloat(correctParts[0])/parseFloat(correctParts[1]);
+                if(Math.abs(val1-val2) < 0.001) isCorrect = true;
+            }
+        }
+        
+        clearTimer();
+        answered = true;
+        if (isCorrect) {
+            correctCount++;
+            feedbackMsgDiv.innerHTML = "✅✨ CORRECT! The spirits approve! +1 point ✨✅";
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Not quite! Correct answer: ${currentQ.correct}. Learn and continue!`;
+        }
+        updateScoreUI();
+        updateLevelUI();
+        
+        waitingForNext = true;
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+        setTimeout(() => {
+            moveToNextQuestion();
+        }, 1300);
+    }
+    
+    function moveToNextQuestion() {
+        if (levelLocked) return;
+        if (currentQIndex + 1 < currentQuestions.length) {
+            currentQIndex++;
+            answered = false;
+            waitingForNext = false;
+            submitBtn.disabled = false;
+            answerInput.disabled = false;
+            renderCurrentQuestion();
+        } else {
+            // finished all 40 questions
+            finishLevel();
+        }
+    }
+    
+    function finishLevel() {
+        levelLocked = true;
+        clearTimer();
+        let percentScore = (correctCount / 40) * 100;
+        if (percentScore >= 80) {
+            if (currentLevel < 5) {
+                feedbackMsgDiv.innerHTML = `🎉✨ VICTORY! You scored ${correctCount}/40 (${percentScore}%). You may advance to Level ${currentLevel+1}! ✨🎉`;
+                nextLevelBtn.classList.remove("hidden");
+                submitBtn.disabled = true;
+                answerInput.disabled = true;
+            } else {
+                // completed game
+                feedbackMsgDiv.innerHTML = `🏆🏅 LEGENDARY! You completed all 5 levels with ${correctCount}/40 in final level! YOU ARE A MATH MASTER! 🏅🏆`;
+                nextLevelBtn.classList.add("hidden");
+                submitBtn.disabled = true;
+                answerInput.disabled = true;
+                storyNarrativeDiv.innerHTML = "✨ The cosmos celebrates your wisdom! ✨ Press RESTART to embark again.";
+            }
+        } else {
+            // below 80%: must retry same level
+            feedbackMsgDiv.innerHTML = `😭 You scored ${correctCount}/40 (${percentScore}%). Need 80% to proceed. The ancient magic resets this level. Try again! 😭`;
+            // reset current level
+            setTimeout(() => {
+                resetCurrentLevel();
+            }, 2000);
+        }
+        updateScoreUI();
+        updateLevelUI();
+    }
+    
+    function resetCurrentLevel() {
+        clearTimer();
+        currentQIndex = 0;
+        correctCount = 0;
+        answered = false;
+        waitingForNext = false;
+        levelLocked = false;
+        submitBtn.disabled = false;
+        answerInput.disabled = false;
+        nextLevelBtn.classList.add("hidden");
+        feedbackMsgDiv.innerHTML = "🔄 The time stream resets. Face the same level again. Rise up!";
+        renderCurrentQuestion();
+        updateScoreUI();
+        updateLevelUI();
+        startTimerForCurrent();
+    }
+    
+    function advanceToNextLevel() {
+        if (currentLevel < 5) {
+            currentLevel++;
+            loadLevel(currentLevel);
+        } else {
+            // already max, restart style
+            fullRestart();
+        }
+    }
+    
+    function fullRestart() {
+        currentLevel = 1;
+        loadLevel(1);
+    }
+    
+    // Event Listeners
+    submitBtn.addEventListener("click", submitAnswer);
+    nextLevelBtn.addEventListener("click", advanceToNextLevel);
+    restartGameBtn.addEventListener("click", () => {
+        clearTimer();
+        fullRestart();
+    });
+    answerInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !answered && !waitingForNext && !levelLocked) submitAnswer();
+    });
+    
+    // Initialize game
+    loadLevel(1);
+</script>
+</body>
+</html>

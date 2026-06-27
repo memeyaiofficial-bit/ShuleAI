@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Art Detective: CBC Creative Arts Analysis | Grade 4</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #2c1a3a 0%, #1a0f24 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 1px 4px rgba(255, 245, 200, 0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #9b59b6, #6c3483);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 6px solid #4a235a;
+            color: white;
+            text-shadow: 2px 2px 0 #4a235a;
+        }
+
+        .level-badge {
+            background: #1e1229;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.7rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #6c4a7a, 0 6px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-area {
+            background: #0d0714;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: inset 0 0 0 3px #e8c3ff, 0 6px 0 #2a0f3a;
+        }
+
+        .timer-number {
+            background: #000000;
+            padding: 6px 20px;
+            border-radius: 50px;
+            color: #f5a97f;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+            min-width: 110px;
+            text-align: center;
+            transition: 0.1s;
+        }
+
+        .score-progress {
+            background: #efe3d0;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #bcaa86;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: #3b2a4a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .question-card {
+            padding: 30px 28px 20px;
+            background: #fffbf2;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: #f3e9ff;
+            padding: 24px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 0 4px white, 0 10px 18px rgba(0,0,0,0.1);
+            color: #2c1e3a;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            padding: 16px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.07s linear;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #aa8e6c;
+            color: #2d2418;
+            font-family: inherit;
+        }
+
+        .option-prefix {
+            background: #8e6baf;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 0 #4a2c66;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #ffe6bf;
+            transform: scale(0.97);
+        }
+
+        .option-btn.correct-highlight {
+            background: #2e7d32;
+            color: white;
+            box-shadow: 0 3px 0 #1b5e1f;
+        }
+
+        .option-btn.correct-highlight .option-prefix {
+            background: #1b5e20;
+        }
+
+        .option-btn.wrong-highlight {
+            background: #c62828;
+            color: white;
+            text-decoration: line-through;
+            box-shadow: 0 3px 0 #7f2a2a;
+        }
+
+        .option-btn.wrong-highlight .option-prefix {
+            background: #8b2a2a;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+
+        .next-area {
+            text-align: center;
+            padding-bottom: 25px;
+        }
+
+        .next-btn {
+            background: #c27bdb;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 45px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #6b3483;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #6b3483;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #2e1a40;
+            color: #f3e2ff;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-top: 2px solid #bf8eff;
+        }
+
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 18px;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+
+        .restart-btn:hover {
+            background: #5e3f2a;
+            color: white;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.25rem; }
+            .timer-number { font-size: 1.5rem; min-width: 75px; letter-spacing: 2px; }
+            .level-badge { font-size: 1.2rem; }
+        }
+
+        .timer-critical {
+            background: #8b0000 !important;
+            color: #ffcc44 !important;
+            text-shadow: 0 0 4px red;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.85; transform: scale(1.03);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <div class="level-badge">🎨 LEVEL <span id="levelNum">1</span> 🎭</div>
+        <div class="timer-area">⏳ TIME LEFT <span class="timer-number" id="timerDisplay">00</span></div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 80% TO PASS → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading masterpiece...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">🎨 ART DETECTIVE! Analyze, appreciate, conquer. Timer is RUNNING — answer before time vanishes!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC: ANALYSIS OF CREATIVE ARTWORKS & APPRECIATION IN CREATIVE ARTS
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // Topics: Elements of art, principles of design, art appreciation, Kenyan artworks, analyzing techniques
+    // --------------------------------------------------------------
+
+    // Helper shuffle
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Master question bank categorized for analysis & appreciation
+    const artAnalysisBank = {
+        ELEMENTS: [
+            { q: "What are the basic building blocks of an artwork called?", correct: "Elements of art", options: ["Principles of design", "Elements of art", "Color theory", "Art mediums"] },
+            { q: "Which element of art refers to the path of a moving point?", correct: "Line", options: ["Shape", "Line", "Texture", "Value"] },
+            { q: "Red, blue, and yellow are examples of...", correct: "Primary colors", options: ["Secondary colors", "Primary colors", "Warm colors", "Cool colors"] },
+            { q: "The element that describes the surface quality (rough/smooth) is:", correct: "Texture", options: ["Space", "Texture", "Form", "Tone"] },
+            { q: "What do we call a two-dimensional area with a defined boundary?", correct: "Shape", options: ["Form", "Volume", "Shape", "Pattern"] }
+        ],
+        PRINCIPLES: [
+            { q: "The principle that creates a focal point in an artwork is:", correct: "Emphasis", options: ["Balance", "Emphasis", "Unity", "Rhythm"] },
+            { q: "When elements are repeated to create a feeling of movement, it's called:", correct: "Rhythm/Pattern", options: ["Contrast", "Rhythm/Pattern", "Proportion", "Variety"] },
+            { q: "What principle describes the distribution of visual weight?", correct: "Balance", options: ["Harmony", "Balance", "Scale", "Dominance"] },
+            { q: "When all parts of an artwork work together harmoniously, it shows:", correct: "Unity", options: ["Variety", "Unity", "Contrast", "Movement"] },
+            { q: "The size relationship between different parts of an artwork is:", correct: "Proportion", options: ["Scale", "Proportion", "Ratio", "Gradation"] }
+        ],
+        APPRECIATION: [
+            { q: "What does 'art appreciation' mainly involve?", correct: "Understanding and enjoying artwork", options: ["Only memorizing artists", "Understanding and enjoying artwork", "Copying famous paintings", "Selling art"] },
+            { q: "When analyzing an artwork, what is the first step?", correct: "Describe what you see", options: ["Judge if it's good", "Describe what you see", "Analyze the price", "Compare to others"] },
+            { q: "Which question helps analyze meaning in art?", correct: "What story or message is the artist sharing?", options: ["What frame is used?", "What story or message is the artist sharing?", "How much paint was used?", "Is the artist famous?"] },
+            { q: "In art criticism, 'interpretation' means:", correct: "Explaining the meaning or mood", options: ["Measuring the artwork", "Explaining the meaning or mood", "Cleaning the painting", "Signing the artwork"] },
+            { q: "Why do we study Kenyan traditional artworks?", correct: "To preserve cultural heritage and identity", options: ["To sell them abroad", "To preserve cultural heritage and identity", "For competition", "To change them"] }
+        ],
+        KENYAN_ART: [
+            { q: "Famous Kenyan contemporary artist known for Tinga Tinga paintings?", correct: "Edward Tingatinga", options: ["El Anatsui", "Edward Tingatinga", "Wangechi Mutu", "Sane Wadu"] },
+            { q: "What is a common theme in traditional Kenyan Maasai beadwork?", correct: "Identity and social status", options: ["Only decoration", "Identity and social status", "Religious sacrifice", "Trade currency"] },
+            { q: "The 'Go down arts centre' in Nairobi is known for:", correct: "Supporting local contemporary artists", options: ["Selling pottery", "Supporting local contemporary artists", "Teaching music", "Film making"] },
+            { q: "Which material is commonly used in Kenyan soapstone carvings?", correct: "Soapstone (Kisii stone)", options: ["Marble", "Soapstone (Kisii stone)", "Wood", "Clay"] },
+            { q: "Kikuyu traditional art includes beautiful beaded ornaments worn during:", correct: "Ceremonies and rites of passage", options: ["Farming only", "Ceremonies and rites of passage", "Daily work", "War"] }
+        ],
+        TECHNIQUES: [
+            { q: "What is 'collage' in creative arts?", correct: "Sticking different materials onto a surface", options: ["Drawing with pencils", "Sticking different materials onto a surface", "Painting with watercolors", "Sculpting clay"] },
+            { q: "A painting technique using small dots of color is called:", correct: "Pointillism", options: ["Impasto", "Pointillism", "Watercolor", "Fresco"] },
+            { q: "Which technique creates the illusion of depth in a flat artwork?", correct: "Perspective", options: ["Outline", "Perspective", "Stencil", "Monochrome"] },
+            { q: "What does 'mixed media' mean?", correct: "Using more than one art material", options: ["Only paint", "Using more than one art material", "Digital art", "Black and white"] },
+            { q: "In batik, what is used to resist dye on fabric?", correct: "Wax", options: ["Glue", "Wax", "Oil", "Water"] }
+        ],
+        CRITIQUE: [
+            { q: "The four steps of art criticism in order are:", correct: "Describe, Analyze, Interpret, Judge", options: ["Judge, Describe, Analyze, Interpret", "Describe, Analyze, Interpret, Judge", "Interpret, Judge, Describe, Analyze", "Analyze, Describe, Judge, Interpret"] },
+            { q: "When judging an artwork, we ask:", correct: "Is it successful and meaningful?", options: ["Is it expensive?", "Is it successful and meaningful?", "Does it have many colors?", "Is it old?"] },
+            { q: "Which phrase shows thoughtful art appreciation?", correct: "I think the colors create a calm mood", options: ["It looks easy to make", "I think the colors create a calm mood", "It's not realistic so it's bad", "I could do better"] },
+            { q: "What does 'composition' refer to in art analysis?", correct: "Arrangement of elements in the artwork", options: ["The paint quality", "Arrangement of elements in the artwork", "Artist's signature", "Frame design"] },
+            { q: "Analyzing 'contrast' in art means looking at:", correct: "Differences between light/dark or rough/smooth", options: ["Similar shapes", "Differences between light/dark or rough/smooth", "Only colors", "The price tag"] }
+        ]
+    };
+
+    // Build 5 levels x 30 questions mixing all topics equally
+    const allCategories = ['ELEMENTS', 'PRINCIPLES', 'APPRECIATION', 'KENYAN_ART', 'TECHNIQUES', 'CRITIQUE'];
+    let levelsData = [];
+
+    function buildGameLevels() {
+        for (let lvl = 1; lvl <= 5; lvl++) {
+            let levelQuestions = [];
+            // we need 30 questions per level, distribute across categories (5 each from 6 categories = 30)
+            for (let cat of allCategories) {
+                let sourceArray = artAnalysisBank[cat];
+                for (let i = 0; i < 5; i++) {  // 5 per category = 30 exactly
+                    let base = sourceArray[i % sourceArray.length];
+                    let newQ = {
+                        text: base.q,
+                        options: [...base.options],
+                        correct: base.correct
+                    };
+                    // Add slight flavor for higher levels
+                    if (lvl >= 3 && i % 2 === 0) {
+                        newQ.text = "⭐ " + newQ.text + " ⭐";
+                    }
+                    if (lvl >= 4 && newQ.text.length < 50) {
+                        newQ.text = "🔍 " + newQ.text + " 🎨";
+                    }
+                    levelQuestions.push(newQ);
+                }
+            }
+            levelQuestions = shuffleArray(levelQuestions);
+            levelsData.push(levelQuestions);
+        }
+    }
+    buildGameLevels();
+
+    // -------------------- GAME STATE --------------------
+    let currentLevel = 1;                // 1 to 5
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100); // 24
+    
+    let levelTimerSeconds = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;
+    let waitingForNext = false;
+    let levelCompleted = false;
+    
+    // DOM elements
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionTextDiv = document.getElementById('questionText');
+    const optionsContainerDiv = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const messageDiv = document.getElementById('gameMessage');
+    
+    function updateScoreUI() {
+        scoreSpan.innerText = `${levelScore}`;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    // Critical timer countdown (visible ticking per level)
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        // Challenging timer: Level1 = 88s, L2=78s, L3=68s, L4=58s, L5=48s
+        const timerMap = {1: 88, 2: 78, 3: 68, 4: 58, 5: 48};
+        levelTimerSeconds = timerMap[currentLevel];
+        timerDisplay.innerText = levelTimerSeconds;
+        timerDisplay.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelCompleted) return;
+            if (levelTimerSeconds <= 1) {
+                // TIME'S UP FOR ENTIRE LEVEL
+                stopTimer();
+                timerDisplay.innerText = "0";
+                gameActive = false;
+                levelCompleted = true;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                messageDiv.innerHTML = `⏰💥 TIME'S UP! Level ${currentLevel} FAILED! You answered ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). RESTART to try again. 💥⏰`;
+                showRestartMessage();
+            } else {
+                levelTimerSeconds--;
+                timerDisplay.innerText = levelTimerSeconds;
+                if (levelTimerSeconds <= 10) {
+                    timerDisplay.classList.add('timer-critical');
+                } else {
+                    timerDisplay.classList.remove('timer-critical');
+                }
+                // extra warning on message
+                if (levelTimerSeconds === 15) {
+                    messageDiv.innerHTML = `⚠️ ONLY ${levelTimerSeconds} SECONDS LEFT! RACE! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+    
+    function disableAllOptions() {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => btn.disabled = true);
+    }
+    
+    function showRestartMessage() {
+        let existing = document.querySelector('.restart-msg-btn');
+        if (existing) existing.remove();
+        const restartButton = document.createElement('button');
+        restartButton.innerText = '🔄 RESTART GAME 🔄';
+        restartButton.className = 'restart-btn restart-msg-btn';
+        restartButton.onclick = () => location.reload();
+        messageDiv.appendChild(restartButton);
+    }
+    
+    function highlightCorrectAnswer(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            const btnRaw = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if (btnRaw === correctText) {
+                btn.classList.add('correct-highlight');
+            }
+        });
+    }
+    
+    function handleAnswer(selected, correctAnswer, btnElement) {
+        if (answerLocked || waitingForNext || !gameActive || levelCompleted) return;
+        answerLocked = true;
+        const isCorrect = (selected === correctAnswer);
+        
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            btnElement.classList.add('correct-highlight');
+            messageDiv.innerHTML = `✅ BRILLIANT! +1 point! (${levelScore}/${TOTAL_QS}) | Time left: ${levelTimerSeconds}s`;
+        } else {
+            btnElement.classList.add('wrong-highlight');
+            // Highlight the correct answer elsewhere
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                const txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if (txt === correctAnswer) {
+                    btn.classList.add('correct-highlight');
+                }
+            });
+            messageDiv.innerHTML = `❌ NOT QUITE! Correct: "${correctAnswer}". Keep analyzing! Score: ${levelScore}/${TOTAL_QS}`;
+        }
+        disableAllOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+    
+    function loadCurrentQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const levelQs = levelsData[currentLevel-1];
+        const question = levelQs[currentQIndex];
+        questionTextDiv.innerText = question.text;
+        optionsContainerDiv.innerHTML = '';
+        const shuffledOptions = shuffleArray([...question.options]);
+        const prefixes = ['A', 'B', 'C', 'D'];
+        shuffledOptions.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, question.correct, btn));
+            optionsContainerDiv.appendChild(btn);
+        });
+        answerLocked = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        messageDiv.innerHTML = `🎨 Level ${currentLevel} • Question ${currentQIndex+1}/30 • Timer ticking! Be an art critic! 🖌️`;
+    }
+    
+    function nextQuestion() {
+        if (!waitingForNext) return;
+        if (levelCompleted) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadCurrentQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+    
+    function finishLevel() {
+        if (levelCompleted) return;
+        levelCompleted = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                // GRAND VICTORY
+                messageDiv.innerHTML = `🏆🎨✨ AMAZING ART SCHOLAR! You completed all 5 levels! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). You truly appreciate creative arts! ✨🎨🏆`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                // advance level
+                messageDiv.innerHTML = `🎉 LEVEL ${currentLevel} CLEARED! 🎉 ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%) PASS! Moving to LEVEL ${currentLevel+1}...`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelCompleted = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadCurrentQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableAllOptions();
+            nextBtn.disabled = true;
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Press RESTART to become an art master! 😭`;
+            showRestartMessage();
+        }
+    }
+    
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        currentQIndex = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelCompleted = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadCurrentQuestion();
+        nextBtn.addEventListener('click', nextQuestion);
+    }
+    
+    initGame();
+</script>
+</body>
+</html>

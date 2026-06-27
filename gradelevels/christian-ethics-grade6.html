@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>🌿 Living Stone | Grade 4 CBC CRE Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1f3d2c 0%, #0e2319 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+            padding: 20px;
+        }
+
+        .game-chapel {
+            max-width: 950px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 56px 40px 56px 40px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255, 250, 210, 0.9);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .cre-header {
+            background: linear-gradient(135deg, #2d6a4f, #1b4d3a);
+            padding: 18px 20px;
+            text-align: center;
+            border-bottom: 5px solid #f4a261;
+        }
+
+        .cre-header h1 {
+            font-size: 1.9rem;
+            letter-spacing: -1px;
+            color: #ffefc0;
+            text-shadow: 3px 3px 0 #2d3e2b;
+        }
+
+        .stats-panel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 14px;
+            background: #2a3e2a;
+            padding: 10px 18px;
+            border-radius: 60px;
+        }
+
+        .level-tag, .score-tag, .req-tag {
+            background: #e9c46a;
+            padding: 6px 18px;
+            border-radius: 40px;
+            color: #1f3a2b;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: inset 0 -1px 0 #b98f3a;
+        }
+
+        .score-tag { background: #2f9e68; color: white; }
+        .req-tag { background: #e76f51; color: white; }
+
+        .timer-progress {
+            background: #2a3e2a;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid #e9c46a;
+        }
+
+        .time-sand {
+            background: #0c1f14;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-family: monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f4a261;
+            letter-spacing: 3px;
+        }
+
+        .question-counter {
+            background: #efe0b2;
+            padding: 5px 16px;
+            border-radius: 32px;
+            font-weight: bold;
+            color: #2c3a2b;
+        }
+
+        .progress-bar-bg {
+            background: #c2a15b;
+            border-radius: 20px;
+            height: 12px;
+            flex: 1;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #f4a261;
+            width: 0%;
+            height: 100%;
+            transition: width 0.2s;
+        }
+
+        .narrative-area {
+            background: #fff7ec;
+            margin: 20px 25px 15px;
+            padding: 18px 20px;
+            border-radius: 48px;
+            border-left: 12px solid #e9c46a;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+
+        .story-text {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #2c5538;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+
+        .question-challenge {
+            font-size: 1.7rem;
+            font-weight: 800;
+            text-align: center;
+            background: #f3ebd4;
+            padding: 22px 12px;
+            border-radius: 48px;
+            margin-top: 10px;
+            color: #2c4a2e;
+            word-break: break-word;
+        }
+
+        .answer-area {
+            padding: 20px 25px 20px;
+        }
+        .answer-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+        .answer-input {
+            flex: 2;
+            min-width: 220px;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            border-radius: 60px;
+            border: 3px solid #e9c46a;
+            background: #fffcf2;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            font-family: 'Segoe UI', system-ui;
+        }
+        .answer-input:focus {
+            border-color: #f4a261;
+            box-shadow: 0 0 0 3px rgba(244,162,97,0.3);
+        }
+        .submit-btn {
+            background: #f4a261;
+            border: none;
+            padding: 16px 36px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 5px 0 #c46a2a;
+        }
+        .submit-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c46a2a; }
+
+        .feedback-message {
+            text-align: center;
+            margin: 10px 25px 20px;
+            font-weight: bold;
+            padding: 14px;
+            border-radius: 60px;
+            background: #e9deca;
+            font-size: 1rem;
+        }
+
+        .next-level-btn, .restart-btn {
+            background: #2f6b4b;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px auto 20px;
+            display: block;
+            width: 70%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        .next-level-btn { background: #2f9e68; }
+        .restart-btn { background: #8b5a2b; width: 50%; }
+
+        .hidden { display: none; }
+
+        footer {
+            background: #e2d2b6;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.7rem;
+            color: #352812;
+        }
+
+        @media (max-width: 550px) {
+            .question-challenge { font-size: 1.2rem; }
+            .story-text { font-size: 0.95rem; }
+            .time-sand { font-size: 1.2rem; }
+            .answer-input { font-size: 1rem; padding: 12px 16px; }
+            .submit-btn { padding: 12px 24px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-chapel" id="creGame">
+    <div class="cre-header">
+        <h1>🌱 LIVING STONE 🌟</h1>
+        <div class="stats-panel">
+            <span class="level-tag" id="levelDisplay">Level 1</span>
+            <span class="score-tag" id="scoreDisplay">🏆 Score: 0</span>
+            <span class="req-tag" id="percentDisplay">📖 0%</span>
+        </div>
+    </div>
+    <div class="timer-progress">
+        <div class="time-sand" id="timerClock">00:00</div>
+        <div class="question-counter" id="questionCounter">Q1 / 40</div>
+        <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="narrative-area">
+        <div class="story-text" id="storyNarrative">🌿 The Wise Counselor speaks: learn about friendship, your body, life, and wise choices...</div>
+        <div class="question-challenge" id="questionText">Loading challenge...</div>
+    </div>
+
+    <div class="answer-area">
+        <div class="answer-flex">
+            <input type="text" id="answerInput" class="answer-input" placeholder="✍️ Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">🕊️ SUBMIT</button>
+        </div>
+    </div>
+    <div class="feedback-message" id="feedbackMsg">🌟 Listen to the story, reflect, and type your answer before time runs out!</div>
+
+    <button id="nextLevelBtn" class="next-level-btn hidden">🌟 ASCEND TO NEXT LEVEL 🌟</button>
+    <button id="restartBtn" class="restart-btn">🔄 RESTART JOURNEY</button>
+    <footer>🏅 CBC Grade 4 CRE | Friendship · Human Sexuality · Sanctity of Life · Drug & Substance Use | 5 Levels, 40 Q each | 80% required</footer>
+</div>
+
+<script>
+    // -------------------------- CRE GRADE 4 GAME ---------------------------------
+    // Topics: Friendship Formation, Human Sexuality, Sanctity of Life, Drug and Substance Use
+    // 5 levels, 40 questions each. 80% correct to advance. Timer: 22 seconds per question.
+    // Students type answers (no multiple choice)
+    
+    let currentLevel = 1;
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let correctCount = 0;
+    let answered = false;
+    let waitingForNext = false;
+    let levelLocked = false;
+    let timerInterval = null;
+    let timeLeft = 0;
+    const QUESTION_TIME = 22;
+    
+    // DOM elements
+    const levelDisplay = document.getElementById("levelDisplay");
+    const scoreDisplaySpan = document.getElementById("scoreDisplay");
+    const percentDisplaySpan = document.getElementById("percentDisplay");
+    const timerClockDiv = document.getElementById("timerClock");
+    const questionCounterSpan = document.getElementById("questionCounter");
+    const progressFillDiv = document.getElementById("progressFill");
+    const storyNarrativeDiv = document.getElementById("storyNarrative");
+    const questionTextDiv = document.getElementById("questionText");
+    const answerInput = document.getElementById("answerInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const nextLevelBtn = document.getElementById("nextLevelBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    
+    // Normalize answer for comparison
+    function normalizeAnswer(str) {
+        return str.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[.,!?;:]/g, '').replace(/[‘’'"]/g, "'").replace(/[\(\)]/g, '');
+    }
+    
+    // Generate 40 questions per level (narrative + answer)
+    function generateCREQuestions(level) {
+        const questions = [];
+        const total = 40;
+        const topics = ["Friendship Formation", "Human Sexuality", "Sanctity of Life", "Drug and Substance Use"];
+        
+        // Level difficulty adds depth
+        for (let i = 0; i < total; i++) {
+            let topicIdx = i % 4;
+            let topic = topics[topicIdx];
+            let text = "";
+            let correctAnswer = "";
+            let narrative = "";
+            const bibleChars = ["David and Jonathan", "Ruth and Naomi", "Jesus", "Paul", "Timothy", "Priscilla and Aquila"];
+            
+            // ----- FRIENDSHIP FORMATION -----
+            if (topic === "Friendship Formation") {
+                const friendshipQA = [
+                    { q: "What is the first quality of a good friend according to Proverbs 17:17?", a: "Love", narrative: "A friend loves at all times." },
+                    { q: "Name the friendship in the Bible known for deep loyalty (David and ______).", a: "Jonathan", narrative: "Jonathan loved David as his own soul." },
+                    { q: "What should you avoid in a friendship that hurts others?", a: "Gossip", narrative: "Gossip separates close friends." },
+                    { q: "What does Proverbs 27:17 say iron sharpens?", a: "Iron", narrative: "As iron sharpens iron, so one person sharpens another." },
+                    { q: "Name one thing that builds strong friendships.", a: "Trust", narrative: "Trust is the foundation of friendship." },
+                    { q: "Who was Ruth's loyal friend in the Bible?", a: "Naomi", narrative: "Ruth stayed with Naomi saying 'your people shall be my people'." },
+                    { q: "What should you do when a friend makes a mistake?", a: "Forgive", narrative: "Forgive as the Lord forgave you." },
+                    { q: "How can you be a good friend to someone who is lonely?", a: "Include them", narrative: "Invite them to play and talk." },
+                    { q: "What does the Bible say about having many friends?", a: "Be careful", narrative: "Proverbs 18:24: A man of many companions may come to ruin." },
+                    { q: "Name one thing that destroys friendship.", a: "Lying", narrative: "A false witness breathes out lies." }
+                ];
+                let item = friendshipQA[i % friendshipQA.length];
+                text = item.q;
+                correctAnswer = item.a;
+                narrative = `🤝 ${item.narrative} ${text}`;
+            }
+            // ----- HUMAN SEXUALITY (age-appropriate, values-based) -----
+            else if (topic === "Human Sexuality") {
+                const sexualityQA = [
+                    { q: "Who created the human body and said it was very good?", a: "God", narrative: "God created human beings in His image." },
+                    { q: "Our bodies are the temple of the ______ (1 Corinthians 6:19).", a: "Holy Spirit", narrative: "Your body is a temple of the Holy Spirit." },
+                    { q: "What should we do to respect our bodies?", a: "Keep them clean", narrative: "Take care of your body as God's gift." },
+                    { q: "At what stage of life do children become teenagers and experience body changes?", a: "Adolescence", narrative: "Adolescence is a time of growth and change." },
+                    { q: "What does God want us to do with our bodies?", a: "Honor Him", narrative: "Honor God with your body." },
+                    { q: "Name one way to show respect for your own body.", a: "Exercise", narrative: "Being active keeps your body healthy." },
+                    { q: "What should you do if you have questions about your body?", a: "Ask a parent", narrative: "Talk to a trusted adult like mom or dad." },
+                    { q: "How should we treat others' bodies?", a: "With respect", narrative: "Treat everyone with dignity and respect." },
+                    { q: "Is it good to compare your body with others?", a: "No", narrative: "God made each person unique and special." },
+                    { q: "What is the best way to stay healthy?", a: "Eat well", narrative: "Good food, exercise, and rest keep you healthy." }
+                ];
+                let item = sexualityQA[i % sexualityQA.length];
+                text = item.q;
+                correctAnswer = item.a;
+                narrative = `💙 ${item.narrative} ${text}`;
+            }
+            // ----- SANCTITY OF LIFE -----
+            else if (topic === "Sanctity of Life") {
+                const lifeQA = [
+                    { q: "According to Genesis 1:27, in whose image were humans made?", a: "God", narrative: "God created mankind in His own image." },
+                    { q: "What commandment says 'You shall not murder'?", a: "Sixth commandment", narrative: "Exodus 20:13 - You shall not murder." },
+                    { q: "Every human life is sacred because it is a gift from ______.", a: "God", narrative: "Life is precious because God gives it." },
+                    { q: "What should we do to protect the lives of unborn babies?", a: "Cherish them", narrative: "God knows us even before we are born." },
+                    { q: "How should we treat elderly people?", a: "With honor", narrative: "Rise in the presence of the aged." },
+                    { q: "What does the Bible say about those with disabilities?", a: "Love them", narrative: "All people have dignity and worth." },
+                    { q: "Name one way to show respect for your own life.", a: "Avoid danger", narrative: "Make wise choices to stay safe." },
+                    { q: "Why is every person valuable?", a: "God created them", narrative: "Every person is made in God's likeness." },
+                    { q: "What did Jesus say about children in Matthew 19:14?", a: "Let them come", narrative: "Let the little children come to me." },
+                    { q: "How can we celebrate the gift of life?", a: "Thank God", narrative: "Praise God for the breath of life." }
+                ];
+                let item = lifeQA[i % lifeQA.length];
+                text = item.q;
+                correctAnswer = item.a;
+                narrative = `🌿 ${item.narrative} ${text}`;
+            }
+            // ----- DRUG AND SUBSTANCE USE -----
+            else {
+                const drugQA = [
+                    { q: "Name one harmful substance that people misuse.", a: "Alcohol", narrative: "Alcohol misuse harms the body and mind." },
+                    { q: "What does 1 Corinthians 6:19-20 say about our bodies?", a: "Temple of God", narrative: "Your body is a temple of the Holy Spirit." },
+                    { q: "What should you say when someone offers you drugs?", a: "No", narrative: "Say NO firmly and walk away." },
+                    { q: "Name one health effect of drug abuse.", a: "Brain damage", narrative: "Drugs damage your brain and organs." },
+                    { q: "Who is a trustworthy person to tell if someone pressures you to use drugs?", a: "Teacher", narrative: "Tell a parent, teacher, or pastor." },
+                    { q: "What is the best way to handle peer pressure to take drugs?", a: "Walk away", narrative: "Leave the situation immediately." },
+                    { q: "Name one legal drug that can be misused if not taken correctly.", a: "Medicine", narrative: "Prescription drugs can be abused too." },
+                    { q: "Drug abuse can destroy what important relationships?", a: "Family", narrative: "Addiction harms family and friends." },
+                    { q: "What does the Bible say about being drunk with wine?", a: "Do not", narrative: "Ephesians 5:18 - Do not get drunk on wine." },
+                    { q: "Name one healthy alternative to drug use.", a: "Sports", narrative: "Play sports, music, or art instead of drugs." }
+                ];
+                let item = drugQA[i % drugQA.length];
+                text = item.q;
+                correctAnswer = item.a;
+                narrative = `🚫 ${item.narrative} ${text}`;
+            }
+            
+            questions.push({
+                text: text,
+                correct: normalizeAnswer(correctAnswer),
+                narrative: narrative,
+                originalCorrect: correctAnswer
+            });
+        }
+        // Shuffle for variety
+        for (let i = questions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+        return questions.slice(0, 40);
+    }
+    
+    function loadLevel(level) {
+        clearTimer();
+        answered = false;
+        waitingForNext = false;
+        levelLocked = false;
+        currentQuestions = generateCREQuestions(level);
+        currentQIndex = 0;
+        correctCount = 0;
+        updateLevelUI();
+        updateScoreUI();
+        nextLevelBtn.classList.add("hidden");
+        submitBtn.disabled = false;
+        answerInput.disabled = false;
+        answerInput.value = "";
+        feedbackMsgDiv.innerHTML = "📖 A new chapter begins! Read the story, then type your answer.";
+        renderCurrentQuestion();
+        startTimerForCurrent();
+    }
+    
+    function renderCurrentQuestion() {
+        if (currentQIndex >= currentQuestions.length) {
+            finishLevel();
+            return;
+        }
+        const q = currentQuestions[currentQIndex];
+        storyNarrativeDiv.innerHTML = q.narrative;
+        questionTextDiv.innerHTML = `❓ ${q.text}`;
+        questionCounterSpan.innerText = `Q${currentQIndex+1} / 40`;
+        updateProgressBar();
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answered = false;
+        waitingForNext = false;
+        if (timerInterval) clearInterval(timerInterval);
+        startTimerForCurrent();
+        answerInput.focus();
+    }
+    
+    function updateProgressBar() {
+        let percentLevel = ((currentQIndex) / 40) * 100;
+        progressFillDiv.style.width = `${percentLevel}%`;
+    }
+    
+    function updateLevelUI() {
+        levelDisplay.innerText = `Level ${currentLevel}`;
+        let percent = Math.floor((correctCount / 40) * 100);
+        percentDisplaySpan.innerText = `📖 ${correctCount}/40 (${percent}%)`;
+    }
+    
+    function updateScoreUI() {
+        let percent = Math.floor((correctCount / 40) * 100);
+        percentDisplaySpan.innerText = `📖 ${correctCount}/40 (${percent}%)`;
+        scoreDisplaySpan.innerText = `🏆 Score: ${correctCount}/40`;
+    }
+    
+    function startTimerForCurrent() {
+        if (waitingForNext || levelLocked) return;
+        timeLeft = QUESTION_TIME;
+        updateTimerDisplay();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (answered || waitingForNext || levelLocked) return;
+            if (timeLeft <= 1) {
+                clearTimer();
+                if (!answered && !waitingForNext && !levelLocked) {
+                    answered = true;
+                    handleTimeout();
+                }
+            } else {
+                timeLeft--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        const currentQ = currentQuestions[currentQIndex];
+        feedbackMsgDiv.innerHTML = `⏳✨ TIME EXPIRED! The correct answer was: "${currentQ.originalCorrect}". No point earned. Moving to next question...`;
+        waitingForNext = true;
+        clearTimer();
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+        setTimeout(() => {
+            moveToNextQuestion();
+        }, 2200);
+    }
+    
+    function clearTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function updateTimerDisplay() {
+        let seconds = timeLeft;
+        let formatted = `00:${seconds < 10 ? '0'+seconds : seconds}`;
+        timerClockDiv.innerText = formatted;
+        if(timeLeft <= 5) timerClockDiv.style.color = "#ff8c5a";
+        else timerClockDiv.style.color = "#f4a261";
+    }
+    
+    function evaluateAnswer() {
+        if (answered || waitingForNext || levelLocked) {
+            feedbackMsgDiv.innerHTML = "⏳ Already answered! Please wait for the next question.";
+            return;
+        }
+        
+        let userAnswer = answerInput.value.trim();
+        if (userAnswer === "") {
+            feedbackMsgDiv.innerHTML = "📝 Please type your answer before submitting!";
+            return;
+        }
+        
+        const currentQ = currentQuestions[currentQIndex];
+        let userNorm = normalizeAnswer(userAnswer);
+        let correctNorm = currentQ.correct;
+        
+        let isCorrect = false;
+        
+        // Direct match
+        if (userNorm === correctNorm) isCorrect = true;
+        // Contains correct answer
+        else if (correctNorm.length > 2 && userNorm.includes(correctNorm)) isCorrect = true;
+        else if (userNorm.includes(correctNorm)) isCorrect = true;
+        // Common variations
+        else if (correctNorm === "god" && (userNorm === "god" || userNorm === "lord")) isCorrect = true;
+        else if (correctNorm === "no" && (userNorm === "no" || userNorm === "no thanks")) isCorrect = true;
+        else if (correctNorm === "love" && (userNorm.includes("love") || userNorm === "loving")) isCorrect = true;
+        else if (correctNorm === "alcohol" && (userNorm === "alcohol" || userNorm === "beer")) isCorrect = true;
+        else if (correctNorm === "walk away" && (userNorm.includes("walk") || userNorm === "leave")) isCorrect = true;
+        else if (correctNorm === "forgive" && (userNorm === "forgive" || userNorm === "forgiveness")) isCorrect = true;
+        else if (correctNorm === "trust" && userNorm === "trust") isCorrect = true;
+        else if (correctNorm === "jesus" && (userNorm === "jesus" || userNorm === "christ")) isCorrect = true;
+        
+        clearTimer();
+        answered = true;
+        
+        if (isCorrect) {
+            correctCount++;
+            feedbackMsgDiv.innerHTML = "✅✨ CORRECT! Wise choice! You're growing in understanding! +1 point ✨✅";
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Not quite! The correct answer is: "${currentQ.originalCorrect}". +0 points. Keep learning!`;
+        }
+        
+        updateScoreUI();
+        updateLevelUI();
+        
+        waitingForNext = true;
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+        
+        setTimeout(() => {
+            moveToNextQuestion();
+        }, 2000);
+    }
+    
+    function moveToNextQuestion() {
+        if (levelLocked) return;
+        if (currentQIndex + 1 < currentQuestions.length) {
+            currentQIndex++;
+            answered = false;
+            waitingForNext = false;
+            submitBtn.disabled = false;
+            answerInput.disabled = false;
+            renderCurrentQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+    
+    function finishLevel() {
+        levelLocked = true;
+        clearTimer();
+        let percentScore = (correctCount / 40) * 100;
+        
+        if (percentScore >= 80) {
+            if (currentLevel < 5) {
+                feedbackMsgDiv.innerHTML = `🏆✨ VICTORY! You scored ${correctCount}/40 (${percentScore.toFixed(1)}%). Ascend to Level ${currentLevel+1}! ✨🏆`;
+                nextLevelBtn.classList.remove("hidden");
+                submitBtn.disabled = true;
+                answerInput.disabled = true;
+            } else {
+                feedbackMsgDiv.innerHTML = `🏅🏆 HALLELUJAH! You completed all 5 levels with ${correctCount}/40 (${percentScore.toFixed(1)}%)! YOU ARE A LIVING STONE! 🏆🏅`;
+                nextLevelBtn.classList.add("hidden");
+                submitBtn.disabled = true;
+                answerInput.disabled = true;
+                storyNarrativeDiv.innerHTML = "✨ You have grown in wisdom, respect for life, and godly choices! ✨ Press RESTART to continue the pilgrimage.";
+            }
+        } else {
+            feedbackMsgDiv.innerHTML = `😭 You scored ${correctCount}/40 (${percentScore.toFixed(1)}%). Need 80% to advance. The journey resets this level. Keep trusting God! 😭`;
+            setTimeout(() => {
+                resetCurrentLevel();
+            }, 2500);
+        }
+        updateScoreUI();
+    }
+    
+    function resetCurrentLevel() {
+        clearTimer();
+        currentQIndex = 0;
+        correctCount = 0;
+        answered = false;
+        waitingForNext = false;
+        levelLocked = false;
+        submitBtn.disabled = false;
+        answerInput.disabled = false;
+        nextLevelBtn.classList.add("hidden");
+        feedbackMsgDiv.innerHTML = "🔄 Pilgrimage reset. Face the same level's questions again. You can do it!";
+        renderCurrentQuestion();
+        updateScoreUI();
+        updateLevelUI();
+        startTimerForCurrent();
+    }
+    
+    function advanceToNextLevel() {
+        if (currentLevel < 5) {
+            currentLevel++;
+            loadLevel(currentLevel);
+        } else {
+            fullRestart();
+        }
+    }
+    
+    function fullRestart() {
+        currentLevel = 1;
+        loadLevel(1);
+    }
+    
+    // Event listeners
+    submitBtn.addEventListener("click", evaluateAnswer);
+    nextLevelBtn.addEventListener("click", advanceToNextLevel);
+    restartBtn.addEventListener("click", () => {
+        clearTimer();
+        fullRestart();
+    });
+    answerInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !answered && !waitingForNext && !levelLocked) {
+            evaluateAnswer();
+        }
+    });
+    
+    // Start the game
+    loadLevel(1);
+</script>
+</body>
+</html>

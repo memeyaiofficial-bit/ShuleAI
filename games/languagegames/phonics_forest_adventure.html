@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phonics Forest Adventure - Nature Sounds</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Comic Sans MS", "Segoe UI", sans-serif;
+        background: linear-gradient(135deg, #4caf50 0%, #8bc34a 50%, #cddc39 100%);
+        min-height: 100vh;
+        padding: 20px;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .forest-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.1;
+      }
+
+      .tree {
+        position: absolute;
+        font-size: 4rem;
+        animation: sway 3s ease-in-out infinite;
+      }
+
+      .tree:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+      .tree:nth-child(2) { top: 60%; left: 85%; animation-delay: 1s; }
+      .tree:nth-child(3) { top: 40%; left: 5%; animation-delay: 2s; }
+      .tree:nth-child(4) { top: 80%; left: 75%; animation-delay: 1.5s; }
+
+      @keyframes sway {
+        0%, 100% { transform: rotate(-2deg); }
+        50% { transform: rotate(2deg); }
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        animation: bounceIn 1.5s ease-out;
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .header p {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      .stats-panel {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 5px;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2e7d32;
+      }
+
+      .game-area {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .game-area::before {
+        content: "🌲🦋🌺🐛🍄";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        font-size: 1.5rem;
+        opacity: 0.1;
+        transform: rotate(15deg);
+      }
+
+      .word-display {
+        text-align: center;
+        background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+        border-radius: 15px;
+        padding: 40px;
+        margin-bottom: 25px;
+        border: 3px dashed #4caf50;
+        position: relative;
+      }
+
+      .current-word {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #2e7d32;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+      }
+
+      .phonetic-guide {
+        font-size: 1.8rem;
+        color: #558b2f;
+        margin-bottom: 15px;
+        font-family: "Courier New", monospace;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 10px 20px;
+        border-radius: 25px;
+        display: inline-block;
+      }
+
+      .nature-context {
+        background: #fff8e1;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        border: 2px solid #ffcc02;
+        position: relative;
+      }
+
+      .nature-context::before {
+        content: "🍃";
+        position: absolute;
+        top: -10px;
+        left: 20px;
+        background: #fff8e1;
+        padding: 0 10px;
+        font-size: 1.5rem;
+      }
+
+      .context-title {
+        font-weight: bold;
+        color: #f57f17;
+        margin-bottom: 12px;
+        font-size: 1.2rem;
+      }
+
+      .context-example {
+        color: #5d4037;
+        font-style: italic;
+        line-height: 1.6;
+        font-size: 1.1rem;
+      }
+
+      .recording-section {
+        text-align: center;
+        margin: 25px 0;
+      }
+
+      .record-btn {
+        background: linear-gradient(135deg, #ff6b6b, #ff8a80);
+        color: white;
+        border: none;
+        padding: 20px 40px;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        margin: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .record-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      }
+
+      .record-btn.recording {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+
+      .play-btn {
+        background: linear-gradient(135deg, #4caf50, #66bb6a);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px;
+      }
+
+      .play-btn:hover {
+        background: linear-gradient(135deg, #388e3c, #4caf50);
+        transform: translateY(-2px);
+      }
+
+      .feedback-area {
+        background: #f1f8e9;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        border-left: 5px solid #4caf50;
+        display: none;
+      }
+
+      .feedback-area.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .feedback-icon {
+        font-size: 3rem;
+        text-align: center;
+        margin-bottom: 15px;
+      }
+
+      .feedback-text {
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .feedback-detail {
+        text-align: center;
+        color: #666;
+        line-height: 1.5;
+      }
+
+      .progress-section {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .progress-title {
+        font-size: 1.2rem;
+        color: #2e7d32;
+        margin-bottom: 15px;
+        font-weight: bold;
+      }
+
+      .progress-bar {
+        background: #e0e0e0;
+        height: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 10px 0;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #66bb6a);
+        transition: width 0.5s ease;
+        border-radius: 10px;
+      }
+
+      .level-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #ff9800, #ffb74d);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+
+      .next-btn {
+        background: linear-gradient(135deg, #2196f3, #42a5f5);
+        color: white;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 25px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 20px auto;
+        display: block;
+      }
+
+      .next-btn:hover {
+        background: linear-gradient(135deg, #1976d2, #2196f3);
+        transform: translateY(-2px);
+      }
+
+      .tips-panel {
+        background: #fff3e0;
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 20px;
+        border: 2px solid #ff9800;
+      }
+
+      .tips-title {
+        font-size: 1.2rem;
+        color: #e65100;
+        margin-bottom: 15px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .tip-item {
+        background: rgba(255, 255, 255, 0.7);
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border-left: 3px solid #ff9800;
+      }
+
+      @keyframes bounceIn {
+        0% { transform: scale(0.3) translateY(-50px); opacity: 0; }
+        50% { transform: scale(1.05) translateY(-10px); opacity: 0.8; }
+        70% { transform: scale(0.9) translateY(5px); opacity: 1; }
+        100% { transform: scale(1) translateY(0); opacity: 1; }
+      }
+
+      .floating-leaves {
+        position: absolute;
+        font-size: 2rem;
+        opacity: 0.3;
+        animation: float 6s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      .floating-leaves:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+      .floating-leaves:nth-child(2) { top: 60%; right: 20%; animation-delay: 2s; }
+      .floating-leaves:nth-child(3) { bottom: 30%; left: 15%; animation-delay: 4s; }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        33% { transform: translateY(-20px) rotate(5deg); }
+        66% { transform: translateY(10px) rotate(-3deg); }
+      }
+
+      .home-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+
+      .home-btn:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .header h1 { font-size: 2.5rem; }
+        .current-word { font-size: 2rem; }
+        .stats-panel { grid-template-columns: repeat(2, 1fr); }
+        .floating-leaves { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="home-btn" onclick="goHome()">
+      🏠 Home
+    </button>
+
+    <div class="forest-bg">
+      <div class="tree">🌲</div>
+      <div class="tree">🌳</div>
+      <div class="tree">🌲</div>
+      <div class="tree">🌳</div>
+    </div>
+
+    <div class="floating-leaves">🍃</div>
+    <div class="floating-leaves">🍂</div>
+    <div class="floating-leaves">🍃</div>
+
+    <div class="container">
+      <div class="header">
+        <h1>
+          🌲 Phonics Forest Adventure 🦋
+        </h1>
+        <p>Explore nature sounds and master pronunciation!</p>
+      </div>
+
+      <div class="stats-panel">
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-label">Forest Level</div>
+          <div class="stat-value" id="level">1</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-label">Nature Stars</div>
+          <div class="stat-value" id="score">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🌱</div>
+          <div class="stat-label">Words Mastered</div>
+          <div class="stat-value" id="wordsCompleted">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-label">Accuracy</div>
+          <div class="stat-value" id="accuracy">0%</div>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="word-display">
+          <div class="current-word" id="currentWord">BUTTERFLY</div>
+          <div class="phonetic-guide" id="phoneticGuide">/ˈbʌtərflaɪ/</div>
+          <div class="level-badge" id="difficultyBadge">🌱 Seedling Level</div>
+        </div>
+
+        <div class="nature-context">
+          <div class="context-title">🦋 Nature Scene</div>
+          <div class="context-example" id="contextExample">
+            The colorful butterfly flutters from flower to flower in the peaceful forest garden.
+          </div>
+        </div>
+
+        <div class="recording-section">
+          <button class="record-btn" id="recordBtn" onclick="toggleRecording()">
+            🎤 Start Recording
+          </button>
+          <button class="play-btn" id="playBtn" onclick="playExample()" disabled>
+            🔊 Listen to Example
+          </button>
+        </div>
+
+        <div class="feedback-area" id="feedbackArea">
+          <div class="feedback-icon" id="feedbackIcon">🎉</div>
+          <div class="feedback-text" id="feedbackText">Excellent pronunciation!</div>
+          <div class="feedback-detail" id="feedbackDetail">You captured the nature spirit perfectly!</div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-title">🌿 Forest Journey Progress</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+          </div>
+          <div id="progressText">Explore the forest sounds: 0/10 words discovered</div>
+        </div>
+
+        <button class="next-btn" id="nextBtn" onclick="nextWord()" style="display: none;">
+          Next Adventure 🍃
+        </button>
+      </div>
+
+      <div class="tips-panel">
+        <div class="tips-title">
+          🐛 Forest Pronunciation Tips
+        </div>
+        <div class="tip-item">
+          🌺 <strong>Listen to Nature:</strong> Pay attention to the rhythm and flow of each word
+        </div>
+        <div class="tip-item">
+          🦜 <strong>Speak Like Birds:</strong> Make your voice clear and melodic
+        </div>
+        <div class="tip-item">
+          🍄 <strong>Forest Breathing:</strong> Take deep breaths before speaking for better control
+        </div>
+        <div class="tip-item">
+          🌸 <strong>Nature's Pace:</strong> Don't rush - speak at a natural, comfortable speed
+        </div>
+      </div>
+    </div>
+
+    <script>
+      class PhonicsForestGame {
+        constructor() {
+          this.words = [
+            { word: "BUTTERFLY", phonetic: "/ˈbʌtərflaɪ/", context: "The colorful butterfly flutters from flower to flower in the peaceful forest garden.", difficulty: "easy" },
+            { word: "SQUIRREL", phonetic: "/ˈskwɜːrəl/", context: "A playful squirrel gathers acorns and nuts for the winter season ahead.", difficulty: "easy" },
+            { word: "WATERFALL", phonetic: "/ˈwɔːtərfɔːl/", context: "The mighty waterfall cascades down the rocky cliff with a thunderous roar.", difficulty: "medium" },
+            { word: "MUSHROOM", phonetic: "/ˈmʌʃruːm/", context: "Colorful mushrooms grow in the damp, shaded areas under the old oak trees.", difficulty: "easy" },
+            { word: "DRAGONFLY", phonetic: "/ˈdrægənflaɪ/", context: "The iridescent dragonfly hovers gracefully above the crystal-clear pond.", difficulty: "medium" },
+            { word: "WILDERNESS", phonetic: "/ˈwɪldərnəs/", context: "Brave explorers venture deep into the untamed wilderness seeking adventure.", difficulty: "hard" },
+            { word: "CHRYSALIS", phonetic: "/ˈkrɪsəlɪs/", context: "The caterpillar forms a protective chrysalis before its magical transformation.", difficulty: "hard" },
+            { word: "PHOTOSYNTHESIS", phonetic: "/ˌfoʊtoʊˈsɪnθəsɪs/", context: "Green plants use photosynthesis to convert sunlight into energy for growth.", difficulty: "expert" },
+            { word: "ECOSYSTEM", phonetic: "/ˈiːkoʊsɪstəm/", context: "Every forest ecosystem depends on the balance between plants, animals, and environment.", difficulty: "medium" },
+            { word: "HIBERNATION", phonetic: "/ˌhaɪbərˈneɪʃən/", context: "Many forest animals enter hibernation during the cold winter months." , difficulty: "hard"}
+          ];
+          
+          this.currentWordIndex = 0;
+          this.score = 0;
+          this.level = 1;
+          this.wordsCompleted = 0;
+          this.totalAttempts = 0;
+          this.correctAttempts = 0;
+          this.isRecording = false;
+          this.mediaRecorder = null;
+          this.audioChunks = [];
+
+          this.initializeGame();
+        }
+
+        initializeGame() {
+          this.updateDisplay();
+          this.setupSpeechRecognition();
+          this.loadWord();
+        }
+
+        setupSpeechRecognition() {
+          if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            this.recognition = new SpeechRecognition();
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+            this.recognition.lang = 'en-US';
+
+            this.recognition.onresult = (event) => {
+              const spokenText = event.results[0][0].transcript.toUpperCase();
+              this.checkPronunciation(spokenText);
+            };
+
+            this.recognition.onerror = (event) => {
+              console.error('Speech recognition error:', event.error);
+              this.showFeedback("🦆", "Try Again!", "Let's practice that nature word once more.");
+              this.stopRecording();
+            };
+
+            this.recognition.onend = () => {
+              this.stopRecording();
+            };
+          } else {
+            console.warn('Speech recognition not supported');
+          }
+        }
+
+        loadWord() {
+          const wordData = this.words[this.currentWordIndex];
+          document.getElementById('currentWord').textContent = wordData.word;
+          document.getElementById('phoneticGuide').textContent = wordData.phonetic;
+          document.getElementById('contextExample').textContent = wordData.context;
+          
+          const badges = {
+            easy: "🌱 Seedling Level",
+            medium: "🌿 Growing Level", 
+            hard: "🌳 Forest Level",
+            expert: "🦅 Eagle Level"
+          };
+          document.getElementById('difficultyBadge').textContent = badges[wordData.difficulty] || "🌱 Seedling Level";
+          
+          document.getElementById('nextBtn').style.display = 'none';
+          document.getElementById('feedbackArea').classList.remove('show');
+          document.getElementById('playBtn').disabled = false;
+        }
+
+        toggleRecording() {
+          if (this.isRecording) {
+            this.stopRecording();
+          } else {
+            this.startRecording();
+          }
+        }
+
+        startRecording() {
+          if (this.recognition) {
+            this.isRecording = true;
+            const recordBtn = document.getElementById('recordBtn');
+            recordBtn.classList.add('recording');
+            recordBtn.innerHTML = '⏹️ Stop Recording';
+            
+            try {
+              this.recognition.start();
+            } catch (error) {
+              console.error('Error starting recognition:', error);
+              this.stopRecording();
+            }
+          }
+        }
+
+        stopRecording() {
+          this.isRecording = false;
+          const recordBtn = document.getElementById('recordBtn');
+          recordBtn.classList.remove('recording');
+          recordBtn.innerHTML = '🎤 Start Recording';
+          
+          if (this.recognition) {
+            this.recognition.stop();
+          }
+        }
+
+        playExample() {
+          const word = this.words[this.currentWordIndex].word;
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.rate = 0.8;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            speechSynthesis.speak(utterance);
+          }
+        }
+
+        checkPronunciation(spokenText) {
+          const currentWord = this.words[this.currentWordIndex].word;
+          const similarity = this.calculateSimilarity(spokenText, currentWord);
+          
+          this.totalAttempts++;
+          
+          if (similarity > 0.7 || spokenText.includes(currentWord) || currentWord.includes(spokenText)) {
+            this.handleCorrectPronunciation();
+          } else if (similarity > 0.4) {
+            this.showFeedback("🌻", "Almost There!", `You said "${spokenText}". Try to emphasize each syllable clearly.`);
+          } else {
+            this.showFeedback("🐿️", "Keep Trying!", `You said "${spokenText}". Listen to the example and try again.`);
+          }
+        }
+
+        handleCorrectPronunciation() {
+          this.correctAttempts++;
+          this.score += 10;
+          this.wordsCompleted++;
+          
+          const encouragements = [
+            "🦋 Beautiful like a butterfly!",
+            "🌺 Blooming with excellence!",
+            "🐦 Tweet-perfect pronunciation!",
+            "🌸 Flourishing with skill!",
+            "🦜 Chirping with confidence!"
+          ];
+          
+          const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+          this.showFeedback("🎉", "Nature Approved!", randomEncouragement);
+          
+          document.getElementById('nextBtn').style.display = 'block';
+          
+          // Level up logic
+          if (this.wordsCompleted % 3 === 0) {
+            this.level++;
+            this.showFeedback("🌟", "Level Up!", `Welcome to Forest Level ${this.level}!`);
+          }
+          
+          this.updateDisplay();
+        }
+
+        calculateSimilarity(str1, str2) {
+          const longer = str1.length > str2.length ? str1 : str2;
+          const shorter = str1.length > str2.length ? str2 : str1;
+          const editDistance = this.levenshteinDistance(longer, shorter);
+          return (longer.length - editDistance) / longer.length;
+        }
+
+        levenshteinDistance(str1, str2) {
+          const matrix = [];
+          for (let i = 0; i <= str2.length; i++) {
+            matrix[i] = [i];
+          }
+          for (let j = 0; j <= str1.length; j++) {
+            matrix[0][j] = j;
+          }
+          for (let i = 1; i <= str2.length; i++) {
+            for (let j = 1; j <= str1.length; j++) {
+              if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+              } else {
+                matrix[i][j] = Math.min(
+                  matrix[i - 1][j - 1] + 1,
+                  matrix[i][j - 1] + 1,
+                  matrix[i - 1][j] + 1
+                );
+              }
+            }
+          }
+          return matrix[str2.length][str1.length];
+        }
+
+        showFeedback(icon, title, message) {
+          document.getElementById('feedbackIcon').textContent = icon;
+          document.getElementById('feedbackText').textContent = title;
+          document.getElementById('feedbackDetail').textContent = message;
+          document.getElementById('feedbackArea').classList.add('show');
+        }
+
+        nextWord() {
+          this.currentWordIndex = (this.currentWordIndex + 1) % this.words.length;
+          this.loadWord();
+        }
+
+        updateDisplay() {
+          document.getElementById('level').textContent = this.level;
+          document.getElementById('score').textContent = this.score;
+          document.getElementById('wordsCompleted').textContent = this.wordsCompleted;
+          
+          const accuracy = this.totalAttempts > 0 ? Math.round((this.correctAttempts / this.totalAttempts) * 100) : 0;
+          document.getElementById('accuracy').textContent = accuracy + '%';
+          
+          const progress = (this.wordsCompleted / this.words.length) * 100;
+          document.getElementById('progressFill').style.width = progress + '%';
+          document.getElementById('progressText').textContent = `Explore the forest sounds: ${this.wordsCompleted}/${this.words.length} words discovered`;
+        }
+      }
+
+      function goHome() {
+        if (confirm('Are you sure you want to return home? Your progress will be saved!')) {
+          window.location.href = '../../index.html';
+        }
+      }
+
+      // Initialize game when page loads
+      document.addEventListener('DOMContentLoaded', () => {
+        window.gameInstance = new PhonicsForestGame();
+      });
+    </script>
+  </body>
+</html>

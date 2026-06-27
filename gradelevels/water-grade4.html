@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Water Guardian | Grade 4 Science | Water Conservation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a5f7a 0%, #0e3e52 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 1px 4px rgba(255, 250, 210, 0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #2c8fbb, #1e6d9e);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 6px solid #0e4a6e;
+            color: white;
+            text-shadow: 2px 2px 0 #0e4a6e;
+        }
+
+        .level-badge {
+            background: #0e3a4e;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.7rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #2c8fbb, 0 6px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-area {
+            background: #0a2a3a;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: inset 0 0 0 3px #b3e4f5, 0 6px 0 #0e4a6e;
+        }
+
+        .timer-number {
+            background: #000000;
+            padding: 6px 20px;
+            border-radius: 50px;
+            color: #7fd4f5;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+            min-width: 110px;
+            text-align: center;
+            transition: 0.1s;
+        }
+
+        .score-progress {
+            background: #e8ddc5;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #b89a6e;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: #1e6d9e;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .question-card {
+            padding: 30px 28px 20px;
+            background: #fffaf0;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 700;
+            background: #d6eaf8;
+            padding: 24px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 0 4px white, 0 10px 18px rgba(0,0,0,0.1);
+            color: #1a5f7a;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            padding: 16px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.07s linear;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #aa8e6c;
+            color: #2d2418;
+            font-family: inherit;
+        }
+
+        .option-prefix {
+            background: #2c8fbb;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 0 #1a5f7a;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #ffefcf;
+            transform: scale(0.97);
+        }
+
+        .option-btn.correct-highlight {
+            background: #2e7d32;
+            color: white;
+            box-shadow: 0 3px 0 #1b5e1f;
+        }
+
+        .option-btn.correct-highlight .option-prefix {
+            background: #1b5e20;
+        }
+
+        .option-btn.wrong-highlight {
+            background: #c62828;
+            color: white;
+            text-decoration: line-through;
+            box-shadow: 0 3px 0 #7f2a2a;
+        }
+
+        .option-btn.wrong-highlight .option-prefix {
+            background: #8b2a2a;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+
+        .next-area {
+            text-align: center;
+            padding-bottom: 25px;
+        }
+
+        .next-btn {
+            background: #f4a261;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 45px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c45c1a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #c45c1a;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #1e6d9e;
+            color: #d6eaf8;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-top: 2px solid #f5bc70;
+        }
+
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 18px;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+
+        .restart-btn:hover {
+            background: #5e3f2a;
+            color: white;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.2rem; }
+            .timer-number { font-size: 1.5rem; min-width: 75px; letter-spacing: 2px; }
+            .level-badge { font-size: 1.2rem; }
+        }
+
+        .timer-critical {
+            background: #8b0000 !important;
+            color: #ffcc44 !important;
+            text-shadow: 0 0 4px red;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.85; transform: scale(1.03);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+        
+        .water-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge">💧 LEVEL <span id="levelNum">1</span> 💧</div>
+        <div class="timer-area">⏱️ TIME LEFT <span class="timer-number" id="timerDisplay">00</span></div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 80% TO PASS → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading water conservation challenge...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">💧 WATER GUARDIAN! Learn to save every drop, discover conservation methods, and understand why water matters. Timer is RUNNING!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC SCIENCE AND TECHNOLOGY: WATER CONSERVATION
+    // Topics: Meaning of water conservation
+    // Methods of conserving water (at home, school, farm, community)
+    // Importance of conserving water (environment, health, economy, future)
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // ---------- BANK 1: MEANING OF WATER CONSERVATION ----------
+    const meaningBank = [
+        { q: "What is water conservation?", correct: "Using water wisely and avoiding waste", options: ["Using as much water as possible", "Using water wisely and avoiding waste", "Polluting water sources", "Building more swimming pools"] },
+        { q: "Water conservation means:", correct: "Protecting water from pollution and overuse", options: ["Only storing water", "Protecting water from pollution and overuse", "Dumping waste in rivers", "Wasting water"] },
+        { q: "Which phrase best describes water conservation?", correct: "Saving water for future generations", options: ["Saving water for future generations", "Using all water now", "Ignoring leaks", "Flooding fields"] },
+        { q: "Water is a precious resource because:", correct: "Only a small percentage of Earth's water is drinkable", options: ["There is unlimited water", "Only a small percentage of Earth's water is drinkable", "It never runs out", "It rains every day everywhere"] },
+        { q: "Why do we need to conserve water?", correct: "To ensure there is enough for people, animals, and plants", options: ["To make water salty", "To ensure there is enough for people, animals, and plants", "To create more floods", "To waste resources"] },
+        { q: "Water conservation is important because:", correct: "Many places face water scarcity and drought", options: ["Water is free", "Many places face water scarcity and drought", "Water is unlimited", "It never evaporates"] }
+    ];
+
+    // ---------- BANK 2: METHODS OF CONSERVING WATER AT HOME ----------
+    const homeMethodsBank = [
+        { q: "Turning off the tap while brushing teeth saves:", correct: "Up to 8 gallons of water per day", options: ["No water", "Up to 8 gallons of water per day", "More electricity", "Time only"] },
+        { q: "Fixing a leaking tap (faucet) is important because:", correct: "A small drip can waste hundreds of liters per month", options: ["It makes noise", "A small drip can waste hundreds of liters per month", "It looks nice", "It cools the house"] },
+        { q: "Taking shorter showers helps conserve water by:", correct: "Reducing the amount of water used per bath", options: ["Making you cleaner", "Reducing the amount of water used per bath", "Using more soap", "Heating more water"] },
+        { q: "Using a bucket instead of a hose to wash a car saves:", correct: "Over 100 liters of water per wash", options: ["No water", "Over 100 liters of water per wash", "Only time", "Soap"] },
+        { q: "Collecting rainwater in barrels is a method of:", correct: "Harvesting free water for gardens and washing", options: ["Wasting water", "Harvesting free water for gardens and washing", "Polluting water", "Making water salty"] },
+        { q: "Which appliance is more water-efficient?", correct: "A front-loading washing machine (uses less water)", options: ["An old top-loader", "A front-loading washing machine", "Hand-washing only", "All use same"] },
+        { q: "Reusing water from washing vegetables to water plants is called:", correct: "Greywater recycling", options: ["Pollution", "Greywater recycling", "Waste", "Flooding"] },
+        { q: "Running the dishwasher only when it is full conserves water by:", correct: "Avoiding half-load cycles that waste water", options: ["Making dishes dirtier", "Avoiding half-load cycles that waste water", "Using more electricity", "Breaking the machine"] }
+    ];
+
+    // ---------- BANK 3: METHODS OF CONSERVING WATER AT SCHOOL AND FARM ----------
+    const schoolFarmMethodsBank = [
+        { q: "At school, you can conserve water by:", correct: "Reporting leaking taps to the teacher", options: ["Leaving taps running", "Reporting leaking taps to the teacher", "Playing with water", "Filling buckets for fun"] },
+        { q: "Drip irrigation on a farm saves water because:", correct: "Water goes directly to plant roots with less evaporation", options: ["Water goes directly to plant roots with less evaporation", "It uses more water", "It floods the field", "It waters the air"] },
+        { q: "Mulching (covering soil with dry leaves) helps conserve water by:", correct: "Reducing evaporation from the soil", options: ["Increasing evaporation", "Reducing evaporation from the soil", "Blocking rain", "Killing plants"] },
+        { q: "Watering plants early in the morning or late evening reduces:", correct: "Water loss through evaporation", options: ["Plant growth", "Water loss through evaporation", "Soil nutrients", "Root development"] },
+        { q: "Installing water-efficient toilets at school helps because:", correct: "They use less water per flush", options: ["They use less water per flush", "They are more expensive", "They break easily", "They flush more often"] },
+        { q: "Using a broom instead of a hose to clean school compound saves:", correct: "Thousands of liters of water", options: ["No water", "Thousands of liters of water", "More time", "Electricity"] },
+        { q: "Covering irrigation canals prevents:", correct: "Water loss through evaporation and seepage", options: ["Water loss through evaporation and seepage", "Plants from growing", "Fish from swimming", "Rain from falling"] }
+    ];
+
+    // ---------- BANK 4: IMPORTANCE OF CONSERVING WATER ----------
+    const importanceBank = [
+        { q: "Conserving water helps to:", correct: "Protect the environment and ecosystems", options: ["Destroy rivers", "Protect the environment and ecosystems", "Create more deserts", "Increase pollution"] },
+        { q: "Saving water ensures that:", correct: "Future generations will have enough clean water", options: ["Future generations will have no water", "Future generations will have enough clean water", "Water will disappear", "Oceans will dry up"] },
+        { q: "Water conservation reduces the energy needed for:", correct: "Pumping, treating, and heating water", options: ["Pumping, treating, and heating water", "Making cars", "Building houses", "Growing forests"] },
+        { q: "Proper water conservation helps prevent:", correct: "Droughts and water shortages", options: ["Droughts and water shortages", "More rain", "Flooding", "Ice melting"] },
+        { q: "Conserving water saves money because:", correct: "Lower water and energy bills", options: ["Lower water and energy bills", "Higher taxes", "More water waste", "Expensive repairs"] },
+        { q: "When we conserve water, we also help:", correct: "Wildlife that depends on rivers and lakes", options: ["Wildlife that depends on rivers and lakes", "Only humans", "Only factories", "Only cars"] },
+        { q: "Water conservation supports food production because:", correct: "Farming needs water to grow crops", options: ["Farming needs water to grow crops", "Food grows without water", "Water makes food rot", "Only rain is enough"] },
+        { q: "Keeping water sources clean is part of conservation because:", correct: "Polluted water cannot be used for drinking or farming", options: ["Pollution helps plants", "Polluted water cannot be used for drinking or farming", "Dirty water tastes better", "Pollution saves water"] }
+    ];
+
+    // ---------- BANK 5: CHALLENGES AND SOLUTIONS IN WATER CONSERVATION ----------
+    const challengesBank = [
+        { q: "What is 'water scarcity'?", correct: "When there is not enough clean water for people's needs", options: ["Too much water", "When there is not enough clean water for people's needs", "Water that is salty", "Water that is frozen"] },
+        { q: "Climate change affects water conservation because:", correct: "It causes unpredictable rainfall and longer droughts", options: ["It causes unpredictable rainfall and longer droughts", "It makes more water", "It stops evaporation", "It freezes all water"] },
+        { q: "Planting trees helps conserve water by:", correct: "Reducing soil erosion and increasing groundwater recharge", options: ["Using all water", "Reducing soil erosion and increasing groundwater recharge", "Making deserts", "Blocking rivers"] },
+        { q: "Building dams helps conserve water by:", correct: "Storing water for dry seasons", options: ["Storing water for dry seasons", "Wasting water", "Flooding farms", "Making water salty"] },
+        { q: "Education and awareness about water conservation leads to:", correct: "People adopting water-saving habits", options: ["People adopting water-saving habits", "More water waste", "Less rainfall", "More pollution"] },
+        { q: "A water meter at home helps conserve water because:", correct: "It shows how much water you use, encouraging saving", options: ["It shows how much water you use, encouraging saving", "It wastes water", "It breaks easily", "It hides leaks"] },
+        { q: "Restricting lawn watering during drought is a conservation method because:", correct: "It reduces unnecessary outdoor water use", options: ["It kills grass", "It reduces unnecessary outdoor water use", "It increases water bills", "It causes flooding"] },
+        { q: "Which of these is a water conservation success story?", correct: "Singapore's water recycling and rainwater harvesting", options: ["Singapore's water recycling and rainwater harvesting", "Wasting water daily", "Polluting all rivers", "Ignoring leaks"] }
+    ];
+
+    // Combine all banks into categories
+    const categories = [meaningBank, homeMethodsBank, schoolFarmMethodsBank, importanceBank, challengesBank];
+    
+    // Build 5 levels (30 Q each, each category contributes 6 per level)
+    let levelsData = [];
+
+    function buildGame() {
+        for (let lvl = 1; lvl <= 5; lvl++) {
+            let levelQs = [];
+            for (let cat of categories) {
+                for (let i = 0; i < 6; i++) {
+                    let source = cat[i % cat.length];
+                    let newQ = {
+                        text: source.q,
+                        options: [...source.options],
+                        correct: source.correct
+                    };
+                    if (lvl >= 3 && i % 2 === 0) newQ.text = "💧 " + newQ.text;
+                    if (lvl >= 4) newQ.text = "⭐ " + newQ.text + " ⭐";
+                    if (lvl === 5 && i % 3 === 0) newQ.text = "🏆 WATER GUARDIAN: " + newQ.text;
+                    levelQs.push(newQ);
+                }
+            }
+            levelQs = shuffleArray(levelQs);
+            levelsData.push(levelQs);
+        }
+    }
+    buildGame();
+
+    // ---------- GAME ENGINE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+
+    let levelTimerSec = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionDiv = document.getElementById('questionText');
+    const optionsDiv = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const messageDiv = document.getElementById('gameMessage');
+
+    function updateScoreUI() {
+        scoreSpan.innerText = levelScore;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        const timeMap = {1: 90, 2: 80, 3: 70, 4: 60, 5: 50};
+        levelTimerSec = timeMap[currentLevel];
+        timerDisplaySpan.innerText = levelTimerSec;
+        timerDisplaySpan.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelFinished) return;
+            if (levelTimerSec <= 1) {
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                messageDiv.innerHTML = `⏰💀 TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to become a Water Guardian! 💀⏰`;
+                showRestartButton();
+            } else {
+                levelTimerSec--;
+                timerDisplaySpan.innerText = levelTimerSec;
+                if (levelTimerSec <= 10) {
+                    timerDisplaySpan.classList.add('timer-critical');
+                } else {
+                    timerDisplaySpan.classList.remove('timer-critical');
+                }
+                if (levelTimerSec === 15) {
+                    messageDiv.innerHTML = `⚠️ ONLY ${levelTimerSec} SECONDS! Every drop counts — answer fast! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+
+    function disableAllOptions() {
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+    }
+
+    function showRestartButton() {
+        let existing = document.querySelector('.restart-custom');
+        if (existing) existing.remove();
+        const restartBtn = document.createElement('button');
+        restartBtn.innerText = '💧 RESTART WATER CHALLENGE 💧';
+        restartBtn.className = 'restart-btn restart-custom';
+        restartBtn.onclick = () => location.reload();
+        messageDiv.appendChild(restartBtn);
+    }
+
+    function highlightCorrectAnswer(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            const rawText = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if (rawText === correctText) {
+                btn.classList.add('correct-highlight');
+            }
+        });
+    }
+
+    function handleAnswer(selected, correctAnswer, btnElement) {
+        if (answerLocked || waitingForNext || !gameActive || levelFinished) return;
+        answerLocked = true;
+        const isCorrect = (selected === correctAnswer);
+        
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            btnElement.classList.add('correct-highlight');
+            messageDiv.innerHTML = `✅ WATER GUARDIAN! +1 point! (${levelScore}/${TOTAL_QS}) | Time left: ${levelTimerSec}s`;
+        } else {
+            btnElement.classList.add('wrong-highlight');
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                const txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if (txt === correctAnswer) {
+                    btn.classList.add('correct-highlight');
+                }
+            });
+            messageDiv.innerHTML = `❌ NOT QUITE! Correct: "${correctAnswer}". Keep learning to save every drop! Score: ${levelScore}/${TOTAL_QS}`;
+        }
+        disableAllOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+
+    function loadCurrentQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const levelData = levelsData[currentLevel - 1];
+        const q = levelData[currentQIndex];
+        questionDiv.innerText = q.text;
+        optionsDiv.innerHTML = '';
+        
+        const shuffledOps = shuffleArray([...q.options]);
+        const prefixes = ['A', 'B', 'C', 'D'];
+        shuffledOps.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, q.correct, btn));
+            optionsDiv.appendChild(btn);
+        });
+        
+        answerLocked = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        messageDiv.innerHTML = `💧 Level ${currentLevel} • Question ${currentQIndex+1}/30 • Water Conservation! Save every drop! ⏱️`;
+    }
+
+    function onNextQuestion() {
+        if (!waitingForNext) return;
+        if (levelFinished) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadCurrentQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                messageDiv.innerHTML = `🏆💧🌊✨ INCREDIBLE! You've mastered the meaning of water conservation, methods to save water at home, school, and farm, and why water is precious! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). You are a true Water Guardian! ✨🌊💧🏆`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                messageDiv.innerHTML = `🎉🎊 LEVEL ${currentLevel} COMPLETE! 🎊🎉 ${levelScore}/${TOTAL_QS} PASS (${Math.round(levelScore/TOTAL_QS*100)}%). Moving to LEVEL ${currentLevel+1}... 💧💧`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelFinished = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadCurrentQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableAllOptions();
+            nextBtn.disabled = true;
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect} correct). Press RESTART to become a Water Guardian! 😭`;
+            showRestartButton();
+        }
+    }
+
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelFinished = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadCurrentQuestion();
+        nextBtn.addEventListener('click', onNextQuestion);
+    }
+
+    initGame();
+</script>
+</body>
+</html>

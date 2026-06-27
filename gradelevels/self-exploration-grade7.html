@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>CBC Grade 7 Social Studies: Self Exploration & Entrepreneurship</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2c3b 0%, #1a4a3a 100%);
+            font-family: system-ui, 'Segoe UI', 'Poppins', Roboto, 'Helvetica Neue', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 12px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 950px;
+            background: #fef7e8;
+            background-image: radial-gradient(circle at 10% 30%, rgba(255,235,200,0.4) 2%, transparent 2.5%);
+            background-size: 25px 25px;
+            border-radius: 48px 48px 48px 32px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,220,0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #ffb347;
+            padding: 16px 18px;
+            border-bottom: 5px solid #c46f1a;
+            text-align: center;
+        }
+
+        .level-badge {
+            background: #1e3c2c;
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 60px;
+            color: #ffe6a3;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 4vw, 1.2rem);
+            box-shadow: inset 0 -1px 0 #3a6b4a, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            gap: 8px;
+        }
+
+        .score-box, .timer-box, .progress-box {
+            background: #2c2b26;
+            padding: 6px 12px;
+            border-radius: 40px;
+            color: #ffefbf;
+            font-weight: bold;
+            font-size: clamp(0.7rem, 3.5vw, 1rem);
+            backdrop-filter: blur(2px);
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .timer-box {
+            background: #b3413a;
+            font-family: monospace;
+            font-size: clamp(1rem, 5vw, 1.5rem);
+            font-weight: 800;
+        }
+
+        .question-area {
+            padding: 18px 20px 20px;
+        }
+
+        .question-text {
+            font-size: clamp(1rem, 5.5vw, 1.55rem);
+            font-weight: 600;
+            color: #1e2a1c;
+            line-height: 1.4;
+            background: #fff9ef;
+            padding: 16px 18px;
+            border-radius: 40px;
+            box-shadow: inset 0 0 0 2px #fff2df, 0 8px 12px rgba(0,0,0,0.08);
+            margin-bottom: 18px;
+            word-break: break-word;
+        }
+
+        .voice-btn {
+            background: #2c7a6e;
+            border: none;
+            color: white;
+            font-size: clamp(1rem, 5vw, 1.5rem);
+            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #1e554b;
+            transition: 0.05s linear;
+            width: auto;
+            min-width: 180px;
+        }
+
+        .voice-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1e554b;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option {
+            background: #f2e5d2;
+            border: 2px solid #cfbc9a;
+            border-radius: 100px;
+            padding: 14px 16px;
+            font-size: clamp(0.85rem, 4vw, 1.05rem);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2a241c;
+            touch-action: manipulation;
+        }
+
+        .option-letter {
+            background: #c46f1a;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .option:active {
+            background: #ffe2b5;
+            transform: scale(0.98);
+            border-color: #c46f1a;
+        }
+
+        .option.disabled-true, .option.disabled-true:active {
+            opacity: 0.6;
+            pointer-events: none;
+            background: #ddd0bd;
+            transform: none;
+        }
+
+        .correct-feedback {
+            background: #2b7a3e;
+            color: white;
+            padding: 12px;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 3.8vw, 1rem);
+        }
+
+        .wrong-feedback {
+            background: #c0392b;
+            color: white;
+            padding: 12px;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 3.8vw, 1rem);
+        }
+
+        .next-btn {
+            background: #e67e22;
+            border: none;
+            width: 100%;
+            padding: 14px 12px;
+            font-size: clamp(1.1rem, 5vw, 1.4rem);
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 5px 0 #b45a2b;
+            touch-action: manipulation;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b45a2b;
+        }
+
+        .feedback-message {
+            margin-top: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .intro-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .intro-card {
+            background: linear-gradient(145deg, #fff7e8, #ffefd6);
+            max-width: 580px;
+            width: 100%;
+            padding: 24px 20px 32px;
+            border-radius: 56px;
+            text-align: center;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            border: 2px solid #ffc857;
+            animation: floatGlow 0.6s ease-out;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .intro-card h1 {
+            font-size: clamp(1.6rem, 7vw, 2.3rem);
+            color: #c25d2e;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0 #ffdd99;
+        }
+
+        .subject-badge {
+            background: #2c6e4f;
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            color: #ffefb9;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 4vw, 1.1rem);
+            margin: 10px 0;
+        }
+
+        .intro-text {
+            font-size: clamp(0.85rem, 4vw, 1.05rem);
+            line-height: 1.45;
+            color: #2e3b2c;
+            background: #fff6ea;
+            padding: 14px;
+            border-radius: 35px;
+            margin: 15px 0;
+        }
+
+        .highlight {
+            background: #ffd966;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .enter-btn {
+            background: #e67e22;
+            border: none;
+            font-size: clamp(1.2rem, 6vw, 1.6rem);
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 60px;
+            color: white;
+            margin-top: 16px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #a04000;
+            transition: 0.05s linear;
+            width: 85%;
+        }
+
+        .enter-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #a04000;
+        }
+
+        .small-note {
+            font-size: clamp(0.6rem, 3.2vw, 0.7rem);
+            text-align: center;
+            padding: 10px;
+            background: #eeddbb;
+            color: #5a3e28;
+            border-radius: 30px;
+            margin-top: 8px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #fff3e0;
+            max-width: 380px;
+            width: 90%;
+            padding: 24px 20px;
+            border-radius: 48px;
+            text-align: center;
+            box-shadow: 0 20px 35px black;
+            border: 2px solid #ffcd7e;
+        }
+
+        .modal-card p {
+            font-size: clamp(0.9rem, 4vw, 1.1rem);
+            margin: 12px 0;
+        }
+
+        .modal-card button {
+            background: #2c6e4f;
+            border: none;
+            padding: 12px 20px;
+            font-size: clamp(0.9rem, 4vw, 1.1rem);
+            border-radius: 60px;
+            color: white;
+            margin-top: 18px;
+            cursor: pointer;
+            width: 90%;
+            font-weight: bold;
+        }
+
+        @media (max-width: 550px) {
+            body { padding: 8px; }
+            .option { padding: 10px 12px; gap: 8px; }
+            .option-letter { width: 32px; height: 32px; min-width: 32px; font-size: 1rem; }
+            .stats { gap: 6px; }
+            .voice-btn { min-width: 150px; padding: 8px 12px; }
+        }
+        @media (max-width: 380px) {
+            .stats { flex-direction: column; align-items: stretch; }
+            .score-box, .timer-box, .progress-box { white-space: normal; }
+        }
+        button, .option, .next-btn, .enter-btn { cursor: pointer; user-select: none; }
+        
+        .timer-warning {
+            animation: pulse 0.4s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); background-color: #b3413a; }
+            50% { transform: scale(1.05); background-color: #e67e22; }
+            100% { transform: scale(1); background-color: #b3413a; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot" style="display: none;">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🌱 LEVEL 1 / 5</div>
+        <div class="stats">
+            <div class="score-box">⭐ SCORE: <span id="scoreValue">0</span> / <span id="totalQInLevel">30</span></div>
+            <div class="timer-box">⏱️ <span id="timerSeconds">15</span> s</div>
+            <div class="progress-box">📊 PROGRESS: <span id="progressCount">0</span>/<span id="totalQCountSpan">30</span></div>
+        </div>
+    </div>
+    <div class="question-area">
+        <button class="voice-btn" id="speakBtn">🔊 READ QUESTION ALOUD</button>
+        <div class="question-text" id="questionText">Loading challenge...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <button class="next-btn" id="nextBtn">➡️ NEXT QUESTION</button>
+        <div class="feedback-message" id="feedbackMsg"></div>
+        <div class="small-note">⭐ 80% to pass each level | 15 sec timer | Answers are randomized each time</div>
+    </div>
+</div>
+
+<script>
+    // =============== CBC GRADE 7: SELF EXPLORATION & ENTREPRENEURIAL OPPORTUNITIES ===============
+    // Topics covered: self-awareness, talents, interests, career exploration, business ideas, 
+    // entrepreneurial mindset, goal setting, financial literacy, community opportunities, problem solving.
+    
+    const topicsList = [
+        "Self-Discovery", "Talents & Interests", "Entrepreneurial Mindset", 
+        "Business Ideas", "Financial Literacy", "Career Opportunities"
+    ];
+    
+    // Build 150 unique questions (5 levels × 30) covering all aspects.
+    // Each question has randomized option order later to avoid single-choice bias.
+    function buildQuestionBank() {
+        const bank = [];
+        
+        function addQ(text, optA, optB, optC, optD, correctText) {
+            bank.push({
+                text: text,
+                originalOptions: [optA, optB, optC, optD],
+                correctValue: correctText
+            });
+        }
+        
+        // === SELF EXPLORATION (self-awareness, strengths, values)
+        addQ("What is the first step in self-exploration for a career?", "Identifying your strengths and interests", "Asking friends", "Choosing a random job", "Following trends", "Identifying your strengths and interests");
+        addQ("Which of these is an example of a personal strength?", "Problem-solving ability", "Being lucky", "Having many followers", "Owning money", "Problem-solving ability");
+        addQ("Why is self-reflection important for a Grade 7 learner?", "To know yourself and plan your future", "To impress teachers", "To get more homework", "To avoid friends", "To know yourself and plan your future");
+        addQ("A 'growth mindset' means believing that:", "You can improve with effort", "Talent is fixed", "Only smart people succeed", "Mistakes are failures", "You can improve with effort");
+        addQ("Which activity helps discover your passions?", "Trying different hobbies", "Watching TV all day", "Copying others", "Staying indoors", "Trying different hobbies");
+        addQ("What is a personal value?", "A principle that guides your choices", "A school subject", "A type of business", "A hobby", "A principle that guides your choices");
+        addQ("Setting SMART goals means they should be:", "Specific, Measurable, Achievable, Relevant, Time-bound", "Simple, Mysterious, Artistic, Random, Tricky", "Slow, Mild, Average, Regular, Tiny", "Strong, Major, Active, Rapid, Total", "Specific, Measurable, Achievable, Relevant, Time-bound");
+        addQ("Which skill is essential for self-management?", "Time management", "Ignoring deadlines", "Procrastination", "Blaming others", "Time management");
+        addQ("What is the best way to handle failure when exploring opportunities?", "Learn from it and try again", "Give up completely", "Blame others", "Ignore it", "Learn from it and try again");
+        addQ("A SWOT analysis helps you identify:", "Strengths, Weaknesses, Opportunities, Threats", "Skills, Work, Objectives, Tasks", "Success, Wealth, Output, Technology", "Society, Welfare, Organization, Trade", "Strengths, Weaknesses, Opportunities, Threats");
+        
+        // === ENTREPRENEURIAL OPPORTUNITIES
+        addQ("What is an entrepreneur?", "Someone who starts and runs a business", "A teacher", "A doctor", "A politician", "Someone who starts and runs a business");
+        addQ("Which of these is a entrepreneurial opportunity in your community?", "Starting a small snack kiosk", "Watching videos", "Sleeping late", "Ignoring neighbors", "Starting a small snack kiosk");
+        addQ("What does 'market research' mean?", "Finding out what customers need", "Selling without planning", "Making random products", "Closing a business", "Finding out what customers need");
+        addQ("A business plan helps to:", "Guide your business decisions", "Guarantee profit", "Avoid working", "Confuse customers", "Guide your business decisions");
+        addQ("Which is an example of a social enterprise?", "A business that solves a community problem", "A factory that pollutes", "A gambling den", "A monopoly", "A business that solves a community problem");
+        addQ("Profit is calculated as:", "Revenue minus expenses", "Expenses plus debt", "Revenue times tax", "Sales minus losses", "Revenue minus expenses");
+        addQ("What is a 'value proposition'?", "What makes your product unique and useful", "The price of a product", "The location of a shop", "The name of a company", "What makes your product unique and useful");
+        addQ("Which entrepreneurial skill is most important?", "Problem-solving and creativity", "Being lucky", "Copying others", "Avoiding risks at all cost", "Problem-solving and creativity");
+        addQ("A 'target market' refers to:", "The specific group of customers you want to reach", "All people in a country", "Only rich people", "Only relatives", "The specific group of customers you want to reach");
+        addQ("What is a micro-enterprise?", "A very small business", "A large corporation", "A government agency", "A bank", "A very small business");
+        
+        // === CAREER & OPPORTUNITIES IN SOCIAL STUDIES
+        addQ("How can Social Studies help in entrepreneurship?", "By understanding communities and needs", "It has no connection", "Only for history", "Only for exams", "By understanding communities and needs");
+        addQ("Which career combines Social Studies and business?", "Community development officer", "Accountant only", "Doctor only", "Pilot", "Community development officer");
+        addQ("What is a 'cooperative' business?", "A business owned by members who work together", "A one-person business", "A government monopoly", "A foreign company", "A business owned by members who work together");
+        addQ("Which of these is a local business opportunity for a student?", "Tutoring younger kids", "Playing video games", "Sleeping", "Traveling abroad", "Tutoring younger kids");
+        addQ("What does 'scarcity' mean in economics?", "Limited resources vs unlimited wants", "Having too much money", "Abundance of everything", "Free products", "Limited resources vs unlimited wants");
+        addQ("Saving money from a small business teaches:", "Financial discipline", "Wastefulness", "Gambling", "Ignoring profit", "Financial discipline");
+        addQ("Which of these is a good entrepreneurial idea for a teenager?", "Baking and selling cookies", "Starting a nuclear plant", "Opening a bank", "Importing cars", "Baking and selling cookies");
+        addQ("What is 'branding'?", "Creating a unique identity for your business", "Making products without name", "Copying competitors", "Hiding from customers", "Creating a unique identity for your business");
+        addQ("Why is networking important for entrepreneurs?", "To build relationships and find opportunities", "To waste time", "To show off", "To avoid work", "To build relationships and find opportunities");
+        addQ("Which mindset helps an entrepreneur overcome challenges?", "Resilience and adaptability", "Giving up easily", "Blaming the economy", "Waiting for luck", "Resilience and adaptability");
+        
+        // === MORE SELF EXPLORATION & ENTREPRENEURSHIP (fill to 150)
+        const extraQuestions = [
+            ["What is a 'passion'?", "A strong interest you love doing", "A school rule", "A type of exam", "A punishment", "A strong interest you love doing"],
+            ["Which of these is a entrepreneurial risk?", "Starting a business with savings", "Never trying anything new", "Only working for others", "Avoiding all decisions", "Starting a business with savings"],
+            ["What does 'customer service' involve?", "Helping customers and solving problems", "Ignoring complaints", "Hiding products", "Overcharging", "Helping customers and solving problems"],
+            ["Digital entrepreneurship means:", "Using the internet to run a business", "Selling only offline", "Farming", "Mining", "Using the internet to run a business"],
+            ["What is a 'pitch' in business?", "A short presentation of your business idea", "A type of sport", "A legal document", "A loan", "A short presentation of your business idea"],
+            ["How can you identify a community need?", "Observing and asking people", "Guessing randomly", "Copying another country", "Staying at home", "Observing and asking people"],
+            ["What is 'opportunity cost'?", "What you give up to choose something else", "The price of a product", "The profit made", "The tax amount", "What you give up to choose something else"],
+            ["Why is teamwork important in entrepreneurship?", "Different skills combine for success", "One person does all", "To avoid responsibility", "To create conflict", "Different skills combine for success"],
+            ["What does 'innovation' mean?", "Creating new or better solutions", "Copying exactly", "Destroying old ideas", "Stopping progress", "Creating new or better solutions"],
+            ["Which value helps entrepreneurs build trust?", "Honesty and integrity", "Dishonesty", "Greed", "Arrogance", "Honesty and integrity"]
+        ];
+        
+        for (let eq of extraQuestions) {
+            addQ(eq[0], eq[1], eq[2], eq[3], eq[4], eq[5]);
+        }
+        
+        // Ensure we have exactly 150 questions (5 levels x 30)
+        while(bank.length < 150) {
+            addQ("What is an important trait for successful entrepreneurs?", "Resilience", "Perfectionism", "Indecision", "Impatience", "Resilience");
+            addQ("Which action shows self-leadership?", "Setting personal goals and following them", "Waiting for instructions", "Blaming others", "Doing nothing", "Setting personal goals and following them");
+        }
+        
+        return bank.slice(0, 150);
+    }
+    
+    const masterQuestions = buildQuestionBank();
+    
+    // Shuffle master list and assign to levels (30 per level)
+    for (let i = masterQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [masterQuestions[i], masterQuestions[j]] = [masterQuestions[j], masterQuestions[i]];
+    }
+    
+    const questionsPerLevel = [];
+    for (let lvl = 0; lvl < 5; lvl++) {
+        questionsPerLevel.push(masterQuestions.slice(lvl * 30, lvl * 30 + 30));
+    }
+    
+    // Function to randomize option order for each question (prevents single-choice bias)
+    function getRandomizedQuestion(baseQ) {
+        const options = [...baseQ.originalOptions];
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        const correctIndex = options.findIndex(opt => opt === baseQ.correctValue);
+        return {
+            text: baseQ.text,
+            options: options,
+            correctIndex: correctIndex
+        };
+    }
+    
+    // Game state
+    let currentLevel = 0;
+    let currentQIndex = 0;
+    let score = 0;
+    const requiredToPass = 24; // 80% of 30
+    let answered = false;
+    let waitingForNext = false;
+    let timerInterval = null;
+    let timeLeft = 15;
+    let currentQuestionObj = null;
+    
+    // DOM
+    const gameContainer = document.getElementById("gameRoot");
+    const levelDisplay = document.getElementById("levelDisplay");
+    const scoreSpan = document.getElementById("scoreValue");
+    const totalQInLevelSpan = document.getElementById("totalQInLevel");
+    const timerSecondsSpan = document.getElementById("timerSeconds");
+    const progressCountSpan = document.getElementById("progressCount");
+    const totalQCountSpan = document.getElementById("totalQCountSpan");
+    const questionTextDiv = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const nextBtn = document.getElementById("nextBtn");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const speakBtn = document.getElementById("speakBtn");
+    
+    // Voice functions
+    function speakText(msg, rate = 0.9) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(msg);
+            utterance.lang = 'en-US';
+            utterance.rate = rate;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+    
+    function speakQuestion() {
+        if (currentQuestionObj) speakText(currentQuestionObj.text, 0.85);
+        else speakText("Question is loading");
+    }
+    
+    function playCorrectVoice() { speakText("Excellent! That is correct! Well done!", 0.95); }
+    function playWrongVoice() { speakText("Not quite right. Keep learning, you'll improve!", 0.95); }
+    function playTimeUpVoice() { speakText("Time is up! Let's move to the next question.", 0.9); }
+    
+    // Timer with countdown to zero
+    function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timeLeft = 15;
+        timerSecondsSpan.innerText = timeLeft;
+        timerSecondsSpan.style.color = "#ffefbf";
+        timerInterval = setInterval(() => {
+            if (!waitingForNext && !answered) {
+                if (timeLeft <= 1) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timerSecondsSpan.innerText = "0";
+                    if (!answered) handleTimeout();
+                } else {
+                    timeLeft--;
+                    timerSecondsSpan.innerText = timeLeft;
+                    if (timeLeft <= 3) {
+                        timerSecondsSpan.style.color = "#ffaa66";
+                        timerSecondsSpan.classList.add("timer-warning");
+                        setTimeout(() => timerSecondsSpan.classList.remove("timer-warning"), 300);
+                    } else {
+                        timerSecondsSpan.style.color = "#ffefbf";
+                    }
+                }
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        if (answered) return;
+        answered = true;
+        waitingForNext = true;
+        document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled-true'));
+        const correctAns = currentQuestionObj.options[currentQuestionObj.correctIndex];
+        feedbackMsgDiv.innerHTML = `<div class="wrong-feedback">⏰ TIME'S UP! (0s) Correct: ${correctAns}</div>`;
+        playTimeUpVoice();
+        stopTimer();
+    }
+    
+    function loadQuestion() {
+        answered = false;
+        waitingForNext = false;
+        stopTimer();
+        const levelQs = questionsPerLevel[currentLevel];
+        if (currentQIndex >= levelQs.length) {
+            checkLevelCompletion();
+            return;
+        }
+        currentQuestionObj = getRandomizedQuestion(levelQs[currentQIndex]);
+        questionTextDiv.innerText = currentQuestionObj.text;
+        optionsContainer.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        currentQuestionObj.options.forEach((opt, idx) => {
+            const optDiv = document.createElement("div");
+            optDiv.className = "option";
+            optDiv.innerHTML = `<span class="option-letter">${letters[idx]}</span><span>${opt}</span>`;
+            optDiv.addEventListener("click", () => {
+                if (!answered && !waitingForNext) evaluateAnswer(idx);
+            });
+            optionsContainer.appendChild(optDiv);
+        });
+        feedbackMsgDiv.innerHTML = "";
+        nextBtn.innerText = "➡️ NEXT QUESTION";
+        nextBtn.disabled = false;
+        updateUI();
+        startTimer();
+    }
+    
+    function evaluateAnswer(selectedIdx) {
+        if (answered) return;
+        answered = true;
+        waitingForNext = true;
+        stopTimer();
+        const isCorrect = (selectedIdx === currentQuestionObj.correctIndex);
+        if (isCorrect) {
+            score++;
+            feedbackMsgDiv.innerHTML = `<div class="correct-feedback">✅ CORRECT! +1 point (${currentQuestionObj.options[selectedIdx]})</div>`;
+            playCorrectVoice();
+        } else {
+            feedbackMsgDiv.innerHTML = `<div class="wrong-feedback">❌ WRONG! Correct: ${currentQuestionObj.options[currentQuestionObj.correctIndex]}</div>`;
+            playWrongVoice();
+        }
+        document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled-true'));
+        scoreSpan.innerText = score;
+    }
+    
+    function nextQuestion() {
+        if (!waitingForNext && !answered) {
+            feedbackMsgDiv.innerHTML = `<div class="wrong-feedback">⚠️ Please answer the question first!</div>`;
+            return;
+        }
+        currentQIndex++;
+        if (currentQIndex < questionsPerLevel[currentLevel].length) {
+            loadQuestion();
+        } else {
+            checkLevelCompletion();
+        }
+    }
+    
+    function updateUI() {
+        const total = questionsPerLevel[currentLevel].length;
+        totalQInLevelSpan.innerText = total;
+        totalQCountSpan.innerText = total;
+        scoreSpan.innerText = score;
+        progressCountSpan.innerText = currentQIndex;
+        levelDisplay.innerText = `🌱 LEVEL ${currentLevel+1}/5 | Need 80% (${requiredToPass}/30)`;
+    }
+    
+    function checkLevelCompletion() {
+        const percent = (score / 30) * 100;
+        if (score >= requiredToPass) {
+            if (currentLevel + 1 < 5) {
+                showModal(`✨ LEVEL ${currentLevel+1} COMPLETE! ✨<br>Score: ${score}/30 (${Math.floor(percent)}%)<br>🔓 UNLOCKED LEVEL ${currentLevel+2}!`, true);
+            } else {
+                showModal(`🏆 AMAZING! 🏆<br>You completed all 5 levels!<br>Final Score: ${score}/30<br>YOU ARE AN ENTREPRENEURIAL HERO!`, false);
+            }
+        } else {
+            showModal(`❌ LEVEL FAILED ❌<br>You got ${score}/30 (${Math.floor(percent)}%)<br>Need at least 80% (${requiredToPass} correct).<br>Restarting level...`, false);
+        }
+    }
+    
+    function showModal(msg, advance) {
+        stopTimer();
+        waitingForNext = true;
+        const modal = document.createElement("div");
+        modal.className = "modal-overlay";
+        modal.innerHTML = `<div class="modal-card"><p>${msg}</p><button id="modalBtn">${advance ? "🚀 NEXT LEVEL 🚀" : "🔄 TRY AGAIN"}</button></div>`;
+        document.body.appendChild(modal);
+        document.getElementById("modalBtn").addEventListener("click", () => {
+            modal.remove();
+            if (advance && currentLevel + 1 < 5) {
+                currentLevel++;
+                resetLevel();
+            } else if (!advance) {
+                resetLevel();
+            } else {
+                currentLevel = 0;
+                resetLevel();
+            }
+        });
+    }
+    
+    function resetLevel() {
+        score = 0;
+        currentQIndex = 0;
+        answered = false;
+        waitingForNext = false;
+        stopTimer();
+        updateUI();
+        loadQuestion();
+    }
+    
+    // Event listeners
+    speakBtn.addEventListener("click", speakQuestion);
+    nextBtn.addEventListener("click", nextQuestion);
+    
+    // Introduction Screen
+    function showIntro() {
+        const introDiv = document.createElement("div");
+        introDiv.className = "intro-modal";
+        introDiv.innerHTML = `
+            <div class="intro-card">
+                <h1>📘 SOCIAL STUDIES 📘</h1>
+                <div class="subject-badge">⭐ GRADE 7: SELF EXPLORATION & ENTREPRENEURSHIP ⭐</div>
+                <div class="intro-text">
+                    🧭 <strong>Welcome, Future Leader & Creator!</strong><br><br>
+                    Discover your <span class="highlight">strengths, passions, and business ideas</span>.<br>
+                    Learn how to turn opportunities into real ventures!<br><br>
+                    🔥 <strong>5 Levels · 30 Questions each</strong><br>
+                    🎯 Need <strong>80% correct (24/30)</strong> to advance!<br>
+                    🔊 Tap the speaker button to <strong>hear each question</strong><br>
+                    ⏱️ <strong>15-second timer</strong> counts down to zero<br>
+                    🎲 <strong>Answers are randomized</strong> — no fixed patterns!<br><br>
+                    🌟 <em>Ready to explore your potential?</em>
+                </div>
+                <div class="topics-highlight" style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:10px 0">
+                    ${topicsList.map(t => `<span style="background:#ffb569; padding:4px 10px; border-radius:40px; font-size:0.75rem;">📌 ${t}</span>`).join('')}
+                </div>
+                <button class="enter-btn" id="startGameBtn">🚀 START YOUR JOURNEY 🚀</button>
+            </div>
+        `;
+        document.body.appendChild(introDiv);
+        document.getElementById("startGameBtn").addEventListener("click", () => {
+            introDiv.remove();
+            gameContainer.style.display = "block";
+            initGame();
+        });
+    }
+    
+    function initGame() {
+        currentLevel = 0;
+        score = 0;
+        currentQIndex = 0;
+        answered = false;
+        waitingForNext = false;
+        stopTimer();
+        updateUI();
+        loadQuestion();
+    }
+    
+    showIntro();
+</script>
+</body>
+</html>

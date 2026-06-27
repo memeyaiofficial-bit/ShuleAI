@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
+<title>🇰🇪 CBC Kiswahili Hub | Gredi 6 | Kukabiliana na Ugaidi</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(145deg, #0b3b5f 0%, #062e4a 100%);
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  .hub-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .hero-header {
+    text-align: center;
+    margin-bottom: 32px;
+    margin-top: 8px;
+  }
+  .hero-header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.6rem, 6vw, 2.6rem);
+    background: linear-gradient(135deg, #FFD966, #FFB347);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .hero-header p {
+    color: #d4f1f9;
+    font-weight: 600;
+    font-size: clamp(0.8rem, 3vw, 0.95rem);
+    background: rgba(0,0,0,0.3);
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 60px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .module-card {
+    background: rgba(255, 250, 235, 0.96);
+    border-radius: 32px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s;
+    box-shadow: 0 15px 30px -10px rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,215,130,0.6);
+    cursor: pointer;
+  }
+  .module-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 40px -12px black;
+  }
+
+  .card-banner {
+    padding: 20px 16px 16px;
+    text-align: center;
+    color: white;
+  }
+  .card-banner span {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .card-banner h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+  }
+  .banner-insha { background: linear-gradient(135deg, #1e5a5a, #0e3a3a); }
+  .banner-masharti { background: linear-gradient(135deg, #1e3a5f, #0f2440); }
+  .banner-tamathili { background: linear-gradient(135deg, #7b5ea7, #5a3d8a); }
+  .banner-linganisho { background: linear-gradient(135deg, #e9c46a, #e3a018); color: #2c4a2a; }
+  .banner-linganisho h2 { color: #1e3a1e; }
+
+  .card-preview {
+    padding: 18px;
+    background: #fffaf0;
+  }
+  .card-preview p {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 14px;
+    line-height: 1.4;
+    font-size: 0.85rem;
+  }
+  .preview-badge {
+    display: inline-block;
+    background: #e9c46a;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #2d2b1f;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  .play-hint {
+    margin-top: 14px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #b87333;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .game-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.94);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    overflow-y: auto;
+    padding: 16px;
+  }
+  .game-modal.active {
+    display: flex;
+  }
+  .game-iframe-container {
+    background: #fffaf0;
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    position: relative;
+    animation: modalFade 0.3s ease;
+  }
+  .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 18px;
+    background: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 26px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 10px black;
+    transition: 0.1s;
+    color: #1a1a2e;
+  }
+  .close-modal:hover {
+    background: #f4a261;
+    color: white;
+    transform: scale(1.05);
+  }
+  iframe {
+    width: 100%;
+    height: 85vh;
+    min-height: 520px;
+    border: none;
+    display: block;
+    background: #fffaf0;
+  }
+
+  @keyframes modalFade {
+    from { opacity: 0; transform: scale(0.96);}
+    to { opacity: 1; transform: scale(1);}
+  }
+
+  @media (max-width: 780px) {
+    .modules-grid { gap: 14px; }
+    .card-banner span { font-size: 2.2rem; }
+    .card-banner h2 { font-size: 1.1rem; }
+    iframe { height: 80vh; }
+    .close-modal { top: 6px; right: 12px; width: 34px; height: 34px; font-size: 22px; }
+  }
+  @media (max-width: 480px) {
+    body { padding: 10px; }
+    .card-preview p { font-size: 0.8rem; }
+    .preview-badge { font-size: 0.6rem; }
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #ffe3b0;
+    font-weight: 600;
+    font-size: 0.7rem;
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 40px;
+    backdrop-filter: blur(4px);
+  }
+</style>
+</head>
+<body>
+
+<div class="hub-container">
+  <div class="hero-header">
+    <h1>🇰🇪 MABINGWA WA KISWAHILI • GREDI 6</h1>
+    <p>📖 Insha • 🔤 Masharti • 🦁 Tamathili • ⚔️ Ulinganisho</p>
+  </div>
+
+  <div class="modules-grid">
+    <!-- Card 1: Insha ya Masimulizi -->
+    <div class="module-card" data-game="insha">
+      <div class="card-banner banner-insha">
+        <span>📖</span>
+        <h2>Insha ya Masimulizi</h2>
+      </div>
+      <div class="card-preview">
+        <p>Andika simulizi kuhusu ushujaa na kukabiliana na ugaidi. Tunga hadithi kwa sauti yako.</p>
+        <div><span class="preview-badge">✍️ Ushujaa</span><span class="preview-badge">🛡️ Ugaidi</span></div>
+        <div class="play-hint">🎤 Bonyeza → Andika simulizi kwa sauti!</div>
+      </div>
+    </div>
+
+    <!-- Card 2: Hali ya Masharti (-nge-, -ngali-, -ki-) -->
+    <div class="module-card" data-game="masharti">
+      <div class="card-banner banner-masharti">
+        <span>🔤</span>
+        <h2>Hali ya Masharti</h2>
+      </div>
+      <div class="card-preview">
+        <p>Jifunze matumizi ya -nge-, -ngali-, -ki- katika sentensi kuhusu amani na usalama.</p>
+        <div><span class="preview-badge">-nge-</span><span class="preview-badge">-ngali-</span><span class="preview-badge">-ki-</span></div>
+        <div class="play-hint">📖 Bonyeza → Chagua jibu sahihi!</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Tamathili na Sitiari -->
+    <div class="module-card" data-game="tamathili">
+      <div class="card-banner banner-tamathili">
+        <span>🦁</span>
+        <h2>Tamathili na Sitiari</h2>
+      </div>
+      <div class="card-preview">
+        <p>Eleza maana ya tamathili na sitiari zinazoelezea tabia za wapiganaji wa amani.</p>
+        <div><span class="preview-badge">⚔️ Simba</span><span class="preview-badge">🛡️ Ngao</span></div>
+        <div class="play-hint">🎤 Bonyeza → Eleza kwa sauti!</div>
+      </div>
+    </div>
+
+    <!-- Card 4: Ulinganisho wa Sifa -->
+    <div class="module-card" data-game="ulinganisho">
+      <div class="card-banner banner-linganisho">
+        <span>⚔️</span>
+        <h2>Ulinganisho na Sitiari</h2>
+      </div>
+      <div class="card-preview">
+        <p>Changanua ulinganisho na sitiari katika muktadha wa kukabiliana na ugaidi.</p>
+        <div><span class="preview-badge">🏹 Upanga</span><span class="preview-badge">🌊 Mawimbi</span></div>
+        <div class="play-hint">🎤 Bonyeza → Eleza kwa sauti!</div>
+      </div>
+    </div>
+  </div>
+  <footer>🇰🇪 CBC Grade 6 Kiswahili • Kukabiliana na Ugaidi • Insha, Masharti, Tamathili, Ulinganisho — Jifunze kwa Maandishi na Sauti! 🇰🇪</footer>
+</div>
+
+<div id="gameModal" class="game-modal">
+  <div class="game-iframe-container">
+    <button class="close-modal" id="closeModalBtn">✕</button>
+    <iframe id="gameIframe" title="CBC Kiswahili Game" srcdoc=""></iframe>
+  </div>
+</div>
+
+<script>
+  // ====================== GAME 1: INSHA YA MASIMULIZI ======================
+  const inshaGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Insha ya Masimulizi</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;box-shadow:0 20px 35px rgba(0,0,0,0.2);} .game-header{background:#1e5a5a;padding:16px;color:white;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;font-weight:bold;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .essay-topic{background:#e6f2ff;padding:20px;border-radius:32px;margin:16px;font-size:1.1rem;font-weight:bold;} .question{font-size:1.2rem;font-weight:bold;margin:16px;} .voice-zone{text-align:center;padding:16px;} .mic-button{background:#0f6ba3;border:none;width:80px;height:80px;border-radius:50%;font-size:2.5rem;color:white;cursor:pointer;} .mic-button.listening-active{animation:pulseMic 1s infinite;background:#1ea87b;} @keyframes pulseMic{0%{transform:scale(1);}50%{transform:scale(1.05);}} .answer-status{padding:12px;font-weight:bold;} .hint-box{background:#fff8e7;border-left:8px solid #ffb347;padding:12px;margin:12px;border-radius:24px;} .next-level-msg{background:#00713b;color:white;text-align:center;padding:12px;margin:12px;border-radius:50px;cursor:pointer;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>📖 INSHA YA MASIMULIZI - KUKABILIANA NA UGAIDI</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📋 SEHEMU: <span id="qNum">1</span>/15</div><div>💡 MAELEKEZO: <span id="hintsLeft">3</span></div></div>
+<div class="essay-topic" id="topicTxt">Andika simulizi kuhusu ushujaa dhidi ya ugaidi</div><div class="question" id="questionTxt">Andika sentensi ya utangulizi</div>
+<div class="voice-zone"><button class="mic-button" id="micBtn">🎤</button><div id="statusMsg">✅ Tayari</div><div class="answer-status" id="fbMsg"></div></div>
+<div class="hint-box" id="hintBox" style="display:none;">💡 Kidokezo: Anza kwa kueleza mahali na wakati</div>
+<button class="hint-btn" id="hintBtn" style="background:#ffc107;border:none;padding:8px 20px;border-radius:40px;margin:8px auto;display:block;cursor:pointer;">💡 Onyesha Kidokezo</button>
+<div id="completeMsg"></div></div>
+<script>const E={1:[{t:"Andika simulizi kuhusu 'Ushujaa wa Wananchi Dhidi ya Ugaidi'",q:"Andika sentensi ya utangulizi",a:"Siku moja kwenye kijiji cha Mlimani",h:"Anza kwa kueleza mahali na wakati"}],2:[],3:[],4:[]};
+for(let l=1;l<=4;l++){while(E[l].length<15)E[l].push({t:"Andika simulizi kuhusu ushujaa",q:"Andika sentensi ya mwili",a:"Wananchi walijipanga kwa umoja",h:"Eleza hatua za wananchi"});}
+let lvl=1,idx=0,score=0,hl=3,complete=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qSpan=document.getElementById('qNum'),tDiv=document.getElementById('topicTxt'),qDiv=document.getElementById('questionTxt'),hDiv=document.getElementById('hintBox'),fbDiv=document.getElementById('fbMsg'),statusDiv=document.getElementById('statusMsg'),msgDiv=document.getElementById('completeMsg'),mic=document.getElementById('micBtn'),hintBtn=document.getElementById('hintBtn'),hintsSpan=document.getElementById('hintsLeft');
+function update(){sSpan.innerText=score;qSpan.innerText=idx+1;let d=E[lvl][idx];tDiv.innerText=d.t;qDiv.innerText=d.q;hDiv.innerHTML="💡 "+d.h;hintsSpan.innerText=hl;if(hl<=0)hintBtn.disabled=true;}
+function showHint(){if(hl>0&&!complete){hl--;hintsSpan.innerText=hl;hDiv.style.display="block";setTimeout(()=>hDiv.style.display="none",4000);if(hl<=0)hintBtn.disabled=true;}}
+hintBtn.onclick=showHint;
+function checkAns(sp){if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}let ok=sp.toLowerCase().includes("ushujaa")||sp.toLowerCase().includes("wananchi")||sp.toLowerCase().includes("kijiji");if(ok){score+=10;update();fbDiv.innerHTML="✅ SAHIHI! +10";if(idx+1<15){idx++;update();}else{complete=true;msgDiv.innerHTML='<div style="background:#00713b;color:#fff;padding:12px;margin:12px;border-radius:50px;cursor:pointer" id="nx">✨ NGAZI INAYOFUATA ✨</div>';document.getElementById('nx')?.addEventListener('click',()=>{if(lvl<4){lvl++;idx=0;complete=false;msgDiv.innerHTML="";update();}else{fbDiv.innerHTML="🏆 BINGWA WA INSHA!";}});}}else{fbDiv.innerHTML='❌ Jaribu tena! '+E[lvl][idx].h;}}
+function initS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){statusDiv.innerText="❌ Hakuna sauti";return;}rec=new S();rec.lang="sw-KE";rec.onstart=()=>{listening=true;mic.classList.add('listening-active');statusDiv.innerText="🎤 Inasikiliza...";};rec.onend=()=>{listening=false;mic.classList.remove('listening-active');statusDiv.innerText="✅ Tayari";};rec.onresult=(e)=>{let txt=e.results[0][0].transcript;statusDiv.innerText='🗣️ "'+txt+'"';checkAns(txt);};}
+mic.onclick=()=>{if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}if(!rec){initS();setTimeout(()=>{if(rec&&!listening)rec.start();},200);return;}if(!listening)rec.start();else rec.stop();};
+function buildL(){let cont=document.getElementById('levelBtns');for(let i=1;i<=4;i++){let b=document.createElement('button');b.innerText="NGAZI "+i;b.className='level-btn'+(i===lvl?' active':'');b.onclick=()=>{if(complete&&lvl!==i){complete=false;msgDiv.innerHTML="";}lvl=i;idx=0;update();document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};cont.appendChild(b);}}
+buildL();update();initS();
+<\/script>
+</body><\/html>`;
+
+  // ====================== GAME 2: HALI YA MASHARTI ======================
+  const mashartiGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Hali ya Masharti</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;} .game-header{background:#1e3a5f;padding:16px;color:#fff;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .question{background:#e6f2ff;padding:20px;border-radius:32px;margin:16px;font-size:1.2rem;font-weight:bold;} .options-grid{display:grid;gap:12px;margin:16px;} .option-btn{background:#d9ecff;border:none;padding:14px;border-radius:30px;font-size:1rem;font-weight:bold;cursor:pointer;} .option-btn.correct{background:#66ff99;} .option-btn.wrong{background:#ff6666;} .nextBtn{background:#1e3a5f;color:#fff;padding:12px 24px;border:none;border-radius:40px;margin:16px;display:none;cursor:pointer;} .hint{background:#f2f9ff;border-left:5px solid #ffb347;padding:10px;margin:12px;border-radius:20px;display:none;} .hint-btn{background:#ffc107;border:none;padding:8px 20px;border-radius:40px;margin:8px auto;display:block;cursor:pointer;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>🔤 HALI YA MASHARTI (-nge-,-ngali-,-ki-)</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📋 SWALI: <span id="qNum">1</span>/15</div><div>💡 MAELEKEZO: <span id="hintsLeft">3</span></div></div>
+<div class="question" id="questionTxt">Chagua kinyume cha "-nge-"</div><div class="options-grid" id="optionsGrid"></div>
+<div class="hint" id="hintBox">💡 Kidokezo: "-nge-" hutumika kwa hali ya masharti ya sasa</div>
+<button class="hint-btn" id="hintBtn">💡 Onyesha Kidokezo</button>
+<button class="nextBtn" id="nextBtn">➡ Swali Linalofuata</button>
+<div id="finalMsg" style="text-align:center;padding:20px;display:none;"></div></div>
+<script>const qData=[{q:"Chagua kinyume cha '-nge-'",o:["hatunge","tunge","nge","tungekuwa"],a:"hatunge",h:"kinyume ni '-nge-' iliyokataliwa"},{q:"Chagua kinyume cha '-ngali-'",o:["hatingali","ngali","tungalikuwa","nge"],a:"hatingali",h:"'-ngali-' ya kukanushwa huwa 'hatingali'"}];
+let levels=[];for(let i=0;i<4;i++){let lvl=[];for(let j=0;j<15;j++){lvl.push(qData[(j+i)%qData.length]);}levels.push(lvl);}
+let L=0,Q=0,score=0,hl=3,answered=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qNoSpan=document.getElementById('qNum'),qDiv=document.getElementById('questionTxt'),optDiv=document.getElementById('optionsGrid'),nextBtn=document.getElementById('nextBtn'),hintBox=document.getElementById('hintBox'),hintBtn=document.getElementById('hintBtn'),finalDiv=document.getElementById('finalMsg'),hintsSpan=document.getElementById('hintsLeft');
+function speak(t){let u=new SpeechSynthesisUtterance(t);u.lang="sw-KE";u.rate=0.9;speechSynthesis.cancel();speechSynthesis.speak(u);}
+function load(){answered=false;nextBtn.style.display="none";let d=levels[L][Q];qDiv.innerText=d.q;hintBox.innerHTML="💡 "+d.h;qNoSpan.innerText=Q+1;hintsSpan.innerText=hl;if(hl<=0)hintBtn.disabled=true;optDiv.innerHTML="";d.o.forEach(opt=>{let b=document.createElement('button');b.className='option-btn';b.innerText=opt;b.onclick=()=>check(opt,b);optDiv.appendChild(b);});speak(d.q);}
+function showHint(){if(hl>0){hl--;hintsSpan.innerText=hl;hintBox.style.display="block";setTimeout(()=>hintBox.style.display="none",4000);if(hl<=0)hintBtn.disabled=true;}}
+hintBtn.onclick=showHint;
+function check(sel,btn){if(answered)return;answered=true;let correct=levels[L][Q].a;document.querySelectorAll('.option-btn').forEach(b=>{b.disabled=true;if(b.innerText===correct)b.classList.add('correct');});if(sel===correct){score+=10;sSpan.innerText=score;speak("Hongera!");btn.classList.add('correct');}else{btn.classList.add('wrong');speak("Pole, jibu sahihi ni: "+correct);}nextBtn.style.display="inline-block";}
+nextBtn.onclick=()=>{Q++;if(Q<15){load();}else{L++;Q=0;if(L<4){load();}else{optDiv.style.display="none";nextBtn.style.display="none";finalDiv.style.display="block";finalDiv.innerHTML="<h2>🏆 Umefanikiwa!</h2><p>Alama: "+score+"</p>";speak("Hongera sana!");}}};
+load();
+<\/script>
+</body><\/html>`;
+
+  // ====================== GAME 3: TAMATHILI NA SITIARI ======================
+  const tamathiliGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Tamathili na Sitiari</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;} .game-header{background:#7b5ea7;padding:16px;color:#fff;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .figure-display{background:#d9efff;padding:20px;border-radius:32px;margin:16px;font-size:1.3rem;font-weight:bold;text-align:center;font-style:italic;} .question{font-size:1.2rem;font-weight:bold;margin:16px;} .voice-zone{text-align:center;padding:16px;} .mic-button{background:#0f6ba3;width:80px;height:80px;border-radius:50%;font-size:2.5rem;color:#fff;border:none;cursor:pointer;} .listening-active{animation:pulse 1s infinite;background:#1ea87b;} @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}} .answer-status{padding:12px;} .hint-box{background:#fff8e7;border-left:8px solid #ffb347;padding:12px;margin:12px;border-radius:24px;display:none;} .hint-btn{background:#ffc107;border:none;padding:8px 20px;border-radius:40px;margin:8px auto;display:block;cursor:pointer;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>🦁 TAMATHILI NA SITIARI</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📖 MSHALE: <span id="qNum">1</span>/15</div><div>💡 MAELEKEZO: <span id="hintsLeft">3</span></div></div>
+<div class="figure-display" id="figureTxt">"Mwanajeshi ni simba anayelinda eneo lake"</div><div class="question" id="questionTxt">Eleza maana ya sitiari hii</div>
+<div class="voice-zone"><button class="mic-button" id="micBtn">🎤</button><div id="statusMsg">✅ Tayari</div><div class="answer-status" id="fbMsg"></div></div>
+<div class="hint-box" id="hintBox">💡 Kidokezo: Simba hulinda eneo lake kwa ujasiri</div>
+<button class="hint-btn" id="hintBtn">💡 Onyesha Kidokezo</button>
+<div id="completeMsg"></div></div>
+<script>const T={1:[{f:"Mwanajeshi ni simba anayelinda eneo lake",q:"Eleza maana",a:"ujaasiri na nguvu kama simba",h:"Simba hulinda kwa nguvu"}],2:[],3:[],4:[]};
+for(let l=1;l<=4;l++){while(T[l].length<15)T[l].push({f:"Mlinzi ni mwenge unaowaka",q:"Eleza sitiari",a:"hutoa mwanga na mwongozo",h:"Mwenge huangaza"});}
+let lvl=1,idx=0,score=0,hl=3,complete=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qSpan=document.getElementById('qNum'),fDiv=document.getElementById('figureTxt'),qDiv=document.getElementById('questionTxt'),hDiv=document.getElementById('hintBox'),fbDiv=document.getElementById('fbMsg'),statusDiv=document.getElementById('statusMsg'),msgDiv=document.getElementById('completeMsg'),mic=document.getElementById('micBtn'),hintBtn=document.getElementById('hintBtn'),hintsSpan=document.getElementById('hintsLeft');
+function update(){sSpan.innerText=score;qSpan.innerText=idx+1;let d=T[lvl][idx];fDiv.innerText='"'+d.f+'"';qDiv.innerText=d.q;hDiv.innerHTML="💡 "+d.h;hintsSpan.innerText=hl;if(hl<=0)hintBtn.disabled=true;}
+function showHint(){if(hl>0&&!complete){hl--;hintsSpan.innerText=hl;hDiv.style.display="block";setTimeout(()=>hDiv.style.display="none",4000);if(hl<=0)hintBtn.disabled=true;}}
+hintBtn.onclick=showHint;
+function checkAns(sp){if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}let ok=sp.toLowerCase().includes("simba")||sp.toLowerCase().includes("ujasiri")||sp.toLowerCase().includes("nguvu");if(ok){score+=10;update();fbDiv.innerHTML="✅ SAHIHI! +10";if(idx+1<15){idx++;update();}else{complete=true;msgDiv.innerHTML='<div style="background:#00713b;color:#fff;padding:12px;margin:12px;border-radius:50px;cursor:pointer" id="nx">✨ NGAZI INAYOFUATA ✨</div>';document.getElementById('nx')?.addEventListener('click',()=>{if(lvl<4){lvl++;idx=0;complete=false;msgDiv.innerHTML="";update();}else{fbDiv.innerHTML="🏆 BINGWA WA TAMATHILI!";}});}}else{fbDiv.innerHTML='❌ Jaribu tena! '+T[lvl][idx].h;}}
+function initS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){statusDiv.innerText="❌ Hakuna sauti";return;}rec=new S();rec.lang="sw-KE";rec.onstart=()=>{listening=true;mic.classList.add('listening-active');statusDiv.innerText="🎤 Inasikiliza...";};rec.onend=()=>{listening=false;mic.classList.remove('listening-active');statusDiv.innerText="✅ Tayari";};rec.onresult=(e)=>{let txt=e.results[0][0].transcript;statusDiv.innerText='🗣️ "'+txt+'"';checkAns(txt);};}
+mic.onclick=()=>{if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}if(!rec){initS();setTimeout(()=>{if(rec&&!listening)rec.start();},200);return;}if(!listening)rec.start();else rec.stop();};
+function buildL(){let cont=document.getElementById('levelBtns');for(let i=1;i<=4;i++){let b=document.createElement('button');b.innerText="NGAZI "+i;b.className='level-btn'+(i===lvl?' active':'');b.onclick=()=>{if(complete&&lvl!==i){complete=false;msgDiv.innerHTML="";}lvl=i;idx=0;update();document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};cont.appendChild(b);}}
+buildL();update();initS();
+<\/script>
+</body><\/html>`;
+
+  // ====================== GAME 4: ULINGANISHO NA SITIARI ======================
+  const ulinganishoGameHTML = `<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><title>Ulinganisho na Sitiari</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;} body{background:linear-gradient(145deg,#eef2ff,#fff);font-family:'Nunito',sans-serif;padding:16px;} .game-container{max-width:750px;margin:0 auto;background:#fff;border-radius:48px;overflow:hidden;} .game-header{background:#e9c46a;padding:16px;color:#2c4a2a;text-align:center;} .levels-row{display:flex;gap:10px;background:#f0f9ff;padding:12px;flex-wrap:wrap;} .level-btn{background:#fff;border:none;padding:10px;flex:1;border-radius:40px;cursor:pointer;} .level-btn.active{background:#1e6faf;color:#fff;} .info-panel{display:flex;justify-content:space-between;padding:12px 20px;} .figure-display{background:#e6f2ff;padding:20px;border-radius:32px;margin:16px;font-size:1.3rem;font-weight:bold;text-align:center;font-style:italic;} .question{font-size:1.2rem;font-weight:bold;margin:16px;} .voice-zone{text-align:center;padding:16px;} .mic-button{background:#0f6ba3;width:80px;height:80px;border-radius:50%;font-size:2.5rem;color:#fff;border:none;cursor:pointer;} .answer-status{padding:12px;} .hint-box{background:#fff8e7;border-left:8px solid #ffb347;padding:12px;margin:12px;border-radius:24px;display:none;} .hint-btn{background:#ffc107;border:none;padding:8px 20px;border-radius:40px;margin:8px auto;display:block;cursor:pointer;}
+</style>
+</head><body>
+<div class="game-container"><div class="game-header"><h2>⚔️ ULINGANISHO NA SITIARI</h2></div>
+<div class="levels-row" id="levelBtns"></div><div class="info-panel"><div>⭐ ALAMA: <span id="scoreVal">0</span></div><div>📋 MSHALE: <span id="qNum">1</span>/15</div><div>💡 MAELEKEZO: <span id="hintsLeft">3</span></div></div>
+<div class="figure-display" id="figureTxt">"Alikimbia kama cheetah anapowakamata wagaidi"</div><div class="question" id="questionTxt">Eleza maana ya ulinganisho huu</div>
+<div class="voice-zone"><button class="mic-button" id="micBtn">🎤</button><div id="statusMsg">✅ Tayari</div><div class="answer-status" id="fbMsg"></div></div>
+<div class="hint-box" id="hintBox">💡 Kidokezo: Cheetah ni mnyama mwepesi sana</div>
+<button class="hint-btn" id="hintBtn">💡 Onyesha Kidokezo</button>
+<div id="completeMsg"></div></div>
+<script>const U={1:[{f:"Alikimbia kama cheetah anapowakamata wagaidi",q:"Eleza maana",a:"wepesi na kasi kubwa",h:"Cheetah ni mwepesi"}],2:[],3:[],4:[]};
+for(let l=1;l<=4;l++){while(U[l].length<15)U[l].push({f:"Alikuwa hodari kama simba",q:"Eleza maana",a:"uhodari na ujasiri",h:"Simba hodari"});}
+let lvl=1,idx=0,score=0,hl=3,complete=false,rec=null,listening=false;
+const sSpan=document.getElementById('scoreVal'),qSpan=document.getElementById('qNum'),fDiv=document.getElementById('figureTxt'),qDiv=document.getElementById('questionTxt'),hDiv=document.getElementById('hintBox'),fbDiv=document.getElementById('fbMsg'),statusDiv=document.getElementById('statusMsg'),msgDiv=document.getElementById('completeMsg'),mic=document.getElementById('micBtn'),hintBtn=document.getElementById('hintBtn'),hintsSpan=document.getElementById('hintsLeft');
+function update(){sSpan.innerText=score;qSpan.innerText=idx+1;let d=U[lvl][idx];fDiv.innerText='"'+d.f+'"';qDiv.innerText=d.q;hDiv.innerHTML="💡 "+d.h;hintsSpan.innerText=hl;if(hl<=0)hintBtn.disabled=true;}
+function showHint(){if(hl>0&&!complete){hl--;hintsSpan.innerText=hl;hDiv.style.display="block";setTimeout(()=>hDiv.style.display="none",4000);if(hl<=0)hintBtn.disabled=true;}}
+hintBtn.onclick=showHint;
+function checkAns(sp){if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}let ok=sp.toLowerCase().includes("cheetah")||sp.toLowerCase().includes("wepesi")||sp.toLowerCase().includes("kasi");if(ok){score+=10;update();fbDiv.innerHTML="✅ SAHIHI! +10";if(idx+1<15){idx++;update();}else{complete=true;msgDiv.innerHTML='<div style="background:#00713b;color:#fff;padding:12px;margin:12px;border-radius:50px;cursor:pointer" id="nx">✨ NGAZI INAYOFUATA ✨</div>';document.getElementById('nx')?.addEventListener('click',()=>{if(lvl<4){lvl++;idx=0;complete=false;msgDiv.innerHTML="";update();}else{fbDiv.innerHTML="🏆 BINGWA WA ULINGANISHO!";}});}}else{fbDiv.innerHTML='❌ Jaribu tena! '+U[lvl][idx].h;}}
+function initS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){statusDiv.innerText="❌ Hakuna sauti";return;}rec=new S();rec.lang="sw-KE";rec.onstart=()=>{listening=true;mic.classList.add('listening-active');statusDiv.innerText="🎤 Inasikiliza...";};rec.onend=()=>{listening=false;mic.classList.remove('listening-active');statusDiv.innerText="✅ Tayari";};rec.onresult=(e)=>{let txt=e.results[0][0].transcript;statusDiv.innerText='🗣️ "'+txt+'"';checkAns(txt);};}
+mic.onclick=()=>{if(complete){fbDiv.innerHTML="Maliza ngazi!";return;}if(!rec){initS();setTimeout(()=>{if(rec&&!listening)rec.start();},200);return;}if(!listening)rec.start();else rec.stop();};
+function buildL(){let cont=document.getElementById('levelBtns');for(let i=1;i<=4;i++){let b=document.createElement('button');b.innerText="NGAZI "+i;b.className='level-btn'+(i===lvl?' active':'');b.onclick=()=>{if(complete&&lvl!==i){complete=false;msgDiv.innerHTML="";}lvl=i;idx=0;update();document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};cont.appendChild(b);}}
+buildL();update();initS();
+<\/script>
+</body><\/html>`;
+
+  // Modal management
+  const modal = document.getElementById('gameModal');
+  const iframe = document.getElementById('gameIframe');
+  const closeBtn = document.getElementById('closeModalBtn');
+
+  function openGame(htmlContent) {
+    iframe.srcdoc = htmlContent;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    iframe.srcdoc = '';
+    document.body.style.overflow = '';
+  }
+
+  // Attach click handlers
+  document.querySelectorAll('.module-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const type = card.getAttribute('data-game');
+      if (type === 'insha') openGame(inshaGameHTML);
+      else if (type === 'masharti') openGame(mashartiGameHTML);
+      else if (type === 'tamathili') openGame(tamathiliGameHTML);
+      else if (type === 'ulinganisho') openGame(ulinganishoGameHTML);
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+</script>
+</body>
+</html>

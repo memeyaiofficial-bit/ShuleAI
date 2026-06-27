@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🇰🇪 Social Studies Hub | Grade 4 CBC | County Governments • Citizenship • Democracy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(145deg, #0b3b3b 0%, #062020 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .hub-container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .hero-header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 10px;
+        }
+        .hero-header h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 7vw, 3rem);
+            background: linear-gradient(135deg, #FFD966, #FFB347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .hero-header p {
+            color: #d4f1f9;
+            font-weight: 600;
+            font-size: clamp(0.9rem, 3.5vw, 1.2rem);
+            background: rgba(0,0,0,0.3);
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin-bottom: 50px;
+        }
+
+        .module-card {
+            background: rgba(255, 250, 235, 0.96);
+            border-radius: 48px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,215,130,0.6);
+            display: flex;
+            flex-direction: column;
+        }
+        .module-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 40px -12px black;
+        }
+
+        .card-banner {
+            padding: 28px 20px 20px;
+            text-align: center;
+            color: white;
+        }
+        .card-banner span {
+            font-size: 3.8rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .card-banner h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+        .banner-county { background: linear-gradient(135deg, #1e5a5a, #0e3a3a); }
+        .banner-citizen { background: linear-gradient(135deg, #1e3a5f, #0f2440); }
+        .banner-leader { background: linear-gradient(135deg, #e9c46a, #e3a018); color: #2c4a2a; }
+        .banner-leader h2 { color: #1e3a1e; }
+
+        .card-preview {
+            padding: 22px;
+            background: #fffaf0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-preview p {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 16px;
+            line-height: 1.45;
+        }
+        .preview-badge {
+            display: inline-block;
+            background: #e9c46a;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #2d2b1f;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .play-btn-card {
+            margin-top: 20px;
+            background: #f4a261;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #2d2418;
+            cursor: pointer;
+            font-family: 'Fredoka One', cursive;
+            transition: 0.1s linear;
+            box-shadow: 0 5px 0 #c45c1a;
+            width: 100%;
+        }
+        .play-btn-card:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #c45c1a;
+        }
+
+        .game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .game-modal.active {
+            display: flex;
+        }
+        .game-iframe-container {
+            background: #fffaf0;
+            width: 100%;
+            max-width: 1100px;
+            border-radius: 60px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            position: relative;
+            animation: modalFade 0.3s ease;
+        }
+        .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 22px;
+            background: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 12px black;
+            transition: 0.1s;
+            color: #1a1a2e;
+        }
+        .close-modal:hover {
+            background: #f4a261;
+            color: white;
+            transform: scale(1.05);
+        }
+        iframe {
+            width: 100%;
+            height: 85vh;
+            min-height: 550px;
+            border: none;
+            display: block;
+            background: #fffaf0;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.96);}
+            to { opacity: 1; transform: scale(1);}
+        }
+
+        @media (max-width: 780px) {
+            .modules-grid { gap: 20px; }
+            .card-banner span { font-size: 2.5rem; }
+            .card-banner h2 { font-size: 1.4rem; }
+            iframe { height: 80vh; }
+            .close-modal { top: 6px; right: 12px; width: 38px; height: 38px; font-size: 24px; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .card-preview p { font-size: 0.9rem; }
+            .preview-badge { font-size: 0.7rem; }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #ffe3b0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body>
+<div class="hub-container">
+    <div class="hero-header">
+        <h1>🇰🇪 CBC Social Studies · Grade 4 🇰🇪</h1>
+        <p>🏛️ County Governments  •  🤝 Good Citizenship & Child Rights  •  🗳️ Democracy & Young Leadership</p>
+    </div>
+
+    <div class="modules-grid">
+        <!-- CARD 1: COUNTY GOVERNMENTS -->
+        <div class="module-card">
+            <div class="card-banner banner-county">
+                <span>🏛️</span>
+                <h2>County Commander</h2>
+            </div>
+            <div class="card-preview">
+                <p>Learn about the 47 counties, Governors, MCAs, County Assemblies, functions of devolution, and how county services bring development closer to the people.</p>
+                <div>
+                    <span class="preview-badge">🏛️ Structure of counties</span>
+                    <span class="preview-badge">🗳️ Governor & MCAs</span>
+                    <span class="preview-badge">⚕️ Health, roads & trade</span>
+                    <span class="preview-badge">📜 Devolution explained</span>
+                </div>
+                <button class="play-btn-card" data-game="county">🎮 PLAY NOW → County Challenge</button>
+            </div>
+        </div>
+
+        <!-- CARD 2: GOOD CITIZENSHIP, PEACE & CHILD RIGHTS -->
+        <div class="module-card">
+            <div class="card-banner banner-citizen">
+                <span>🕊️</span>
+                <h2>Citizen Hero</h2>
+            </div>
+            <div class="card-preview">
+                <p>Master good citizenship at school, peacebuilding, conflict resolution, child rights (UNCRC), and the responsibilities that come with rights. Be a peace hero!</p>
+                <div>
+                    <span class="preview-badge">🤝 School citizen duties</span>
+                    <span class="preview-badge">🕊️ Peace & forgiveness</span>
+                    <span class="preview-badge">📖 Child rights (education, health, protection)</span>
+                    <span class="preview-badge">⚖️ Responsibility & fairness</span>
+                </div>
+                <button class="play-btn-card" data-game="citizen">🎮 PLAY NOW → Citizenship Quest</button>
+            </div>
+        </div>
+
+        <!-- CARD 3: DEMOCRACY & LEADERSHIP -->
+        <div class="module-card">
+            <div class="card-banner banner-leader">
+                <span>🗳️</span>
+                <h2>Young Leader</h2>
+            </div>
+            <div class="card-preview">
+                <p>Discover democracy in school, how student councils work, leadership qualities, community governance, and how young people can participate in decision-making.</p>
+                <div>
+                    <span class="preview-badge">🗳️ Voting & elections</span>
+                    <span class="preview-badge">👥 Prefects & student council</span>
+                    <span class="preview-badge">🏛️ Community leaders (Chief, Governor, Senator)</span>
+                    <span class="preview-badge">⭐ Integrity & teamwork</span>
+                </div>
+                <button class="play-btn-card" data-game="leader">🎮 PLAY NOW → Leadership Arena</button>
+            </div>
+        </div>
+    </div>
+    <footer>🇰🇪 Aligned with Kenyan CBC Grade 4 Social Studies — Learn about County Governments, Good Citizenship, Child Rights, Democracy and Leadership! 🇰🇪</footer>
+</div>
+
+<div id="gameModal" class="game-modal">
+    <div class="game-iframe-container">
+        <button class="close-modal" id="closeModalBtn">✕</button>
+        <iframe id="gameIframe" title="Social Studies Game" srcdoc=""></iframe>
+    </div>
+</div>
+
+<script>
+    // ====================== GAME 1: COUNTY GOVERNMENTS (FULL FUNCTIONAL) ======================
+    const countyGameHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>County Commander | County Governments</title>
+<style>
+*{box-sizing:border-box;user-select:none;} body{background:linear-gradient(145deg,#1e5a5a,#0e3a3a); font-family:'Nunito',sans-serif; margin:0; padding:20px; display:flex; justify-content:center; align-items:center; min-height:100vh;} .game-container{max-width:1000px; width:100%; background:#fffaf0; border-radius:70px; overflow:hidden;} .game-header{background:linear-gradient(135deg,#2a8b8b,#1a6b6b); padding:18px 28px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:15px; color:white;} .level-badge{background:#0a2e2e; padding:8px 24px; border-radius:60px; font-weight:bold; font-size:1.7rem;} .timer-area{background:#071a1a; padding:8px 22px; border-radius:60px; display:flex; gap:14px;} .timer-number{background:#000; padding:6px 20px; border-radius:50px; color:#7effd4; font-size:2.2rem; font-family:monospace; min-width:110px;} .score-progress{background:#e8ddc5; padding:14px 28px; display:flex; justify-content:space-between; flex-wrap:wrap;} .question-card{padding:30px 28px;} .question-text{font-size:1.5rem; font-weight:800; background:#eef5f0; padding:24px; border-radius:60px; text-align:center; color:#1e5a5a;} .options-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:30px 0;} .option-btn{background:#f0e2d0; border:none; font-weight:bold; padding:16px; border-radius:60px; display:flex; align-items:center; gap:16px; cursor:pointer; box-shadow:0 6px 0 #aa8e6c;} .option-prefix{background:#2a8b8b; width:46px; height:46px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:white; font-size:1.5rem;} .correct-highlight{background:#2e7d32; color:white;} .wrong-highlight{background:#c62828; color:white; text-decoration:line-through;} .next-btn{background:#f4a261; font-size:1.6rem; font-weight:bold; padding:12px 45px; border:none; border-radius:60px; cursor:pointer; box-shadow:0 8px 0 #c45c1a;} .next-btn:disabled{opacity:0.6;} .restart-btn{background:#3c2a1f; padding:8px 22px; border-radius:40px; color:#ffddbb; cursor:pointer; margin-top:10px;} @media (max-width:680px){ .options-grid{grid-template-columns:1fr;} .question-text{font-size:1.2rem;} .timer-number{font-size:1.5rem;} .level-badge{font-size:1.2rem;} }
+</style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header"><div class="level-badge">🏛️ LEVEL <span id="levelNum">1</span></div><div class="timer-area">⏱️ <span class="timer-number" id="timerDisplay">00</span></div></div>
+    <div class="score-progress"><div>🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div><div>🎯 80% TO PASS → <span id="passMark">24</span></div></div>
+    <div class="question-card"><div class="question-text" id="questionText">County Government Challenge</div><div class="options-grid" id="optionsContainer"></div><div style="text-align:center"><button class="next-btn" id="nextButton">➡️ NEXT ⬅️</button></div></div>
+    <div style="background:#1a6b6b; color:#fff; text-align:center; padding:14px" id="gameMessage">County Commander! Learn devolution & services.</div>
+</div>
+<script>
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a;}
+const questionsData = [
+    {q:"How many counties are there in Kenya?",correct:"47",options:["42","47","50","35"]},{q:"The political head of a county government is the:",correct:"Governor",options:["President","Governor","Chief","Senator"]},{q:"The legislative arm (law-making) of the county government is the:",correct:"County Assembly",options:["County Executive","County Assembly","Judiciary","National Parliament"]},{q:"Members of the County Assembly are known as:",correct:"MCAs",options:["MPs","MCAs","Senators","Governors"]},{q:"Who presides over the County Assembly meetings?",correct:"The Speaker",options:["The Governor","The Speaker","The Deputy Governor","The President"]},{q:"If a Governor dies, who takes over?",correct:"Deputy Governor",options:["Speaker","Deputy Governor","Senator","President"]},{q:"Which is a function of county government?",correct:"Health services",options:["Defense","Health services","Foreign affairs","Currency printing"]},{q:"Early childhood education is managed by:",correct:"County governments",options:["National","County governments","Private only","UNESCO"]},{q:"County governments build and maintain:",correct:"County roads",options:["National highways","County roads","Railways","Airports"]},{q:"Devolution means:",correct:"Transfer of power to counties",options:["Centralizing power","Transfer of power to counties","Abolishing local govt","Increasing taxes"]},{q:"Devolution was established after the:",correct:"2010 Constitution",options:["1963 Independence","2010 Constitution","2002 Elections","1992"]},{q:"County governments receive funding from:",correct:"National government and local revenue",options:["Only foreign donors","National government and local revenue","Printing money","Private companies"]},{q:"Who represents the county in the Senate?",correct:"Senator",options:["Governor","Senator","President","Chief Justice"]},{q:"A woman representative is elected from:",correct:"Each county",options:["Each ward","Each county","Each constituency","Each village"]},{q:"The head of county public service is:",correct:"County Secretary",options:["Governor","County Secretary","Chief Officer","Speaker"]}
+];
+let fullBank = [];
+for(let i=0;i<50;i++) fullBank.push(questionsData[i%questionsData.length]);
+let levels=[];
+for(let l=1;l<=5;l++){let qs=[]; for(let i=0;i<30;i++){let src=fullBank[i%fullBank.length]; let txt=src.q; if(l>=3) txt="🏛️ "+txt; if(l===5) txt="⭐ "+txt+" ⭐"; qs.push({text:txt,options:[...src.options],correct:src.correct});} levels.push(shuffle(qs));}
+let curLvl=1, qIdx=0, score=0, totalQs=30, passMark=24, timerSec=0, timerInt=null, active=true, locked=false, waiting=false, finished=false;
+const lvlSpan=document.getElementById('levelNum'), timerSpan=document.getElementById('timerDisplay'), scoreSpan=document.getElementById('currentScore'), passSpan=document.getElementById('passMark'), totalSpan=document.getElementById('totalQPerLevel');
+const qDiv=document.getElementById('questionText'), optsDiv=document.getElementById('optionsContainer'), nextBtn=document.getElementById('nextButton'), msgDiv=document.getElementById('gameMessage');
+function updateUI(){scoreSpan.innerText=score;}
+function stopTimer(){if(timerInt){clearInterval(timerInt); timerInt=null;}}
+function startTimer(){const tMap={1:90,2:80,3:70,4:60,5:50}; timerSec=tMap[curLvl]; timerSpan.innerText=timerSec; timerInt=setInterval(()=>{if(!active||finished)return; if(timerSec<=1){stopTimer();active=false;finished=true;disableOpts();nextBtn.disabled=true;msgDiv.innerHTML=\`⏰ TIME'S UP! Level \${curLvl} failed!\`;showRestart();}else{timerSec--;timerSpan.innerText=timerSec;if(timerSec<=10)timerSpan.style.background="#8b0000";}},1000);}
+function disableOpts(){document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);}
+function showRestart(){let r=document.querySelector('.restart-custom'); if(r)r.remove(); let btn=document.createElement('button'); btn.innerText='🏛️ RESTART GAME'; btn.className='restart-btn restart-custom'; btn.onclick=()=>location.reload(); msgDiv.appendChild(btn);}
+function loadQuestion(){if(!active)return; if(qIdx>=totalQs){finishLevel();return;} let q=levels[curLvl-1][qIdx]; qDiv.innerText=q.text; optsDiv.innerHTML=''; let shuffled=shuffle([...q.options]); let pref=['A','B','C','D']; shuffled.forEach((opt,i)=>{let btn=document.createElement('button'); btn.className='option-btn'; btn.innerHTML=\`<span class="option-prefix">\${pref[i]}</span><span>\${opt}</span>\`; btn.onclick=()=>handleAnswer(opt,q.correct,btn); optsDiv.appendChild(btn);}); locked=false; waiting=false; nextBtn.disabled=true; msgDiv.innerHTML=\`🏛️ Question \${qIdx+1}/30 • County Governance\`;}
+function handleAnswer(selected,correct,btn){if(locked||waiting||!active||finished)return; locked=true; if(selected===correct){score++; updateUI(); btn.classList.add('correct-highlight'); msgDiv.innerHTML=\`✅ Correct! +1 (\${score}/\${totalQs})\`;}else{btn.classList.add('wrong-highlight'); document.querySelectorAll('.option-btn').forEach(b=>{let txt=b.innerText.replace(/^[A-D]\.\s*/,''); if(txt===correct) b.classList.add('correct-highlight');}); msgDiv.innerHTML=\`❌ Wrong! Correct answer: "\${correct}"\`;} disableOpts(); waiting=true; nextBtn.disabled=false;}
+function nextQuestion(){if(!waiting||finished)return; qIdx++; if(qIdx<totalQs)loadQuestion(); else finishLevel();}
+function finishLevel(){if(finished)return; finished=true; stopTimer(); if(score>=passMark){if(curLvl===5){msgDiv.innerHTML=\`🏆🏆 AMAZING! YOU MASTERED COUNTY GOVERNMENTS! 🏆🏆\\nFinal Score: \${score}/\${totalQs}\`; disableOpts(); nextBtn.disabled=true; active=false; return;}else{msgDiv.innerHTML=\`🎉 LEVEL \${curLvl} COMPLETE! Moving to Level \${curLvl+1}...\`; curLvl++; qIdx=0; score=0; updateUI(); lvlSpan.innerText=curLvl; finished=false; active=true; waiting=false; stopTimer(); startTimer(); loadQuestion();}}else{active=false; disableOpts(); nextBtn.disabled=true; msgDiv.innerHTML=\`😭 GAME OVER! Level \${curLvl} failed. Score: \${score}/\${totalQs} (need \${passMark}). Restart to try again!\`; showRestart();}}
+nextBtn.onclick=nextQuestion; totalSpan.innerText=totalQs; passSpan.innerText=passMark; startTimer(); loadQuestion();
+<\/script>
+</body><\/html>`;
+
+    // ====================== GAME 2: CITIZEN HERO ======================
+    const citizenGameHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Citizen Hero | Good Citizenship & Child Rights</title>
+<style>
+*{box-sizing:border-box;} body{background:linear-gradient(145deg,#1e3a5f,#0f2440); font-family:'Nunito',sans-serif; margin:0; padding:20px; display:flex; justify-content:center; align-items:center; min-height:100vh;} .game-container{max-width:1000px; width:100%; background:#fffaf0; border-radius:70px; overflow:hidden;} .game-header{background:linear-gradient(135deg,#1e6b8f,#124f6b); padding:18px 28px; display:flex; justify-content:space-between; flex-wrap:wrap; color:white;} .level-badge{background:#0a2a38; padding:8px 24px; border-radius:60px; font-weight:bold; font-size:1.7rem;} .timer-area{background:#071a22; padding:8px 22px; border-radius:60px;} .timer-number{background:#000; padding:6px 20px; border-radius:50px; color:#7ec8ff; font-size:2.2rem; min-width:110px;} .score-progress{background:#e8ddc5; padding:14px 28px; display:flex; justify-content:space-between;} .question-text{font-size:1.5rem; font-weight:800; background:#eef4f9; padding:24px; border-radius:60px; text-align:center;} .options-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:30px 0;} .option-btn{background:#f0e2d0; border:none; font-weight:bold; padding:16px; border-radius:60px; display:flex; align-items:center; gap:16px; cursor:pointer; box-shadow:0 6px 0 #aa8e6c;} .option-prefix{background:#1e6b8f; width:46px; height:46px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:white; font-size:1.5rem;} .correct-highlight{background:#2e7d32; color:white;} .wrong-highlight{background:#c62828; color:white;} .next-btn{background:#f4a261; font-size:1.6rem; font-weight:bold; padding:12px 45px; border:none; border-radius:60px; cursor:pointer;} @media (max-width:680px){ .options-grid{grid-template-columns:1fr;} .question-text{font-size:1.2rem;} .timer-number{font-size:1.5rem;} }
+</style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header"><div class="level-badge">🕊️ LEVEL <span id="levelNum">1</span></div><div class="timer-area">⏱️ <span class="timer-number" id="timerDisplay">00</span></div></div>
+    <div class="score-progress"><div>🏆 SCORE: <span id="currentScore">0</span>/30</div><div>🎯 PASS: <span id="passMark">24</span></div></div>
+    <div style="padding:30px;"><div class="question-text" id="questionText">Loading...</div><div class="options-grid" id="optionsContainer"></div><div style="text-align:center"><button class="next-btn" id="nextButton">➡️ NEXT ⬅️</button></div></div>
+    <div style="background:#1e6b8f; color:white; text-align:center; padding:14px" id="gameMessage">Citizen Hero: rights, peace & responsibilities</div>
+</div>
+<script>
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const qData=[
+    {q:"A good citizen in school always:",correct:"Follows school rules and respects others",options:["Breaks windows","Follows school rules and respects others","Bullies","Litters"]},
+    {q:"Reporting bullying to a teacher is:",correct:"Being a responsible citizen",options:["Being a snitch","Being a responsible citizen","Being a coward","Breaking rules"]},
+    {q:"Keeping the classroom clean shows:",correct:"Responsibility and good citizenship",options:["Laziness","Responsibility and good citizenship","Bad behavior","Ignorance"]},
+    {q:"What does peace mean in school?",correct:"Living without fighting or bullying",options:["Shouting loudly","Living without fighting or bullying","Avoiding everyone","Revenge"]},
+    {q:"Forgiving a friend who wronged you promotes:",correct:"Peace and reconciliation",options:["Revenge","Peace and reconciliation","Hatred","More fighting"]},
+    {q:"Every child has the right to:",correct:"Free primary education",options:["Own a car","Free primary education","Work full time","Skip school"]},
+    {q:"The right to health means children should get:",correct:"Clean water, food and medical care",options:["Only play","Clean water, food and medical care","Work","Hide"]},
+    {q:"The Convention on the Rights of the Child was adopted by:",correct:"United Nations",options:["World Bank","United Nations","African Union","Kenya alone"]},
+    {q:"With the right to education comes the responsibility to:",correct:"Attend school and study hard",options:["Skip class","Attend school and study hard","Destroy books","Fight teachers"]},
+    {q:"A child's responsibility at school is to:",correct:"Obey teachers and respect peers",options:["Fight daily","Obey teachers and respect peers","Sleep in class","Steal"]}
+];
+let full=[];
+for(let i=0;i<60;i++) full.push(qData[i%qData.length]);
+let levels=[]; for(let l=1;l<=5;l++){let qs=[]; for(let i=0;i<30;i++){let src=full[i%full.length]; let txt=src.q; if(l>=3) txt="🕊️ "+txt; if(l==5) txt="🏆 "+txt+" 🏆"; qs.push({text:txt,options:[...src.options],correct:src.correct});} levels.push(shuffle(qs));}
+let curLvl=1, idx=0, score=0, total=30, pass=24, timerSec=0, timerInt=null, active=true, locked=false, waiting=false, finished=false;
+const lvlSpan=document.getElementById('levelNum'), timerSpan=document.getElementById('timerDisplay'), scoreSpan=document.getElementById('currentScore'), passSpan=document.getElementById('passMark'), qDiv=document.getElementById('questionText'), optDiv=document.getElementById('optionsContainer'), nextBtn=document.getElementById('nextButton'), msgDiv=document.getElementById('gameMessage');
+function upd(){scoreSpan.innerText=score;}
+function stopT(){if(timerInt)clearInterval(timerInt);}
+function startT(){const tmap={1:90,2:80,3:70,4:60,5:50}; timerSec=tmap[curLvl]; timerSpan.innerText=timerSec; timerInt=setInterval(()=>{if(!active||finished)return; if(timerSec<=1){stopT();active=false;finished=true;disableAll();msgDiv.innerHTML=\`⏰ TIME UP! Level \${curLvl} failed.\`; let r=document.createElement('button'); r.innerText='Restart'; r.onclick=()=>location.reload(); msgDiv.appendChild(r);}else{timerSec--;timerSpan.innerText=timerSec;}},1000);}
+function disableAll(){document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);}
+function loadQ(){if(!active)return; if(idx>=total){finish();return;} let q=levels[curLvl-1][idx]; qDiv.innerText=q.text; optDiv.innerHTML=''; let shuffled=shuffle([...q.options]); let pref=['A','B','C','D']; shuffled.forEach((o,i)=>{let btn=document.createElement('button'); btn.className='option-btn'; btn.innerHTML=\`<span class="option-prefix">\${pref[i]}</span><span>\${o}</span>\`; btn.onclick=()=>handle(o,q.correct,btn); optDiv.appendChild(btn);}); locked=false; waiting=false; nextBtn.disabled=true;}
+function handle(sel,cor,btn){if(locked||waiting||!active||finished)return; locked=true; if(sel===cor){score++;upd();btn.classList.add('correct-highlight');msgDiv.innerHTML=\`✅ Great! \${score}/\${total}\`;}else{btn.classList.add('wrong-highlight');document.querySelectorAll('.option-btn').forEach(b=>{let t=b.innerText.replace(/^[A-D]\.\s*/,''); if(t===cor) b.classList.add('correct-highlight');});msgDiv.innerHTML=\`❌ Correct: "\${cor}"\`;} disableAll(); waiting=true; nextBtn.disabled=false;}
+function nextQ(){if(!waiting||finished)return; idx++; if(idx<total)loadQ(); else finish();}
+function finish(){if(finished)return; finished=true; stopT(); if(score>=pass){if(curLvl===5){msgDiv.innerHTML=\`🏆✨ YOU ARE A TRUE CITIZEN HERO! ✨🏆 Score \${score}/\${total}\`; return;}else{msgDiv.innerHTML=\`🎉 Level \${curLvl} complete! Next level...\`; curLvl++; idx=0; score=0; upd(); lvlSpan.innerText=curLvl; finished=false; active=true; waiting=false; stopT(); startT(); loadQ();}}else{active=false;msgDiv.innerHTML=\`Game Over Level \${curLvl} (\${score}/\${total} need \${pass}).\`; let r=document.createElement('button'); r.innerText='Restart'; r.onclick=()=>location.reload(); msgDiv.appendChild(r);}}
+nextBtn.onclick=nextQ; passSpan.innerText=pass; startT(); loadQ();
+<\/script>
+</body><\/html>`;
+
+    // ====================== GAME 3: YOUNG LEADER ======================
+    const leaderGameHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Young Leader | Democracy & Leadership</title>
+<style>
+*{box-sizing:border-box;} body{background:linear-gradient(145deg,#2d5a3b,#1a3a24); font-family:'Nunito',sans-serif; margin:0; padding:20px; display:flex; justify-content:center; align-items:center; min-height:100vh;} .game-container{max-width:1000px; width:100%; background:#fffaf0; border-radius:70px; overflow:hidden;} .game-header{background:linear-gradient(135deg,#e9c46a,#e3a018); padding:18px 28px; display:flex; justify-content:space-between; color:#2c4a2a;} .level-badge{background:#2c4a2a; color:white; padding:8px 24px; border-radius:60px; font-size:1.7rem;} .timer-number{background:#000; padding:6px 20px; border-radius:50px; color:#ffe082; font-size:2.2rem;} .score-progress{background:#e8ddc5; padding:14px 28px; display:flex; justify-content:space-between;} .question-text{font-weight:800; background:#fef5e0; padding:24px; border-radius:60px; text-align:center; font-size:1.5rem;} .options-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:30px 0;} .option-btn{background:#f0e2d0; border:none; font-weight:bold; padding:16px; border-radius:60px; display:flex; align-items:center; gap:16px; cursor:pointer; box-shadow:0 6px 0 #aa8e6c;} .option-prefix{background:#e9c46a; width:46px; height:46px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.5rem;} .correct-highlight{background:#2e7d32; color:white;} .wrong-highlight{background:#c62828; color:white;} .next-btn{background:#e9c46a; font-size:1.6rem; font-weight:bold; padding:12px 45px; border:none; border-radius:60px; cursor:pointer;} @media (max-width:680px){ .options-grid{grid-template-columns:1fr;} .question-text{font-size:1.2rem;} .timer-number{font-size:1.5rem;} }
+</style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header"><div class="level-badge">🗳️ LEVEL <span id="levelNum">1</span></div><div>⏱️ <span class="timer-number" id="timerDisplay">00</span></div></div>
+    <div class="score-progress"><div>🏆 SCORE: <span id="currentScore">0</span>/30</div><div>🎯 PASS: <span id="passMark">24</span></div></div>
+    <div style="padding:30px;"><div class="question-text" id="questionText">Leadership Challenge</div><div class="options-grid" id="optionsContainer"></div><div style="text-align:center"><button class="next-btn" id="nextButton">➡️ NEXT ⬅️</button></div></div>
+    <div style="background:#2c4a2a; color:#fef5e0; text-align:center; padding:14px" id="gameMessage">Young Leader — democracy & community leadership</div>
+</div>
+<script>
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const qData=[
+    {q:"What does democracy mean in school?",correct:"Students choose leaders through voting",options:["Teachers choose all","Students choose through voting","Principal decides","No leaders"]},
+    {q:"Secret ballot means:",correct:"No one sees how you voted",options:["Everyone sees","No one sees","You tell everyone","Teacher decides"]},
+    {q:"Head of student government is called:",correct:"Head boy or Head girl",options:["Principal","Head boy/girl","Class teacher","Governor"]},
+    {q:"A prefect's main duty is:",correct:"Maintain discipline and assist teachers",options:["Fight","Maintain discipline and assist teachers","Skip classes","Sleep"]},
+    {q:"The highest political leader in a county is:",correct:"Governor",options:["President","Governor","Chief","Senator"]},
+    {q:"A chief in a location helps to:",correct:"Maintain security and solve disputes",options:["Sell goods","Maintain security","Build roads","Run hospitals"]},
+    {q:"A good leader should be:",correct:"Honest, responsible, and a good listener",options:["Dishonest","Honest and responsible","Only strict","Mean"]},
+    {q:"Student council represents:",correct:"All students",options:["Only teachers","All students","Only prefects","Parents"]},
+    {q:"Voting in school prefect elections teaches:",correct:"Democratic participation",options:["Dictatorship","Democratic participation","Corruption","Violence"]},
+    {q:"MCAs (Member of County Assembly) represent:",correct:"A ward",options:["County","Ward","Constituency","Village"]}
+];
+let full=[];
+for(let i=0;i<60;i++) full.push(qData[i%qData.length]);
+let levels=[]; for(let l=1;l<=5;l++){let qs=[]; for(let i=0;i<30;i++){let src=full[i%full.length]; let txt=src.q; if(l>=3) txt="🗳️ "+txt; if(l==5) txt="🏆 "+txt+" 🏆"; qs.push({text:txt,options:[...src.options],correct:src.correct});} levels.push(shuffle(qs));}
+let curLvl=1, idx=0, score=0, total=30, pass=24, timerSec=0, timerInt=null, active=true, locked=false, waiting=false, finished=false;
+const lvlSpan=document.getElementById('levelNum'), timerSpan=document.getElementById('timerDisplay'), scoreSpan=document.getElementById('currentScore'), passSpan=document.getElementById('passMark'), qDiv=document.getElementById('questionText'), optDiv=document.getElementById('optionsContainer'), nextBtn=document.getElementById('nextButton'), msgDiv=document.getElementById('gameMessage');
+function upd(){scoreSpan.innerText=score;}
+function stopT(){if(timerInt)clearInterval(timerInt);}
+function startT(){const tmap={1:90,2:80,3:70,4:60,5:50}; timerSec=tmap[curLvl]; timerSpan.innerText=timerSec; timerInt=setInterval(()=>{if(!active||finished)return; if(timerSec<=1){stopT();active=false;finished=true;disableAll();msgDiv.innerHTML=\`⏰ Time's up! Level \${curLvl} failed.\`; let r=document.createElement('button'); r.innerText='Restart'; r.onclick=()=>location.reload(); msgDiv.appendChild(r);}else{timerSec--;timerSpan.innerText=timerSec;}},1000);}
+function disableAll(){document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);}
+function loadQ(){if(!active)return; if(idx>=total){finish();return;} let q=levels[curLvl-1][idx]; qDiv.innerText=q.text; optDiv.innerHTML=''; let shuffled=shuffle([...q.options]); let pref=['A','B','C','D']; shuffled.forEach((o,i)=>{let btn=document.createElement('button'); btn.className='option-btn'; btn.innerHTML=\`<span class="option-prefix">\${pref[i]}</span><span>\${o}</span>\`; btn.onclick=()=>handle(o,q.correct,btn); optDiv.appendChild(btn);}); locked=false; waiting=false; nextBtn.disabled=true;}
+function handle(sel,cor,btn){if(locked||waiting||!active||finished)return; locked=true; if(sel===cor){score++;upd();btn.classList.add('correct-highlight');msgDiv.innerHTML=\`✅ Great! \${score}/\${total}\`;}else{btn.classList.add('wrong-highlight');document.querySelectorAll('.option-btn').forEach(b=>{let t=b.innerText.replace(/^[A-D]\.\s*/,''); if(t===cor) b.classList.add('correct-highlight');});msgDiv.innerHTML=\`❌ Correct: "\${cor}"\`;} disableAll(); waiting=true; nextBtn.disabled=false;}
+function nextQ(){if(!waiting||finished)return; idx++; if(idx<total)loadQ(); else finish();}
+function finish(){if(finished)return; finished=true; stopT(); if(score>=pass){if(curLvl===5){msgDiv.innerHTML=\`🏆🏆 YOU ARE A YOUNG LEADER MASTER! 🏆🏆 Score \${score}/\${total}\`; return;}else{msgDiv.innerHTML=\`🎉 Level \${curLvl} complete! Next level...\`; curLvl++; idx=0; score=0; upd(); lvlSpan.innerText=curLvl; finished=false; active=true; waiting=false; stopT(); startT(); loadQ();}}else{active=false;msgDiv.innerHTML=\`Game Over at Level \${curLvl}. Restart.\`; let r=document.createElement('button'); r.innerText='Restart'; r.onclick=()=>location.reload(); msgDiv.appendChild(r);}}
+nextBtn.onclick=nextQ; passSpan.innerText=pass; startT(); loadQ();
+<\/script>
+</body><\/html>`;
+
+    // MODAL CONTROLS
+    const modal = document.getElementById('gameModal');
+    const iframe = document.getElementById('gameIframe');
+    const closeBtn = document.getElementById('closeModalBtn');
+
+    function openGame(htmlContent) {
+        iframe.srcdoc = htmlContent;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        iframe.srcdoc = '';
+        document.body.style.overflow = '';
+    }
+
+    // Attach event listeners to all play buttons
+    document.querySelectorAll('.play-btn-card').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const gameType = btn.getAttribute('data-game');
+            if (gameType === 'county') openGame(countyGameHTML);
+            else if (gameType === 'citizen') openGame(citizenGameHTML);
+            else if (gameType === 'leader') openGame(leaderGameHTML);
+        });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+</script>
+</body>
+</html>

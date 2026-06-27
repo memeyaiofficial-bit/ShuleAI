@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grade 2 CBC Environmental | Water · Plants · Animals | Voice Quiz Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1b7b5e 0%, #0e5a44 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI Emoji', 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+            background: #fef9e6;
+            border-radius: 75px 75px 65px 65px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), inset 0 1px 4px rgba(255, 250, 210, 0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #48c9b0;
+            padding: 18px 22px 14px;
+            text-align: center;
+            border-bottom: 5px solid #2e9e86;
+        }
+
+        .level-badge {
+            background: #2c5a4a;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 60px;
+            color: #ffeaac;
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .stars {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .star {
+            font-size: 28px;
+            color: #ffc107;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .score-progress {
+            background: #e6f4ea;
+            margin: 12px 16px 0;
+            border-radius: 40px;
+            padding: 6px 18px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #2d5a44;
+        }
+
+        .quiz-card {
+            padding: 22px 24px 24px;
+        }
+
+        .question-text {
+            background: #ffffff;
+            padding: 22px 18px;
+            border-radius: 55px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: inset 0 0 0 3px #c8e6df, 0 8px 12px rgba(0,0,0,0.05);
+            border: 1px solid #b8dfce;
+            word-break: break-word;
+            color: #1c5a48;
+            margin-bottom: 22px;
+        }
+
+        .timer-area {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-circle {
+            background: #2d6a4f;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+            font-family: monospace;
+            box-shadow: 0 5px 0 #1b4d3a;
+            transition: 0.1s;
+        }
+
+        .warning {
+            background: #c0392b;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); background-color: #c0392b; }
+            100% { transform: scale(1.05); background-color: #e67e22; }
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 20px 0 18px;
+        }
+
+        .option-btn {
+            background: #f0e2ca;
+            border: 3px solid #74c69d;
+            border-radius: 50px;
+            padding: 12px 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.08s linear;
+            text-align: center;
+            color: #2d5a44;
+            font-family: inherit;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .option-btn:active {
+            transform: scale(0.96);
+        }
+
+        .option-btn:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .voice-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 10px 0 12px;
+        }
+
+        .voice-btn {
+            background: #5a9e8a;
+            border: none;
+            padding: 12px 12px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        .voice-btn.mic {
+            background: #2e7d64;
+        }
+
+        .voice-btn.speaker {
+            background: #e67e22;
+        }
+
+        .voice-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Live mic feedback */
+        .mic-live-feedback {
+            background: #e0f2e9;
+            border-radius: 50px;
+            padding: 10px 16px;
+            margin: 8px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid #74c69d;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .mic-live-feedback .label {
+            background: #2e7d64;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .live-text {
+            flex: 1;
+            font-size: 1rem;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #1f3b2c;
+            word-break: break-word;
+            min-height: 48px;
+        }
+        .mic-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #888;
+            transition: 0.1s;
+        }
+        .mic-indicator.listening {
+            background: #2ecc71;
+            box-shadow: 0 0 6px #2ecc71;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        .status-msg {
+            background: #e8f0e8;
+            border-radius: 40px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .next-btn {
+            background: #52b788;
+            width: 100%;
+            border: none;
+            padding: 14px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.1s;
+            font-family: inherit;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .reset-area {
+            text-align: center;
+            margin: 14px 20px 18px;
+        }
+
+        .reset-btn {
+            background: #b4813c;
+            border: none;
+            padding: 8px 26px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.2rem; }
+            .option-btn { font-size: 0.9rem; padding: 10px 4px; }
+            .voice-btn { font-size: 0.8rem; }
+            .mic-live-feedback .label { font-size: 0.7rem; }
+            .live-text { font-size: 0.8rem; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #d4ecd9;
+            padding: 8px;
+            color: #2d5a44;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">💧 LEVEL 1 / 5</div>
+        <div class="stars" id="starRating">⭐⭐⭐</div>
+        <div class="score-progress">
+            <span>🌍 SCORE: <span id="currentScore">0</span></span>
+            <span>✅ NEED 80% ➡️ <span id="requiredInfo">0/24</span></span>
+        </div>
+    </div>
+    <div class="quiz-card">
+        <div class="question-text" id="questionText">🌟 Explore Water, Plants & Animals! 🌟</div>
+        <div class="timer-area"><div class="timer-circle" id="timerCircle">40</div></div>
+        <div class="options-grid" id="optionsContainer"></div>
+        
+        <div class="voice-actions">
+            <button class="voice-btn speaker" id="speakBtn">🔊 READ QUESTION</button>
+            <button class="voice-btn mic" id="micBtn">🎤 VOICE ANSWER</button>
+        </div>
+        
+        <!-- Live Mic Feedback -->
+        <div class="mic-live-feedback" id="micLiveBox">
+            <span class="label">🎙️ MIC HEARS:</span>
+            <span class="live-text" id="micLiveText">— tap 🎤 and speak —</span>
+            <div class="mic-indicator" id="micIndicator"></div>
+        </div>
+        
+        <div class="status-msg" id="statusMsg">✨ Tap or speak! 40 seconds. Learn about nature! ✨</div>
+        <button class="next-btn" id="nextBtn" disabled>➡️ NEXT QUESTION</button>
+        <div class="reset-area"><button class="reset-btn" id="resetGameBtn">🔄 RESTART GAME</button></div>
+    </div>
+    <footer>💧 Water · 🌱 Plants · 🦒 Animals | Environmental Activities Grade 2 CBC</footer>
+</div>
+
+<script>
+    // ---------- TOPICS: Water, Plants, Animals ----------
+    const envTopics = ["Water", "Plants", "Animals"];
+    
+    // Generate dynamic question bank for each topic
+    function generateQuestionByTopic(topic, id, level) {
+        if (topic === "Water") {
+            const bank = [
+                { q: "Which of these is a source of water?", opts: ["River", "Desert", "Sand", "Rock"], ans: "River" },
+                { q: "Why is water important for animals?", opts: ["To drink and stay alive", "To play only", "To hide", "To sleep"], ans: "To drink and stay alive" },
+                { q: "What happens to plants without water?", opts: ["They wilt and die", "They grow faster", "They flower more", "They change color to blue"], ans: "They wilt and die" },
+                { q: "Which is a way to save water at home?", opts: ["Turn off tap while brushing", "Leave tap running", "Fill a pool every day", "Wash car daily"], ans: "Turn off tap while brushing" },
+                { q: "Rain is a natural source of water. Where does rain come from?", opts: ["Clouds", "Ground", "Trees", "Rivers"], ans: "Clouds" },
+                { q: "Which animal lives in water?", opts: ["Fish", "Lion", "Elephant", "Giraffe"], ans: "Fish" },
+                { q: "Water that is safe to drink is called:", opts: ["Clean/Drinking water", "Dirty water", "Salt water", "Muddy water"], ans: "Clean/Drinking water" },
+                { q: "What do we use water for in farming?", opts: ["Watering crops", "Building houses", "Making clothes", "Driving cars"], ans: "Watering crops" }
+            ];
+            let pick = bank[(id + level) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+        else if (topic === "Plants") {
+            const bank = [
+                { q: "What do plants need to grow?", opts: ["Sunlight, water and soil", "Only sugar", "Only rocks", "Only plastic"], ans: "Sunlight, water and soil" },
+                { q: "Which part of a plant is under the ground?", opts: ["Roots", "Leaves", "Stem", "Flower"], ans: "Roots" },
+                { q: "What do leaves help the plant to do?", opts: ["Make food using sunlight", "Drink water", "Hold the soil", "Reproduce"], ans: "Make food using sunlight" },
+                { q: "Which is a fruit that grows on a plant?", opts: ["Mango", "Rock", "Table", "Book"], ans: "Mango" },
+                { q: "Trees give us shade and:", opts: ["Oxygen", "Carbon dioxide", "Plastic", "Metal"], ans: "Oxygen" },
+                { q: "A seed needs _______ to germinate.", opts: ["Water and warmth", "Cold ice", "Darkness only", "Sand only"], ans: "Water and warmth" },
+                { q: "Which plant is a vegetable?", opts: ["Kale/Sukuma wiki", "Rose", "Cactus", "Sunflower"], ans: "Kale/Sukuma wiki" },
+                { q: "What do we call a young plant?", opts: ["Seedling", "Log", "Branch", "Fruit"], ans: "Seedling" }
+            ];
+            let pick = bank[(id + level*2) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+        else { // Animals
+            const bank = [
+                { q: "Which animal is a wild animal?", opts: ["Lion", "Cow", "Goat", "Chicken"], ans: "Lion" },
+                { q: "What do herbivores eat?", opts: ["Plants", "Meat", "Both plants and meat", "Insects only"], ans: "Plants" },
+                { q: "Which animal lives both on land and in water?", opts: ["Frog", "Fish", "Eagle", "Snake"], ans: "Frog" },
+                { q: "Birds are animals that have:", opts: ["Feathers and wings", "Fur", "Scales", "Slimy skin"], ans: "Feathers and wings" },
+                { q: "Where do domestic animals live?", opts: ["Near humans on farms or homes", "Deep in the forest only", "In the ocean", "In the sky"], ans: "Near humans on farms or homes" },
+                { q: "Which animal gives us milk?", opts: ["Cow", "Lion", "Elephant", "Zebra"], ans: "Cow" },
+                { q: "A baby dog is called a:", opts: ["Puppy", "Kitten", "Cub", "Calf"], ans: "Puppy" },
+                { q: "What helps a fish to breathe underwater?", opts: ["Gills", "Lungs", "Fins", "Tail"], ans: "Gills" },
+                { q: "Which animal is known for its long neck?", opts: ["Giraffe", "Zebra", "Hippo", "Rhino"], ans: "Giraffe" }
+            ];
+            let pick = bank[(id + level*3) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+    }
+    
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    
+    function buildQuestionsForLevel(level) {
+        let qs = [];
+        for (let i = 1; i <= 30; i++) {
+            let topicIdx = (i + level) % envTopics.length;
+            let topic = envTopics[topicIdx];
+            qs.push(generateQuestionByTopic(topic, i, level));
+        }
+        return qs;
+    }
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let questions = [];
+    let score = 0;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let waitingForNext = false;
+    let lockAnswer = false;
+    let currentQuestionObj = null;
+    
+    // Speech synthesis
+    let speechUtterance = null;
+    function speakNow(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        speechUtterance = new SpeechSynthesisUtterance(text);
+        speechUtterance.lang = "en-US";
+        speechUtterance.rate = 0.9;
+        speechUtterance.pitch = 1.05;
+        window.speechSynthesis.speak(speechUtterance);
+    }
+    
+    function readQuestionOutLoud() {
+        if (currentQuestionObj) {
+            speakNow(`Question: ${currentQuestionObj.text}`);
+            statusMsg.innerText = "🔊 Reading question aloud...";
+            setTimeout(() => {
+                if (statusMsg.innerText.includes("Reading")) statusMsg.innerText = "✅ Now answer using voice or tap!";
+            }, 1500);
+        }
+    }
+    
+    // Live mic elements
+    const micLiveText = document.getElementById("micLiveText");
+    const micIndicator = document.getElementById("micIndicator");
+    
+    let recognition = null;
+    let isListening = false;
+    
+    function updateLiveMicText(text, isFinal = false) {
+        micLiveText.innerText = text || "— listening —";
+        if (isFinal) {
+            micLiveText.style.background = "#d4f0e0";
+            setTimeout(() => { if (!isListening) micLiveText.style.background = "white"; }, 800);
+        } else {
+            micLiveText.style.background = "#fff3cf";
+        }
+    }
+    
+    function initSpeechRecognition() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            micBtn.disabled = true;
+            micBtn.style.opacity = 0.5;
+            document.getElementById("micLiveBox").style.opacity = 0.6;
+            statusMsg.innerText = "⚠️ Voice input not supported. Use click.";
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = () => {
+            isListening = true;
+            micIndicator.classList.add("listening");
+            updateLiveMicText("🎤 Listening... speak your answer", false);
+            statusMsg.innerText = "🎤 I'm listening... speak clearly!";
+        };
+        
+        recognition.onresult = (event) => {
+            let interimTranscript = "";
+            let finalTranscript = "";
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            if (interimTranscript) {
+                updateLiveMicText(`👂 hearing: ${interimTranscript}`, false);
+            }
+            if (finalTranscript) {
+                updateLiveMicText(`✅ ${finalTranscript}`, true);
+                checkVoiceMatch(finalTranscript.trim().toLowerCase());
+            }
+        };
+        
+        recognition.onerror = (ev) => {
+            updateLiveMicText(`⚠️ Error: ${ev.error}`, false);
+            statusMsg.innerText = `Voice error: ${ev.error}. Tap answer.`;
+            micIndicator.classList.remove("listening");
+            isListening = false;
+            setTimeout(() => { if (!isListening) updateLiveMicText("— tap 🎤 to speak —", false); }, 1500);
+        };
+        
+        recognition.onend = () => {
+            micIndicator.classList.remove("listening");
+            isListening = false;
+            if (!lockAnswer && !waitingForNext) {
+                updateLiveMicText("— ready — tap 🎤", false);
+            } else {
+                updateLiveMicText("— answer submitted —", false);
+            }
+        };
+    }
+    
+    function startVoiceInput() {
+        if (lockAnswer || waitingForNext) {
+            statusMsg.innerText = "Finish current question first!";
+            speakNow("Complete this question first.");
+            return;
+        }
+        if (recognition && !isListening) {
+            try {
+                recognition.start();
+            } catch(e) {
+                statusMsg.innerText = "Voice busy, try again.";
+                updateLiveMicText("⚠️ restart mic", false);
+            }
+        } else if (isListening) {
+            statusMsg.innerText = "Already listening! Please speak...";
+        } else {
+            statusMsg.innerText = "Voice not ready. Tap answer instead.";
+        }
+    }
+    
+    function checkVoiceMatch(spoken) {
+        if (lockAnswer || waitingForNext) {
+            statusMsg.innerText = "Question already finished!";
+            return;
+        }
+        if (!currentQuestionObj) return;
+        const correctAns = currentQuestionObj.correct.toLowerCase();
+        let matched = false;
+        if (spoken === correctAns) matched = true;
+        else if (correctAns.includes(spoken) && spoken.length > 3) matched = true;
+        else if (spoken.includes(correctAns)) matched = true;
+        else {
+            for (let opt of currentQuestionObj.options) {
+                if (opt.toLowerCase() === spoken && opt === currentQuestionObj.correct) {
+                    matched = true;
+                    break;
+                }
+            }
+        }
+        if (matched) handleCorrect();
+        else handleWrong();
+    }
+    
+    function handleCorrect() {
+        if (lockAnswer) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        score++;
+        updateUI();
+        speakNow(`Excellent! Correct! ${currentQuestionObj.correct} is right. +1 point.`);
+        statusMsg.innerText = "🎉 CORRECT! 🎉 +1 point!";
+        highlightCorrectOption();
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+        if (recognition && isListening) recognition.abort();
+        updateLiveMicText("✅ Correct! Well done!", false);
+    }
+    
+    function handleWrong() {
+        if (lockAnswer) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        speakNow(`Oh! The correct answer is ${currentQuestionObj.correct}. Keep learning about nature!`);
+        statusMsg.innerText = `😓 WRONG! Correct: "${currentQuestionObj.correct}".`;
+        highlightCorrectOption();
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+        if (recognition && isListening) recognition.abort();
+        updateLiveMicText(`❌ Correct: ${currentQuestionObj.correct}`, false);
+    }
+    
+    function handleTimeout() {
+        if (lockAnswer || waitingForNext) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        speakNow(`Time is up! The correct answer was ${currentQuestionObj.correct}. Let's protect our environment!`);
+        statusMsg.innerText = `⏰ TIME'S UP! Answer: ${currentQuestionObj.correct}`;
+        highlightCorrectOption();
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+        if (recognition && isListening) recognition.abort();
+        updateLiveMicText(`⏰ Time up: ${currentQuestionObj.correct}`, false);
+    }
+    
+    function highlightCorrectOption() {
+        const btns = document.querySelectorAll('.option-btn');
+        for (let btn of btns) {
+            if (btn.innerText === currentQuestionObj.correct) {
+                btn.style.background = "#b9f6ca";
+                btn.style.border = "3px solid #2e7d32";
+            } else {
+                btn.style.background = "#ffe0b0";
+            }
+        }
+    }
+    
+    function disableOptions() {
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+    }
+    
+    function updateUI() {
+        document.getElementById("currentScore").innerText = score;
+        let needed = Math.ceil(questions.length * 0.8);
+        document.getElementById("requiredInfo").innerText = `${score}/${needed}`;
+        let percent = (score / questions.length) * 100;
+        let starCount = Math.min(5, Math.floor(percent / 20));
+        let starHtml = "⭐".repeat(starCount) + "☆".repeat(5 - starCount);
+        document.getElementById("starRating").innerHTML = starHtml;
+    }
+    
+    function startTimerForQuestion() {
+        if (timerInterval) clearInterval(timerInterval);
+        timeLeft = 40;
+        timerCircle.innerText = timeLeft;
+        timerCircle.classList.remove("warning");
+        timerInterval = setInterval(() => {
+            if (lockAnswer || waitingForNext) return;
+            if (timeLeft <= 1) {
+                clearInterval(timerInterval);
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerCircle.innerText = timeLeft;
+                if (timeLeft <= 10) timerCircle.classList.add("warning");
+            }
+        }, 1000);
+    }
+    
+    function loadQuestion() {
+        if (timerInterval) clearInterval(timerInterval);
+        lockAnswer = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        if (recognition && isListening) recognition.abort();
+        updateLiveMicText("— tap 🎤 to speak —", false);
+        
+        if (currentQuestionIndex >= questions.length) {
+            let requiredPass = Math.ceil(questions.length * 0.8);
+            if (score >= requiredPass) {
+                if (currentLevel === 5) {
+                    statusMsg.innerText = "🏆🌍 AMAZING! YOU MASTERED WATER, PLANTS & ANIMALS! 🌍🏆";
+                    speakNow("Congratulations! You completed all 5 levels! You are an environmental champion!");
+                    questionTextEl.innerText = "🎉 NATURE HERO! 🎉 You care for our environment!";
+                    optionsContainer.innerHTML = "";
+                    nextBtn.disabled = true;
+                    return;
+                } else {
+                    currentLevel++;
+                    currentQuestionIndex = 0;
+                    score = 0;
+                    loadLevel();
+                    updateLevelDisplay();
+                    updateUI();
+                    loadQuestion();
+                    return;
+                }
+            } else {
+                statusMsg.innerText = `❌ You got ${score}/${questions.length} (need ${requiredPass}%). Restarting level ${currentLevel}. Keep exploring nature! ❌`;
+                speakNow(`Restarting level ${currentLevel}. You can do it!`);
+                resetCurrentLevel();
+                return;
+            }
+        }
+        
+        currentQuestionObj = questions[currentQuestionIndex];
+        questionTextEl.innerText = currentQuestionObj.text;
+        optionsContainer.innerHTML = "";
+        currentQuestionObj.options.forEach(opt => {
+            let btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.classList.add("option-btn");
+            btn.addEventListener("click", () => {
+                if (lockAnswer || waitingForNext) return;
+                if (opt === currentQuestionObj.correct) handleCorrect();
+                else handleWrong();
+            });
+            optionsContainer.appendChild(btn);
+        });
+        startTimerForQuestion();
+        updateUI();
+        statusMsg.innerText = "💧 Listen to the question. Tap or speak your answer!";
+        speakNow(currentQuestionObj.text);
+    }
+    
+    function loadLevel() {
+        questions = buildQuestionsForLevel(currentLevel);
+        score = 0;
+        currentQuestionIndex = 0;
+    }
+    
+    function updateLevelDisplay() {
+        document.getElementById("levelDisplay").innerHTML = `🌿 LEVEL ${currentLevel} / 5 🌿`;
+        let need = Math.ceil(30 * 0.8);
+        document.getElementById("requiredInfo").innerText = `0/${need}`;
+    }
+    
+    function resetCurrentLevel() {
+        if (timerInterval) clearInterval(timerInterval);
+        loadLevel();
+        currentQuestionIndex = 0;
+        score = 0;
+        lockAnswer = false;
+        waitingForNext = false;
+        updateLevelDisplay();
+        updateUI();
+        loadQuestion();
+    }
+    
+    function fullReset() {
+        if (timerInterval) clearInterval(timerInterval);
+        currentLevel = 1;
+        loadLevel();
+        currentQuestionIndex = 0;
+        score = 0;
+        updateLevelDisplay();
+        updateUI();
+        loadQuestion();
+    }
+    
+    // DOM elements
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetGameBtn");
+    const speakBtn = document.getElementById("speakBtn");
+    const micBtn = document.getElementById("micBtn");
+    const timerCircle = document.getElementById("timerCircle");
+    const questionTextEl = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const statusMsg = document.getElementById("statusMsg");
+    
+    nextBtn.addEventListener("click", () => {
+        if (!waitingForNext && !lockAnswer) {
+            statusMsg.innerText = "👉 Please answer the question first!";
+            speakNow("Please answer the question before moving on.");
+            return;
+        }
+        if (waitingForNext) {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+    });
+    
+    resetBtn.addEventListener("click", () => fullReset());
+    speakBtn.addEventListener("click", () => readQuestionOutLoud());
+    micBtn.addEventListener("click", () => startVoiceInput());
+    
+    // Initialize game
+    initSpeechRecognition();
+    loadLevel();
+    updateLevelDisplay();
+    updateUI();
+    loadQuestion();
+</script>
+</body>
+</html>

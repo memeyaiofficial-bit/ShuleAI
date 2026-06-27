@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Mavazi - CBC Darasa la 4 | Kiswahili</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #8B4513;
+      --primary-dark: #6B3410;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --radius: 20px;
+      --shadow: 0 12px 40px rgba(0,0,0,0.1);
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: linear-gradient(135deg, #2c3e50 0%, #1a2a36 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+    #app {
+      width: 100%;
+      max-width: 800px;
+      background: #fffaf0;
+      background-image: radial-gradient(circle at 5% 30%, rgba(100, 70, 40, 0.05) 2%, transparent 2.5%);
+      background-size: 28px 28px;
+      border-radius: 70px 50px 70px 50px;
+      box-shadow: 0 30px 40px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,245,200,0.8);
+      overflow: hidden;
+      position: relative;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+    .screen {
+      display: none;
+      padding: 20px;
+      flex-direction: column;
+      flex: 1;
+      animation: slideIn 0.4s ease;
+    }
+    .screen.active { display: flex; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pop { 0% { transform: scale(0.95); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+    .shake { animation: shake 0.4s ease; }
+    .pop { animation: pop 0.3s ease; }
+
+    /* Header */
+    .game-header {
+      background: #9b6a3c;
+      padding: 16px 22px;
+      color: #fff3e0;
+      text-shadow: 2px 2px 0 #5a3a1a;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 5px solid #e6cba0;
+    }
+    .level-badge {
+      background: #2c2b28;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      box-shadow: inset 0 -1px 0 #ffb347, 0 5px 10px rgba(0,0,0,0.2);
+    }
+    .score-timer {
+      display: flex;
+      gap: 16px;
+      background: #00000055;
+      backdrop-filter: blur(4px);
+      padding: 5px 16px;
+      border-radius: 60px;
+    }
+    .score, .timer { font-weight: bold; font-size: 0.9rem; }
+
+    /* Main Content */
+    .game-main { padding: 20px; }
+
+    /* Level Selector */
+    .level-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .level-card {
+      background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+      border: 2px solid #e2e8f0;
+      padding: 12px 8px;
+      border-radius: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .level-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .level-card.locked { opacity: 0.65; cursor: not-allowed; background: #f8fafc; }
+    .level-card.locked:hover { transform: none; border-color: #e2e8f0; }
+    .level-card.completed { border-color: var(--success); background: #f0fdf4; }
+    .clothing-icon { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+
+    /* Question Card */
+    .question-card {
+      background: #fffdf7;
+      border-radius: 35px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+      border-left: 10px solid #e67e22;
+    }
+    .question-text {
+      font-size: 1rem;
+      line-height: 1.45;
+      font-weight: 600;
+      color: #2d3e2b;
+      word-break: break-word;
+    }
+    .story-icon { font-size: 1.5rem; margin-bottom: 8px; display: inline-block; }
+
+    /* Answer Area */
+    .answer-label {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #7b4a2e;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .answer-input {
+      width: 100%;
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      border: 3px solid #e0b354;
+      border-radius: 50px;
+      background: #fffef7;
+      font-family: inherit;
+      outline: none;
+      transition: 0.2s;
+      color: #2c3e2b;
+    }
+    .answer-input:focus { border-color: #e67e22; box-shadow: 0 0 0 3px rgba(230,126,34,0.2); }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .check-btn, .next-btn {
+      border: none;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: 0.2s;
+      flex: 1;
+      min-width: 110px;
+    }
+    .check-btn { background: #2c9e6e; color: white; box-shadow: 0 3px 0 #1e6b5e; }
+    .check-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e6b5e; }
+    .next-btn { background: #e0b354; color: #2c2b28; box-shadow: 0 3px 0 #b88b2e; }
+    .next-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b88b2e; }
+    .check-btn:disabled, .next-btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+
+    .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+    .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+
+    /* Feedback */
+    .feedback {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 30px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      background: #e9ecef;
+    }
+    .feedback.correct { background: #d4ecd0; color: #1f5437; border-left: 5px solid #2d6a4f; }
+    .feedback.wrong { background: #ffe0db; color: #bc3900; border-left: 5px solid #e67e22; }
+
+    /* Progress */
+    .progress-container {
+      background: #e2cfb3;
+      border-radius: 20px;
+      margin: 20px 0 12px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .progress-fill { background: #e67e22; width: 0%; height: 100%; transition: width 0.3s ease; border-radius: 20px; }
+
+    /* Stats */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      background: #fef5e6;
+      padding: 8px 12px;
+      border-radius: 30px;
+    }
+    .badge { background: #ede9fe; color: var(--primary-dark); padding: 3px 10px; border-radius: 20px; font-weight: 600; font-size: 0.7rem; }
+    .streak { display: flex; gap: 4px; }
+    .streak-dot { width: 9px; height: 9px; border-radius: 50%; background: #e2e8f0; }
+    .streak-dot.filled { background: var(--success); }
+
+    /* Timer Bar */
+    .timer-bar { height: 5px; background: #e2e8f0; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+    .timer-fill { height: 100%; background: #ffc107; width: 100%; transition: width 1s linear; }
+    .timer-fill.critical { background: #dc3545; animation: pulse 0.5s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+    .confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 10; }
+    .confetti { position: absolute; width: 8px; height: 8px; background: gold; border-radius: 2px; animation: fall 1.5s linear forwards; }
+    @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+    @media (max-width: 580px) {
+      .game-header { flex-direction: column; align-items: center; text-align: center; }
+      .question-text { font-size: 0.9rem; }
+      .game-main { padding: 15px; }
+      .answer-input { font-size: 0.85rem; padding: 10px 14px; }
+      .button-group { flex-direction: column; }
+      .level-selector { grid-template-columns: repeat(2, 1fr); }
+      .level-card { padding: 10px 5px; }
+      .clothing-icon { font-size: 1.3rem; }
+    }
+    @media (max-width: 400px) { .level-selector { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="confetti-container" id="confetti"></div>
+
+  <!-- WELCOME SCREEN -->
+  <div id="welcome-screen" class="screen active">
+    <div class="game-header" style="border-radius: 0;">
+      <div class="level-badge">🧥 Mavazi</div>
+      <div class="score-timer"><div class="score">🎯 CBC Darasa la 4</div><div class="timer">📚 Kiswahili</div></div>
+    </div>
+    <div class="game-main">
+      <h1 style="color:#9b6a3c; margin-bottom:12px; font-size:1.6rem;">👘 Mavazi</h1>
+      <p style="font-size:0.9rem;">Mchezo wa CBC Darasa la 4. Soma hadithi fupi za mavazi, andika jibu sahihi. Lenga kupata angalau 80% (32/40) ili kufungua kiwango kijacho!</p>
+      <div class="stats-bar" style="margin:12px 0;"><span>🎯 Lengo: 32/40 (80%)</span><span>⏱️ Sekunde 25 kwa swali</span></div>
+      <div class="level-selector" id="levelMenu"></div>
+      <button class="btn" id="startBtn">🚀 Anza Kucheza</button>
+    </div>
+  </div>
+
+  <!-- LEVEL INTRO -->
+  <div id="level-intro" class="screen">
+    <div class="game-header" style="border-radius: 0;"><div class="level-badge">📖 Kiwango kipya</div></div>
+    <div class="game-main">
+      <h2 id="levelTitle" style="font-size:1.3rem;"></h2>
+      <p id="levelDesc" style="font-size:0.85rem;"></p>
+      <div class="progress-container"><div class="progress-fill" id="introProgress"></div></div>
+      <button class="btn" id="beginLevelBtn">✨ Anza Kiwango</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    <div class="game-header" style="border-radius: 0;">
+      <div class="level-badge" id="levelDisplay">Ngazi ya 1</div>
+      <div class="score-timer">
+        <div class="score">👘 Alama: <span id="scoreSpan">0</span>/<span id="qTotalSpan">40</span></div>
+        <div class="timer">⏱️ Sekunde: <span id="timerSpan">25</span>s</div>
+      </div>
+    </div>
+    <div class="game-main">
+      <div class="stats-bar">
+        <span class="badge" id="gameLevelBadge">Kiwango 1</span>
+        <span id="gameScoreDisplay">0 / 40</span>
+        <div class="streak" id="streakDots"></div>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+      <div class="question-card">
+        <div class="story-icon">🧥👗</div>
+        <div class="question-text" id="questionText">Hadithi inaandaliwa...</div>
+      </div>
+      <div class="answer-area">
+        <label class="answer-label">✏️ Andika jibu lako hapa (Kiswahili sanifu):</label>
+        <input type="text" id="answerInput" class="answer-input" placeholder="mfano: shati, suruali, kanzu..." autocomplete="off">
+        <div class="button-group">
+          <button id="checkBtn" class="check-btn">🔎 Angalia Jibu</button>
+          <button id="nextBtn" class="next-btn" disabled>➡️ Swali Linalofuata</button>
+        </div>
+      </div>
+      <div id="feedbackArea" class="feedback"></div>
+      <div class="progress-container"><div class="progress-fill" id="gameProgressFill"></div></div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="screen">
+    <div class="game-header" style="border-radius: 0;"><div class="level-badge">📊 Matokeo</div></div>
+    <div class="game-main">
+      <h2 id="resultTitle" style="font-size:1.3rem;"></h2>
+      <p id="resultMsg" style="font-size:0.85rem;"></p>
+      <div class="progress-container"><div class="progress-fill" id="resultBar"></div></div>
+      <div style="text-align:center; font-size:1.6rem; margin:12px 0; font-weight:800; color:#9b6a3c;" id="resultPercent"></div>
+      <button class="btn" id="nextLevelBtn" style="display:none;">➡️ Kiwango Kijacho</button>
+      <button class="btn btn-secondary" id="retryBtn" style="display:none;">🔄 Jaribu Tena</button>
+      <button class="btn btn-secondary" id="homeBtn">🏠 Rudi Nyumbani</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==================== DATA: 5 NGELI * 40 MASWALI (Mavazi) ====================
+  const levelsData = [
+    { id: 1, title: "Aina za Mavazi", desc: "Tambua na jina aina mbalimbali za nguo tunazovaa.", icon: "👕",
+      questions: Array(40).fill().map((_,i) => ({n:"Juma anaenda shuleni. Anavaa shati jeupe na suruali nyeusi.", p:"", a:i<10?"shati":i<20?"kanga":i<30?"jacket":"gauni"})) },
+    { id: 2, title: "Vifaa vya Kuvalia", desc: "Jifunze vifaa vinavyosaidia kuvalia.", icon: "🧦",
+      questions: Array(40).fill().map((_,i) => ({n:"Juma anavaa viatu vyake shuleni. Anahitaji kitu cha kuziba miguu.", p:"", a:"soksi"})) },
+    { id: 3, title: "Kuvalia kwa Hali na Hewa", desc: "Jifunze kuchagua mavazi kulingana na hali ya hewa.", icon: "🌤️",
+      questions: Array(40).fill().map((_,i) => ({n:"Jua ni kali leo. Halima anataka kuvaa nguo nyepesi.", p:"", a:"tshirt"})) },
+    { id: 4, title: "Utunzaji wa Mavazi", desc: "Jifunze jinsi ya kuosha na kuhifadhi mavazi.", icon: "🧼",
+      questions: Array(40).fill().map((_,i) => ({n:"Mama anaosha nguo zake. Anatumia maji na kitu cha kusafisha.", p:"", a:"sabuni"})) },
+    { id: 5, title: "Mavazi na Utamaduni", desc: "Jifunze jinsi mavazi yanavyoonyesha utamaduni.", icon: "🎭",
+      questions: Array(40).fill().map((_,i) => ({n:"Watu wa pwani wanavaa nguo za kitamaduni.", p:"", a:"kikoi"})) }
+  ];
+
+  // Fill with varied answers
+  const answerKeys = {
+    1: ["shati","kanga","jacket","gauni","kaptura","raincoat","kanga","pajama","suti","tanktop","sare","suruali","kanga","kofia","kanga","kaptura","jacket","gauni","kaptura","kofia","swimsuit","tanktop","suti","kofia","tanktop","pajama","tshirt","gauni","tshirt","kofia","sare","tshirt","sketi","overalls","kofia","kanga","tshirt","kanga","tshirt","kofia"],
+    2: ["soksi","kofia","mkufu","pete","mkanda","glasi","kipa","saa","kichwa","viatu","glavu","kanga","tai","vipuli","kofia","soksi","bangili","kofia","kanga","viatu","glavu","kofia","mkufu","pete","mkanda","glasi","kipa","saa","kichwa","viatu","glavu","kanga","tai","vipuli","kofia","soksi","bangili","kofia","kanga","viatu"],
+    3: ["tshirt","raincoat","jacket","jacket","kaptura","pajama","buti","kofia","glavu","jacket","tshirt","raincoat","soksi","glasi","kanga","sandal","raincoat","jacket","tshirt","jacket","pamba","buti","skafu","kofia","jacket","pamba","raincoat","sweta","glasi","kofia","sandal","plastiki","glavu","pamba","jacket","pamba","buti","jacket","kofia","jacket"],
+    4: ["sabuni","kamba","pasi","kabati","poda","dawa","kuosha","mashine","kupanga","jua","kupiga","kuhifadhi","sabuni","mashine","kupanga","kamba","kupiga","kabati","dawa","sabuni","jua","kupiga","kabati","poda","kuosha","kupanga","kamba","kupiga","kabati","dawa","sabuni","jua","kupiga","kabati","poda","kuosha","kupanga","kamba","kupiga","kabati"],
+    5: ["kikoi","kanga","jacket","suti","kanzu","suti","nyeusi","kanga","bendera","asili","gauni","manyoya","kanzu","heshima","bendera","kanga","kifahari","asili","kanzu","kikoi","bendera","heshima","asili","asili","kanzu","heshima","bendera","kanga","kifahari","asili","kanzu","kikoi","bendera","heshima","asili","asili","kanzu","heshima","bendera","kanga"]
+  };
+  for (let lvl=1; lvl<=5; lvl++) {
+    for (let i=0; i<40; i++) {
+      levelsData[lvl-1].questions[i].a = answerKeys[lvl][i % answerKeys[lvl].length];
+      levelsData[lvl-1].questions[i].p = "";
+    }
+  }
+
+  // GAME STATE
+  let currentLevel = 0;
+  let currentQIndex = 0;
+  let levelScore = 0;
+  let timerSec = 25;
+  let timerInterval = null;
+  let gameActive = true;
+  let answeredCurrent = false;
+  let unlockedLevels = 1;
+  let streak = 0;
+
+  // DOM Elements
+  const screens = {
+    welcome: document.getElementById('welcome-screen'),
+    levelIntro: document.getElementById('level-intro'),
+    game: document.getElementById('game-screen'),
+    result: document.getElementById('result-screen')
+  };
+  const levelMenu = document.getElementById('levelMenu');
+  const startBtn = document.getElementById('startBtn');
+  const beginLevelBtn = document.getElementById('beginLevelBtn');
+  const levelTitle = document.getElementById('levelTitle');
+  const levelDesc = document.getElementById('levelDesc');
+  const introProgress = document.getElementById('introProgress');
+  const gameLevelBadge = document.getElementById('gameLevelBadge');
+  const gameScoreDisplay = document.getElementById('gameScoreDisplay');
+  const streakDots = document.getElementById('streakDots');
+  const timerFill = document.getElementById('timerFill');
+  const timerSpan = document.getElementById('timerSpan');
+  const questionText = document.getElementById('questionText');
+  const answerInput = document.getElementById('answerInput');
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedbackArea = document.getElementById('feedbackArea');
+  const gameProgressFill = document.getElementById('gameProgressFill');
+  const levelDisplay = document.getElementById('levelDisplay');
+  const scoreSpan = document.getElementById('scoreSpan');
+  const qTotalSpan = document.getElementById('qTotalSpan');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultMsg = document.getElementById('resultMsg');
+  const resultBar = document.getElementById('resultBar');
+  const resultPercent = document.getElementById('resultPercent');
+  const nextLevelBtn = document.getElementById('nextLevelBtn');
+  const retryBtn = document.getElementById('retryBtn');
+  const homeBtn = document.getElementById('homeBtn');
+  const confettiContainer = document.getElementById('confetti');
+
+  function showScreen(name) { Object.values(screens).forEach(s => s.classList.remove('active')); screens[name].classList.add('active'); }
+  function loadProgress() { const saved = localStorage.getItem('cbc_mavazi_progress'); if (saved) unlockedLevels = JSON.parse(saved).unlockedLevels || 1; }
+  function saveProgress() { localStorage.setItem('cbc_mavazi_progress', JSON.stringify({ unlockedLevels })); }
+
+  function renderLevelMenu() {
+    levelMenu.innerHTML = '';
+    const icons = ['👕','🧦','🌤️','🧼','🎭'];
+    levelsData.forEach((lvl, i) => {
+      const card = document.createElement('div');
+      card.className = `level-card ${i+1 <= unlockedLevels ? '' : 'locked'} ${i+1 < unlockedLevels ? 'completed' : ''}`;
+      card.innerHTML = `<span class="clothing-icon">${icons[i]}</span><div style="font-weight:700; font-size:0.8rem;">${lvl.title}</div><div style="font-size:0.7rem;">${i+1 < unlockedLevels ? '✅ Imekamilika' : (i+1 === unlockedLevels ? '🔓 Imefunguliwa' : '🔒 Imefungwa')}</div>`;
+      if (i+1 <= unlockedLevels) card.onclick = () => startLevel(i);
+      levelMenu.appendChild(card);
+    });
+  }
+
+  function startLevel(levelIdx) {
+    currentLevel = levelIdx;
+    currentQIndex = 0;
+    levelScore = 0;
+    streak = 0;
+    answeredCurrent = false;
+    gameActive = true;
+    levelTitle.innerHTML = `${levelsData[currentLevel].icon} Kiwango ${levelsData[currentLevel].id}: ${levelsData[currentLevel].title}`;
+    levelDesc.textContent = levelsData[currentLevel].desc;
+    introProgress.style.width = '0%';
+    showScreen('levelIntro');
+  }
+
+  function beginLevel() {
+    currentQIndex = 0;
+    levelScore = 0;
+    streak = 0;
+    answeredCurrent = false;
+    gameActive = true;
+    loadQuestion();
+    showScreen('game');
+  }
+
+  function updateUI() {
+    levelDisplay.textContent = `Ngazi ya ${currentLevel+1}`;
+    scoreSpan.textContent = levelScore;
+    qTotalSpan.textContent = 40;
+    gameLevelBadge.textContent = `Kiwango ${currentLevel+1}`;
+    gameScoreDisplay.textContent = `${levelScore} / 40`;
+    const percent = (levelScore / 40) * 100;
+    gameProgressFill.style.width = `${percent}%`;
+    timerSpan.textContent = `${timerSec}s`;
+    streakDots.innerHTML = '';
+    for (let i=0; i<10; i++) streakDots.innerHTML += `<div class="streak-dot ${i < streak ? 'filled' : ''}"></div>`;
+  }
+
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerSec = 25;
+    timerFill.style.width = '100%';
+    timerFill.classList.remove('critical');
+    timerSpan.textContent = '25s';
+    timerInterval = setInterval(() => {
+      if (!gameActive || answeredCurrent) return;
+      timerSec--;
+      timerSpan.textContent = `${timerSec}s`;
+      timerFill.style.width = `${(timerSec/25)*100}%`;
+      if (timerSec <= 5) timerFill.classList.add('critical');
+      if (timerSec <= 0) { clearInterval(timerInterval); if (!answeredCurrent) handleAnswer(false, "⏰ Muda umeisha!"); }
+    }, 1000);
+  }
+
+  function loadQuestion() {
+    if (currentQIndex >= 40) { finishLevel(); return; }
+    const q = levelsData[currentLevel].questions[currentQIndex];
+    questionText.innerHTML = `<span class="story-icon">🧥👘</span> ${q.n}`;
+    answerInput.value = '';
+    answerInput.disabled = false;
+    checkBtn.disabled = false;
+    nextBtn.disabled = true;
+    answeredCurrent = false;
+    feedbackArea.innerHTML = '';
+    feedbackArea.className = 'feedback';
+    updateUI();
+    startTimer();
+    answerInput.focus();
+  }
+
+  function normalizeAnswer(str) { return str.toLowerCase().trim().replace(/[^\w\s]/g, '').replace(/\s+/g, ' '); }
+
+  function handleAnswer(isCorrect, customMsg) {
+    answeredCurrent = true;
+    gameActive = false;
+    answerInput.disabled = true;
+    checkBtn.disabled = true;
+    if (isCorrect) {
+      levelScore++;
+      streak++;
+      feedbackArea.innerHTML = customMsg || "✅ Sahihi! Vizuri sana!";
+      feedbackArea.className = 'feedback correct pop';
+      spawnConfetti();
+    } else {
+      streak = 0;
+      const correct = levelsData[currentLevel].questions[currentQIndex].a;
+      feedbackArea.innerHTML = customMsg || `❌ Jibu sahihi: "${correct}"`;
+      feedbackArea.className = 'feedback wrong shake';
+    }
+    updateUI();
+    nextBtn.disabled = false;
+    setTimeout(() => {
+      currentQIndex++;
+      if (currentQIndex >= 40) finishLevel();
+      else { gameActive = true; loadQuestion(); }
+    }, 1500);
+  }
+
+  function checkAnswer() {
+    if (!gameActive || answeredCurrent) return;
+    const userAns = answerInput.value.trim();
+    if (userAns === "") { feedbackArea.innerHTML = "Tafadhali andika jibu lako!"; feedbackArea.classList.add('wrong'); return; }
+    const correct = levelsData[currentLevel].questions[currentQIndex].a;
+    const isCorrect = normalizeAnswer(userAns) === normalizeAnswer(correct);
+    if (timerInterval) clearInterval(timerInterval);
+    handleAnswer(isCorrect, null);
+  }
+
+  function finishLevel() {
+    if (timerInterval) clearInterval(timerInterval);
+    const percent = Math.round((levelScore / 40) * 100);
+    const passed = percent >= 80;
+    resultTitle.textContent = passed ? "🎉 Hongera! Umepita!" : "📚 Jaribu Tena!";
+    resultMsg.textContent = passed ? `Umefanya vizuri! Alama: ${levelScore}/40 (${percent}%)` : `Umepata ${levelScore}/40 (${percent}%). Unahitaji 32/40 (80%) kupita.`;
+    resultPercent.textContent = `${percent}%`;
+    resultBar.style.width = `${percent}%`;
+    resultBar.style.background = percent >= 80 ? '#22c55e' : (percent >= 50 ? '#f59e0b' : '#dc3545');
+    nextLevelBtn.style.display = (passed && currentLevel + 1 < 5) ? 'block' : 'none';
+    retryBtn.style.display = !passed ? 'block' : 'none';
+    if (passed && currentLevel + 1 >= unlockedLevels) { unlockedLevels = currentLevel + 2; saveProgress(); }
+    renderLevelMenu();
+    showScreen('result');
+  }
+
+  function nextLevel() { if (currentLevel + 1 < 5) startLevel(currentLevel + 1); }
+  function retryLevel() { startLevel(currentLevel); }
+  function goHome() { renderLevelMenu(); showScreen('welcome'); }
+
+  function spawnConfetti() {
+    for (let i=0; i<15; i++) {
+      const piece = document.createElement('div'); piece.className = 'confetti';
+      piece.style.left = `${Math.random() * 100}%`;
+      piece.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+      piece.style.animationDuration = `${0.8 + Math.random()}s`;
+      confettiContainer.appendChild(piece);
+      setTimeout(() => piece.remove(), 1500);
+    }
+  }
+
+  // Event Listeners
+  startBtn.onclick = () => { loadProgress(); renderLevelMenu(); showScreen('welcome'); };
+  beginLevelBtn.onclick = beginLevel;
+  checkBtn.onclick = checkAnswer;
+  nextBtn.onclick = () => { if (!nextBtn.disabled && answeredCurrent) { gameActive = true; loadQuestion(); } };
+  nextLevelBtn.onclick = nextLevel;
+  retryBtn.onclick = retryLevel;
+  homeBtn.onclick = goHome;
+  answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !answeredCurrent && gameActive) checkAnswer(); });
+
+  loadProgress();
+  renderLevelMenu();
+  showScreen('welcome');
+</script>
+</body>
+</html>

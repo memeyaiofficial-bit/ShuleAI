@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>📐 MeasureMaster Elite | Grade 6 CBC Measurement Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* better mobile tap feel, but text can be selected if needed */
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a2a3a 0%, #0f1a24 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* main game panel */
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255,255,240,0.95);
+            border-radius: 64px 48px 64px 48px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.6);
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            transition: all 0.2s ease;
+        }
+
+        /* header with level & topic */
+        .game-header {
+            background: #ffcd3c;
+            padding: 18px 24px;
+            text-align: center;
+            border-bottom: 5px solid #e6a017;
+        }
+
+        .game-header h1 {
+            margin: 0;
+            font-size: 1.9rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #2c3e2f, #1f4f2b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: none;
+            font-weight: 800;
+        }
+
+        .badge-panel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin-top: 12px;
+            background: #fdf8e7;
+            padding: 12px 20px;
+            border-radius: 60px;
+        }
+
+        .topic-badge, .level-badge, .score-badge {
+            background: #2e5a3a;
+            padding: 6px 16px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: inset 0 -1px 0 #1e3a28, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .topic-badge { background: #3e6b8f; }
+        .level-badge { background: #c97e2a; }
+        .score-badge { background: #1f6d49; font-size: 1.2rem; }
+
+        /* progress bar */
+        .progress-area {
+            padding: 16px 24px 8px;
+        }
+        .progress-track {
+            background: #ddd2b0;
+            border-radius: 30px;
+            height: 14px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #f5a623;
+            width: 0%;
+            height: 100%;
+            transition: width 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-radius: 30px;
+            background-image: linear-gradient(90deg, #ffb347, #ff7e05);
+        }
+        .q-counter {
+            text-align: right;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            color: #3a2c1f;
+        }
+
+        /* question card */
+        .question-card {
+            padding: 25px 24px 15px;
+            background: #fffef7;
+        }
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1f3b2c;
+            line-height: 1.3;
+            margin-bottom: 28px;
+            word-break: break-word;
+            background: #f0f3e8;
+            padding: 18px 16px;
+            border-radius: 40px;
+            text-align: center;
+            border: 2px solid #e2dbb0;
+        }
+
+        /* options grid (responsive) */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+        .option-btn {
+            background: #f4f1e1;
+            padding: 16px 10px;
+            border: 2px solid #cbae76;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s linear;
+            color: #2c3a2b;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.05);
+        }
+        .option-btn:hover {
+            background: #ffe7b0;
+            transform: scale(0.98);
+            border-color: #f5b042;
+        }
+        .option-btn:active {
+            transform: scale(0.96);
+        }
+        .correct-feedback {
+            background: #84d6a3;
+            border-color: #2c7840;
+            color: #155a2a;
+            box-shadow: 0 0 0 2px #b0f0c2;
+        }
+        .wrong-feedback {
+            background: #f3bcb0;
+            border-color: #c73e2d;
+            color: #871e0e;
+            text-decoration: line-through;
+        }
+        .disabled-btn {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* next & feedback */
+        .feedback-area {
+            padding: 5px 24px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        .next-btn {
+            background: #ff9f2e;
+            border: none;
+            width: 80%;
+            margin: 10px auto 20px;
+            display: block;
+            padding: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            color: white;
+            text-shadow: 0 1px 2px black;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 0 #b4621a;
+        }
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #b4621a;
+        }
+        .reset-area {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 10px 20px 25px;
+        }
+        .small-btn {
+            background: #5b6e5c;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .small-btn:active {
+            transform: scale(0.96);
+        }
+        .message-pop {
+            background: #1e2f2a;
+            color: #ffebc2;
+            padding: 12px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #e9e0ca;
+            padding: 10px;
+            color: #3d3b2c;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.3rem; }
+            .option-btn { padding: 12px 6px; font-size: 0.85rem; }
+            .badge-panel { flex-direction: column; align-items: center; }
+            .game-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <h1>📏 MEASUREMASTER ELITE 🧮</h1>
+        <div class="badge-panel">
+            <span class="topic-badge" id="topicDisplay">Length</span>
+            <span class="level-badge" id="levelDisplay">Level 1</span>
+            <span class="score-badge" id="scoreDisplay">⭐ 0</span>
+        </div>
+    </div>
+    <div class="progress-area">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="q-counter" id="qCounter">Question 0 / 30</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+    </div>
+    <div class="feedback-area" id="feedbackMsg"></div>
+    <button class="next-btn" id="nextBtn">➡ NEXT QUESTION</button>
+    <div class="reset-area">
+        <button class="small-btn" id="resetTopicBtn">🔄 Change Topic</button>
+        <button class="small-btn" id="resetGameBtn">🏁 Full Restart</button>
+    </div>
+    <footer>🏆 Grade 6 CBC | 30 Q per level • 4 levels per topic • Length | Area | Capacity | Mass | Time | Money | Decimals</footer>
+</div>
+
+<script>
+    // ----------------------------- QUESTION BANK ---------------------------------------------
+    // Each subtopic (Length, Area, Capacity, Mass, Time, Money, Decimals) has 4 levels (1-4)
+    // For each level we dynamically generate 30 QUESTIONS (varied, randomized but consistent in level difficulty)
+    // To keep code manageable but fully functional: We'll use generator functions that produce 30 unique questions per (topic, level)
+    // ensuring every level has 30 distinct problems appropriate for grade 6 measurement.
+    
+    // Helper: random between inclusive
+    function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Question factory for each topic & level (returns array of 30 question objects)
+    function generateQuestions(topic, level) {
+        const questions = [];
+        const count = 30;
+        // difficulty multiplier for level (makes numbers bigger/complex)
+        const mult = level; // level 1 simplest, level 4 harder
+        
+        for (let i = 0; i < count; i++) {
+            let qText = "";
+            let options = [];
+            let correct = "";
+            // distinct variant per i to ensure variety
+            const varSeed = i;
+            
+            if (topic === "Length") {
+                const conversions = [
+                    {from:"cm", to:"mm", factor:10}, {from:"m", to:"cm", factor:100}, {from:"km", to:"m", factor:1000},
+                    {from:"mm", to:"cm", factor:0.1}, {from:"cm", to:"m", factor:0.01}, {from:"m", to:"km", factor:0.001}
+                ];
+                let conv = conversions[varSeed % conversions.length];
+                let val = rand(2 * mult + 1, 25 * mult + 5);
+                if (level >= 3 && mult>1) val = rand(50, 450);
+                let answer = (val * conv.factor).toFixed(2);
+                if (conv.factor >= 1 && answer % 1 === 0) answer = parseInt(answer);
+                else if (conv.factor < 1) answer = parseFloat(answer).toFixed(2);
+                qText = `Convert ${val} ${conv.from} to ${conv.to}:`;
+                let wrong1 = (val * conv.factor + rand(1,15)).toFixed(2);
+                let wrong2 = (val * conv.factor - rand(1,12)).toFixed(2);
+                let wrong3 = (val * conv.factor * (rand(8,12)/10)).toFixed(2);
+                correct = String(answer);
+                options = [correct, String(wrong1), String(wrong2), String(wrong3)];
+                shuffleArray(options);
+            } 
+            else if (topic === "Area") {
+                let length = rand(3 + mult*2, 28 + mult*3);
+                let width = rand(2 + mult, 20 + mult*2);
+                let area = length * width;
+                qText = `Find the area of a rectangle with length ${length} cm and width ${width} cm:`;
+                correct = `${area} cm²`;
+                let wrongs = [`${area + rand(5,30)} cm²`, `${Math.max(5, area - rand(5,28))} cm²`, `${area + rand(12,40)} cm²`];
+                options = [correct, ...wrongs];
+                shuffleArray(options);
+            }
+            else if (topic === "Capacity") {
+                let liters = rand(1 + mult, 18 + mult*2);
+                let ml = liters * 1000;
+                if (varSeed % 2 === 0) {
+                    qText = `How many milliliters are in ${liters} L?`;
+                    correct = `${ml} mL`;
+                    options = [correct, `${ml + rand(200,700)} mL`, `${ml - rand(100,600)} mL`, `${ml + rand(50,300)} mL`];
+                } else {
+                    let mlVal = rand(500, 6500);
+                    let lVal = (mlVal / 1000).toFixed(2);
+                    qText = `Convert ${mlVal} mL to liters:`;
+                    correct = `${lVal} L`;
+                    options = [correct, `${(mlVal/1000 + 0.5).toFixed(2)} L`, `${(mlVal/1000 - 0.3).toFixed(2)} L`, `${(mlVal/1000 + 0.2).toFixed(2)} L`];
+                }
+                shuffleArray(options);
+            }
+            else if (topic === "Mass") {
+                let kg = rand(2 + mult, 22 + mult*2);
+                let g = kg * 1000;
+                qText = `Convert ${kg} kg to grams:`;
+                correct = `${g} g`;
+                options = [correct, `${g + rand(100,900)} g`, `${g - rand(200,800)} g`, `${g + rand(50,500)} g`];
+                shuffleArray(options);
+                if (varSeed % 5 === 0) { // mix grams to kg
+                    let gramsVal = rand(750, 12500);
+                    let kgVal = (gramsVal/1000).toFixed(2);
+                    qText = `How many kilograms is ${gramsVal} g?`;
+                    correct = `${kgVal} kg`;
+                    options = [correct, `${(gramsVal/1000 + 0.7).toFixed(2)} kg`, `${(gramsVal/1000 - 0.4).toFixed(2)} kg`, `${(gramsVal/1000 + 0.2).toFixed(2)} kg`];
+                    shuffleArray(options);
+                }
+            }
+            else if (topic === "Time") {
+                let hours = rand(1 + mult, 12 + mult);
+                let mins = hours * 60;
+                qText = `How many minutes are in ${hours} hours?`;
+                correct = `${mins} minutes`;
+                options = [correct, `${mins + rand(5,35)} min`, `${mins - rand(4,20)} min`, `${mins + rand(10,45)} min`];
+                shuffleArray(options);
+                if (varSeed % 3 === 0) {
+                    let minutesGiven = rand(45, 480);
+                    let hoursOut = (minutesGiven / 60).toFixed(2);
+                    qText = `Convert ${minutesGiven} minutes into hours (decimal):`;
+                    correct = `${hoursOut} hours`;
+                    options = [correct, `${(minutesGiven/60 + 0.3).toFixed(2)} h`, `${(minutesGiven/60 - 0.2).toFixed(2)} h`, `${(minutesGiven/60 + 0.5).toFixed(2)} h`];
+                    shuffleArray(options);
+                }
+            }
+            else if (topic === "Money") {
+                let cost = rand(50 + mult*30, 800 + mult*100);
+                let items = rand(2 + mult, 9 + mult);
+                let total = cost * items;
+                qText = `If one item costs KSh ${cost}, what is the cost of ${items} items?`;
+                correct = `KSh ${total}`;
+                let optionsArr = [`KSh ${total + rand(50,300)}`, `KSh ${total - rand(40,200)}`, `KSh ${total + rand(100,400)}`, correct];
+                shuffleArray(optionsArr);
+                options = optionsArr;
+                if (varSeed % 4 === 1) {
+                    let change = rand(500, 2000);
+                    let price = rand(100, 1500);
+                    let balance = change - price;
+                    qText = `You pay with KSh ${change} for an item costing KSh ${price}. How much change?`;
+                    correct = `KSh ${balance}`;
+                    options = [`KSh ${balance + rand(20,100)}`, `KSh ${balance - rand(10,80)}`, `KSh ${balance + rand(5,70)}`, correct];
+                    shuffleArray(options);
+                }
+            }
+            else if (topic === "Decimals") {
+                // Measurement with decimals: conversions, additions
+                let num1 = (rand(12, 99) + rand(0,99)/100).toFixed(2);
+                let num2 = (rand(5, 48) + rand(0,99)/100).toFixed(2);
+                let op = varSeed % 3;
+                let result;
+                if (op === 0) {
+                    qText = `Add: ${num1} m + ${num2} m = ? (in meters)`;
+                    result = (parseFloat(num1) + parseFloat(num2)).toFixed(2);
+                } else if (op === 1) {
+                    qText = `Subtract: ${num1} kg - ${num2} kg = ? (kg)`;
+                    result = (parseFloat(num1) - parseFloat(num2)).toFixed(2);
+                } else {
+                    let multDec = (rand(2, 9) * (level * 0.5 + 0.6)).toFixed(1);
+                    let val = parseFloat(num1);
+                    result = (val * multDec).toFixed(2);
+                    qText = `Multiply: ${num1} L × ${multDec} = ? Liters`;
+                }
+                correct = result;
+                let wrong1 = (parseFloat(result) + (rand(5, 30)/10)).toFixed(2);
+                let wrong2 = (parseFloat(result) - (rand(4, 25)/10)).toFixed(2);
+                let wrong3 = (parseFloat(result) + (rand(1, 15)/5)).toFixed(2);
+                options = [correct, wrong1, wrong2, wrong3];
+                shuffleArray(options);
+            }
+            
+            // fallback / ensure valid
+            if (!qText) qText = `Measurement challenge ${i+1}`;
+            questions.push({ text: qText, options: options, correct: correct });
+        }
+        return questions.slice(0,30);
+    }
+    
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+    
+    // topics list order
+    const TOPICS = ["Length", "Area", "Capacity", "Mass", "Time", "Money", "Decimals"];
+    let currentTopicIndex = 0;      // 0..6
+    let currentLevel = 1;           // 1..4
+    let currentQuestionsList = [];   // array of 30 question objects
+    let currentQIndex = 0;
+    let score = 0;                   // total correct answers across levels? per session? we'll track total score across topics/levels reset on full restart but topic reset preserves? better: sessionScore for overall motivation
+    let sessionScore = 0;
+    let answered = false;
+    let selectedOptionValue = null;
+    let nextLock = false;
+    
+    // DOM elements
+    const topicDisplay = document.getElementById("topicDisplay");
+    const levelDisplay = document.getElementById("levelDisplay");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const progressFill = document.getElementById("progressFill");
+    const qCounterSpan = document.getElementById("qCounter");
+    const questionTextDiv = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetTopicBtn = document.getElementById("resetTopicBtn");
+    const resetGameBtn = document.getElementById("resetGameBtn");
+    
+    // Load current topic & level questions
+    function loadQuestionsForCurrent() {
+        const topic = TOPICS[currentTopicIndex];
+        currentQuestionsList = generateQuestions(topic, currentLevel);
+        currentQIndex = 0;
+        answered = false;
+        selectedOptionValue = null;
+        nextLock = false;
+        renderCurrentQuestion();
+        updateProgressAndScore();
+        enableOptions(true);
+        feedbackMsgDiv.innerHTML = "✨ Choose the correct answer! ✨";
+        // re-enable next btn style
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = "1";
+        nextBtn.style.pointerEvents = "auto";
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestionsList.length || currentQIndex >= currentQuestionsList.length) {
+            // completed level?
+            if (currentQIndex >= 30) {
+                handleLevelComplete();
+                return;
+            }
+        }
+        const q = currentQuestionsList[currentQIndex];
+        questionTextDiv.innerText = q.text;
+        // generate option buttons
+        optionsContainer.innerHTML = "";
+        q.options.forEach(opt => {
+            const btn = document.createElement("div");
+            btn.classList.add("option-btn");
+            btn.innerText = opt;
+            btn.addEventListener("click", () => handleAnswer(opt, btn));
+            optionsContainer.appendChild(btn);
+        });
+        updateProgressAndScore();
+    }
+    
+    function handleAnswer(selected, btnElement) {
+        if (answered || nextLock) {
+            feedbackMsgDiv.innerHTML = "⚠️ Already answered! Click NEXT ➡";
+            return;
+        }
+        const currentQ = currentQuestionsList[currentQIndex];
+        const isCorrect = (selected === currentQ.correct);
+        // apply styling to all options
+        const allOptions = document.querySelectorAll(".option-btn");
+        allOptions.forEach(opt => {
+            opt.classList.add("disabled-btn");
+            if (opt.innerText === currentQ.correct) {
+                opt.classList.add("correct-feedback");
+            }
+            if (opt.innerText === selected && !isCorrect) {
+                opt.classList.add("wrong-feedback");
+            }
+        });
+        if (isCorrect) {
+            sessionScore += 10;
+            feedbackMsgDiv.innerHTML = "✅ PERFECT! +10 points 🎉";
+            scoreDisplay.innerText = `⭐ ${sessionScore}`;
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Oops! Correct answer: ${currentQ.correct}. +0 points. Keep going!`;
+            scoreDisplay.innerText = `⭐ ${sessionScore}`;
+        }
+        answered = true;
+        nextLock = false;
+        nextBtn.disabled = false;
+    }
+    
+    function nextQuestion() {
+        if (!answered) {
+            feedbackMsgDiv.innerHTML = "🔔 Please answer the current question first!";
+            return;
+        }
+        if (currentQIndex + 1 < currentQuestionsList.length) {
+            currentQIndex++;
+            answered = false;
+            nextLock = false;
+            renderCurrentQuestion();
+            enableOptions(false);
+            // re-enable options after new render
+            enableOptions(true);
+            feedbackMsgDiv.innerHTML = "➡ Next question! Choose wisely.";
+        } else {
+            // completed level!
+            handleLevelComplete();
+        }
+    }
+    
+    function enableOptions(enable) {
+        const btns = document.querySelectorAll(".option-btn");
+        btns.forEach(btn => {
+            if (enable) {
+                btn.classList.remove("disabled-btn");
+                btn.classList.remove("correct-feedback", "wrong-feedback");
+            } else {
+                // it's fine
+            }
+        });
+        if (!enable) return;
+        // cleanup any leftover classes from previous but they are regenerated anyway
+    }
+    
+    function handleLevelComplete() {
+        // All 30 questions completed for current level
+        if (currentLevel < 4) {
+            feedbackMsgDiv.innerHTML = `🏆 LEVEL ${currentLevel} COMPLETE! 🏆 Moving to Level ${currentLevel+1} 🚀`;
+            currentLevel++;
+            levelDisplay.innerText = `Level ${currentLevel}`;
+            loadQuestionsForCurrent();
+        } else {
+            // MAX LEVEL for this topic
+            let nextTopicIdx = currentTopicIndex + 1;
+            if (nextTopicIdx < TOPICS.length) {
+                feedbackMsgDiv.innerHTML = `✨ AMAZING! You mastered ${TOPICS[currentTopicIndex]} Level 4! ✨ Moving to ${TOPICS[nextTopicIdx]} Level 1 🎉🎉`;
+                currentTopicIndex = nextTopicIdx;
+                currentLevel = 1;
+                topicDisplay.innerText = TOPICS[currentTopicIndex];
+                levelDisplay.innerText = `Level ${currentLevel}`;
+                loadQuestionsForCurrent();
+            } else {
+                // GRAND VICTORY all topics done!
+                feedbackMsgDiv.innerHTML = "🏅 GRAND CHAMPION! You completed all topics up to Level 4! 🏅 Press 'Full Restart' for another run!";
+                nextBtn.disabled = true;
+                disableAllOptionsPermanently();
+                return;
+            }
+        }
+        updateProgressAndScore();
+    }
+    
+    function disableAllOptionsPermanently() {
+        const btns = document.querySelectorAll(".option-btn");
+        btns.forEach(btn => btn.style.pointerEvents = "none");
+        nextBtn.disabled = true;
+    }
+    
+    function updateProgressAndScore() {
+        const progressPercent = ((currentQIndex) / 30) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+        qCounterSpan.innerText = `Question ${currentQIndex+1} / 30`;
+        scoreDisplay.innerText = `⭐ ${sessionScore}`;
+    }
+    
+    function resetFullGame() {
+        currentTopicIndex = 0;
+        currentLevel = 1;
+        sessionScore = 0;
+        answered = false;
+        nextLock = false;
+        topicDisplay.innerText = TOPICS[0];
+        levelDisplay.innerText = `Level 1`;
+        scoreDisplay.innerText = `⭐ 0`;
+        loadQuestionsForCurrent();
+        feedbackMsgDiv.innerHTML = "🔄 Game reset! Start fresh. Good luck!";
+        nextBtn.disabled = false;
+    }
+    
+    function changeTopicOnly() {
+        let newTopicIdx = (currentTopicIndex + 1) % TOPICS.length;
+        currentTopicIndex = newTopicIdx;
+        currentLevel = 1;
+        levelDisplay.innerText = `Level ${currentLevel}`;
+        topicDisplay.innerText = TOPICS[currentTopicIndex];
+        sessionScore = Math.max(0, sessionScore - 5); // small penalty but keep fun
+        if(sessionScore<0) sessionScore=0;
+        scoreDisplay.innerText = `⭐ ${sessionScore}`;
+        loadQuestionsForCurrent();
+        feedbackMsgDiv.innerHTML = `🔄 Switched to ${TOPICS[currentTopicIndex]} (Level 1). Keep mastering!`;
+    }
+    
+    // event listeners
+    nextBtn.addEventListener("click", nextQuestion);
+    resetTopicBtn.addEventListener("click", changeTopicOnly);
+    resetGameBtn.addEventListener("click", resetFullGame);
+    
+    // INIT
+    loadQuestionsForCurrent();
+</script>
+</body>
+</html>

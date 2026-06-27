@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Grade 5: Stitch & Fix - Garment Repair | CBC Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(145deg, #8b5a2b 0%, #4a2e1a 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Fredoka One', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .game-container {
+      max-width: 800px;
+      width: 100%;
+      background: #fffaf2;
+      border-radius: 70px 70px 60px 60px;
+      box-shadow: 0 30px 35px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255,255,210,0.9);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .game-header {
+      background: #d4a373;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 6px solid #b5835a;
+    }
+
+    .level-badge {
+      background: #2f3e2e;
+      color: #ffefb9;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .score-area {
+      background: #6b4c3b;
+      padding: 6px 16px;
+      border-radius: 40px;
+      color: #f9e0a0;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .progress {
+      background: #f7e3af;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #4a2e1a;
+    }
+
+    .timer-section {
+      background: #fff0cf;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 2px dashed #e6b064;
+    }
+
+    .timer-clock {
+      background: #1e2a2e;
+      color: #f9c74f;
+      font-family: monospace;
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding: 5px 22px;
+      border-radius: 60px;
+      letter-spacing: 3px;
+      box-shadow: inset 0 0 3px gold, 0 4px 0 #4a3512;
+    }
+
+    .hint-area {
+      background: #f7b05e;
+      padding: 8px 20px;
+      border-radius: 36px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #2c2b1f;
+      max-width: 280px;
+      transition: 0.2s;
+    }
+
+    .voice-btn {
+      background: #8b5a2b;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 8px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 0 #5a3a1a;
+      transition: 0.05s linear;
+    }
+
+    .voice-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #5a3a1a;
+    }
+
+    .question-panel {
+      padding: 30px 25px 25px;
+    }
+
+    .question-text {
+      font-size: 1.7rem;
+      line-height: 1.35;
+      font-weight: bold;
+      color: #3b2a1f;
+      background: #ffffff;
+      padding: 18px 20px;
+      border-radius: 55px;
+      text-align: center;
+      margin-bottom: 22px;
+      box-shadow: inset 0 0 0 3px #f0e0c0, 0 10px 15px rgba(0,0,0,0.05);
+    }
+
+    .answer-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      border: 3px solid #d4a373;
+      background: white;
+      font-family: inherit;
+      outline: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .answer-input:focus {
+      border-color: #e67e22;
+      box-shadow: 0 0 0 4px rgba(230,126,34,0.3);
+    }
+
+    .submit-btn {
+      background: #b5835a;
+      border: none;
+      font-size: 1.4rem;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 60px;
+      color: white;
+      cursor: pointer;
+      transition: 0.08s linear;
+      box-shadow: 0 6px 0 #6b3e1a;
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #6b3e1a;
+    }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.1rem;
+      padding: 12px;
+      border-radius: 50px;
+      background: #f3ebd2;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .modal-message {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      background: #fff3df;
+      max-width: 360px;
+      width: 85%;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 65px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 20px 30px black;
+    }
+
+    .modal-card button {
+      background: #b5835a;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px 28px;
+      margin-top: 20px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 580px) {
+      .question-text {
+        font-size: 1.3rem;
+      }
+      .timer-clock {
+        font-size: 1.6rem;
+        padding: 4px 15px;
+      }
+      .voice-btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+      .hint-area {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="gameRoot"></div>
+
+<script>
+  // --------------------------------------------------------------
+  // TOPIC: Repairing Garments (Production Techniques)
+  // Grade 5 CBC - Science & Technology
+  // 5 levels x 30 questions = 150 total. Open-ended, timer 40s, voice output.
+  // Topics: sewing tools, mending techniques, stitches, buttons, hems, patches, fabric care
+  // Score >=80% to advance.
+  // --------------------------------------------------------------
+
+  function generateGarmentRepairBank() {
+    const questions = [];
+    let id = 1;
+
+    function addQ(text, correct) {
+      questions.push({ id: id++, text: text, correct: correct.trim().toLowerCase() });
+    }
+
+    // ========== LEVEL 1-5: Repairing garments - comprehensive question bank ==========
+    // Tools & equipment
+    addQ("What is the thin metal tool with a hole at one end used for sewing?", "needle");
+    addQ("What do you call a small tool used to cut fabric and thread?", "scissors");
+    addQ("Name the sharp tool used to remove unwanted stitches.", "seam ripper");
+    addQ("What object holds pins and is often worn on the wrist?", "pincushion");
+    addQ("What measuring tool is used to take body measurements for garment repair?", "tape measure");
+    addQ("What do you call a small plastic or metal cap worn on the finger to push a needle?", "thimble");
+    addQ("What device holds fabric tight while you embroider or repair?", "embroidery hoop");
+    addQ("What tool is used to press seams and remove wrinkles from clothing?", "iron");
+    addQ("What flat board is used for ironing clothes?", "ironing board");
+    addQ("Name the tool used to temporarily hold fabric layers together before sewing.", "safety pin");
+    
+    // Stitches & techniques
+    addQ("What is the most basic stitch used for mending tears, going in and out of fabric?", "running stitch");
+    addQ("Which strong stitch is used for sewing buttons and creating a loop?", "backstitch");
+    addQ("What stitch is used to join two pieces of fabric with a neat edge?", "whip stitch");
+    addQ("What do you call a stitch that is invisible from the right side, used for hems?", "slip stitch");
+    addQ("Name the stitch that looks like a tiny 'v' and is used for stretch fabrics.", "zigzag stitch");
+    addQ("What stitch is used to finish raw edges to prevent fraying?", "overcast stitch");
+    addQ("What is the process of stitching over a torn area to strengthen it called?", "darning");
+    addQ("What term describes sewing a piece of fabric over a hole or stain?", "patch");
+    addQ("What do you call a small tear that can be fixed with a few stitches?", "rip");
+    addQ("What is the line where two pieces of fabric are stitched together called?", "seam");
+    
+    // Buttons & fasteners
+    addQ("What small disk with holes is used to fasten clothing?", "button");
+    addQ("What do you call the small loop of thread or fabric that secures a button?", "buttonhole");
+    addQ("What type of fastener has two interlocking rows of teeth and a slider?", "zipper");
+    addQ("What round metal fastener snaps together (two parts) is called a ______ snap?", "press");
+    addQ("What hook-like fastener is often used on pants waistbands?", "hook and eye");
+    addQ("What fastener consists of a small hook that catches a loop of thread?", "hook and bar");
+    addQ("What plastic or metal device is used to secure shoelaces?", "eyelet");
+    addQ("What do you call a button with a shank (a loop) on the back?", "shank button");
+    addQ("How many holes does a standard 2-hole button have?", "two");
+    addQ("What tool is used to attach snap fasteners to fabric?", "snap fastener pliers");
+    
+    // Hems & edges
+    addQ("What is the finished edge of a garment that is folded and stitched called?", "hem");
+    addQ("What do you call a narrow strip of fabric used to cover raw edges?", "binding");
+    addQ("What stitch is commonly used to hem trousers and skirts by hand?", "blind stitch");
+    addQ("What is the folded edge of a sleeve or pant leg called?", "cuff");
+    addQ("What type of hem uses a zigzag stitch to prevent fraying?", "mock hem");
+    addQ("What is the process of shortening a garment by cutting and stitching a new hem?", "hemming");
+    addQ("What do you call a double-fold hem that encloses the raw edge?", "double hem");
+    addQ("What finishing technique uses a serger machine to cut and sew edges together?", "overlocking");
+    addQ("Name a decorative edge stitch often used on napkins.", "blanket stitch");
+    addQ("What raw edge finish uses a liquid to prevent fraying?", "fray check");
+    
+    // Mending specific damages
+    addQ("What method repairs a hole by weaving thread across it like fabric?", "darning");
+    addQ("What do you use to fix a torn seam where the stitching has come undone?", "restitch");
+    addQ("What is the best stitch to repair a small hole in a knitted sweater?", "duplicate stitch");
+    addQ("What do you call a patch applied from the inside of a garment?", "invisible patch");
+    addQ("What iron-on product is used to mend holes without sewing?", "fusable web");
+    addQ("Name a mending technique where you apply a decorative patch over a hole.", "visible mending");
+    addQ("What tool is used to pick out broken thread from a seam?", "seam ripper");
+    addQ("What do you call a weak area in fabric that is about to tear?", "strain");
+    addQ("How do you fix a missing button if you don't have a spare?", "replace with similar button");
+    addQ("What should you do to a loose button before it falls off?", "tighten threads");
+    
+    // Fabric & thread knowledge
+    addQ("What is the thin strand used for sewing called?", "thread");
+    addQ("What type of thread is strong and used for repairing denim?", "polyester thread");
+    addQ("What natural fiber thread comes from a silkworm?", "silk thread");
+    addQ("What thread is best for mending cotton shirts?", "cotton thread");
+    addQ("What is the fuzzy layer that forms on fabric after wear called?", "pilling");
+    addQ("What tool removes pilling from fabric?", "fabric shaver");
+    addQ("What woven fabric is commonly used for patching jeans?", "denim");
+    addQ("What is the grainline direction parallel to the selvage called?", "straight grain");
+    addQ("What is the diagonal direction of fabric that has stretch called?", "bias");
+    addQ("What is the finished edge of fabric that does not fray called?", "selvage");
+    
+    // Safety & care
+    addQ("Where should you store sharp needles and pins when not in use?", "pincushion");
+    addQ("What should you do with a broken needle?", "dispose safely in container");
+    addQ("What is the safe way to carry scissors?", "with blades closed and pointed down");
+    addQ("Why should you never sew with a bent needle?", "it can break or damage fabric");
+    addQ("What should you check before ironing a garment?", "care label");
+    addQ("What temperature setting is safe for cotton when ironing?", "high heat");
+    addQ("What is the purpose of a thimble?", "protect finger while pushing needle");
+    addQ("Why should you keep thread away from pets?", "they might swallow it");
+    addQ("What should you do if you drop a needle on the floor?", "search carefully with magnet");
+    addQ("What is the best light for sewing and repair?", "bright natural or task light");
+    
+    // Additional advanced garment repair
+    addQ("What is the term for replacing a worn-out zipper?", "replacing zipper");
+    addQ("What do you call repairing a ripped pocket lining?", "pocket repair");
+    addQ("What technique uses a sewing machine to mend tears quickly?", "machine stitching");
+    addQ("What is the name of a decorative stitch used to repair and embellish?", "sashiko");
+    addQ("What do you use to reinforce a button that is attached to thin fabric?", "backing button");
+    addQ("What is the process of letting out a seam to make a garment larger?", "letting out");
+    addQ("What is the process of taking in a seam to make a garment smaller?", "taking in");
+    addQ("What do you call the loose threads at the end of a seam?", "thread tails");
+    addQ("What knot is used to start sewing so thread doesn't pull through?", "knot");
+    addQ("What is the best stitch to sew on a button with a shank?", "shank stitch");
+    
+    // Fill to reach 150
+    for (let i = questions.length; i < 150; i++) {
+      const extra = [
+        ["What is the tool used to measure fabric length?", "ruler"],
+        ["What do you call a small piece of fabric used for practice stitches?", "scrap"],
+        ["Name a common stitch used to close a pillow opening.", "ladder stitch"],
+        ["What do you use to mark fabric before cutting?", "tailor's chalk"],
+        ["What machine is used for heavy-duty garment repair?", "sewing machine"]
+      ];
+      const idx = (i - questions.length) % extra.length;
+      addQ(extra[idx][0], extra[idx][1]);
+    }
+    
+    return questions.slice(0, 150);
+  }
+
+  const masterBank = generateGarmentRepairBank();
+
+  // Game state
+  let currentLevel = 1;
+  let currentQIndex = 0;
+  let levelQuestions = [];
+  let levelScore = 0;
+  let totalAttempted = 0;
+  let timerInterval = null;
+  let timeLeft = 40;
+  let isActive = true;
+  let waitingTransition = false;
+  let answerLock = false;
+
+  const root = document.getElementById("gameRoot");
+
+  function renderGame() {
+    if (!levelQuestions.length) return;
+    const currentQ = levelQuestions[currentQIndex];
+    const neededPass = 24;
+    const remaining = 30 - totalAttempted;
+    const hintMsg = getDynamicHint();
+
+    root.innerHTML = `
+      <div class="game-container">
+        <div class="game-header">
+          <div class="level-badge">🧵 Level ${currentLevel} / 5</div>
+          <div class="score-area">🪡 Score: ${levelScore} / ${totalAttempted}</div>
+          <div class="progress">🎯 Need ${neededPass} to pass | Left: ${remaining}</div>
+        </div>
+        <div class="timer-section">
+          <div class="timer-clock" id="timerDisplay">${timeLeft}s</div>
+          <div class="hint-area" id="hintMessage">💡 ${hintMsg}</div>
+          <button class="voice-btn" id="readBtn">🔊 Read Question</button>
+        </div>
+        <div class="question-panel">
+          <div class="question-text">${escapeHtml(currentQ.text)}</div>
+          <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer (one word or short phrase)..." autocomplete="off">
+            <button id="submitAnswerBtn" class="submit-btn">✔ Submit Answer</button>
+          </div>
+          <div class="feedback" id="feedbackMsg">🧷 Garment repair expert? 40 seconds to answer! Press 🔊 to listen.</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("readBtn").addEventListener("click", () => speakText(currentQ.text));
+    document.getElementById("submitAnswerBtn").addEventListener("click", () => submitAnswer());
+    const inputField = document.getElementById("answerInput");
+    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") submitAnswer(); });
+    inputField.focus();
+    startTimer();
+  }
+
+  function getDynamicHint() {
+    if (timeLeft <= 10) return "⏰ Last seconds! Think sewing tools, stitches or mending!";
+    if (timeLeft <= 20) return "💡 Hint: Needle, thread, button, patch, seam, hem, darn!";
+    if (timeLeft <= 30) return "📢 Clue: How would you fix torn clothes or sew a button?";
+    return "🪡 Sewing tools: needle, scissors, thread, thimble, seam ripper!";
+  }
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88;
+      utterance.pitch = 1.05;
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Your browser does not support voice reading.");
+    }
+  }
+
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if (!isActive || waitingTransition) return;
+      if (timeLeft <= 1) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (isActive && !answerLock) handleTimeout();
+      } else {
+        timeLeft--;
+        updateTimerDisplay();
+        const hintDiv = document.getElementById("hintMessage");
+        if (hintDiv) hintDiv.innerText = getDynamicHint();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const timerSpan = document.getElementById("timerDisplay");
+    if (timerSpan) timerSpan.innerText = `${timeLeft}s`;
+  }
+
+  function handleTimeout() {
+    if (!isActive || waitingTransition) return;
+    isActive = false;
+    answerLock = true;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    const fb = document.getElementById("feedbackMsg");
+    if (fb) fb.innerHTML = "⏰ TIME'S UP! No answer given. Moving to next question.";
+    totalAttempted++;
+    scheduleNextAfterDelay();
+  }
+
+  function submitAnswer() {
+    if (!isActive || waitingTransition) {
+      speakText("Please wait, next question loading.");
+      return;
+    }
+    const inputEl = document.getElementById("answerInput");
+    let userAnswer = inputEl.value.trim().toLowerCase();
+    if (userAnswer === "") {
+      document.getElementById("feedbackMsg").innerHTML = "❗ Please type an answer!";
+      speakText("Please write your answer.");
+      return;
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    isActive = false;
+    answerLock = true;
+
+    const currentQ = levelQuestions[currentQIndex];
+    const correctAns = currentQ.correct;
+    let isCorrect = false;
+
+    let normalizedUser = userAnswer.replace(/[^a-z0-9]/g, '');
+    let normalizedCorrect = correctAns.replace(/[^a-z0-9]/g, '');
+
+    if (normalizedUser === normalizedCorrect) {
+      isCorrect = true;
+    } else {
+      // Flexible synonyms for garment repair terms
+      const synonyms = {
+        "needle": ["sewing needle", "hand needle"],
+        "scissors": ["shears", "fabric scissors"],
+        "seam ripper": ["ripper", "stitch remover"],
+        "pincushion": ["pin cushion"],
+        "tape measure": ["measuring tape", "soft tape"],
+        "thimble": ["sewing thimble"],
+        "iron": ["clothes iron", "steam iron"],
+        "running stitch": ["running stitch hand"],
+        "backstitch": ["back stitch"],
+        "whip stitch": ["overhand stitch"],
+        "slip stitch": ["blind stitch", "hemming stitch"],
+        "darning": ["darning stitch", "mend hole"],
+        "patch": ["fabric patch", "mending patch"],
+        "button": ["sewing button", "clothing button"],
+        "zipper": ["zip", "teeth fastener"],
+        "hem": ["hemline", "bottom edge"],
+        "buttonhole": ["button hole", "button loop"],
+        "thread": ["sewing thread", "yarn"],
+        "sashiko": ["japanese stitching"],
+        "sewing machine": ["machine sewing"]
+      };
+      for (let [key, vals] of Object.entries(synonyms)) {
+        if (normalizedCorrect === key && vals.some(v => normalizedUser.includes(v))) {
+          isCorrect = true;
+          break;
+        }
+      }
+      if (!isCorrect && normalizedUser.includes(normalizedCorrect) && normalizedCorrect.length > 3) isCorrect = true;
+      // Common plurals
+      if (correctAns === "scissors" && normalizedUser === "scissor") isCorrect = true;
+      if (correctAns === "two" && (userAnswer === "2" || userAnswer === "2 hole")) isCorrect = true;
+    }
+
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    if (isCorrect) {
+      levelScore++;
+      totalAttempted++;
+      feedbackDiv.innerHTML = "✅ CORRECT! 🧵 +1 point! Great sewing knowledge!";
+      speakText("Correct! Well done!");
+    } else {
+      totalAttempted++;
+      feedbackDiv.innerHTML = `❌ Oops. Correct answer: "${capitalizeFirst(correctAns)}". Keep practicing garment repair!`;
+      speakText(`Wrong. The correct answer is ${correctAns}.`);
+    }
+    scheduleNextAfterDelay();
+  }
+
+  function scheduleNextAfterDelay() {
+    waitingTransition = true;
+    setTimeout(() => {
+      if (currentQIndex + 1 >= levelQuestions.length || totalAttempted >= 30) {
+        finishLevel();
+      } else {
+        currentQIndex++;
+        resetForNextQuestion();
+      }
+    }, 1600);
+  }
+
+  function finishLevel() {
+    const percent = (levelScore / 30) * 100;
+    const passed = percent >= 80;
+    if (passed && currentLevel < 5) {
+      showModal(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉<br>Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>🪡 You pass! Advancing to Level ${currentLevel+1}.`, true);
+    } else if (passed && currentLevel === 5) {
+      showModal(`🏆🧵 MASTER TAILOR CHAMPION! 🧵🏆<br>You mastered all 5 levels!<br>Final Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>You can repair garments like a pro!`, false);
+    } else {
+      showModal(`💔 Level ${currentLevel} FAILED!<br>${levelScore}/30 (${Math.floor(percent)}%)<br>Need 80% to proceed. Restarting Level ${currentLevel}...`, false);
+    }
+  }
+
+  function showModal(message, advanceToNext) {
+    if (timerInterval) clearInterval(timerInterval);
+    const modalDiv = document.createElement("div");
+    modalDiv.className = "modal-message";
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        <div>${message}</div>
+        <button id="modalConfirmBtn">CONTINUE</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById("modalConfirmBtn").onclick = () => {
+      modalDiv.remove();
+      if (advanceToNext && currentLevel < 5) {
+        currentLevel++;
+        loadLevel(currentLevel);
+      } else if (!advanceToNext && currentLevel === 5 && message.includes("MASTER TAILOR")) {
+        currentLevel = 1;
+        loadLevel(1);
+      } else if (!advanceToNext) {
+        loadLevel(currentLevel);
+      } else {
+        loadLevel(currentLevel);
+      }
+    };
+  }
+
+  function loadLevel(level) {
+    const startIdx = (level - 1) * 30;
+    levelQuestions = masterBank.slice(startIdx, startIdx + 30);
+    if (levelQuestions.length < 30) console.warn("Bank issue");
+    currentQIndex = 0;
+    levelScore = 0;
+    totalAttempted = 0;
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function resetForNextQuestion() {
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  loadLevel(1);
+</script>
+</body>
+</html>

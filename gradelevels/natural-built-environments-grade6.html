@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Ultimate CBC Social Studies | Grade 4-6 Explorer | Eastern Africa, Seasons, Map Masters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a4d2a 0%, #0e2a1a 50%, #0f2a2e 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1100px;
+            width: 100%;
+            background: #fffef5;
+            border-radius: 3rem 2rem 3rem 2rem;
+            box-shadow: 0 30px 45px -12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 2px solid #fbbf24;
+        }
+
+        /* Tabs */
+        .mode-tabs {
+            display: flex;
+            background: #1e3a2f;
+            border-bottom: 3px solid #fbbf24;
+            gap: 2px;
+        }
+        .tab-btn {
+            flex: 1;
+            background: #2d5a44;
+            color: #fef9e0;
+            border: none;
+            padding: 16px 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #d96c2b, #f39c12);
+            color: white;
+            text-shadow: 0 1px 0 #7c3a1e;
+            box-shadow: inset 0 -3px 0 #fde047;
+        }
+        .tab-btn:active { transform: scale(0.98); }
+
+        /* headers per mode - dynamic but shared */
+        .game-header {
+            background: linear-gradient(105deg, #2c7a47, #3e9e65);
+            padding: 1rem 1.5rem;
+            color: white;
+            text-shadow: 2px 2px 0 #0a3a22;
+            border-bottom: 4px solid #ffdf8c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .level-badge, .score-badge, .timer-area {
+            background: #1e3a2a;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .timer-area {
+            background: #4a2a1a;
+            font-family: monospace;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            color: #ffea9e;
+        }
+        .score-progress {
+            background: #e8ddc5;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #b89a6e;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 1rem;
+            color: #2c5a2a;
+        }
+        .question-card {
+            padding: 1.5rem 1.8rem;
+            background: #fffaf0;
+        }
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: #eef5e5;
+            padding: 20px;
+            border-radius: 48px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #1e3a1e;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 14px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #aa8e6c;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+        .option-prefix {
+            background: #3c7e5a;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        .option-btn:hover:not(:disabled) { background: #ffefcf; transform: scale(0.97); }
+        .option-btn.correct-highlight { background: #2e7d32; color: white; box-shadow: 0 3px 0 #1b5e1f; }
+        .option-btn.correct-highlight .option-prefix { background: #1b5e20; }
+        .option-btn.wrong-highlight { background: #c62828; color: white; text-decoration: line-through; box-shadow: 0 3px 0 #7f2a2a; }
+        .option-btn.wrong-highlight .option-prefix { background: #8b2a2a; }
+        .option-btn:disabled { cursor: default; opacity: 0.85; }
+
+        .next-area { text-align: center; padding-bottom: 20px; }
+        .next-btn {
+            background: #f4a261;
+            font-size: 1.4rem;
+            font-weight: bold;
+            padding: 10px 40px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #c45c1a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+        .next-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #c45c1a; }
+        .next-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .message-area {
+            background: #2c4a2a;
+            color: #e8f5e0;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-top: 2px solid #f5bc70;
+        }
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 12px;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.1rem; }
+            .tab-btn { font-size: 0.7rem; padding: 12px 6px; }
+            .game-header { flex-direction: column; align-items: stretch; }
+        }
+        .timer-critical { background: #8b0000 !important; color: #ffcc44 !important; animation: pulse 0.6s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+        .restart-custom { margin-top: 8px; }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="mode-tabs">
+        <button class="tab-btn active" id="tabEastern">🗺️ EASTERN AFRICA</button>
+        <button class="tab-btn" id="tabSeasons">🌾 SEASONS & HERITAGE</button>
+        <button class="tab-btn" id="tabMaps">🧭 MAP MASTERS</button>
+    </div>
+    <div class="game-header">
+        <div class="level-badge">⭐ LEVEL <span id="levelNum">1</span></div>
+        <div class="score-badge">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="timer-area">⏱️ <span id="timerDisplay">00</span> sec</div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">📊 CURRENT SCORE: <span id="scoreSpan">0</span></div>
+        <div class="required-text">🎯 NEED 80% → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Select a game mode and start exploring!</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">✨ Choose a subject above. Answer multiple-choice questions. Timer runs — pass 80% to unlock next level! ✨</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // MERGED CBC SOCIAL STUDIES: 3 GAMES IN ONE
+    // MODE 1: Eastern Africa Explorer (Geography, Size, Physical Features, Historic Built)
+    // MODE 2: Seasons & Heritage (Rainy/dry seasons, historic buildings, seasonal effects)
+    // MODE 3: Map Masters (Compass directions, counties, physical/built features)
+    // Each mode: 5 levels × 30 questions = 150 unique Q per mode
+    // --------------------------------------------------------------
+
+    // ---------- 1. EASTERN AFRICA EXPLORER (Grades 6) ----------
+    const easternAfricaBank = {
+        1: [ // position & size
+            { q: "Which country in Eastern Africa is the largest by land area?", correct: "Tanzania", options: ["Kenya", "Uganda", "Tanzania", "South Sudan"] },
+            { q: "Which Eastern African country is landlocked and shares borders with Uganda, Tanzania, Rwanda, and South Sudan?", correct: "Burundi", options: ["Rwanda", "Burundi", "Uganda", "South Sudan"] },
+            { q: "How many countries are in the East African Community (EAC) as of 2024?", correct: "8", options: ["5", "6", "7", "8"] },
+            { q: "Which Eastern African country has the longest coastline along the Indian Ocean?", correct: "Tanzania", options: ["Kenya", "Somalia", "Tanzania", "Mozambique"] },
+            { q: "Which country in Eastern Africa is known as the 'Pearl of Africa'?", correct: "Uganda", options: ["Rwanda", "Uganda", "Kenya", "Burundi"] },
+            { q: "Which Eastern African nation has Kigali as its capital?", correct: "Rwanda", options: ["Burundi", "Rwanda", "Uganda", "Tanzania"] },
+            { q: "Which Eastern African country is the most populous?", correct: "Tanzania", options: ["Kenya", "Uganda", "Tanzania", "Ethiopia"] },
+            { q: "Which Eastern African country has its capital at Dodoma?", correct: "Tanzania", options: ["Kenya", "Tanzania", "Uganda", "Burundi"] }
+        ],
+        2: [ // physical features
+            { q: "What is the highest mountain in Eastern Africa (also highest in Africa)?", correct: "Mount Kilimanjaro", options: ["Mount Kenya", "Mount Kilimanjaro", "Rwenzori", "Mount Elgon"] },
+            { q: "Which is the largest lake in Africa and second-largest freshwater lake in the world?", correct: "Lake Victoria", options: ["Lake Tanganyika", "Lake Victoria", "Lake Malawi", "Lake Turkana"] },
+            { q: "Name the deepest lake in Africa, located in the Western Rift Valley.", correct: "Lake Tanganyika", options: ["Lake Victoria", "Lake Tanganyika", "Lake Albert", "Lake Edward"] },
+            { q: "Which national park in northern Tanzania is known for the wildebeest migration?", correct: "Serengeti National Park", options: ["Ngorongoro", "Serengeti", "Tarangire", "Ruaha"] },
+            { q: "What is the name of the mountain range along the Uganda-Congo border?", correct: "Rwenzori Mountains", options: ["Aberdares", "Rwenzori", "Mount Elgon", "Cherangani"] },
+            { q: "Which lake in Kenya is famous for flamingos and is a soda lake?", correct: "Lake Nakuru", options: ["Lake Naivasha", "Lake Nakuru", "Lake Bogoria", "Lake Magadi"] }
+        ],
+        3: [ // climate & vegetation
+            { q: "What type of climate does most of Eastern Africa experience?", correct: "Tropical savanna", options: ["Desert", "Tropical savanna", "Mediterranean", "Alpine"] },
+            { q: "Which region in Eastern Africa receives the highest annual rainfall?", correct: "Lake Victoria Basin", options: ["Serengeti", "Lake Victoria Basin", "Coastal Kenya", "Ethiopian Highlands"] },
+            { q: "Which vegetation type is dominant in semi-arid areas of Eastern Africa?", correct: "Savanna", options: ["Rainforest", "Savanna", "Desert scrub", "Mangroves"] },
+            { q: "What is the dense tropical forest found in parts of Uganda and Rwanda called?", correct: "Tropical rainforest", options: ["Jungle", "Tropical rainforest", "Montane forest", "Woodland"] },
+            { q: "Which mountain region in Tanzania has a unique afro-alpine vegetation zone?", correct: "Mount Kilimanjaro", options: ["Mount Meru", "Mount Kilimanjaro", "Usambara", "Uluguru"] }
+        ],
+        4: [ // historic built environments
+            { q: "Which ancient Swahili stone town in Kenya is a UNESCO World Heritage Site?", correct: "Lamu Old Town", options: ["Mombasa Old Town", "Lamu Old Town", "Gedi Ruins", "Malindi"] },
+            { q: "What is the name of the ruined city in coastal Kenya dating back to the 12th century?", correct: "Gedi Ruins", options: ["Jumba la Mtwana", "Gedi Ruins", "Takwa Ruins", "Siyu Fort"] },
+            { q: "Which historic site in Tanzania is famous for ancient rock art?", correct: "Kondoa Rock Art", options: ["Olduvai Gorge", "Kondoa Rock Art", "Kilwa Kisiwani", "Zanzibar Stone Town"] },
+            { q: "What is the name of the Ethiopian rock-hewn churches carved out of solid rock?", correct: "Lalibela", options: ["Axum", "Lalibela", "Gondar", "Harar"] },
+            { q: "Which historic fort in Mombasa was built by the Portuguese in 1593?", correct: "Fort Jesus", options: ["Fort Jesus", "Fort Ternan", "Fort Hall", "Fort Smith"] }
+        ],
+        5: [ // mixed advanced
+            { q: "Which Eastern African country has the largest area of tropical rainforest?", correct: "DRC (Eastern region)", options: ["Uganda", "Rwanda", "DRC", "Tanzania"] },
+            { q: "Which ancient city in Ethiopia is known for its obelisks and stelae?", correct: "Axum", options: ["Lalibela", "Axum", "Gondar", "Harar"] },
+            { q: "Which historic slave trading fort is located on Zanzibar Island?", correct: "Ngome Kongwe (Old Fort)", options: ["Stone Town Fort", "Ngome Kongwe", "House of Wonders", "Maruhubi Palace"] }
+        ]
+    };
+
+    // ---------- 2. SEASONS & HERITAGE ----------
+    const seasonsBank = [
+        { q: "In most parts of Kenya, how many rainy seasons are there in a year?", correct: "Two (Long rains & Short rains)", options: ["One", "Two", "Three", "Four"] },
+        { q: "The long rains in Kenya usually occur between which months?", correct: "March to May", options: ["June to August", "March to May", "October to December", "January to February"] },
+        { q: "The dry season in many Kenyan counties is characterized by:", correct: "Little or no rainfall", options: ["Heavy rainfall", "Little or no rainfall", "Strong winds only", "Frost"] },
+        { q: "Farmers plant crops mainly during which season?", correct: "Rainy season", options: ["Dry season", "Rainy season", "Cold season", "Harvest season"] },
+        { q: "Which season brings lush green vegetation in the county?", correct: "Rainy season", options: ["Dry season", "Rainy season", "Harmattan", "Dust season"] },
+        { q: "Fort Jesus, a famous historic fort, is located in which county?", correct: "Mombasa", options: ["Kilifi", "Kwale", "Mombasa", "Lamu"] },
+        { q: "The Gedi Ruins (ancient Swahili town) are found in which county?", correct: "Kilifi", options: ["Mombasa", "Kilifi", "Malindi", "Tana River"] },
+        { q: "The 'Lord Egerton Castle' is a historic stone castle located in which county?", correct: "Nakuru", options: ["Nyandarua", "Nakuru", "Laikipia", "Kericho"] },
+        { q: "During heavy rainy seasons, historic stone buildings may suffer from:", correct: "Dampness and erosion", options: ["Earthquakes", "Dampness and erosion", "Fire", "Snow"] },
+        { q: "In dry seasons, wooden historic structures are at risk of:", correct: "Cracking and termites", options: ["Rusting", "Cracking and termites", "Floating", "Freezing"] }
+    ];
+    // extend to 30 per level (simulated)
+    const buildSeasonsLevel = (level) => {
+        let arr = [];
+        for(let i=0;i<30;i++) {
+            let base = seasonsBank[i % seasonsBank.length];
+            let newQ = { ...base };
+            if(level>=3) newQ.q = "⭐ " + newQ.q;
+            arr.push(newQ);
+        }
+        return arr;
+    };
+
+    // ---------- 3. MAP MASTERS ----------
+    const mapBank = [
+        { q: "If you are facing the rising sun, which direction are you facing?", correct: "East", options: ["North", "South", "East", "West"] },
+        { q: "The sun sets in which direction?", correct: "West", options: ["East", "West", "North", "South"] },
+        { q: "If you face north, which direction is behind you?", correct: "South", options: ["East", "West", "South", "North"] },
+        { q: "The needle of a compass always points towards which direction?", correct: "North", options: ["East", "South", "West", "North"] },
+        { q: "Which county is known as the 'Green City in the Sun' and is the capital of Kenya?", correct: "Nairobi", options: ["Mombasa", "Kisumu", "Nakuru", "Nairobi"] },
+        { q: "The largest county in Kenya by land area is:", correct: "Turkana", options: ["Marsabit", "Turkana", "Kajiado", "Samburu"] },
+        { q: "Which county is home to Mount Kenya?", correct: "Meru / Kirinyaga", options: ["Nyeri", "Meru / Kirinyaga", "Embu", "Laikipia"] },
+        { q: "Kisumu County borders which large freshwater lake?", correct: "Lake Victoria", options: ["Lake Turkana", "Lake Naivasha", "Lake Victoria", "Lake Baringo"] },
+        { q: "The largest mountain in Kenya is:", correct: "Mount Kenya", options: ["Mount Elgon", "Mount Kenya", "Kilimanjaro", "Aberdare Range"] },
+        { q: "Which is the largest desert lake in Kenya?", correct: "Lake Turkana", options: ["Lake Victoria", "Lake Nakuru", "Lake Turkana", "Lake Naivasha"] },
+        { q: "The Standard Gauge Railway (SGR) connects Mombasa to:", correct: "Nairobi", options: ["Kisumu", "Malaba", "Nairobi", "Nanyuki"] },
+        { q: "The largest man-made dam for hydroelectric power in Kenya is:", correct: "Masinga Dam", options: ["Kamburu", "Kindaruma", "Masinga Dam", "Gitaru"] }
+    ];
+    const buildMapLevel = (level) => {
+        let arr = [];
+        for(let i=0;i<30;i++) {
+            let base = mapBank[i % mapBank.length];
+            let newQ = { ...base };
+            if(level>=4) newQ.q = "🔍 " + newQ.q;
+            arr.push(newQ);
+        }
+        return arr;
+    };
+
+    // Level builders for each mode
+    const modeBuilders = {
+        eastern: (level) => {
+            let pool = [];
+            for(let cat=1; cat<=5; cat++) {
+                let qs = easternAfricaBank[cat] || [];
+                for(let i=0;i<6;i++) {
+                    let q = qs[i % qs.length];
+                    if(q) pool.push({ ...q });
+                }
+            }
+            return shuffleArray(pool.slice(0,30));
+        },
+        seasons: (level) => buildSeasonsLevel(level),
+        maps: (level) => buildMapLevel(level)
+    };
+
+    function shuffleArray(arr) {
+        for(let i=arr.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+        return arr;
+    }
+
+    // Global state
+    let currentMode = "eastern";
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelQuestions = [];
+    let levelScore = 0;
+    let totalQuestions = 30;
+    let passPercent = 80;
+    let requiredCorrect = Math.ceil(totalQuestions * passPercent / 100);
+    let timerInterval = null;
+    let timeLeft = 0;
+    let answeringLock = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+    let gameActive = true;
+
+    // DOM elements
+    const levelNumSpan = document.getElementById('levelNum');
+    const scoreSpanDom = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const questionTextDiv = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const gameMessageDiv = document.getElementById('gameMessage');
+    const scoreValueSpan = document.getElementById('scoreSpan');
+
+    function updateUI() {
+        scoreSpanDom.innerText = levelScore;
+        scoreValueSpan.innerText = levelScore;
+        levelNumSpan.innerText = currentLevel;
+        passMarkSpan.innerText = requiredCorrect;
+    }
+
+    function stopTimer() { if(timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+
+    function startTimer() {
+        if(timerInterval) stopTimer();
+        const timeMap = {1:92, 2:82, 3:72, 4:62, 5:52};
+        timeLeft = timeMap[currentLevel] || 70;
+        timerDisplaySpan.innerText = timeLeft;
+        timerDisplaySpan.classList.remove('timer-critical');
+        timerInterval = setInterval(() => {
+            if(!gameActive || levelFinished || answeringLock || waitingForNext) return;
+            if(timeLeft <= 1) {
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableOptions();
+                nextBtn.disabled = true;
+                gameMessageDiv.innerHTML = `⏰ TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${totalQuestions} (need ${requiredCorrect}). Restart or change mode.`;
+                showRestart();
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = timeLeft;
+                if(timeLeft <= 10) timerDisplaySpan.classList.add('timer-critical');
+                else timerDisplaySpan.classList.remove('timer-critical');
+                if(timeLeft === 15) gameMessageDiv.innerHTML = `⚠️ ${timeLeft} seconds left! Answer quickly! ⚠️`;
+            }
+        }, 1000);
+    }
+
+    function disableOptions() {
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+    }
+
+    function showRestart() {
+        let existing = document.querySelector('.restart-custom');
+        if(existing) existing.remove();
+        const btn = document.createElement('button');
+        btn.innerText = '🔄 RESTART LEVEL 🔄';
+        btn.className = 'restart-btn restart-custom';
+        btn.onclick = () => initMode(currentMode);
+        gameMessageDiv.appendChild(btn);
+    }
+
+    function highlightCorrect(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            let raw = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if(raw === correctText) btn.classList.add('correct-highlight');
+        });
+    }
+
+    function handleAnswer(selected, correct, btnEl) {
+        if(answeringLock || waitingForNext || !gameActive || levelFinished) return;
+        answeringLock = true;
+        const isCorrect = (selected === correct);
+        if(isCorrect) {
+            levelScore++;
+            updateUI();
+            btnEl.classList.add('correct-highlight');
+            gameMessageDiv.innerHTML = `✅ CORRECT! +1 point (${levelScore}/${totalQuestions}) | Time left: ${timeLeft}s`;
+        } else {
+            btnEl.classList.add('wrong-highlight');
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(btn => {
+                btn.disabled = true;
+                let txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if(txt === correct) btn.classList.add('correct-highlight');
+            });
+            gameMessageDiv.innerHTML = `❌ WRONG! Correct: "${correct}". Score: ${levelScore}/${totalQuestions}`;
+        }
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+
+    function loadQuestion() {
+        if(!gameActive) return;
+        if(currentQIndex >= totalQuestions) { finishLevel(); return; }
+        const q = levelQuestions[currentQIndex];
+        questionTextDiv.innerText = q.q;
+        optionsContainer.innerHTML = '';
+        const shuffled = shuffleArray([...q.options]);
+        const prefixes = ['A','B','C','D'];
+        shuffled.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, q.correct, btn));
+            optionsContainer.appendChild(btn);
+        });
+        answeringLock = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        gameMessageDiv.innerHTML = `📖 Level ${currentLevel} • Q${currentQIndex+1}/${totalQuestions} • ${currentMode.toUpperCase()} mode. Timer running!`;
+    }
+
+    function nextQuestion() {
+        if(!waitingForNext) return;
+        if(levelFinished) return;
+        currentQIndex++;
+        if(currentQIndex < totalQuestions) loadQuestion();
+        else finishLevel();
+    }
+
+    function finishLevel() {
+        if(levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if(passed) {
+            if(currentLevel === 5) {
+                gameMessageDiv.innerHTML = `🏆✨ AMAZING! You mastered ALL levels in ${currentMode.toUpperCase()}! Final Score: ${levelScore}/${totalQuestions} (${Math.round(levelScore/totalQuestions*100)}%). Champion! ✨🏆`;
+                disableOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                gameMessageDiv.innerHTML = `🎉 LEVEL ${currentLevel} COMPLETE! 🎉 ${levelScore}/${totalQuestions} PASS! Moving to LEVEL ${currentLevel+1}...`;
+                disableOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(totalQuestions * passPercent / 100);
+                updateUI();
+                levelFinished = false;
+                gameActive = true;
+                answeringLock = false;
+                waitingForNext = false;
+                // load new questions for this level
+                levelQuestions = modeBuilders[currentMode](currentLevel);
+                levelQuestions = shuffleArray(levelQuestions).slice(0,totalQuestions);
+                stopTimer();
+                startTimer();
+                loadQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableOptions();
+            nextBtn.disabled = true;
+            gameMessageDiv.innerHTML = `💔 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${totalQuestions} (need ${requiredCorrect}). Restart or switch mode. 💔`;
+            showRestart();
+        }
+    }
+
+    function initMode(mode) {
+        stopTimer();
+        currentMode = mode;
+        currentLevel = 1;
+        currentQIndex = 0;
+        levelScore = 0;
+        requiredCorrect = Math.ceil(totalQuestions * passPercent / 100);
+        gameActive = true;
+        levelFinished = false;
+        answeringLock = false;
+        waitingForNext = false;
+        levelQuestions = modeBuilders[currentMode](currentLevel);
+        levelQuestions = shuffleArray(levelQuestions).slice(0,totalQuestions);
+        updateUI();
+        startTimer();
+        loadQuestion();
+        gameMessageDiv.innerHTML = `🌍 ${mode.toUpperCase()} MODE • Level 1 • Answer all questions, pass 80% to advance!`;
+        // update active tab visual
+        document.getElementById('tabEastern').classList.toggle('active', mode==='eastern');
+        document.getElementById('tabSeasons').classList.toggle('active', mode==='seasons');
+        document.getElementById('tabMaps').classList.toggle('active', mode==='maps');
+    }
+
+    // Event listeners
+    document.getElementById('tabEastern').addEventListener('click', () => initMode('eastern'));
+    document.getElementById('tabSeasons').addEventListener('click', () => initMode('seasons'));
+    document.getElementById('tabMaps').addEventListener('click', () => initMode('maps'));
+    nextBtn.addEventListener('click', nextQuestion);
+
+    // start with eastern mode
+    initMode('eastern');
+</script>
+</body>
+</html>

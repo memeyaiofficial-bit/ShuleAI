@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Built Environments Quest - Grade 5 CBC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --danger: #e63946;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #4a00e0);
+            color: #333;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-attachment: fixed;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .header h1 i {
+            font-size: 1.5rem;
+        }
+        
+        .level-indicator {
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .game-content {
+            padding: 25px;
+        }
+        
+        .timer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #e9ecef;
+            padding: 12px 20px;
+            border-radius: 16px;
+            font-weight: 600;
+        }
+        
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.4rem;
+            color: var(--danger);
+        }
+        
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+            color: var(--success);
+        }
+        
+        .question-container {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 1.4;
+            position: relative;
+            border: 3px solid var(--primary);
+        }
+        
+        .question-container::before {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, var(--primary), var(--success), var(--warning), var(--primary));
+            border-radius: 23px;
+            z-index: -1;
+            animation: gradientRotate 8s linear infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes gradientRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .answer-section {
+            margin-bottom: 25px;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid #ddd;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            transition: var(--transition);
+            background: #f8f9ff;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+        }
+        
+        .hint-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: 0 12px 12px 0;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: #f0f4ff;
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .voice-btn {
+            background: linear-gradient(120deg, #7209b7, #4361ee);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .voice-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .voice-btn.speaking {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(114, 9, 183, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(114, 9, 183, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(114, 9, 183, 0); }
+        }
+        
+        .progress-container {
+            margin: 25px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .level-complete, .game-complete, .level-failed {
+            text-align: center;
+            padding: 30px 20px;
+            display: none;
+        }
+        
+        .level-complete h2, .game-complete h2, .level-failed h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .level-complete p, .game-complete p, .level-failed p {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #f00;
+            border-radius: 0;
+            animation: confetti-fall 5s ease-in-out forwards;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(1000px) rotate(720deg); opacity: 0; }
+        }
+        
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            font-size: 2.5rem;
+            color: #ffc107;
+        }
+        
+        .next-level-btn {
+            background: linear-gradient(120deg, #06d6a0, #118ab2);
+            padding: 18px 45px;
+            font-size: 1.4rem;
+            margin-top: 15px;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(120deg, #ef476f, #d62839);
+            padding: 18px 45px;
+            font-size: 1.4rem;
+            margin-top: 15px;
+        }
+        
+        .start-screen, .level-select {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .start-screen h2, .level-select h2 {
+            font-size: 2.3rem;
+            margin: 20px 0;
+            color: var(--dark);
+        }
+        
+        .start-screen p, .level-select p {
+            font-size: 1.3rem;
+            margin: 15px 0 25px;
+            line-height: 1.5;
+            color: #444;
+        }
+        
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .level-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 3px solid #e9ecef;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        
+        .level-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 7px 15px rgba(0,0,0,0.15);
+        }
+        
+        .level-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+        
+        .level-card.locked:hover {
+            transform: none;
+        }
+        
+        .level-number {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .level-status {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .level-card.completed .level-status {
+            color: #06d6a0;
+        }
+        
+        .level-card.current {
+            border-color: var(--warning);
+            box-shadow: 0 0 0 3px rgba(247, 37, 133, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+        
+        .feedback {
+            padding: 15px;
+            border-radius: 16px;
+            margin: 15px 0;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .character {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 4rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.95rem;
+            color: #666;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .question-container {
+                font-size: 1.3rem;
+                padding: 20px;
+                min-height: 100px;
+            }
+            
+            .answer-input {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 14px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .voice-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+                top: 15px;
+                right: 15px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-container {
+                border-radius: 16px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .game-content {
+                padding: 20px 15px;
+            }
+            
+            .question-container {
+                font-size: 1.2rem;
+                padding: 18px;
+            }
+            
+            .timer-container {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .level-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            
+            .level-number {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Animation for correct/incorrect answers */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .shake {
+            animation: shake 0.3s;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .celebrate {
+            animation: celebrate 0.5s;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1><i>🏗️</i> Built Environments Quest</h1>
+            <div class="level-indicator">Grade 5 CBC • Social Studies</div>
+            <button class="voice-btn" id="voiceToggle" aria-label="Toggle voice output">
+                <i>🔊</i>
+            </button>
+        </div>
+        
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <div class="character">🏫</div>
+            <h2>Welcome, Young Architect!</h2>
+            <p>Test your knowledge about built environments in your community. Answer questions correctly to build your way to the top!</p>
+            
+            <div class="instructions">
+                <strong>How to Play:</strong>
+                <ul>
+                    <li>✅ Type your answer (no multiple choice!)</li>
+                    <li>⏱️ You have 40 seconds per question</li>
+                    <li>💡 Hints appear as time runs out</li>
+                    <li>🎯 Score 80% or higher to unlock the next level</li>
+                    <li>🔊 Tap the speaker icon to hear questions read aloud</li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-primary" id="startBtn">
+                <i>🚀</i> Start Adventure
+            </button>
+        </div>
+        
+        <!-- Level Select Screen -->
+        <div class="level-select hidden" id="levelSelect">
+            <h2>Select Your Level</h2>
+            <p>Complete each level with 80% or higher to unlock the next challenge!</p>
+            
+            <div class="level-grid" id="levelGrid">
+                <!-- Levels will be generated by JavaScript -->
+            </div>
+            
+            <button class="btn btn-secondary" id="backToStart">
+                <i>←</i> Back to Start
+            </button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="game-content hidden" id="gameScreen">
+            <div class="timer-container">
+                <div class="timer">⏱️ <span id="timeDisplay">40</span>s</div>
+                <div class="score-display">⭐ <span id="scoreDisplay">0</span>/<span id="totalDisplay">30</span></div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Question <span id="currentQuestion">1</span> of 30</span>
+                    <span>Level <span id="currentLevel">1</span></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div class="question-container" id="questionText">
+                Loading question...
+            </div>
+            
+            <div class="answer-section">
+                <input type="text" class="answer-input" id="answerInput" placeholder="Type your answer here..." autocomplete="off">
+                <div class="hint-box" id="hintBox">💡 Hint: Think about materials used in construction...</div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-secondary" id="hintBtn">💡 Get Hint</button>
+                <button class="btn btn-primary" id="submitBtn">✅ Submit Answer</button>
+            </div>
+        </div>
+        
+        <!-- Level Complete Screen -->
+        <div class="level-complete" id="levelComplete">
+            <div class="character">🎉</div>
+            <h2>Level Complete!</h2>
+            <p>You scored <span id="levelScore">0</span> out of 30!</p>
+            <div class="stars" id="starRating">
+                <!-- Stars will be added by JavaScript -->
+            </div>
+            <p id="levelMessage">Great job! You're ready for the next challenge.</p>
+            <button class="btn next-level-btn" id="nextLevelBtn">
+                <i>➡️</i> Next Level
+            </button>
+            <button class="btn btn-secondary" id="retryLevelBtn" style="margin-top: 10px;">
+                <i>🔄</i> Retry Level
+            </button>
+        </div>
+        
+        <!-- Level Failed Screen -->
+        <div class="level-failed" id="levelFailed">
+            <div class="character">🧱</div>
+            <h2>Keep Building!</h2>
+            <p>You scored <span id="failedScore">0</span> out of 30.</p>
+            <p>You need at least 24 correct answers (80%) to unlock the next level.</p>
+            <button class="btn retry-btn" id="retryBtn">
+                <i>🔄</i> Try Again
+            </button>
+            <button class="btn btn-secondary" id="backToLevelsBtn" style="margin-top: 10px;">
+                <i>🗂️</i> Select Level
+            </button>
+        </div>
+        
+        <!-- Game Complete Screen -->
+        <div class="game-complete" id="gameComplete">
+            <div class="character">🏆</div>
+            <h2>Congratulations, Master Builder!</h2>
+            <p>You've completed all 5 levels of the Built Environments Quest!</p>
+            <p>You've demonstrated excellent knowledge of communities, construction, and sustainable environments.</p>
+            <div class="stars">
+                <i>⭐</i><i>⭐</i><i>⭐</i><i>⭐</i><i>⭐</i>
+            </div>
+            <button class="btn btn-primary" id="playAgainBtn">
+                <i>🎮</i> Play Again
+            </button>
+        </div>
+        
+        <div class="footer">
+            CBC Grade 5 Social Studies • Built Environments • Made with ❤️ for Young Learners
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentLevel: 1,
+            currentQuestion: 0,
+            score: 0,
+            timeLeft: 40,
+            timer: null,
+            voiceEnabled: true,
+            hintsUsed: 0,
+            levelsUnlocked: [1],
+            levelScores: {},
+            questions: {}
+        };
+
+        // DOM Elements
+        const elements = {
+            startScreen: document.getElementById('startScreen'),
+            levelSelect: document.getElementById('levelSelect'),
+            gameScreen: document.getElementById('gameScreen'),
+            levelComplete: document.getElementById('levelComplete'),
+            levelFailed: document.getElementById('levelFailed'),
+            gameComplete: document.getElementById('gameComplete'),
+            questionText: document.getElementById('questionText'),
+            answerInput: document.getElementById('answerInput'),
+            hintBox: document.getElementById('hintBox'),
+            feedback: document.getElementById('feedback'),
+            timeDisplay: document.getElementById('timeDisplay'),
+            scoreDisplay: document.getElementById('scoreDisplay'),
+            totalDisplay: document.getElementById('totalDisplay'),
+            currentQuestion: document.getElementById('currentQuestion'),
+            currentLevel: document.getElementById('currentLevel'),
+            progressFill: document.getElementById('progressFill'),
+            levelScore: document.getElementById('levelScore'),
+            failedScore: document.getElementById('failedScore'),
+            levelMessage: document.getElementById('levelMessage'),
+            starRating: document.getElementById('starRating'),
+            voiceToggle: document.getElementById('voiceToggle'),
+            startBtn: document.getElementById('startBtn'),
+            nextLevelBtn: document.getElementById('nextLevelBtn'),
+            retryLevelBtn: document.getElementById('retryLevelBtn'),
+            retryBtn: document.getElementById('retryBtn'),
+            backToLevelsBtn: document.getElementById('backToLevelsBtn'),
+            backToStart: document.getElementById('backToStart'),
+            playAgainBtn: document.getElementById('playAgainBtn'),
+            submitBtn: document.getElementById('submitBtn'),
+            hintBtn: document.getElementById('hintBtn'),
+            levelGrid: document.getElementById('levelGrid')
+        };
+
+        // CBC Grade 5 Built Environments Questions (5 levels × 30 questions)
+        const questionsDatabase = {
+            1: [
+                { q: "What is a built environment?", a: ["human-made surroundings", "man-made surroundings", "constructed environment", "built surroundings"], hint: "Think about places people create, not natural ones" },
+                { q: "Name one example of a built environment in your community.", a: ["school", "hospital", "market", "house", "church", "mosque", "road", "bridge"], hint: "Where do people learn, work, or live?" },
+                { q: "What material is commonly used to build houses in rural Kenya?", a: ["mud", "stones", "timber", "grass", "thatch"], hint: "Traditional homes often use natural, local materials" },
+                { q: "Why are roads important in a built environment?", a: ["transportation", "movement of people and goods", "connect places", "access to services"], hint: "They help people and things move from one place to another" },
+                { q: "What is the main purpose of a hospital?", a: ["healthcare", "treat sick people", "medical care", "help the sick"], hint: "It's where people go when they are not feeling well" },
+                { q: "Which built environment helps students learn?", a: ["school", "classroom", "learning center"], hint: "Children go here every weekday to study" },
+                { q: "What do we call a place where people buy and sell goods?", a: ["market", "shopping center", "mall", "shop"], hint: "Vendors gather here to sell fruits, vegetables, and other items" },
+                { q: "Name a modern material used in building construction.", a: ["concrete", "steel", "glass", "bricks", "cement"], hint: "This material is strong and used in tall buildings" },
+                { q: "Why is clean water important in built environments?", a: ["health", "sanitation", "prevents disease", "drinking", "cooking"], hint: "Without it, people can get sick easily" },
+                { q: "What is a bridge used for?", a: ["crossing rivers", "connecting places", "transportation over obstacles"], hint: "It helps people get across water or valleys" },
+                { q: "Which built environment provides security for a community?", a: ["police station", "chief's camp", "security post"], hint: "Uniformed officers work here to keep people safe" },
+                { q: "What do we call the system that removes waste from homes?", a: ["sewage system", "drainage", "waste disposal", "sanitation"], hint: "It carries dirty water away from houses" },
+                { q: "Why are parks important in urban areas?", a: ["recreation", "fresh air", "play area", "relaxation", "green space"], hint: "They give people a place to play and rest" },
+                { q: "What is the function of a market shed?", a: ["protect goods from rain", "provide shade", "organize vendors"], hint: "It covers the market area so sellers stay dry" },
+                { q: "Name one way to make buildings environmentally friendly.", a: ["use solar energy", "plant trees", "recycle materials", "use natural light"], hint: "Think about using the sun's power" },
+                { q: "What is a dam built for?", a: ["store water", "generate electricity", "control floods", "irrigation"], hint: "It holds back river water for various uses" },
+                { q: "Which built environment helps in worship?", a: ["church", "mosque", "temple", "place of worship"], hint: "People gather here to pray and practice their faith" },
+                { q: "Why are street lights important?", a: ["safety at night", "visibility", "prevent accidents", "security"], hint: "They help people see after sunset" },
+                { q: "What do we call a large building where many people live?", a: ["apartment", "flat", "high-rise", "block of flats"], hint: "It has many separate homes stacked vertically" },
+                { q: "Name one problem caused by poor planning of built environments.", a: ["pollution", "congestion", "flooding", "waste problems", "disease spread"], hint: "When cities grow without planning, trash and dirty water can cause sickness" },
+                { q: "What is the purpose of a library?", a: ["borrow books", "reading", "research", "learning resources"], hint: "It's a quiet place full of books and information" },
+                { q: "Which material is best for roofing in areas with heavy rain?", a: ["iron sheets", "tiles", "slates"], hint: "This material is waterproof and durable" },
+                { q: "Why should buildings have windows?", a: ["light", "ventilation", "fresh air", "see outside"], hint: "They let sunshine in and allow air to flow" },
+                { q: "What is a bus park used for?", a: ["transportation hub", "buses pick and drop passengers", "public transport"], hint: "People gather here to catch buses to different places" },
+                { q: "Name one way to conserve water in a built environment.", a: ["fix leaks", "use water-saving taps", "harvest rainwater", "reuse water"], hint: "Collecting rain from roofs is a good method" },
+                { q: "What is the function of a fire station?", a: ["put out fires", "emergency response", "rescue operations"], hint: "Firefighters work here and rush to emergencies" },
+                { q: "Why are sidewalks important?", a: ["pedestrian safety", "walking space", "separate from vehicles"], hint: "They keep people walking safely away from cars" },
+                { q: "What do we call a place where vehicles are repaired?", a: ["garage", "workshop", "mechanic shop"], hint: "When your bicycle or car breaks, you take it here" },
+                { q: "Which built environment helps in food production in cities?", a: ["urban garden", "greenhouse", "farm"], hint: "People grow vegetables even in small city spaces" },
+                { q: "Why is proper waste disposal important?", a: ["prevents disease", "keeps environment clean", "reduces pollution"], hint: "Trash left everywhere can make people sick" }
+            ],
+            2: [
+                { q: "What is urbanization?", a: ["growth of cities", "people moving to towns", "expansion of urban areas"], hint: "It's when more people live in cities than in villages" },
+                { q: "Name one challenge of rapid urban growth.", a: ["housing shortage", "traffic congestion", "pollution", "unemployment", "waste management"], hint: "When too many people move to a city quickly, finding homes becomes difficult" },
+                { q: "What is a slum?", a: ["overcrowded poor area", "informal settlement", "area with poor housing"], hint: "It's a place where people live in very basic, crowded conditions" },
+                { q: "Why are drainage systems important in towns?", a: ["prevent flooding", "remove wastewater", "control rainwater"], hint: "Without them, streets fill with water during heavy rain" },
+                { q: "What is sustainable construction?", a: ["building with environment in mind", "eco-friendly building", "using renewable resources"], hint: "It means constructing in a way that doesn't harm nature" },
+                { q: "Name one renewable energy source for buildings.", a: ["solar power", "wind energy", "biogas"], hint: "Panels on rooftops that capture sunshine" },
+                { q: "What is the purpose of zoning in urban planning?", a: ["organize land use", "separate residential and industrial areas", "control development"], hint: "It decides where homes, shops, and factories can be built" },
+                { q: "Why should communities have green spaces?", a: ["improve air quality", "reduce heat", "provide recreation", "support biodiversity"], hint: "Trees and plants help clean the air we breathe" },
+                { q: "What is a pedestrian crossing?", a: ["safe place to cross road", "zebra crossing", "marked path for walkers"], hint: "It has white stripes painted on the road for people walking" },
+                { q: "Name one way to reduce traffic congestion.", a: ["public transport", "carpooling", "bicycle lanes", "traffic management"], hint: "When many people share one bus, fewer cars are on the road" },
+                { q: "What is the function of a water treatment plant?", a: ["clean water for use", "make water safe", "remove impurities"], hint: "It processes river or lake water so it's safe to drink" },
+                { q: "Why are building codes important?", a: ["ensure safety", "standardize construction", "prevent collapse"], hint: "They are rules that make sure buildings won't fall down" },
+                { q: "What is a community center used for?", a: ["gatherings", "events", "meetings", "social activities"], hint: "People meet here for weddings, meetings, and celebrations" },
+                { q: "Name one effect of deforestation on built environments.", a: ["soil erosion", "flooding", "landslides", "loss of shade"], hint: "Without trees, rain washes away the soil around buildings" },
+                { q: "What is rainwater harvesting?", a: ["collecting rain for use", "storing rainwater", "using roof runoff"], hint: "Saving rain from roofs in tanks for later use" },
+                { q: "Why should buildings be accessible to people with disabilities?", a: ["inclusion", "equal access", "human rights"], hint: "Ramps and wide doors help everyone enter buildings" },
+                { q: "What is the purpose of a landfill?", a: ["safe waste disposal", "burying trash", "managing solid waste"], hint: "It's a designated area where garbage is buried properly" },
+                { q: "Name one traditional building material still used today.", a: ["mud bricks", "thatch", "stone", "timber"], hint: "Some homes still use sun-dried earth blocks" },
+                { q: "What is a flyover?", a: ["bridge for roads over other roads", "elevated roadway", "overpass"], hint: "It lets traffic go over a busy intersection without stopping" },
+                { q: "Why is public lighting important in settlements?", a: ["safety", "security", "night activities", "reduce crime"], hint: "Well-lit areas discourage bad activities after dark" },
+                { q: "What is a borehole?", a: ["deep well for water", "underground water source", "water point"], hint: "A deep hole drilled to reach clean groundwater" },
+                { q: "Name one benefit of using local materials in construction.", a: ["cost-effective", "supports local economy", "environmentally friendly", "culturally appropriate"], hint: "Buying materials nearby saves transport costs" },
+                { q: "What is the function of a market inspector?", a: ["ensure fair trade", "check quality", "maintain order"], hint: "This officer makes sure sellers use correct weights and measures" },
+                { q: "Why should schools have fences?", a: ["security", "safety of children", "define boundary"], hint: "They keep learners safe from strangers and traffic" },
+                { q: "What is a septic tank?", a: ["underground waste container", "holds sewage", "treats household waste"], hint: "It collects toilet waste where there's no sewer system" },
+                { q: "Name one way buildings can save energy.", a: ["good insulation", "natural lighting", "energy-efficient appliances"], hint: "Thick walls keep houses cool without fans" },
+                { q: "What is a bus stop shelter for?", a: ["protect from weather", "waiting area", "comfort for passengers"], hint: "It gives shade and cover while waiting for transport" },
+                { q: "Why is community participation important in planning?", a: ["meet people's needs", "ownership", "better decisions"], hint: "When residents help plan, the results work better for everyone" },
+                { q: "What is a culvert?", a: ["drain under a road", "channel for water", "prevents road flooding"], hint: "It's a pipe that lets water flow under a road" },
+                { q: "Name one feature of a child-friendly built environment.", a: ["safe play areas", "traffic calming", "accessible parks", "safe routes to school"], hint: "Playgrounds should be away from busy roads" }
+            ],
+            3: [
+                { q: "What is infrastructure?", a: ["basic physical systems", "roads and utilities", "essential facilities"], hint: "It includes roads, water pipes, and power lines that support a community" },
+                { q: "Name two types of transport infrastructure.", a: ["roads and railways", "airports and ports", "bridges and tunnels"], hint: "Think about ways people and goods move from place to place" },
+                { q: "Why is maintenance of built environments important?", a: ["prolongs life", "ensures safety", "saves money", "prevents collapse"], hint: "Fixing small problems early stops them from becoming big, dangerous issues" },
+                { q: "What is a master plan in urban development?", a: ["long-term development guide", "future layout plan", "comprehensive design"], hint: "It's a big-picture map showing how a town will grow over many years" },
+                { q: "Name one environmental impact of construction.", a: ["habitat loss", "pollution", "resource depletion", "noise"], hint: "Clearing land for buildings can destroy homes of animals and plants" },
+                { q: "What is a green building?", a: ["eco-friendly design", "energy-efficient structure", "sustainable construction"], hint: "It uses less water and energy and creates less waste" },
+                { q: "Why are emergency exits important in buildings?", a: ["safety during fires", "quick evacuation", "save lives"], hint: "They provide a safe way out when there's danger" },
+                { q: "Name one way to make public transport more attractive.", a: ["reliable schedules", "affordable fares", "clean vehicles", "comfortable seating"], hint: "When buses come on time, more people will use them" },
+                { q: "What is the purpose of a roundabout?", a: ["control traffic flow", "improve safety", "reduce accidents"], hint: "It helps cars move smoothly through intersections without traffic lights" },
+                { q: "Why should communities recycle building materials?", a: ["reduce waste", "conserve resources", "lower costs", "protect environment"], hint: "Old bricks and metal can be used again in new projects" },
+                { q: "What is a water tower used for?", a: ["store water", "maintain water pressure", "supply distribution"], hint: "It holds water high up so it flows strongly to homes" },
+                { q: "Name one social benefit of good housing.", a: ["health improvement", "family stability", "community pride", "better education"], hint: "When families have safe homes, children can study better" },
+                { q: "What is traffic calming?", a: ["measures to slow vehicles", "speed reduction methods", "pedestrian safety features"], hint: "Speed bumps and narrow roads make drivers go slower in neighborhoods" },
+                { q: "Why is it important to involve youth in community planning?", a: ["future users", "fresh ideas", "ownership", "sustainability"], hint: "Young people will live with the results of today's decisions" },
+                { q: "What is a community garden?", a: ["shared growing space", "collective farming", "urban agriculture"], hint: "Neighbors work together to grow vegetables in a shared plot" },
+                { q: "Name one technology used in modern construction.", a: ["3D printing", "drones", "BIM software", "prefabrication"], hint: "Some buildings are now printed layer by layer like a giant printer" },
+                { q: "What is the function of a stormwater drain?", a: ["manage rainwater", "prevent flooding", "channel runoff"], hint: "It carries heavy rain away from roads and buildings quickly" },
+                { q: "Why should public buildings be centrally located?", a: ["easy access", "equitable service", "reduce travel time"], hint: "When clinics and offices are in the middle, everyone can reach them fairly" },
+                { q: "What is a pedestrian bridge?", a: ["footbridge", "safe crossing over roads", "walkway over obstacles"], hint: "It lets people cross busy roads or railways without walking on them" },
+                { q: "Name one way to reduce noise pollution in built environments.", a: ["sound barriers", "green buffers", "zoning", "quiet pavements"], hint: "Planting trees along roads can absorb traffic noise" },
+                { q: "What is a utility corridor?", a: ["space for pipes and cables", "underground service channel", "infrastructure pathway"], hint: "It's a dedicated area where water, power, and internet lines run" },
+                { q: "Why is cultural heritage important in urban planning?", a: ["preserve identity", "tourism", "community pride", "historical value"], hint: "Old buildings and sites tell the story of a community's past" },
+                { q: "What is a mixed-use development?", a: ["combines residential and commercial", "live-work-play spaces", "integrated land use"], hint: "Buildings where people can live, shop, and work in the same area" },
+                { q: "Name one challenge of providing services in informal settlements.", a: ["lack of planning", "land tenure issues", "high density", "limited access"], hint: "When homes are built without official permission, it's hard to bring water pipes" },
+                { q: "What is the purpose of building setbacks?", a: ["space from boundaries", "light and air", "fire safety", "aesthetics"], hint: "Rules that require buildings to be set back from roads or neighbors" },
+                { q: "Why should schools be located away from industrial areas?", a: ["reduce pollution exposure", "quieter environment", "health protection"], hint: "Factories can produce smoke and noise that aren't good for learning" },
+                { q: "What is a smart city?", a: ["uses technology for efficiency", "data-driven management", "connected infrastructure"], hint: "It uses sensors and data to improve services like traffic and waste collection" },
+                { q: "Name one way to make buildings resilient to climate change.", a: ["elevated foundations", "flood-resistant materials", "good drainage", "green roofs"], hint: "Building houses higher can protect them from rising flood waters" },
+                { q: "What is a community hall?", a: ["public gathering space", "event venue", "multipurpose room"], hint: "A large room where the whole community can meet for celebrations or meetings" },
+                { q: "Why is walkability important in urban design?", a: ["promotes health", "reduces pollution", "builds community", "accessible for all"], hint: "When people can walk safely to shops and schools, they exercise more and pollute less" }
+            ],
+            4: [
+                { q: "What is participatory planning?", a: ["community involvement in decisions", "inclusive development process", "collaborative design"], hint: "It means asking residents what they need before building new facilities" },
+                { q: "Name one indicator of a well-planned community.", a: ["access to services", "safe public spaces", "efficient transport", "clean environment"], hint: "People can easily reach schools, clinics, and markets" },
+                { q: "Why is land use planning important?", a: ["prevents conflicts", "optimizes resources", "guides development", "protects environment"], hint: "It decides the best places for homes, farms, and industries" },
+                { q: "What is a buffer zone?", a: ["transitional area", "separation space", "protective boundary"], hint: "A green area between a factory and homes to reduce pollution impact" },
+                { q: "Name one way to promote affordable housing.", a: ["subsidies", "simplified regulations", "innovative materials", "community land trusts"], hint: "Government support can help low-income families own decent homes" },
+                { q: "What is the role of local government in built environments?", a: ["planning approval", "service provision", "regulation enforcement", "infrastructure development"], hint: "They issue building permits and maintain public roads" },
+                { q: "Why should public spaces be inclusive?", a: ["equal access for all", "social cohesion", "diverse community needs"], hint: "Playgrounds should have equipment for children with different abilities" },
+                { q: "Name one benefit of compact city design.", a: ["reduced transport needs", "efficient service delivery", "preserved natural areas", "vibrant communities"], hint: "When homes, shops, and offices are close, people walk more and drive less" },
+                { q: "What is a green corridor?", a: ["ecological pathway", "connected green spaces", "wildlife passage"], hint: "A chain of parks and trees that lets animals move safely through a city" },
+                { q: "Why is disaster risk reduction important in construction?", a: ["protect lives", "minimize damage", "ensure continuity", "save costs"], hint: "Building to withstand earthquakes or floods saves lives and money" },
+                { q: "What is a community map?", a: ["resident-drawn area guide", "participatory mapping", "local knowledge visualization"], hint: "Villagers draw their own maps showing water points, paths, and important places" },
+                { q: "Name one way to improve air quality in urban areas.", a: ["more trees", "clean energy", "vehicle emission controls", "industrial regulations"], hint: "Planting trees along streets helps filter dust and pollution" },
+                { q: "What is adaptive reuse?", a: ["repurposing old buildings", "converting structures for new uses", "heritage conservation"], hint: "Turning an old school into a community center instead of demolishing it" },
+                { q: "Why should water sources be protected?", a: ["ensure clean supply", "prevent contamination", "sustainable use", "public health"], hint: "Keeping factories and latrines away from wells keeps water safe to drink" },
+                { q: "What is a transit-oriented development?", a: ["housing near transport hubs", "walkable neighborhoods around stations", "reduced car dependency"], hint: "Building apartments and shops within walking distance of bus or train stations" },
+                { q: "Name one challenge of maintaining public infrastructure.", a: ["funding shortages", "technical capacity", "vandalism", "climate impacts"], hint: "Sometimes there isn't enough money to fix roads and pipes regularly" },
+                { q: "What is a public-private partnership?", a: ["collaboration for development", "shared investment", "joint service delivery"], hint: "Government and businesses work together to build and manage projects like markets" },
+                { q: "Why is gender-responsive planning important?", a: ["meets diverse needs", "promotes equality", "improves safety", "inclusive design"], hint: "Well-lit paths and safe water points make communities better for women and girls" },
+                { q: "What is a building permit?", a: ["official construction approval", "legal authorization", "development consent"], hint: "A document from the county that says you can legally build a structure" },
+                { q: "Name one way communities can monitor development projects.", a: ["community committees", "public meetings", "social audits", "feedback mechanisms"], hint: "Residents can form groups to check if a new school is built properly" },
+                { q: "What is a sustainable drainage system?", a: ["manages rainwater naturally", "reduces flooding", "improves water quality"], hint: "Using gardens and permeable surfaces to absorb rain instead of just pipes" },
+                { q: "Why should historical sites be preserved?", a: ["cultural identity", "education", "tourism", "community pride"], hint: "Old forts and buildings teach us about our ancestors' lives" },
+                { q: "What is a neighborhood plan?", a: ["local development framework", "community-led vision", "area-specific guidelines"], hint: "Residents decide together how their specific area should grow and improve" },
+                { q: "Name one impact of poor waste management on built environments.", a: ["health hazards", "pollution", "blocked drains", "attracts pests"], hint: "Trash in streets can clog water channels and cause flooding" },
+                { q: "What is universal design?", a: ["accessible to all people", "inclusive architecture", "barrier-free environment"], hint: "Designing buildings and spaces that everyone can use, regardless of age or ability" },
+                { q: "Why is community ownership important for maintenance?", a: ["sustainability", "pride", "responsibility", "long-term care"], hint: "When people feel a park belongs to them, they help keep it clean" },
+                { q: "What is a climate-resilient infrastructure?", a: ["withstands climate impacts", "adapts to changing conditions", "reduces vulnerability"], hint: "Roads and bridges built to handle heavier rains and stronger winds" },
+                { q: "Name one way to involve children in community planning.", a: ["child-friendly consultations", "school projects", "youth councils", "participatory activities"], hint: "Asking students to draw their dream playground helps designers understand their needs" },
+                { q: "What is a service delivery charter?", a: ["community agreement on standards", "public commitment to quality", "accountability framework"], hint: "A promise from local leaders about how quickly they will fix problems like broken water pipes" },
+                { q: "Why is integrated planning important?", a: ["coordinates sectors", "avoids duplication", "holistic development", "efficient resource use"], hint: "Planning water, roads, and housing together makes communities work better" }
+            ],
+            5: [
+                { q: "What is sustainable urban development?", a: ["growth that meets present needs without compromising future", "balanced economic, social, environmental progress", "long-term community well-being"], hint: "Development that doesn't use up resources needed by our children" },
+                { q: "Name one principle of sustainable communities.", a: ["equity", "participation", "environmental protection", "economic viability", "cultural respect"], hint: "Everyone should have a fair chance to benefit from development" },
+                { q: "Why is biodiversity important in built environments?", a: ["ecosystem services", "resilience", "well-being", "educational value"], hint: "Trees, birds, and insects help clean air, water, and soil in our neighborhoods" },
+                { q: "What is a circular economy in construction?", a: ["reuse and recycle materials", "minimize waste", "closed-loop systems"], hint: "Using old building materials to create new structures instead of throwing them away" },
+                { q: "Name one way to reduce the carbon footprint of buildings.", a: ["energy efficiency", "renewable energy", "sustainable materials", "passive design"], hint: "Using solar panels reduces the need for electricity from fossil fuels" },
+                { q: "What is social infrastructure?", a: ["facilities for community well-being", "schools, health centers, parks", "spaces for social interaction"], hint: "Buildings and spaces that help people connect, learn, and stay healthy" },
+                { q: "Why is intergenerational planning important?", a: ["future-proofing", "legacy", "sustainable decisions", "long-term thinking"], hint: "Today's choices about land and resources affect children and grandchildren" },
+                { q: "Name one technology that can improve service delivery in settlements.", a: ["mobile reporting apps", "GIS mapping", "smart meters", "digital payment systems"], hint: "Apps that let residents report broken streetlights with photos and location" },
+                { q: "What is a resilient community?", a: ["adapts to challenges", "recovers from shocks", "prepared for change", "strong social networks"], hint: "A neighborhood that can handle floods, droughts, or economic changes without collapsing" },
+                { q: "Why should planning consider informal economies?", a: ["livelihood support", "inclusive growth", "realistic policies", "poverty reduction"], hint: "Many people earn income from small businesses that need space and support" },
+                { q: "What is a green economy?", a: ["low-carbon development", "resource efficiency", "social inclusion", "environmental sustainability"], hint: "An economy that creates jobs while protecting nature and reducing pollution" },
+                { q: "Name one way to promote active transport in communities.", a: ["safe walking paths", "bicycle lanes", "traffic calming", "secure parking"], hint: "Dedicated, protected lanes encourage people to cycle instead of drive" },
+                { q: "What is community-based monitoring?", a: ["resident-led oversight", "participatory evaluation", "local accountability"], hint: "Villagers track whether a new water project is working well and report problems" },
+                { q: "Why is cultural sustainability important in development?", a: ["preserves identity", "strengthens communities", "enriches planning", "promotes diversity"], hint: "Respecting local traditions and knowledge leads to more appropriate solutions" },
+                { q: "What is a just transition?", a: ["fair shift to sustainability", "inclusive change", "protecting vulnerable groups"], hint: "Ensuring workers and communities aren't left behind when moving to green economies" },
+                { q: "Name one benefit of nature-based solutions in urban areas.", a: ["flood control", "cooling effect", "biodiversity", "mental health", "cost-effectiveness"], hint: "Wetlands and parks can absorb floodwater better than concrete drains" },
+                { q: "What is participatory budgeting?", a: ["community decides on spending", "citizen allocation of funds", "democratic resource distribution"], hint: "Residents vote on how to use part of the local government's budget for projects" },
+                { q: "Why should planning address spatial inequality?", a: ["equitable access", "social justice", "inclusive growth", "reduced tensions"], hint: "Ensuring poor neighborhoods get the same quality services as wealthy ones" },
+                { q: "What is a living lab?", a: ["real-world testing space", "community innovation hub", "collaborative experimentation"], hint: "A neighborhood where new ideas for sustainability are tested with resident involvement" },
+                { q: "Name one way to strengthen community resilience to climate change.", a: ["early warning systems", "diverse livelihoods", "ecosystem restoration", "knowledge sharing"], hint: "Teaching farmers about drought-resistant crops helps communities adapt" },
+                { q: "What is the precautionary principle in planning?", a: ["prevent harm when uncertain", "cautious approach to risks", "protect health and environment"], hint: "If a new development might cause harm, take preventive action even if science isn't complete" },
+                { q: "Why is local knowledge valuable in development?", a: ["contextual solutions", "cultural appropriateness", "community ownership", "practical insights"], hint: "Elders know which areas flood or where water sources are located" },
+                { q: "What is a regenerative design?", a: ["restores ecosystems", "creates positive impact", "goes beyond sustainability"], hint: "Buildings that produce more energy than they use and improve soil health" },
+                { q: "Name one challenge of implementing sustainable practices in low-resource settings.", a: ["limited funding", "technical capacity", "competing priorities", "awareness gaps"], hint: "Communities may prioritize immediate needs like food over long-term environmental goals" },
+                { q: "What is multi-stakeholder governance?", a: ["collaborative decision-making", "inclusive institutions", "shared responsibility"], hint: "Government, businesses, and communities working together on development plans" },
+                { q: "Why should children's rights be considered in planning?", a: ["future citizens", "unique needs", "participation rights", "long-term impact"], hint: "Safe routes to school and clean play areas are essential for children's development" },
+                { q: "What is a doughnut economics approach to communities?", a: ["meeting needs within planetary boundaries", "social foundation and ecological ceiling", "balanced prosperity"], hint: "Ensuring everyone has enough while not using more than Earth can renew" },
+                { q: "Name one way to promote food security in urban built environments.", a: ["urban agriculture", "food markets", "waste reduction", "local supply chains"], hint: "Growing vegetables on rooftops or in community gardens increases fresh food access" },
+                { q: "What is transformative planning?", a: ["systemic change", "addressing root causes", "equitable futures", "paradigm shift"], hint: "Going beyond small fixes to create fundamentally fairer and sustainable communities" },
+                { q: "Why is hope important in sustainable development?", a: ["motivates action", "builds resilience", "inspires innovation", "fosters collaboration"], hint: "Believing a better future is possible encourages people to work together for change" }
+            ]
+        };
+
+        // Initialize the game
+        function initGame() {
+            // Load questions for all levels
+            gameState.questions = questionsDatabase;
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize level grid
+            renderLevelGrid();
+            
+            // Show start screen
+            showScreen('startScreen');
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            elements.startBtn.addEventListener('click', () => {
+                showScreen('levelSelect');
+            });
+            
+            elements.backToStart.addEventListener('click', () => {
+                showScreen('startScreen');
+            });
+            
+            elements.backToLevelsBtn.addEventListener('click', () => {
+                showScreen('levelSelect');
+            });
+            
+            elements.playAgainBtn.addEventListener('click', resetGame);
+            
+            elements.voiceToggle.addEventListener('click', toggleVoice);
+            
+            elements.submitBtn.addEventListener('click', submitAnswer);
+            elements.answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') submitAnswer();
+            });
+            
+            elements.hintBtn.addEventListener('click', showHint);
+            
+            elements.nextLevelBtn.addEventListener('click', goToNextLevel);
+            elements.retryLevelBtn.addEventListener('click', retryLevel);
+            elements.retryBtn.addEventListener('click', retryLevel);
+        }
+
+        // Render level selection grid
+        function renderLevelGrid() {
+            elements.levelGrid.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const levelCard = document.createElement('div');
+                levelCard.className = `level-card ${gameState.levelsUnlocked.includes(i) ? '' : 'locked'} ${i === gameState.currentLevel ? 'current' : ''}`;
+                levelCard.dataset.level = i;
+                
+                const status = gameState.levelScores[i] ? 
+                    (gameState.levelScores[i] >= 24 ? 'Completed' : 'Attempted') : 
+                    (i === 1 ? 'Start' : 'Locked');
+                
+                levelCard.innerHTML = `
+                    <span class="level-number">Level ${i}</span>
+                    <span class="level-status">${status}</span>
+                `;
+                
+                if (gameState.levelsUnlocked.includes(i)) {
+                    levelCard.addEventListener('click', () => startLevel(i));
+                }
+                
+                elements.levelGrid.appendChild(levelCard);
+            }
+        }
+
+        // Show a specific screen
+        function showScreen(screenId) {
+            // Hide all screens
+            [elements.startScreen, elements.levelSelect, elements.gameScreen, 
+             elements.levelComplete, elements.levelFailed, elements.gameComplete]
+                .forEach(el => el.classList.add('hidden'));
+            
+            // Show requested screen
+            document.getElementById(screenId).classList.remove('hidden');
+            
+            // Special handling for level select
+            if (screenId === 'levelSelect') {
+                renderLevelGrid();
+            }
+        }
+
+        // Start a specific level
+        function startLevel(level) {
+            gameState.currentLevel = level;
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.hintsUsed = 0;
+            
+            // Reset UI
+            elements.scoreDisplay.textContent = '0';
+            elements.totalDisplay.textContent = '30';
+            elements.currentLevel.textContent = level;
+            elements.progressFill.style.width = '0%';
+            
+            // Show game screen
+            showScreen('gameScreen');
+            
+            // Load first question
+            loadQuestion();
+        }
+
+        // Load a question
+        function loadQuestion() {
+            if (gameState.currentQuestion >= 30) {
+                endLevel();
+                return;
+            }
+            
+            const question = gameState.questions[gameState.currentLevel][gameState.currentQuestion];
+            elements.questionText.textContent = question.q;
+            elements.answerInput.value = '';
+            elements.answerInput.focus();
+            elements.hintBox.style.display = 'none';
+            elements.feedback.style.display = 'none';
+            elements.currentQuestion.textContent = gameState.currentQuestion + 1;
+            elements.progressFill.style.width = `${((gameState.currentQuestion) / 30) * 100}%`;
+            
+            // Reset timer
+            gameState.timeLeft = 40;
+            elements.timeDisplay.textContent = gameState.timeLeft;
+            clearInterval(gameState.timer);
+            
+            // Start timer
+            gameState.timer = setInterval(updateTimer, 1000);
+            
+            // Read question aloud if voice is enabled
+            if (gameState.voiceEnabled) {
+                speakQuestion(question.q);
+            }
+        }
+
+        // Update timer display and handle time events
+        function updateTimer() {
+            gameState.timeLeft--;
+            elements.timeDisplay.textContent = gameState.timeLeft;
+            
+            // Show hint when time is low
+            if (gameState.timeLeft <= 15 && !elements.hintBox.style.display) {
+                showHint();
+            }
+            
+            // Warning colors for timer
+            if (gameState.timeLeft <= 10) {
+                elements.timeDisplay.parentElement.style.color = '#e63946';
+            } else if (gameState.timeLeft <= 20) {
+                elements.timeDisplay.parentElement.style.color = '#f72585';
+            } else {
+                elements.timeDisplay.parentElement.style.color = '';
+            }
+            
+            // Time's up
+            if (gameState.timeLeft <= 0) {
+                clearInterval(gameState.timer);
+                handleTimeUp();
+            }
+        }
+
+        // Handle when time runs out
+        function handleTimeUp() {
+            elements.answerInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            
+            // Show correct answer as feedback
+            const question = gameState.questions[gameState.currentLevel][gameState.currentQuestion];
+            elements.feedback.textContent = `⏰ Time's up! Possible answer: ${question.a[0]}`;
+            elements.feedback.className = 'feedback incorrect';
+            elements.feedback.style.display = 'block';
+            
+            // Move to next question after delay
+            setTimeout(nextQuestion, 2500);
+        }
+
+        // Submit answer
+        function submitAnswer() {
+            if (gameState.timeLeft <= 0) return;
+            
+            clearInterval(gameState.timer);
+            const userAnswer = elements.answerInput.value.trim().toLowerCase();
+            const question = gameState.questions[gameState.currentLevel][gameState.currentQuestion];
+            const correctAnswers = question.a;
+            
+            // Check if answer is correct (simple keyword matching)
+            const isCorrect = correctAnswers.some(ans => 
+                userAnswer.includes(ans) || ans.includes(userAnswer) || 
+                userAnswer.split(' ').some(word => ans.includes(word) && word.length > 3)
+            );
+            
+            // Show feedback
+            if (isCorrect) {
+                gameState.score++;
+                elements.scoreDisplay.textContent = gameState.score;
+                elements.feedback.textContent = '✅ Excellent! That\'s correct!';
+                elements.feedback.className = 'feedback correct';
+                elements.questionText.classList.add('celebrate');
+                setTimeout(() => elements.questionText.classList.remove('celebrate'), 500);
+            } else {
+                elements.feedback.textContent = `❌ Not quite. Possible answer: ${correctAnswers[0]}`;
+                elements.feedback.className = 'feedback incorrect';
+                elements.answerInput.classList.add('shake');
+                setTimeout(() => elements.answerInput.classList.remove('shake'), 300);
+            }
+            
+            elements.feedback.style.display = 'block';
+            elements.answerInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            
+            // Next question after delay
+            setTimeout(nextQuestion, 2000);
+        }
+
+        // Go to next question
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            
+            if (gameState.currentQuestion >= 30) {
+                endLevel();
+            } else {
+                // Reset UI for next question
+                elements.answerInput.disabled = false;
+                elements.submitBtn.disabled = false;
+                loadQuestion();
+            }
+        }
+
+        // Show hint
+        function showHint() {
+            if (elements.hintBox.style.display === 'block') return;
+            
+            const question = gameState.questions[gameState.currentLevel][gameState.currentQuestion];
+            elements.hintBox.textContent = `💡 Hint: ${question.hint}`;
+            elements.hintBox.style.display = 'block';
+            gameState.hintsUsed++;
+        }
+
+        // End current level
+        function endLevel() {
+            clearInterval(gameState.timer);
+            
+            // Record score
+            gameState.levelScores[gameState.currentLevel] = gameState.score;
+            
+            // Check if level passed (80% = 24/30)
+            if (gameState.score >= 24) {
+                // Unlock next level if not last
+                if (gameState.currentLevel < 5 && !gameState.levelsUnlocked.includes(gameState.currentLevel + 1)) {
+                    gameState.levelsUnlocked.push(gameState.currentLevel + 1);
+                }
+                
+                // Show level complete screen
+                elements.levelScore.textContent = gameState.score;
+                renderStars(gameState.score);
+                
+                if (gameState.currentLevel === 5) {
+                    elements.levelMessage.textContent = "You've mastered all levels!";
+                    elements.nextLevelBtn.style.display = 'none';
+                    setTimeout(() => showScreen('gameComplete'), 3000);
+                } else {
+                    elements.levelMessage.textContent = "Great job! You're ready for the next challenge.";
+                    elements.nextLevelBtn.style.display = 'inline-flex';
+                    showScreen('levelComplete');
+                }
+            } else {
+                // Show level failed screen
+                elements.failedScore.textContent = gameState.score;
+                showScreen('levelFailed');
+            }
+        }
+
+        // Render star rating
+        function renderStars(score) {
+            elements.starRating.innerHTML = '';
+            const stars = Math.min(5, Math.max(0, Math.floor((score - 18) / 3)));
+            
+            for (let i = 0; i < 5; i++) {
+                const star = document.createElement('i');
+                star.textContent = '⭐';
+                if (i >= stars) star.style.opacity = '0.3';
+                elements.starRating.appendChild(star);
+            }
+        }
+
+        // Go to next level
+        function goToNextLevel() {
+            if (gameState.currentLevel < 5) {
+                startLevel(gameState.currentLevel + 1);
+            }
+        }
+
+        // Retry current level
+        function retryLevel() {
+            startLevel(gameState.currentLevel);
+        }
+
+        // Reset entire game
+        function resetGame() {
+            gameState.currentLevel = 1;
+            gameState.levelsUnlocked = [1];
+            gameState.levelScores = {};
+            showScreen('startScreen');
+        }
+
+        // Toggle voice output
+        function toggleVoice() {
+            gameState.voiceEnabled = !gameState.voiceEnabled;
+            elements.voiceToggle.innerHTML = gameState.voiceEnabled ? '<i>🔊</i>' : '<i>🔇</i>';
+            elements.voiceToggle.classList.toggle('speaking', !gameState.voiceEnabled);
+        }
+
+        // Text-to-speech function
+        function speakQuestion(text) {
+            if (!gameState.voiceEnabled || !('speechSynthesis' in window)) return;
+            
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; // Slightly slower for clarity
+            utterance.pitch = 1.1; // Slightly higher for engagement
+            
+            // Visual feedback
+            elements.voiceToggle.classList.add('speaking');
+            
+            utterance.onend = () => {
+                elements.voiceToggle.classList.remove('speaking');
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Initialize the game when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

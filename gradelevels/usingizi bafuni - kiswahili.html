@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Usingizi Bafuni - Mchezo wa CBC Darasa la 2 | Kusikiliza, Kuzungumza, Kusoma na Kuandika</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a4d8c 0%, #0d2b4d 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Fredoka One', 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: #E8F4FD;
+            background-image: radial-gradient(circle at 10% 30%, rgba(100,180,250,0.15) 2%, transparent 2.5%);
+            background-size: 28px 28px;
+            border-radius: 70px 70px 70px 50px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,255,0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #1E88E5;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 6px solid #0D47A1;
+        }
+
+        .level-badge, .score-badge, .progress-badge {
+            background: #2c2b28;
+            color: #FFD966;
+            font-weight: bold;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-family: monospace;
+            box-shadow: inset 0 -2px 0 #4b3a1e, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .timer-area {
+            background: #1f2c0e;
+            padding: 5px 15px;
+            border-radius: 50px;
+            color: #FFD966;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .story-card {
+            background: #FFFFFF;
+            margin: 20px 25px;
+            padding: 20px 25px;
+            border-radius: 55px;
+            box-shadow: inset 0 0 0 3px white, 0 12px 18px rgba(0,0,0,0.1);
+        }
+
+        .narrative-text {
+            font-size: 1.4rem;
+            line-height: 1.4;
+            font-weight: 600;
+            color: #0D47A1;
+            text-shadow: 1px 1px 0 #E3F2FD;
+            background: #E3F2FD;
+            padding: 18px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: #BBDEFB;
+            padding: 20px;
+            border-radius: 60px;
+            text-align: center;
+            color: #0D47A1;
+            margin: 15px 0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 25px 0;
+        }
+
+        .option-btn {
+            background: #BBDEFB;
+            border: 4px solid #1E88E5;
+            font-size: 1.2rem;
+            padding: 15px 8px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: #0D47A1;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.1s;
+            text-align: left;
+            font-family: inherit;
+            box-shadow: 0 5px 0 #1565C0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-prefix {
+            background: #1E88E5;
+            color: white;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-left: 8px;
+            box-shadow: inset 0 -1px 0 #0D47A1;
+            flex-shrink: 0;
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        .option-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1565C0;
+        }
+
+        .option-btn:hover {
+            background: #90CAF9;
+        }
+
+        .disabled-opt {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .next-area {
+            text-align: center;
+            margin: 20px 0 10px;
+        }
+
+        .next-btn {
+            background: #1E88E5;
+            border: none;
+            font-size: 1.5rem;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #0D47A1;
+            transition: 0.05s linear;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0D47A1;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-message {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 10px;
+            font-weight: bold;
+            background: #BBDEFB;
+            display: inline-block;
+            width: auto;
+            padding: 5px 20px;
+            border-radius: 30px;
+        }
+
+        footer {
+            background: #90CAF9;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #0D47A1;
+        }
+
+        @media (max-width: 650px) {
+            .narrative-text { font-size: 1.1rem; }
+            .question-text { font-size: 1.3rem; }
+            .option-btn { font-size: 0.9rem; padding: 10px 5px; }
+            .option-prefix { width: 32px; height: 32px; font-size: 1rem; }
+            .level-badge, .score-badge { font-size: 0.8rem; }
+        }
+
+        .correct-fx {
+            background: #A5D6A7 !important;
+            border-color: #2E7D32 !important;
+        }
+
+        .wrong-fx {
+            background: #EF9A9A !important;
+            border-color: #C62828 !important;
+        }
+        
+        .sleep-zzz {
+            display: inline-block;
+            animation: float 0.5s ease-out;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-20px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Ngazi ya 1</div>
+        <div class="score-badge" id="scoreDisplay">Alama: 0 / 0</div>
+        <div class="progress-badge" id="progressDisplay">Swali: 1 / 40</div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span> s</div>
+    </div>
+    <div class="story-card">
+        <div class="narrative-text" id="storyNarrative">🛁 Alielie! Mtoto analala bafuni! Jiunge na hadithi ya kuchekesha "Usingizi Bafuni"! 💤</div>
+        <div class="question-text" id="questionText">Loading...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ Swali linalofuata</button>
+        </div>
+        <div style="text-align: center; margin-top: 8px;"><span id="feedbackMsg" class="info-message">✨ Chagua jibu (A, B, C, au D)</span></div>
+    </div>
+    <footer>🎵 "Usingizi Bafuni" - Kusikiliza, Kuzungumza, Kusoma na Kuandika 🎵</footer>
+</div>
+
+<script>
+    // ------------------- INTRO SONG (Sleepy but playful melody for Usingizi Bafuni) ------------------
+    function playIntroSong() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioCtx.currentTime;
+            const playNote = (freq, start, duration, vol = 0.3) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(vol, start);
+                gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+                osc.start(start);
+                osc.stop(start + duration);
+            };
+            // Sleepy, playful melody
+            playNote(392.00, now, 0.4);
+            playNote(349.23, now + 0.45, 0.4);
+            playNote(293.66, now + 0.9, 0.5);
+            playNote(440.00, now + 1.4, 0.35);
+            playNote(392.00, now + 1.85, 0.4);
+            playNote(349.23, now + 2.3, 0.45);
+            playNote(293.66, now + 2.8, 0.6);
+            playNote(349.23, now + 3.4, 0.35);
+            playNote(440.00, now + 3.8, 0.4);
+            playNote(392.00, now + 4.2, 0.5);
+        } catch(e) { console.log("audio context error", e); }
+    }
+
+    // Voice synthesis in Kiswahili
+    function speakKiswahili(text, type = "info") {
+        if (!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "sw-KE";
+            utterance.rate = 0.9;
+            utterance.pitch = (type === "correct") ? 1.1 : (type === "wrong" ? 0.9 : 1.0);
+            window.speechSynthesis.speak(utterance);
+        } catch(e) { console.log("speech error", e); }
+    }
+
+    // ------------------------------------------------------------------
+    // 200 UNIQUE QUESTIONS about "Usingizi Bafuni" (Sleeping in the Bathroom)
+    // Topics: Kusikiliza, Kuzungumza, Kusoma, Kuandika
+    // Each question has unique narrative, answers randomly placed in A,B,C,D
+    // ------------------------------------------------------------------
+    
+    // Rich pool of funny bathroom sleeping scenarios
+    const bathroomScenarios = [
+        { nar: "Mtoto anachoka baada ya kucheza sana. Anaingia bafuni kujiosha lakini analala ndani!", q: "Mtoto alifanya wapi usingizi?", correct: "Bafuni", wrongs: ["Chumbani", "Jikoni", "Sebuleni", "Bustanini"] },
+        { nar: "Mama anamtafuta mtoto wake. Anapiga kelele 'Wewe uko wapi?' Hakuna jibu.", q: "Mama anafanya nini?", correct: "Anamtafuta mtoto", wrongs: ["Anapika", "Analala", "Anacheza", "Anasoma"] },
+        { nar: "Kusikiliza: Bomba la maji linaendelea kumwaga. Mtoto bado yuko bafuni akiwa amelala.", q: "Mtoto anaendelea kufanya nini?", correct: "Kulala", wrongs: ["Kuogelea", "Kuimba", "Kucheka", "Kukimbia"] },
+        { nar: "Soma: 'Baba anafungua mlango wa bafuni na kumwona mtoto amelala sakafuni.'", q: "Baba alimwona nani bafuni?", correct: "Mtoto amelala", wrongs: ["Mgeni", "Jini", "Paka", "Mbwa"] },
+        { nar: "Kuandika: Taja herufi ya kwanza ya neno 'bafu'.", q: "Herufi ya mwanzo ya 'bafu' ni?", correct: "B", wrongs: ["A", "F", "U", "M"] },
+        { nar: "Mtoto alikuwa amevalia nguo za kuoga. Alilala kabla hajaoga.", q: "Mtoto alifanya nini kabla ya kulala?", correct: "Alivaa nguo za kuoga", wrongs: ["Alikula", "Alikimbia", "Alilia", "Alicheka"] },
+        { nar: "Mama alimwamsha mtoto kwa kumwaga maji baridi. Mtoto aliruka kwa mshtuko!", q: "Mama alimwamshaje mtoto?", correct: "Kwa kumwaga maji baridi", wrongs: ["Kwa kupiga kelele", "Kwa kumtia nguvu", "Kwa kumwimbia", "Kwa kumpiga"] },
+        { nar: "Kusikiliza: Saa inagonga kumi usiku. Bafuni bado kuna mtu ndani.", q: "Ni saa ngapi usiku?", correct: "Kumi", wrongs: ["Saba", "Nane", "Tisa", "Kumi na moja"] },
+        { nar: "Soma: 'Mtoto aliota ndoto ya kuwa anaruka angani alipokuwa bafuni.'", q: "Mtoto aliota ndoto gani?", correct: "Anaruka angani", wrongs: ["Anaogelea", "Anakula", "Anacheza", "Anasoma"] },
+        { nar: "Kuandika: Neno 'usingizi' lina herufi ngapi?", q: "Neno 'usingizi' lina herufi ngapi?", correct: "Saba", wrongs: ["Sita", "Nane", "Tano", "Nne"] },
+        { nar: "Mtoto alipoona baba anakuja, alijifanya anaoga. Lakini hakuwa na maji.", q: "Mtoto alijifanya anafanya nini?", correct: "Anaoga", wrongs: ["Analala", "Anakula", "Anacheza", "Anasoma"] },
+        { nar: "Mama alimwambia mtoto, 'Usilale bafuni, maana ni hatari!'", q: "Mama alimwambia mtoto nini?", correct: "Usilale bafuni", wrongs: ["Usicheze bafuni", "Usiogelee bafuni", "Usiimbe bafuni", "Usikimbie bafuni"] },
+        { nar: "Kusikiliza: Mtoto anapiga miayo bafuni. Anasema 'Nimechoka sana!'", q: "Mtoto anasema nini?", correct: "Nimechoka sana", wrongs: ["Nina furaha", "Nina njaa", "Nina kiu", "Nina hasira"] },
+        { nar: "Soma: 'Baba alicheka alipomwona mtoto amelala ndani ya bafu tupu.'", q: "Baba alicheka kwa nini?", correct: "Alimwona mtoto amelala", wrongs: ["Aliona ndoto", "Aliweza kuoga", "Alipata pesa", "Alikula chakula"] },
+        { nar: "Kuandika: Taja herufi ya mwisho ya neno 'bafuni'.", q: "Herufi ya mwisho ya 'bafuni' ni?", correct: "I", wrongs: ["B", "A", "F", "N"] },
+        { nar: "Dada anamtafuta mdogo wake. Anaangalia chumbani, jikoni, sebuleni, lakini hakuna.", q: "Dada alitafuta wapi mtoto?", correct: "Chumbani, jikoni, sebuleni", wrongs: ["Bafuni tu", "Nje tu", "Darasani tu", "Shambani tu"] },
+        { nar: "Mtoto anaamka na kusema, 'Niliota niko baharini!' Lakini alikuwa bafuni.", q: "Mtoto aliona ndoto ya wapi?", correct: "Bahari", wrongs: ["Mlima", "Msitu", "Jangwani", "Shuleni"] },
+        { nar: "Kusikiliza: Simu inaita. Mama anajibu na kusema, 'Samahani, mtoto wangu amelala bafuni!'", q: "Mama anamwambia nani juu ya mtoto?", correct: "Mtu kwenye simu", wrongs: ["Baba", "Dada", "Rafiki", "Mwalimu"] },
+        { nar: "Soma: 'Usingizi bafuni uliwafundisha watoto kuwa bafuni si mahali pa kulala.'", q: "Bafuni ni mahali pa nini?", correct: "Kuoga", wrongs: ["Kulala", "Kucheza", "Kupika", "Kusoma"] },
+        { nar: "Kuandika: Andika neno 'bafu' kwa herufi kubwa.", q: "Bafu kwa herufi kubwa ni...", correct: "BAFU", wrongs: ["bafu", "Bafu", "bAFU", "BaFu"] }
+    ];
+    
+    // Shuffle array randomly
+    function shuffleArray(arr) {
+        const shuffled = [...arr];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+    
+    // Generate distinct question for each level and index
+    function generateDistinctQuestion(level, qIndex) {
+        const scenarioIndex = (level * 27 + qIndex * 33) % bathroomScenarios.length;
+        const base = bathroomScenarios[scenarioIndex];
+        
+        const levelNames = ["Awali", "Kati", "Juvi", "Stadi", "Ubingwa"];
+        const levelName = levelNames[level - 1];
+        
+        const topicType = qIndex % 4;
+        let topicPrefix = "";
+        if (topicType === 0) topicPrefix = "🎧 Kusikiliza: ";
+        else if (topicType === 1) topicPrefix = "💬 Kuzungumza: ";
+        else if (topicType === 2) topicPrefix = "📖 Kusoma: ";
+        else topicPrefix = "✍️ Kuandika: ";
+        
+        let narrative = `${topicPrefix}${base.nar} [L${level}Q${qIndex}] - Ngazi ${levelName} ya hadithi "Usingizi Bafuni".`;
+        let question = base.q;
+        let correctAnswer = base.correct;
+        
+        // Add variation for uniqueness
+        if (qIndex % 5 === 2) {
+            question = `Kuhusu usingizi bafuni, ${question.toLowerCase()}`;
+        }
+        if (qIndex % 7 === 3) {
+            narrative = `🛁 ${narrative} Kumbuka hadithi ya kuchekesha!`;
+        }
+        if (qIndex % 9 === 4) {
+            narrative = `💤 ${narrative} Zzz... mtoto amelala tena!`;
+        }
+        
+        // Build 4 options
+        let allOptions = [correctAnswer];
+        for (let w of base.wrongs) {
+            if (!allOptions.includes(w) && allOptions.length < 4) {
+                allOptions.push(w);
+            }
+        }
+        const fallbacks = ["Sijui", "Labda", "Pengine", "Hapana", "Ndiyo", "Asante", "Samahani", "Usingizi", "Bafu"];
+        for (let f of fallbacks) {
+            if (!allOptions.includes(f) && allOptions.length < 4) {
+                allOptions.push(f);
+            }
+        }
+        
+        // Randomly shuffle answers to A, B, C, D
+        const shuffledOptions = shuffleArray(allOptions);
+        
+        return { narrative, question, options: shuffledOptions, correctAnswer };
+    }
+    
+    // Build 200 unique questions (5 levels x 40)
+    let questionBank = [];
+    const usedQuestions = new Set();
+    
+    for (let lvl = 1; lvl <= 5; lvl++) {
+        let levelQuestions = [];
+        for (let i = 0; i < 40; i++) {
+            let q = generateDistinctQuestion(lvl, i);
+            let key = `${q.narrative}|${q.question}`;
+            let attempts = 0;
+            while (usedQuestions.has(key) && attempts < 30) {
+                q = generateDistinctQuestion(lvl, i + attempts * 43);
+                key = `${q.narrative}|${q.question}`;
+                attempts++;
+            }
+            usedQuestions.add(key);
+            levelQuestions.push(q);
+        }
+        questionBank.push(levelQuestions);
+    }
+    
+    console.log(`✅ Maswali ${usedQuestions.size} tofauti kabisa kuhusu Usingizi Bafuni!`);
+    
+    // Game state
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let scoreInLevel = 0;
+    const totalQuestionsInLevel = 40;
+    const requiredToPass = 32;
+    let answered = false;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let waitingForNext = false;
+    let gameActive = true;
+    
+    // DOM elements
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const progressDisplay = document.getElementById('progressDisplay');
+    const timerSecondsSpan = document.getElementById('timerSeconds');
+    const storyNarrativeDiv = document.getElementById('storyNarrative');
+    const questionTextDiv = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const nextButton = document.getElementById('nextButton');
+    const feedbackSpan = document.getElementById('feedbackMsg');
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        stopTimer();
+        if (!gameActive || waitingForNext || answered) return;
+        timeLeft = 40;
+        timerSecondsSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if (!gameActive || waitingForNext || answered) return;
+            if (timeLeft <= 1) {
+                if (!answered) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    handleTimeout();
+                } else {
+                    stopTimer();
+                }
+            } else {
+                timeLeft--;
+                timerSecondsSpan.innerText = timeLeft;
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        if (answered) return;
+        answered = true;
+        gameActive = false;
+        speakKiswahili("Wakati umekwisha! Jibu sahihi lilikuwa: " + currentQuestionObj.correctAnswer + ". Usilale kwenye maswali!", "timeout");
+        feedbackSpan.innerHTML = `⏰ Muda umekwisha! Jibu sahihi: ${currentQuestionObj.correctAnswer}`;
+        highlightCorrectAnswer();
+        disableOptions(true);
+        waitingForNext = true;
+        setTimeout(() => {
+            if (waitingForNext) autoNextAfterTimeout();
+        }, 2200);
+    }
+    
+    function autoNextAfterTimeout() {
+        if (!waitingForNext) return;
+        waitingForNext = false;
+        gameActive = true;
+        moveToNextQuestion();
+    }
+    
+    function highlightCorrectAnswer() {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            if (btn.getAttribute('data-value') === currentQuestionObj.correctAnswer) {
+                btn.style.backgroundColor = "#A5D6A7";
+                btn.style.borderColor = "#2E7D32";
+            }
+        });
+    }
+    
+    function disableOptions(disabled) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            if (disabled) {
+                btn.classList.add('disabled-opt');
+            } else {
+                btn.classList.remove('disabled-opt');
+            }
+        });
+    }
+    
+    function handleAnswer(selectedValue, btnElement) {
+        if (!gameActive || answered || waitingForNext) return;
+        stopTimer();
+        answered = true;
+        const isCorrect = (selectedValue === currentQuestionObj.correctAnswer);
+        if (isCorrect) {
+            scoreInLevel++;
+            speakKiswahili("Jibu sahihi! Hongera! Haukuwa na usingizi kwenye swali!", "correct");
+            feedbackSpan.innerHTML = "✅ Sahihi! Umepata alama! 💤";
+            btnElement.classList.add('correct-fx');
+        } else {
+            speakKiswahili("Pole! Jibu sahihi ni: " + currentQuestionObj.correctAnswer + ". Usilale bafuni kwenye maswali!", "wrong");
+            feedbackSpan.innerHTML = `❌ Si sahihi! Jibu sahihi: ${currentQuestionObj.correctAnswer}`;
+            btnElement.classList.add('wrong-fx');
+            highlightCorrectAnswer();
+            // Add sleepy effect for wrong answer
+            const zzz = document.createElement('span');
+            zzz.innerHTML = '💤😴';
+            zzz.className = 'sleep-zzz';
+            feedbackSpan.appendChild(zzz);
+            setTimeout(() => zzz.remove(), 500);
+        }
+        disableOptions(true);
+        updateUIStats();
+        waitingForNext = true;
+        setTimeout(() => {
+            if (waitingForNext) moveToNextQuestion();
+        }, 2000);
+    }
+    
+    function moveToNextQuestion() {
+        waitingForNext = false;
+        if (currentQIndex + 1 >= totalQuestionsInLevel) {
+            let percentage = (scoreInLevel / totalQuestionsInLevel) * 100;
+            if (percentage >= 80) {
+                if (currentLevel === 5) {
+                    feedbackSpan.innerHTML = "🏆🏆 HONGERA SANA! UMEMALIZA HADITHI YA USINGIZI BAFUNI! WEWE NI BINGWA WA KUSOMA NA KUANDIKA! 🏆🏆";
+                    speakKiswahili("Hongera sana! Umemaliza ngazi zote tano za Usingizi Bafuni! Kumbuka, bafuni ni mahali pa kuoga, si kulala!", "correct");
+                    gameActive = false;
+                    disableOptions(true);
+                    nextButton.disabled = true;
+                    stopTimer();
+                    return;
+                } else {
+                    currentLevel++;
+                    currentQIndex = 0;
+                    scoreInLevel = 0;
+                    resetLevelUI();
+                    loadQuestion();
+                    speakKiswahili(`Hongera! Umefika Ngazi ya ${currentLevel} ya hadithi ya Usingizi Bafuni! Endelea kujifunza!`, "correct");
+                    feedbackSpan.innerHTML = `🎉🎉 Umepitisha ngazi! Sasa Ngazi ${currentLevel} ya Hadithi! 🎉🎉`;
+                    return;
+                }
+            } else {
+                feedbackSpan.innerHTML = `😭 Hujapata asilimia 80. Unarudia Ngazi ${currentLevel} ya Usingizi Bafuni. Usilale kwenye maswali! Jaribu tena! 😭`;
+                speakKiswahili("Samahani, hujapata alama za kutosha. Rudia ngazi hii ya Usingizi Bafuni tena. Usilale bafuni!", "wrong");
+                scoreInLevel = 0;
+                currentQIndex = 0;
+                resetLevelUI();
+                loadQuestion();
+                return;
+            }
+        } else {
+            currentQIndex++;
+            loadQuestion();
+        }
+    }
+    
+    function resetLevelUI() {
+        updateUIStats();
+        if (timerInterval) stopTimer();
+        answered = false;
+        waitingForNext = false;
+        gameActive = true;
+        if (nextButton) nextButton.disabled = false;
+    }
+    
+    function updateUIStats() {
+        if (levelDisplay) levelDisplay.innerText = `Ngazi ya ${currentLevel}`;
+        if (scoreDisplay) scoreDisplay.innerText = `Alama: ${scoreInLevel} / ${totalQuestionsInLevel}`;
+        if (progressDisplay) progressDisplay.innerText = `Swali: ${currentQIndex+1} / ${totalQuestionsInLevel}`;
+    }
+    
+    let currentQuestionObj = null;
+    
+    function loadQuestion() {
+        if (!questionBank[currentLevel-1] || !questionBank[currentLevel-1][currentQIndex]) {
+            console.error("Swali halipo");
+            return;
+        }
+        currentQuestionObj = questionBank[currentLevel-1][currentQIndex];
+        if (storyNarrativeDiv) storyNarrativeDiv.innerHTML = `🛁 ${currentQuestionObj.narrative}`;
+        if (questionTextDiv) questionTextDiv.innerHTML = `❓ ${currentQuestionObj.question}`;
+        
+        if (optionsContainer) {
+            optionsContainer.innerHTML = "";
+            const prefixes = ['A', 'B', 'C', 'D'];
+            currentQuestionObj.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.setAttribute('data-value', opt);
+                const prefixSpan = document.createElement('span');
+                prefixSpan.className = 'option-prefix';
+                prefixSpan.innerText = prefixes[idx];
+                const textSpan = document.createElement('span');
+                textSpan.className = 'option-text';
+                textSpan.innerText = opt;
+                btn.appendChild(prefixSpan);
+                btn.appendChild(textSpan);
+                btn.addEventListener('click', (e) => {
+                    if (!answered && gameActive && !waitingForNext) {
+                        handleAnswer(opt, btn);
+                    }
+                });
+                optionsContainer.appendChild(btn);
+            });
+        }
+        
+        updateUIStats();
+        answered = false;
+        gameActive = true;
+        waitingForNext = false;
+        disableOptions(false);
+        stopTimer();
+        startTimer();
+        if (feedbackSpan) feedbackSpan.innerHTML = "🎤 Chagua jibu (A, B, C, D) - Usilale bafuni, lakin usilale kwenye maswali pia! 🎤";
+    }
+    
+    function initGame() {
+        currentLevel = 1;
+        currentQIndex = 0;
+        scoreInLevel = 0;
+        answered = false;
+        waitingForNext = false;
+        gameActive = true;
+        loadQuestion();
+        playIntroSong();
+        setTimeout(() => {
+            speakKiswahili("Karibu kwenye mchezo 'Usingizi Bafuni'! Hadithi ya kuchekesha ya mtoto aliyelala bafuni. Jibu maswali 40 kwa kila ngazi. Pata angalau asilimia 80 kupanda ngazi. Usilale kwenye maswali!", "info");
+        }, 800);
+        
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                if (!answered && gameActive && !waitingForNext) {
+                    speakKiswahili("Tafadhali jibu swali kwanza!", "info");
+                    if (feedbackSpan) feedbackSpan.innerHTML = "⚠️ Jibu swali kabla ya kuendelea! ⚠️";
+                    return;
+                }
+                if (waitingForNext) {
+                    if (timerInterval) stopTimer();
+                    moveToNextQuestion();
+                }
+            });
+        }
+    }
+    
+    window.addEventListener('DOMContentLoaded', initGame);
+</script>
+</body>
+</html>

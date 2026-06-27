@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Matter Master | Grade 4 Science | States of Matter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #2c3e50 0%, #1a2632 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 1px 4px rgba(255, 250, 210, 0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 6px solid #1a5276;
+            color: white;
+            text-shadow: 2px 2px 0 #1a5276;
+        }
+
+        .level-badge {
+            background: #1a3a4a;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.7rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #3498db, 0 6px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-area {
+            background: #0f2a3a;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: inset 0 0 0 3px #aed6f1, 0 6px 0 #1a3a4a;
+        }
+
+        .timer-number {
+            background: #000000;
+            padding: 6px 20px;
+            border-radius: 50px;
+            color: #85c1e9;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+            min-width: 110px;
+            text-align: center;
+            transition: 0.1s;
+        }
+
+        .score-progress {
+            background: #e8ddc5;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #b89a6e;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: #2980b9;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .question-card {
+            padding: 30px 28px 20px;
+            background: #fffaf0;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 700;
+            background: #eaf2f8;
+            padding: 24px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 0 4px white, 0 10px 18px rgba(0,0,0,0.1);
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            padding: 16px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.07s linear;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #aa8e6c;
+            color: #2d2418;
+            font-family: inherit;
+        }
+
+        .option-prefix {
+            background: #3498db;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 0 #1a5276;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #ffefcf;
+            transform: scale(0.97);
+        }
+
+        .option-btn.correct-highlight {
+            background: #2e7d32;
+            color: white;
+            box-shadow: 0 3px 0 #1b5e1f;
+        }
+
+        .option-btn.correct-highlight .option-prefix {
+            background: #1b5e20;
+        }
+
+        .option-btn.wrong-highlight {
+            background: #c62828;
+            color: white;
+            text-decoration: line-through;
+            box-shadow: 0 3px 0 #7f2a2a;
+        }
+
+        .option-btn.wrong-highlight .option-prefix {
+            background: #8b2a2a;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+
+        .next-area {
+            text-align: center;
+            padding-bottom: 25px;
+        }
+
+        .next-btn {
+            background: #f4a261;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 45px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c45c1a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #c45c1a;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #2980b9;
+            color: #eaf2f8;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-top: 2px solid #f5bc70;
+        }
+
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 18px;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+
+        .restart-btn:hover {
+            background: #5e3f2a;
+            color: white;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.2rem; }
+            .timer-number { font-size: 1.5rem; min-width: 75px; letter-spacing: 2px; }
+            .level-badge { font-size: 1.2rem; }
+        }
+
+        .timer-critical {
+            background: #8b0000 !important;
+            color: #ffcc44 !important;
+            text-shadow: 0 0 4px red;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.85; transform: scale(1.03);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+        
+        .matter-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge">🧊 LEVEL <span id="levelNum">1</span> 💧</div>
+        <div class="timer-area">⏱️ TIME LEFT <span class="timer-number" id="timerDisplay">00</span></div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 80% TO PASS → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading matter challenge...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">🧪 MATTER MASTER! Learn solids, liquids, gases — their properties and importance. Timer is RUNNING!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC SCIENCE AND TECHNOLOGY: STATES OF MATTER
+    // Topics: Categorising substances into solids, liquids, gases
+    // Properties of the three states of matter (shape, volume, compressibility, particle arrangement)
+    // Importance of different states of matter in day-to-day life
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // ---------- BANK 1: CATEGORISING SUBSTANCES INTO THREE STATES OF MATTER ----------
+    const categoriseBank = [
+        { q: "Which of these is a solid?", correct: "Rock", options: ["Water", "Rock", "Air", "Steam"] },
+        { q: "Which of these is a liquid at room temperature?", correct: "Milk", options: ["Ice", "Milk", "Oxygen", "Wood"] },
+        { q: "Which of these is a gas?", correct: "Oxygen", options: ["Iron", "Oxygen", "Glass", "Butter"] },
+        { q: "Water in the form of ice is a:", correct: "Solid", options: ["Liquid", "Gas", "Solid", "Plasma"] },
+        { q: "Water vapor (steam) is a:", correct: "Gas", options: ["Solid", "Liquid", "Gas", "None"] },
+        { q: "Which of the following is NOT a solid?", correct: "Juice", options: ["Table", "Juice", "Book", "Pen"] },
+        { q: "Which of the following is NOT a liquid?", correct: "Brick", options: ["Oil", "Brick", "Water", "Syrup"] },
+        { q: "Which of the following is NOT a gas?", correct: "Stone", options: ["Helium", "Stone", "Carbon dioxide", "Nitrogen"] },
+        { q: "Butter at room temperature is a:", correct: "Solid", options: ["Solid", "Liquid", "Gas", "Both solid and liquid"] },
+        { q: "Honey is a substance that flows slowly. It is a:", correct: "Liquid", options: ["Solid", "Liquid", "Gas", "Plasma"] }
+    ];
+
+    // ---------- BANK 2: PROPERTIES OF SOLIDS ----------
+    const solidsBank = [
+        { q: "A solid has a:", correct: "Fixed shape and fixed volume", options: ["Fixed shape and fixed volume", "Fixed shape but no fixed volume", "No fixed shape but fixed volume", "No fixed shape and no fixed volume"] },
+        { q: "Solids cannot be poured because:", correct: "Their particles are tightly packed and cannot flow", options: ["They are too heavy", "Their particles are tightly packed and cannot flow", "They are invisible", "They have no mass"] },
+        { q: "Which property is true for solids?", correct: "They are usually hard and rigid", options: ["They flow easily", "They are usually hard and rigid", "They have no definite shape", "They can be compressed easily"] },
+        { q: "When you hit a metal spoon on a table, it makes a sound. This shows solids:", correct: "Can vibrate and transmit sound", options: ["Are silent", "Can vibrate and transmit sound", "Are always soft", "Have no particles"] },
+        { q: "Solids cannot be compressed easily because:", correct: "The particles have no space to move closer", options: ["The particles have no space to move closer", "They are very light", "They are invisible", "They are made of gas"] }
+    ];
+
+    // ---------- BANK 3: PROPERTIES OF LIQUIDS ----------
+    const liquidsBank = [
+        { q: "A liquid has:", correct: "No fixed shape but a fixed volume", options: ["Fixed shape and fixed volume", "No fixed shape but fixed volume", "Fixed shape but no fixed volume", "No fixed shape and no fixed volume"] },
+        { q: "Liquids take the shape of the container they are in because:", correct: "Their particles can slide past each other", options: ["Their particles are fixed", "Their particles can slide past each other", "They are invisible", "They have no mass"] },
+        { q: "Which property is true for liquids?", correct: "They flow from higher to lower level", options: ["They cannot flow", "They flow from higher to lower level", "They have a fixed shape", "They are always hot"] },
+        { q: "The surface of a liquid in a container is always:", correct: "Level (flat)", options: ["Curved only", "Level (flat)", "Tilted", "Circular"] },
+        { q: "Liquids can be poured but solids cannot because:", correct: "Liquid particles can move around each other", options: ["Liquids are heavier", "Liquid particles can move around each other", "Liquids are invisible", "Liquids have no mass"] }
+    ];
+
+    // ---------- BANK 4: PROPERTIES OF GASES ----------
+    const gasesBank = [
+        { q: "A gas has:", correct: "No fixed shape and no fixed volume", options: ["Fixed shape and fixed volume", "No fixed shape but fixed volume", "Fixed shape but no fixed volume", "No fixed shape and no fixed volume"] },
+        { q: "Gases fill the entire container they are in because:", correct: "Gas particles move freely and spread out", options: ["They are heavy", "Gas particles move freely and spread out", "They are stuck together", "They have no mass"] },
+        { q: "Which property is true for gases?", correct: "They can be compressed easily", options: ["They cannot be compressed", "They can be compressed easily", "They have fixed shape", "They are always visible"] },
+        { q: "Air is a mixture of gases. When you inflate a balloon, you are:", correct: "Adding gas particles that push outwards", options: ["Adding solid particles", "Adding gas particles that push outwards", "Adding liquid", "Removing air"] },
+        { q: "Gas particles move:", correct: "Very fast in all directions", options: ["Very slowly", "Very fast in all directions", "Only upward", "Only downward"] }
+    ];
+
+    // ---------- BANK 5: IMPORTANCE OF STATES OF MATTER IN DAILY LIFE ----------
+    const importanceBank = [
+        { q: "We drink water (liquid) because:", correct: "It keeps us hydrated and helps body functions", options: ["It is solid", "It keeps us hydrated and helps body functions", "It is a gas", "It has no use"] },
+        { q: "We use solid wood to build houses because:", correct: "It is strong and has a fixed shape", options: ["It flows", "It is strong and has a fixed shape", "It evaporates", "It is invisible"] },
+        { q: "Oxygen gas is important for:", correct: "Breathing (respiration) to stay alive", options: ["Drinking", "Breathing to stay alive", "Building houses", "Cooking only"] },
+        { q: "Water as a solid (ice) is used to:", correct: "Keep food and drinks cold", options: ["Heat food", "Keep food and drinks cold", "Water plants", "Wash clothes"] },
+        { q: "Fuel gases like natural gas and LPG are used for:", correct: "Cooking and heating", options: ["Only cooling", "Cooking and heating", "Building roads", "Drinking"] },
+        { q: "Liquid water is used in farming to:", correct: "Irrigate crops so plants can grow", options: ["Burn fields", "Irrigate crops so plants can grow", "Freeze seeds", "Dry soil"] },
+        { q: "Solid metals like iron and steel are used to:", correct: "Build cars, bridges, and machines", options: ["Make drinks", "Build cars, bridges, and machines", "Breathe", "Cook food"] },
+        { q: "Liquid fuel (petrol/diesel) is important for:", correct: "Running vehicles and machines", options: ["Drinking", "Running vehicles and machines", "Building houses", "Clothing"] },
+        { q: "Gases in the atmosphere keep the Earth warm through:", correct: "The greenhouse effect (natural)", options: ["The greenhouse effect", "Cooling only", "Making ice", "Blocking all light"] },
+        { q: "We use solid soap and liquid water together to:", correct: "Clean our hands and kill germs", options: ["Make fire", "Clean our hands and kill germs", "Grow food", "Breathe"] }
+    ];
+
+    // Combine all banks into categories
+    const categories = [categoriseBank, solidsBank, liquidsBank, gasesBank, importanceBank];
+    
+    // Build 5 levels (30 Q each, each category contributes 6 per level)
+    let levelsData = [];
+
+    function buildGame() {
+        for (let lvl = 1; lvl <= 5; lvl++) {
+            let levelQs = [];
+            for (let cat of categories) {
+                // each category gives 6 questions (total 30 per level)
+                for (let i = 0; i < 6; i++) {
+                    let source = cat[i % cat.length];
+                    let newQ = {
+                        text: source.q,
+                        options: [...source.options],
+                        correct: source.correct
+                    };
+                    // Add challenge flavor based on level
+                    if (lvl >= 3 && i % 2 === 0) newQ.text = "🧊 " + newQ.text;
+                    if (lvl >= 4) newQ.text = "⭐ " + newQ.text + " ⭐";
+                    if (lvl === 5 && i % 3 === 0) newQ.text = "🏆 MATTER MASTER: " + newQ.text;
+                    levelQs.push(newQ);
+                }
+            }
+            levelQs = shuffleArray(levelQs);
+            levelsData.push(levelQs);
+        }
+    }
+    buildGame();
+
+    // ---------- GAME ENGINE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100); // 24
+
+    let levelTimerSec = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+
+    // DOM elements
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionDiv = document.getElementById('questionText');
+    const optionsDiv = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const messageDiv = document.getElementById('gameMessage');
+
+    function updateScoreUI() {
+        scoreSpan.innerText = levelScore;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        // Challenging timer: Level1=90s, L2=80s, L3=70s, L4=60s, L5=50s
+        const timeMap = {1: 90, 2: 80, 3: 70, 4: 60, 5: 50};
+        levelTimerSec = timeMap[currentLevel];
+        timerDisplaySpan.innerText = levelTimerSec;
+        timerDisplaySpan.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelFinished) return;
+            if (levelTimerSec <= 1) {
+                // TIME'S UP - Level failure
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                messageDiv.innerHTML = `⏰💀 TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to become a matter expert! 💀⏰`;
+                showRestartButton();
+            } else {
+                levelTimerSec--;
+                timerDisplaySpan.innerText = levelTimerSec;
+                if (levelTimerSec <= 10) {
+                    timerDisplaySpan.classList.add('timer-critical');
+                } else {
+                    timerDisplaySpan.classList.remove('timer-critical');
+                }
+                if (levelTimerSec === 15) {
+                    messageDiv.innerHTML = `⚠️ ONLY ${levelTimerSec} SECONDS! Matter matters — answer fast! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+
+    function disableAllOptions() {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => btn.disabled = true);
+    }
+
+    function showRestartButton() {
+        let existing = document.querySelector('.restart-custom');
+        if (existing) existing.remove();
+        const restartBtn = document.createElement('button');
+        restartBtn.innerText = '🧪 RESTART MATTER CHALLENGE 🧪';
+        restartBtn.className = 'restart-btn restart-custom';
+        restartBtn.onclick = () => location.reload();
+        messageDiv.appendChild(restartBtn);
+    }
+
+    function highlightCorrectAnswer(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            const rawText = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if (rawText === correctText) {
+                btn.classList.add('correct-highlight');
+            }
+        });
+    }
+
+    function handleAnswer(selected, correctAnswer, btnElement) {
+        if (answerLocked || waitingForNext || !gameActive || levelFinished) return;
+        answerLocked = true;
+        const isCorrect = (selected === correctAnswer);
+        
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            btnElement.classList.add('correct-highlight');
+            messageDiv.innerHTML = `✅ MATTER EXPERT! +1 point! (${levelScore}/${TOTAL_QS}) | Time left: ${levelTimerSec}s`;
+        } else {
+            btnElement.classList.add('wrong-highlight');
+            // Show correct answer by highlighting it among all options
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                const txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if (txt === correctAnswer) {
+                    btn.classList.add('correct-highlight');
+                }
+            });
+            messageDiv.innerHTML = `❌ NOT QUITE! Correct: "${correctAnswer}". Keep learning about solids, liquids and gases! Score: ${levelScore}/${TOTAL_QS}`;
+        }
+        disableAllOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+
+    function loadCurrentQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const levelData = levelsData[currentLevel - 1];
+        const q = levelData[currentQIndex];
+        questionDiv.innerText = q.text;
+        optionsDiv.innerHTML = '';
+        
+        const shuffledOps = shuffleArray([...q.options]);
+        const prefixes = ['A', 'B', 'C', 'D'];
+        shuffledOps.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, q.correct, btn));
+            optionsDiv.appendChild(btn);
+        });
+        
+        answerLocked = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        messageDiv.innerHTML = `🧊 Level ${currentLevel} • Question ${currentQIndex+1}/30 • States of Matter! Know your solids, liquids & gases! ⏱️`;
+    }
+
+    function onNextQuestion() {
+        if (!waitingForNext) return;
+        if (levelFinished) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadCurrentQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                // GRAND VICTORY
+                messageDiv.innerHTML = `🏆🧊💧🔥✨ AMAZING! You've mastered the three states of matter — solids, liquids, and gases — their properties and importance in daily life! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). You are a true Matter Master! ✨🔥💧🧊🏆`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                messageDiv.innerHTML = `🎉🎊 LEVEL ${currentLevel} COMPLETE! 🎊🎉 ${levelScore}/${TOTAL_QS} PASS (${Math.round(levelScore/TOTAL_QS*100)}%). Moving to LEVEL ${currentLevel+1}... 🧊💧🔥`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelFinished = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadCurrentQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableAllOptions();
+            nextBtn.disabled = true;
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect} correct). Press RESTART to become a matter champion! 😭`;
+            showRestartButton();
+        }
+    }
+
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelFinished = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadCurrentQuestion();
+        nextBtn.addEventListener('click', onNextQuestion);
+    }
+
+    initGame();
+</script>
+</body>
+</html>

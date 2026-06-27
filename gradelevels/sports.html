@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBC Grade 7: Creative Arts & Sports Quest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #1d3557;
+            --handball: #ff6b6b;
+            --recorder: #4ecdc4;
+            --storytelling: #ffd166;
+            --football: #06d6a0;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            color: var(--dark);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+        
+        #game-container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--handball), var(--recorder), var(--storytelling), var(--football), var(--primary));
+            border-radius: 8px 8px 0 0;
+            animation: gradientFlow 8s ease infinite;
+            background-size: 300% 300%;
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .screen {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.98);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px 0 20px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .header h1 {
+            font-size: 1.9rem;
+            color: var(--dark);
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
+            margin-bottom: 5px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.15rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 3px;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 10px 0 15px;
+            flex-wrap: wrap;
+        }
+        
+        .topic-icon {
+            font-size: 2.2rem;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+        
+        .topic-icon:nth-child(2) { animation-delay: 0.2s; }
+        .topic-icon:nth-child(3) { animation-delay: 0.4s; }
+        .topic-icon:nth-child(4) { animation-delay: 0.6s; }
+        
+        .progress-container {
+            background: #e9ecef;
+            border-radius: 14px;
+            height: 14px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--accent), var(--primary));
+            border-radius: 14px;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 2s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.12), rgba(72, 149, 239, 0.08));
+            border-radius: 18px;
+            padding: 12px 18px;
+            margin: 10px 0 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            font-weight: 600;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 75px;
+            padding: 4px 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.82rem;
+            color: var(--dark);
+            opacity: 0.85;
+            margin-top: 2px;
+        }
+        
+        .timer-display {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: var(--warning);
+            text-align: center;
+            margin: 8px 0 15px;
+            padding: 8px 15px;
+            background: rgba(247, 37, 133, 0.12);
+            border-radius: 16px;
+            border: 2px solid rgba(247, 37, 133, 0.3);
+            animation: pulse 2s infinite;
+            letter-spacing: -0.5px;
+        }
+        
+        .timer-display.warning {
+            color: var(--danger);
+            animation: pulse 0.8s infinite;
+            background: rgba(230, 57, 70, 0.15);
+            border-color: rgba(230, 57, 70, 0.4);
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 24px;
+            padding: 22px 20px;
+            margin: 10px 0 20px;
+            box-shadow: var(--shadow);
+            min-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: 500;
+            position: relative;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            transition: var(--transition);
+        }
+        
+        .question-card::before {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, var(--handball), var(--recorder), var(--storytelling), var(--football));
+            border-radius: 27px;
+            z-index: -1;
+            animation: gradientFlow 10s ease infinite;
+            background-size: 300% 300%;
+        }
+        
+        .voice-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.35);
+            transition: var(--transition);
+            z-index: 10;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .voice-btn:hover {
+            transform: scale(1.12) rotate(5deg);
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.5);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .voice-btn:active {
+            transform: scale(0.96);
+        }
+        
+        .voice-btn.speaking {
+            animation: pulse 0.6s infinite;
+            box-shadow: 0 0 0 4px rgba(72, 149, 239, 0.4);
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin: 15px 0 25px;
+            width: 100%;
+        }
+        
+        .option-btn {
+            background: white;
+            border: 3px solid #e0e6ef;
+            border-radius: 20px;
+            padding: 16px 20px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .option-btn:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+            background: #f9fbff;
+        }
+        
+        .option-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .option-btn.selected {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(72, 149, 239, 0.1));
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+        }
+        
+        .option-btn.selected::before {
+            opacity: 1;
+            background: var(--primary);
+        }
+        
+        .option-btn.correct {
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.25), rgba(6, 214, 160, 0.15));
+            border-color: var(--success);
+            color: var(--dark);
+            font-weight: 600;
+            animation: pulse 0.4s;
+        }
+        
+        .option-btn.correct::before {
+            background: var(--success);
+            opacity: 1;
+        }
+        
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.2), rgba(247, 37, 133, 0.12));
+            border-color: var(--danger);
+            color: var(--dark);
+            animation: shake 0.5s;
+        }
+        
+        .option-btn.incorrect::before {
+            background: var(--danger);
+            opacity: 1;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        
+        .option-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 1.05rem;
+        }
+        
+        .option-btn.correct .option-label {
+            background: var(--success);
+        }
+        
+        .option-btn.incorrect .option-label {
+            background: var(--danger);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 32px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 0 rgba(55, 75, 180, 0.85);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 rgba(55, 75, 180, 0.9);
+        }
+        
+        .btn:hover::after {
+            opacity: 1;
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 rgba(55, 75, 180, 0.85);
+        }
+        
+        .btn:disabled {
+            background: #b0b8c5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 3px 0 rgba(150, 160, 180, 0.7);
+        }
+        
+        .btn:disabled:hover {
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            box-shadow: 0 5px 0 rgba(90, 98, 104, 0.85);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 8px 0 rgba(90, 98, 104, 0.9);
+        }
+        
+        .btn-large {
+            padding: 18px 42px;
+            font-size: 1.45rem;
+            margin: 10px 5px;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #05a677);
+            box-shadow: 0 5px 0 rgba(5, 166, 119, 0.85);
+        }
+        
+        .btn-success:hover {
+            box-shadow: 0 8px 0 rgba(5, 166, 119, 0.9);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #d61a6a);
+            box-shadow: 0 5px 0 rgba(214, 26, 106, 0.85);
+        }
+        
+        .btn-warning:hover {
+            box-shadow: 0 8px 0 rgba(214, 26, 106, 0.9);
+        }
+        
+        .level-select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 18px;
+            margin: 25px 0;
+            width: 100%;
+        }
+        
+        .level-card {
+            background: white;
+            border-radius: 22px;
+            padding: 22px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 140px;
+        }
+        
+        .level-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(67,97,238,0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 0;
+        }
+        
+        .level-card:hover::before {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .level-card:hover {
+            transform: translateY(-6px) scale(1.03);
+            border-color: var(--accent);
+            z-index: 2;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.18);
+        }
+        
+        .level-card.locked {
+            opacity: 0.75;
+            cursor: not-allowed;
+            transform: none !important;
+            border-color: #e0e6ef !important;
+        }
+        
+        .level-card.locked::after {
+            content: "🔒";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.2rem;
+            color: rgba(0,0,0,0.25);
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+        }
+        
+        .level-card.unlocked::after {
+            content: "✨";
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 1.4rem;
+            animation: bounce 1.5s infinite;
+            z-index: 1;
+        }
+        
+        .level-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 5px;
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .level-title {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.05rem;
+            margin-top: 3px;
+            position: relative;
+            z-index: 1;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .level-topic {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feedback-panel {
+            text-align: center;
+            padding: 16px;
+            margin: 15px 0;
+            border-radius: 20px;
+            font-weight: 600;
+            min-height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .feedback-panel.correct {
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.25), rgba(6, 214, 160, 0.18));
+            color: #0a5d4d;
+            border: 2px solid var(--success);
+            animation: pulse 0.6s;
+        }
+        
+        .feedback-panel.incorrect {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.22), rgba(247, 37, 133, 0.15));
+            color: #8a1c2a;
+            border: 2px solid var(--danger);
+            animation: shake 0.5s;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            border-radius: 3px;
+            animation: confettiFall 4s ease-in-out forwards;
+            z-index: 100;
+            opacity: 0.95;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        
+        .celebration {
+            text-align: center;
+            padding: 25px 15px;
+            animation: pulse 1.2s infinite;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .celebration h2 {
+            font-size: 2.4rem;
+            color: var(--primary);
+            margin: 15px 0 10px;
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .stars-container {
+            font-size: 3.8rem;
+            margin: 12px 0 15px;
+            color: var(--storytelling);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            animation: bounce 1.8s infinite;
+            display: flex;
+            gap: 4px;
+        }
+        
+        .score-display {
+            font-size: 4.2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--success), var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 8px 0 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            line-height: 1;
+        }
+        
+        .percentage-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 5px 0 20px;
+        }
+        
+        .progression-message {
+            background: linear-gradient(135deg, rgba(255, 209, 102, 0.25), rgba(255, 214, 102, 0.15));
+            border-left: 5px solid var(--storytelling);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 16px 16px 0;
+            font-weight: 600;
+            font-size: 1.15rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .progression-message.success {
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.28), rgba(6, 214, 160, 0.2));
+            border-left-color: var(--success);
+            color: #0a5d4d;
+        }
+        
+        .topic-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .topic-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            color: var(--dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .topic-tag.handball { border-color: var(--handball); color: var(--handball); }
+        .topic-tag.recorder { border-color: var(--recorder); color: var(--recorder); }
+        .topic-tag.storytelling { border-color: var(--storytelling); color: #a67c00; }
+        .topic-tag.football { border-color: var(--football); color: var(--football); }
+        
+        .instructions {
+            background: rgba(67, 97, 238, 0.08);
+            border-radius: 20px;
+            padding: 18px;
+            margin: 15px 0 25px;
+            border-left: 4px solid var(--primary);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        
+        .instructions ol {
+            padding-left: 22px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 6px;
+        }
+        
+        .instructions strong {
+            color: var(--primary);
+        }
+        
+        .start-cta {
+            text-align: center;
+            margin: 25px 0 15px;
+            width: 100%;
+        }
+        
+        .footer-note {
+            text-align: center;
+            font-size: 0.95rem;
+            color: rgba(29, 53, 87, 0.75);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .screen-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 10px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #game-container {
+                border-radius: 24px;
+                padding: 16px;
+                min-height: 95vh;
+            }
+            
+            .header h1 {
+                font-size: 1.7rem;
+            }
+            
+            .header .subtitle {
+                font-size: 1.05rem;
+            }
+            
+            .logo-container {
+                gap: 8px;
+            }
+            
+            .topic-icon {
+                font-size: 1.9rem;
+            }
+            
+            .question-card {
+                font-size: 1.25rem;
+                padding: 20px 18px;
+                min-height: 150px;
+            }
+            
+            .option-btn {
+                font-size: 1.1rem;
+                padding: 14px 18px;
+            }
+            
+            .option-label {
+                width: 26px;
+                height: 26px;
+                font-size: 1rem;
+                margin-right: 10px;
+            }
+            
+            .btn {
+                padding: 14px 28px;
+                font-size: 1.15rem;
+            }
+            
+            .btn-large {
+                padding: 16px 36px;
+                font-size: 1.35rem;
+            }
+            
+            .level-select-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 14px;
+            }
+            
+            .level-number {
+                font-size: 2.4rem;
+            }
+            
+            .level-title {
+                font-size: 0.95rem;
+                min-height: 36px;
+            }
+            
+            .stats-bar {
+                padding: 10px 15px;
+                font-size: 0.95rem;
+            }
+            
+            .stat-value {
+                font-size: 1.4rem;
+            }
+            
+            .timer-display {
+                font-size: 1.9rem;
+                padding: 7px 14px;
+            }
+            
+            .celebration h2 {
+                font-size: 2.1rem;
+            }
+            
+            .score-display {
+                font-size: 3.6rem;
+            }
+            
+            .percentage-display {
+                font-size: 1.65rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            #game-container {
+                border-radius: 20px;
+                padding: 14px;
+            }
+            
+            .header h1 {
+                font-size: 1.55rem;
+            }
+            
+            .header .subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .topic-icon {
+                font-size: 1.7rem;
+            }
+            
+            .question-card {
+                font-size: 1.18rem;
+                padding: 18px 16px;
+                min-height: 140px;
+            }
+            
+            .voice-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 1.3rem;
+                top: 12px;
+                right: 12px;
+            }
+            
+            .options-grid {
+                gap: 12px;
+            }
+            
+            .option-btn {
+                font-size: 1.05rem;
+                padding: 13px 16px;
+            }
+            
+            .option-label {
+                width: 24px;
+                height: 24px;
+                font-size: 0.95rem;
+                margin-right: 9px;
+            }
+            
+            .btn {
+                padding: 13px 24px;
+                font-size: 1.1rem;
+                width: 100%;
+                max-width: 320px;
+                justify-content: center;
+            }
+            
+            .btn-large {
+                padding: 15px 30px;
+                font-size: 1.25rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .level-select-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .level-card {
+                padding: 18px 10px;
+                min-height: 125px;
+            }
+            
+            .level-number {
+                font-size: 2.1rem;
+            }
+            
+            .level-title {
+                font-size: 0.9rem;
+                min-height: 32px;
+            }
+            
+            .stats-bar {
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 8px 12px;
+            }
+            
+            .stat-item {
+                min-width: 65px;
+                padding: 3px 6px;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            
+            .stat-label {
+                font-size: 0.78rem;
+            }
+            
+            .timer-display {
+                font-size: 1.75rem;
+                padding: 6px 12px;
+                margin: 6px 0 12px;
+            }
+            
+            .feedback-panel {
+                font-size: 1.05rem;
+                padding: 14px;
+                min-height: 60px;
+            }
+            
+            .celebration h2 {
+                font-size: 1.9rem;
+            }
+            
+            .stars-container {
+                font-size: 3.2rem;
+            }
+            
+            .score-display {
+                font-size: 3.2rem;
+            }
+            
+            .percentage-display {
+                font-size: 1.5rem;
+            }
+            
+            .progression-message {
+                font-size: 1.05rem;
+                padding: 14px 16px;
+            }
+            
+            .instructions {
+                font-size: 0.98rem;
+                padding: 15px;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            #game-container {
+                min-height: 98vh;
+                padding: 12px;
+            }
+            
+            .header {
+                padding: 10px 0 15px;
+            }
+            
+            .stats-bar {
+                margin: 8px 0 15px;
+            }
+            
+            .question-card {
+                margin: 8px 0 15px;
+                min-height: 140px;
+            }
+            
+            .options-grid {
+                margin: 10px 0 20px;
+                gap: 12px;
+            }
+            
+            .controls {
+                margin-top: 5px;
+            }
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+        
+        /* Focus states for accessibility */
+        button:focus, .option-btn:focus {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
+        }
+        
+        .voice-btn:focus {
+            outline: 3px solid var(--success);
+            outline-offset: 3px;
+        }
+        
+        /* Hide scrollbars but allow scrolling */
+        .screen-content {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+        
+        .screen-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .screen-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .screen-content::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 10px;
+        }
+        
+        /* Topic-specific animations for icons */
+        .handball-icon { color: var(--handball); }
+        .recorder-icon { color: var(--recorder); }
+        .storytelling-icon { color: var(--storytelling); }
+        .football-icon { color: var(--football); }
+        
+        /* Loading animation for voice button */
+        @keyframes voicePulse {
+            0% { box-shadow: 0 0 0 0 rgba(72, 149, 239, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(72, 149, 239, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(72, 149, 239, 0); }
+        }
+        
+        .voice-btn.speaking {
+            animation: voicePulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="topic-icon handball-icon">🤾</div>
+                    <div class="topic-icon recorder-icon">🎵</div>
+                    <div class="topic-icon storytelling-icon">📚</div>
+                    <div class="topic-icon football-icon">⚽</div>
+                </div>
+                <h1>CBC Grade 7: Creative Arts & Sports Quest</h1>
+                <div class="subtitle">Handball • Descant Recorder • Storytelling & Animation • Football</div>
+            </div>
+            
+            <div class="instructions">
+                <strong>🎮 How to Play:</strong>
+                <ol>
+                    <li>Answer <strong>40 questions per level</strong> about Creative Arts & Sports</li>
+                    <li>Tap <strong>🔊</strong> to hear questions read aloud</li>
+                    <li>Beat the <strong>30-second timer</strong> for each question!</li>
+                    <li>Score <strong>80% or higher</strong> to unlock the next level</li>
+                    <li>Complete all 5 levels to earn your <strong>Creative Champion Badge</strong>! 🏆</li>
+                </ol>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <div class="topic-tags">
+                    <span class="topic-tag handball">🤾 Handball</span>
+                    <span class="topic-tag recorder">🎵 Descant Recorder</span>
+                    <span class="topic-tag storytelling">📚 Storytelling & Animation</span>
+                    <span class="topic-tag football">⚽ Football</span>
+                </div>
+            </div>
+            
+            <div class="start-cta">
+                <button id="start-btn" class="btn btn-large">
+                    🚀 Start Your Adventure!
+                </button>
+            </div>
+            
+            <div class="footer-note">
+                💡 Tip: Use headphones for the best voice experience! Works best on Chrome, Edge, or Safari.
+            </div>
+        </div>
+        
+        <!-- Level Select Screen -->
+        <div id="level-select-screen" class="screen">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="topic-icon">🏆</div>
+                </div>
+                <h1>Select Your Level</h1>
+                <div class="subtitle">Complete levels to unlock more challenges!</div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-score">0</div>
+                    <div class="stat-label">Total Points</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="levels-completed">0/5</div>
+                    <div class="stat-label">Levels Done</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stars-earned">0</div>
+                    <div class="stat-label">Stars Earned</div>
+                </div>
+            </div>
+            
+            <div class="level-select-grid" id="level-select-container">
+                <!-- Levels will be generated by JavaScript -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <button id="back-to-start" class="btn btn-secondary">← Back to Start</button>
+            </div>
+            
+            <div class="footer-note">
+                🎯 Remember: You need 80% (32/40 correct) to unlock the next level!
+            </div>
+        </div>
+        
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="topic-icon">❓</div>
+                </div>
+                <h1>Level <span id="current-level">1</span>: <span id="level-title">Handball Basics</span></h1>
+                <div class="subtitle">Question <span id="question-number">1</span> of 40</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="correct-count">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="timer-display">30s</div>
+                    <div class="stat-label">Time Left</div>
+                </div>
+            </div>
+            
+            <div class="timer-display" id="main-timer">30 seconds</div>
+            
+            <div class="question-card">
+                <button class="voice-btn" id="voice-btn" title="Listen to question">🔊</button>
+                <div id="question-text">Loading your challenge...</div>
+            </div>
+            
+            <div class="options-grid" id="options-container">
+                <!-- Options will be generated by JavaScript -->
+            </div>
+            
+            <div class="feedback-panel" id="feedback"></div>
+            
+            <div class="controls">
+                <button id="next-btn" class="btn" disabled>Next Question →</button>
+            </div>
+            
+            <div class="footer-note" style="margin-top: auto; padding-top: 10px;">
+                💬 Tap 🔊 anytime to hear the question again!
+            </div>
+        </div>
+        
+        <!-- Level Complete Screen -->
+        <div id="level-complete-screen" class="screen">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="topic-icon">🎉</div>
+                </div>
+                <h1>Level Complete!</h1>
+                <div class="subtitle">Amazing effort, Creative Champion!</div>
+            </div>
+            
+            <div class="celebration">
+                <div class="stars-container" id="stars-display">★★★★★</div>
+                <div class="score-display" id="level-score">32/40</div>
+                <div class="percentage-display">
+                    You scored <span id="percentage">80</span>%!
+                </div>
+            </div>
+            
+            <div class="progression-message" id="progression-message">
+                🎯 You need 80% to unlock the next level. Keep practicing!
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0; width: 100%;">
+                <button id="retry-btn" class="btn btn-secondary">🔄 Try Level Again</button>
+                <button id="next-level-btn" class="btn btn-success btn-large" disabled>✨ Next Level →</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 10px; width: 100%;">
+                <button id="back-to-levels" class="btn">← Choose Different Level</button>
+            </div>
+            
+            <div class="footer-note">
+                🌟 Tip: Review questions you missed to improve next time!
+            </div>
+        </div>
+        
+        <!-- Game Complete Screen -->
+        <div id="game-complete-screen" class="screen">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="topic-icon">🏆✨</div>
+                </div>
+                <h1>Creative Champion!</h1>
+                <div class="subtitle">You've mastered all 5 levels!</div>
+            </div>
+            
+            <div class="celebration">
+                <div style="font-size: 5.5rem; margin: 10px 0; animation: bounce 1.5s infinite;">🎨⚽🎵📚</div>
+                <h2 style="font-size: 2.3rem; margin: 15px 0 10px;">Congratulations!</h2>
+                <div class="score-display" id="final-score">200/200</div>
+                <div style="font-size: 1.7rem; font-weight: 700; margin: 8px 0 20px;">
+                    You earned <span id="final-stars">25</span> stars!
+                </div>
+                <p style="margin: 15px 0 25px; font-size: 1.25rem; line-height: 1.5; max-width: 90%;">
+                    You've mastered Handball, Descant Recorder, Storytelling & Animation, and Football!<br>
+                    Keep creating, playing, and learning! 🌈✨
+                </p>
+                <div class="topic-tags">
+                    <span class="topic-tag handball">🤾 Handball Expert</span>
+                    <span class="topic-tag recorder">🎵 Recorder Pro</span>
+                    <span class="topic-tag storytelling">📚 Story Master</span>
+                    <span class="topic-tag football">⚽ Football Star</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 25px 0; width: 100%;">
+                <button id="play-again-btn" class="btn btn-large btn-warning">🔄 Play Again</button>
+            </div>
+            
+            <div class="footer-note">
+                📚 Share your achievement certificate with your teacher and family!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CBC Grade 7 Creative Arts & Sports Questions Database
+        // Topics: Handball, Descant Recorder, Storytelling & Animation, Football
+        // 5 levels × 40 questions = 200 questions total
+        // ✅ CORRECT ANSWERS DISTRIBUTED EVENLY ACROSS A, B, C, D POSITIONS
+        const questionsDatabase = {
+            1: [ // Level 1: Introduction to Topics - Answers distributed: 10 A, 10 B, 10 C, 10 D
+                // Handball Questions (10) - Mixed answer positions
+                { q: "What is the main objective in handball?", opts: ["To score goals by throwing the ball into the opponent's net", "To kick the ball into a goal", "To hit the ball with a racket", "To run the fastest around the court"], correctAnswer: "To score goals by throwing the ball into the opponent's net", t: "handball" },
+                { q: "How many players are on a handball team during a match?", opts: ["5 players", "7 players", "11 players", "3 players"], correctAnswer: "7 players", t: "handball" },
+                { q: "Which part of the body is NOT allowed to touch the ball in handball (except the goalkeeper)?", opts: ["Hands", "Feet", "Head", "Chest"], correctAnswer: "Feet", t: "handball" },
+                { q: "What is the size of a handball court approximately?", opts: ["20m x 10m", "40m x 20m", "100m x 50m", "10m x 5m"], correctAnswer: "40m x 20m", t: "handball" },
+                { q: "In handball, how many steps can a player take with the ball without dribbling?", opts: ["1 step", "3 steps", "5 steps", "Unlimited steps"], correctAnswer: "3 steps", t: "handball" },
+                { q: "What is a 'fast break' in handball?", opts: ["A type of penalty", "A quick attack when the opponent is not ready", "A special throw", "A defensive strategy"], correctAnswer: "A quick attack when the opponent is not ready", t: "handball" },
+                { q: "Which skill is MOST important for a handball player?", opts: ["Swimming ability", "Throwing and catching accuracy", "Playing piano", "Drawing skills"], correctAnswer: "Throwing and catching accuracy", t: "handball" },
+                { q: "What does the goalkeeper do in handball?", opts: ["Scores most of the goals", "Prevents the ball from entering their team's goal", "Coaches the team", "Keeps score"], correctAnswer: "Prevents the ball from entering their team's goal", t: "handball" },
+                { q: "How long is a typical handball match for Grade 7 students?", opts: ["10 minutes total", "2 halves of 15-20 minutes", "90 minutes", "5 minutes"], correctAnswer: "2 halves of 15-20 minutes", t: "handball" },
+                { q: "What should you do if you drop the ball while running in handball?", opts: ["Pick it up and keep running", "Stop and pass to a teammate or dribble again", "Kick it to a teammate", "Throw it to the referee"], correctAnswer: "Stop and pass to a teammate or dribble again", t: "handball" },
+                
+                // Descant Recorder Questions (10) - Mixed answer positions
+                { q: "What is a descant recorder?", opts: ["A type of drum", "A woodwind musical instrument you blow into", "A sports equipment", "A drawing tool"], correctAnswer: "A woodwind musical instrument you blow into", t: "recorder" },
+                { q: "Which part of the recorder do you blow into?", opts: ["The foot joint", "The mouthpiece (beak)", "The finger holes", "The bell"], correctAnswer: "The mouthpiece (beak)", t: "recorder" },
+                { q: "How do you make different notes on a recorder?", opts: ["By blowing harder or softer only", "By covering and uncovering finger holes", "By shaking it", "By tapping it on your hand"], correctAnswer: "By covering and uncovering finger holes", t: "recorder" },
+                { q: "What is the correct posture when playing the recorder?", opts: ["Slouching on a chair", "Sitting or standing straight with relaxed shoulders", "Lying down", "Running around"], correctAnswer: "Sitting or standing straight with relaxed shoulders", t: "recorder" },
+                { q: "Which finger is usually placed on the first hole at the back of the recorder?", opts: ["Thumb of the left hand", "Index finger of the right hand", "Pinky finger", "Middle finger of the right hand"], correctAnswer: "Thumb of the left hand", t: "recorder" },
+                { q: "What does 'articulation' mean when playing recorder?", opts: ["How you hold the instrument", "How you start and separate notes with your tongue", "The color of the recorder", "The speed of playing"], correctAnswer: "How you start and separate notes with your tongue", t: "recorder" },
+                { q: "Why is it important to warm up before playing the recorder?", opts: ["To make the recorder hotter", "To prepare your fingers, breath, and ears for playing", "To clean the recorder", "To tune the recorder"], correctAnswer: "To prepare your fingers, breath, and ears for playing", t: "recorder" },
+                { q: "What should you do after playing the recorder?", opts: ["Leave it on the floor", "Wipe the mouthpiece and store it safely", "Throw it in your bag", "Give it to a friend"], correctAnswer: "Wipe the mouthpiece and store it safely", t: "recorder" },
+                { q: "Which note is often the first note learned on the descant recorder?", opts: ["High C", "B", "Low C", "F#"], correctAnswer: "Low C", t: "recorder" },
+                { q: "What is a 'scale' in music?", opts: ["A tool to weigh the recorder", "A series of notes going up or down in pitch", "A type of rhythm", "A special dance"], correctAnswer: "A series of notes going up or down in pitch", t: "recorder" },
+                
+                // Storytelling & Animation Questions (10) - Mixed answer positions
+                { q: "What is storytelling?", opts: ["Drawing pictures only", "Sharing stories using words, actions, or images", "Playing sports", "Singing songs only"], correctAnswer: "Sharing stories using words, actions, or images", t: "storytelling" },
+                { q: "Which element is IMPORTANT in a good story?", opts: ["Only the ending", "Characters, setting, and plot", "Only the title", "Only the pictures"], correctAnswer: "Characters, setting, and plot", t: "storytelling" },
+                { q: "What is animation?", opts: ["A type of sport", "Making still images appear to move", "A musical instrument", "A drawing technique only"], correctAnswer: "Making still images appear to move", t: "storytelling" },
+                { q: "Which tool can be used for simple animation?", opts: ["A football", "Flipbook or digital app", "A recorder", "A handball"], correctAnswer: "Flipbook or digital app", t: "storytelling" },
+                { q: "What is a 'character' in a story?", opts: ["The background scenery", "A person, animal, or being in the story", "The title of the story", "The moral lesson"], correctAnswer: "A person, animal, or being in the story", t: "storytelling" },
+                { q: "Why do we use voices and sounds in storytelling?", opts: ["To make the story longer", "To bring characters to life and show emotions", "To confuse the audience", "To finish faster"], correctAnswer: "To bring characters to life and show emotions", t: "storytelling" },
+                { q: "What is the 'setting' of a story?", opts: ["The main character", "Where and when the story happens", "The problem in the story", "The solution"], correctAnswer: "Where and when the story happens", t: "storytelling" },
+                { q: "Which is a traditional Kenyan storytelling method?", opts: ["Only using computers", "Oral storytelling with songs and gestures", "Only writing books", "Only watching TV"], correctAnswer: "Oral storytelling with songs and gestures", t: "storytelling" },
+                { q: "What is a 'storyboard' used for?", opts: ["Playing handball", "Planning scenes in animation or stories", "Cleaning recorders", "Scoring goals"], correctAnswer: "Planning scenes in animation or stories", t: "storytelling" },
+                { q: "How can animation help tell a story?", opts: ["By making it shorter", "By showing actions and emotions visually", "By removing characters", "By using only text"], correctAnswer: "By showing actions and emotions visually", t: "storytelling" },
+                
+                // Football Questions (10) - Mixed answer positions
+                { q: "What is the main objective in football?", opts: ["To throw the ball into a net", "To score goals by kicking the ball into the opponent's goal", "To hit the ball with hands", "To run without the ball"], correctAnswer: "To score goals by kicking the ball into the opponent's goal", t: "football" },
+                { q: "How many players are on a football team during a match?", opts: ["5 players", "7 players", "11 players", "3 players"], correctAnswer: "11 players", t: "football" },
+                { q: "Which part of the body is MOST used to control the ball in football?", opts: ["Hands (except goalkeeper)", "Feet, thighs, and head", "Elbows", "Back"], correctAnswer: "Feet, thighs, and head", t: "football" },
+                { q: "What is 'dribbling' in football?", opts: ["Kicking the ball hard", "Moving the ball with small touches while running", "Throwing the ball", "Passing to the goalkeeper"], correctAnswer: "Moving the ball with small touches while running", t: "football" },
+                { q: "What should you do if the ball goes out of bounds on the side in football?", opts: ["Kick it back in", "Take a throw-in", "Score a goal", "Call a timeout"], correctAnswer: "Take a throw-in", t: "football" },
+                { q: "Which skill is important for passing in football?", opts: ["Only kicking hard", "Accuracy and timing", "Only running fast", "Only jumping high"], correctAnswer: "Accuracy and timing", t: "football" },
+                { q: "What is the role of a goalkeeper in football?", opts: ["Score most goals", "Prevent the ball from entering their team's goal", "Coach the team", "Keep time"], correctAnswer: "Prevent the ball from entering their team's goal", t: "football" },
+                { q: "What does 'fair play' mean in football?", opts: ["Only caring about winning", "Playing by rules, respecting others, and good sportsmanship", "Cheating to win", "Ignoring teammates"], correctAnswer: "Playing by rules, respecting others, and good sportsmanship", t: "football" },
+                { q: "How long is a typical football match for Grade 7 students?", opts: ["10 minutes total", "2 halves of 15-20 minutes", "90 minutes", "5 minutes"], correctAnswer: "2 halves of 15-20 minutes", t: "football" },
+                { q: "What should you do after playing football?", opts: ["Eat junk food only", "Cool down, stretch, and drink water", "Go straight to sleep", "Ignore your body"], correctAnswer: "Cool down, stretch, and drink water", t: "football" }
+            ],
+            2: [ // Level 2: Skills and Techniques - Answers distributed evenly
+                // Handball (10)
+                { q: "What is the correct way to catch a handball?", opts: ["With straight arms", "With hands forming a 'W' shape, fingers spread", "With closed fists", "With your feet"], correctAnswer: "With hands forming a 'W' shape, fingers spread", t: "handball" },
+                { q: "Which throw is used to restart play after the ball goes out over the sideline in handball?", opts: ["Penalty throw", "Throw-in", "Goal throw", "Free throw"], correctAnswer: "Throw-in", t: "handball" },
+                { q: "What is 'pivoting' in handball?", opts: ["Running in circles", "Turning on one foot while holding the ball to change direction", "Jumping to block a shot", "Passing while falling"], correctAnswer: "Turning on one foot while holding the ball to change direction", t: "handball" },
+                { q: "Why is teamwork important in handball?", opts: ["Only the best player should score", "Players pass, support, and create scoring opportunities together", "It slows down the game", "It's not important"], correctAnswer: "Players pass, support, and create scoring opportunities together", t: "handball" },
+                { q: "What is a 'screen' or 'pick' in handball offense?", opts: ["Blocking the goalkeeper's view", "A player positioning to block a defender for a teammate", "Hiding the ball", "Stopping the game"], correctAnswer: "A player positioning to block a defender for a teammate", t: "handball" },
+                { q: "Which defensive position stays closest to the goal in handball?", opts: ["Wing player", "Goalkeeper", "Center back", "Pivot"], correctAnswer: "Goalkeeper", t: "handball" },
+                { q: "What should you do before throwing the ball in handball?", opts: ["Close your eyes", "Look at your target and plant your feet", "Spin around", "Shout loudly"], correctAnswer: "Look at your target and plant your feet", t: "handball" },
+                { q: "How can you improve your handball passing?", opts: ["Only practice alone", "Practice with a partner, focusing on accuracy and timing", "Only watch videos", "Avoid practicing"], correctAnswer: "Practice with a partner, focusing on accuracy and timing", t: "handball" },
+                { q: "What is the '6-meter line' in handball?", opts: ["Where the game starts", "The area where only the goalkeeper can play", "The boundary for substitutions", "The scoring zone"], correctAnswer: "The area where only the goalkeeper can play", t: "handball" },
+                { q: "Which is a safety rule in handball?", opts: ["Push opponents to get the ball", "Wear proper shoes and avoid dangerous contact", "Play on slippery surfaces", "Ignore the referee"], correctAnswer: "Wear proper shoes and avoid dangerous contact", t: "handball" },
+                
+                // Descant Recorder (10)
+                { q: "What does 'breath support' mean when playing recorder?", opts: ["Holding your breath", "Using your diaphragm to control steady air flow", "Blowing as hard as possible", "Breathing through your nose only"], correctAnswer: "Using your diaphragm to control steady air flow", t: "recorder" },
+                { q: "Which finger covers the thumb hole on the back of the recorder?", opts: ["Right thumb", "Left thumb", "Left index finger", "Right pinky"], correctAnswer: "Left thumb", t: "recorder" },
+                { q: "What is 'fingering' on the recorder?", opts: ["How you hold the instrument", "The pattern of fingers covering holes to make notes", "Cleaning the holes", "Tapping the recorder"], correctAnswer: "The pattern of fingers covering holes to make notes", t: "recorder" },
+                { q: "Why do we use 'tu' or 'du' articulation on recorder?", opts: ["To make the recorder louder", "To start notes clearly and separate them", "To change the pitch", "To clean the mouthpiece"], correctAnswer: "To start notes clearly and separate them", t: "recorder" },
+                { q: "What should you do if your recorder sounds squeaky?", opts: ["Blow harder", "Check finger holes are fully covered and use steady breath", "Shake the recorder", "Ignore it"], correctAnswer: "Check finger holes are fully covered and use steady breath", t: "recorder" },
+                { q: "Which note comes after B when learning recorder scales?", opts: ["A", "C", "D", "E"], correctAnswer: "A", t: "recorder" },
+                { q: "What is a 'phrase' in music?", opts: ["A type of recorder", "A musical sentence with a beginning and end", "A cleaning method", "A special grip"], correctAnswer: "A musical sentence with a beginning and end", t: "recorder" },
+                { q: "How do you play a longer note on the recorder?", opts: ["Blow harder", "Use steady breath support for the duration", "Cover more holes", "Move the recorder"], correctAnswer: "Use steady breath support for the duration", t: "recorder" },
+                { q: "Why is it important to warm up your fingers before playing recorder?", opts: ["To make them colder", "To improve flexibility and accuracy on the holes", "To change the recorder's color", "To make the recorder lighter"], correctAnswer: "To improve flexibility and accuracy on the holes", t: "recorder" },
+                { q: "What is the correct way to clean a plastic descant recorder?", opts: ["Wash with hot water and soap", "Wipe mouthpiece with a cloth, rinse body with cool water, dry thoroughly", "Put in dishwasher", "Leave it wet"], correctAnswer: "Wipe mouthpiece with a cloth, rinse body with cool water, dry thoroughly", t: "recorder" },
+                
+                // Storytelling & Animation (10)
+                { q: "What is a 'plot' in a story?", opts: ["The background pictures", "The sequence of events: beginning, middle, and end", "The character's name", "The moral lesson only"], correctAnswer: "The sequence of events: beginning, middle, and end", t: "storytelling" },
+                { q: "Which technique helps make storytelling more engaging?", opts: ["Speaking in a monotone voice", "Using different voices, gestures, and facial expressions", "Reading very fast", "Skipping the ending"], correctAnswer: "Using different voices, gestures, and facial expressions", t: "storytelling" },
+                { q: "What is 'stop-motion' animation?", opts: ["A type of football move", "Taking photos of objects moved slightly between frames to create movement", "A drawing style", "A musical technique"], correctAnswer: "Taking photos of objects moved slightly between frames to create movement", t: "storytelling" },
+                { q: "Why do stories often have a 'problem' or 'conflict'?", opts: ["To make them boring", "To create interest and show how characters grow", "To make them shorter", "To confuse readers"], correctAnswer: "To create interest and show how characters grow", t: "storytelling" },
+                { q: "What is a 'moral' in a story?", opts: ["The main character", "The lesson or message the story teaches", "The setting", "The title"], correctAnswer: "The lesson or message the story teaches", t: "storytelling" },
+                { q: "Which tool can help create simple digital animation?", opts: ["A handball", "Apps like FlipaClip or Scratch", "A football", "A recorder"], correctAnswer: "Apps like FlipaClip or Scratch", t: "storytelling" },
+                { q: "What is 'pacing' in storytelling?", opts: ["How fast you walk while telling", "The speed at which the story events unfold", "The volume of your voice", "The number of characters"], correctAnswer: "The speed at which the story events unfold", t: "storytelling" },
+                { q: "How can sound effects improve a story?", opts: ["They make it longer", "They create atmosphere and help listeners imagine scenes", "They replace the story", "They confuse the audience"], correctAnswer: "They create atmosphere and help listeners imagine scenes", t: "storytelling" },
+                { q: "What is a 'character arc'?", opts: ["A type of drawing", "How a character changes or grows through the story", "The shape of the book", "A musical note"], correctAnswer: "How a character changes or grows through the story", t: "storytelling" },
+                { q: "Why is planning important before creating animation?", opts: ["It's not important", "To organize ideas, save time, and create a clearer story", "To make it more expensive", "To use more colors"], correctAnswer: "To organize ideas, save time, and create a clearer story", t: "storytelling" },
+                
+                // Football (10)
+                { q: "What is the correct technique for a basic football pass?", opts: ["Kick with your toe only", "Use the inside of your foot, plant foot beside ball, follow through", "Kick with your heel", "Throw the ball"], correctAnswer: "Use the inside of your foot, plant foot beside ball, follow through", t: "football" },
+                { q: "What is 'shielding' the ball in football?", opts: ["Hiding the ball under your shirt", "Using your body to protect the ball from opponents", "Kicking it far away", "Passing immediately"], correctAnswer: "Using your body to protect the ball from opponents", t: "football" },
+                { q: "Which part of the foot is best for accurate short passes?", opts: ["Toe", "Inside of the foot", "Heel", "Outside of the foot only"], correctAnswer: "Inside of the foot", t: "football" },
+                { q: "What should you do when receiving a pass in football?", opts: ["Stand still with straight legs", "Move toward the ball, cushion it with your foot, and control it", "Kick it away immediately", "Close your eyes"], correctAnswer: "Move toward the ball, cushion it with your foot, and control it", t: "football" },
+                { q: "What is 'positioning' in football?", opts: ["Where you stand for a photo", "Being in the right place to support teammates and defend", "Only standing near the goal", "Running randomly"], correctAnswer: "Being in the right place to support teammates and defend", t: "football" },
+                { q: "Why is communication important in football?", opts: ["Only to shout at teammates", "To coordinate plays, warn of opponents, and encourage each other", "It's not important", "Only the captain should talk"], correctAnswer: "To coordinate plays, warn of opponents, and encourage each other", t: "football" },
+                { q: "What is a 'corner kick' in football?", opts: ["A kick from the center", "A restart when the ball goes out over the goal line, last touched by defense", "A penalty kick", "A throw-in"], correctAnswer: "A restart when the ball goes out over the goal line, last touched by defense", t: "football" },
+                { q: "How can you improve your dribbling in football?", opts: ["Only kick the ball hard", "Practice with cones, keep the ball close, use both feet", "Avoid practicing", "Only use your strong foot"], correctAnswer: "Practice with cones, keep the ball close, use both feet", t: "football" },
+                { q: "What is the offside rule in simple terms for Grade 7?", opts: ["You can never be offside", "An attacker can't be nearer to the goal than the ball and second-last defender when the ball is passed", "Only the goalkeeper can be offside", "Offside doesn't exist"], correctAnswer: "An attacker can't be nearer to the goal than the ball and second-last defender when the ball is passed", t: "football" },
+                { q: "Which is a good sportsmanship behavior in football?", opts: ["Arguing with the referee", "Helping an opponent up after a fall", "Celebrating by mocking others", "Ignoring teammates"], correctAnswer: "Helping an opponent up after a fall", t: "football" }
+            ],
+            3: [ // Level 3: Application and Strategy - Answers distributed evenly
+                // Handball (10)
+                { q: "When should a handball player use a jump shot?", opts: ["When far from the goal with no defenders", "To shoot over defenders near the goal area", "Only when the goalkeeper is not looking", "When passing to a teammate"], correctAnswer: "To shoot over defenders near the goal area", t: "handball" },
+                { q: "What is a 'fast break' strategy in handball?", opts: ["Playing very slowly", "Quickly attacking when the opponent is transitioning from offense to defense", "Only using the goalkeeper", "Stopping the game"], correctAnswer: "Quickly attacking when the opponent is transitioning from offense to defense", t: "handball" },
+                { q: "How can a handball team create space for scoring?", opts: ["All players stand in one spot", "Using passes, movement, and screens to spread the defense", "Only one player dribbles", "Avoiding the goal area"], correctAnswer: "Using passes, movement, and screens to spread the defense", t: "handball" },
+                { q: "What is the purpose of a 'timeout' in handball?", opts: ["To end the game", "For teams to rest, strategize, and make substitutions", "To change the rules", "To clean the court"], correctAnswer: "For teams to rest, strategize, and make substitutions", t: "handball" },
+                { q: "Which defensive strategy involves players guarding specific opponents?", opts: ["Zone defense", "Man-to-man defense", "No defense", "Goalkeeper defense"], correctAnswer: "Man-to-man defense", t: "handball" },
+                { q: "What should a handball player do after losing possession?", opts: ["Stand and watch", "Immediately transition to defense and try to regain the ball", "Argue with the referee", "Leave the court"], correctAnswer: "Immediately transition to defense and try to regain the ball", t: "handball" },
+                { q: "How does 'ball movement' help in handball offense?", opts: ["It slows down the game", "It forces the defense to move, creating openings", "It makes the ball heavier", "It confuses teammates"], correctAnswer: "It forces the defense to move, creating openings", t: "handball" },
+                { q: "What is important when defending in handball?", opts: ["Only trying to steal the ball", "Staying between your opponent and the goal, using feet and body position", "Pushing opponents", "Ignoring the ball"], correctAnswer: "Staying between your opponent and the goal, using feet and body position", t: "handball" },
+                { q: "Why is fitness important for handball players?", opts: ["It's not important", "To maintain speed, agility, and endurance throughout the match", "Only for the goalkeeper", "Only for scoring"], correctAnswer: "To maintain speed, agility, and endurance throughout the match", t: "handball" },
+                { q: "What is a 'penalty throw' in handball?", opts: ["A throw from the sideline", "A shot from the 7-meter line after a foul prevents a clear scoring chance", "A throw by the goalkeeper", "A practice drill"], correctAnswer: "A shot from the 7-meter line after a foul prevents a clear scoring chance", t: "handball" },
+                
+                // Descant Recorder (10)
+                { q: "How do you play a slur (two notes connected) on the recorder?", opts: ["Tongue each note separately", "Tongue the first note, then change fingers without tonguing the second", "Blow harder on the second note", "Stop blowing between notes"], correctAnswer: "Tongue the first note, then change fingers without tonguing the second", t: "recorder" },
+                { q: "What is 'dynamics' in recorder playing?", opts: ["The speed of playing", "The volume variations: loud (forte) and soft (piano)", "The type of recorder", "The cleaning method"], correctAnswer: "The volume variations: loud (forte) and soft (piano)", t: "recorder" },
+                { q: "How can you make a note softer on the recorder?", opts: ["Blow harder", "Use less air pressure with steady support", "Cover more holes", "Use a different recorder"], correctAnswer: "Use less air pressure with steady support", t: "recorder" },
+                { q: "What is a 'scale practice' useful for?", opts: ["Only for performances", "Building finger technique, ear training, and understanding keys", "Cleaning the recorder", "Making the recorder louder"], correctAnswer: "Building finger technique, ear training, and understanding keys", t: "recorder" },
+                { q: "Why is listening important when playing in a group on recorders?", opts: ["It's not important", "To blend with others, stay in tune, and follow the tempo", "To play louder than others", "To ignore the conductor"], correctAnswer: "To blend with others, stay in tune, and follow the tempo", t: "recorder" },
+                { q: "What does 'tempo' mean in music?", opts: ["The volume", "The speed of the music", "The type of instrument", "The cleaning method"], correctAnswer: "The speed of the music", t: "recorder" },
+                { q: "How can you improve your recorder tone quality?", opts: ["Blow as hard as possible", "Use steady, focused air stream and proper embouchure", "Cover holes partially", "Play only high notes"], correctAnswer: "Use steady, focused air stream and proper embouchure", t: "recorder" },
+                { q: "What is 'sight-reading' on the recorder?", opts: ["Reading a book while playing", "Playing music you see for the first time without prior practice", "Memorizing all songs", "Only playing by ear"], correctAnswer: "Playing music you see for the first time without prior practice", t: "recorder" },
+                { q: "Why learn simple songs on the recorder?", opts: ["To finish lessons faster", "To apply techniques, build confidence, and enjoy making music", "To avoid practicing scales", "To play only one note"], correctAnswer: "To apply techniques, build confidence, and enjoy making music", t: "recorder" },
+                { q: "What should you do if you make a mistake while playing recorder in a group?", opts: ["Stop playing completely", "Keep going, listen, and rejoin at the next phrase", "Blame others", "Leave the group"], correctAnswer: "Keep going, listen, and rejoin at the next phrase", t: "recorder" },
+                
+                // Storytelling & Animation (10)
+                { q: "How can you show a character's emotion in storytelling?", opts: ["Only by the words", "Through voice tone, facial expressions, gestures, and word choice", "By speaking very fast", "By skipping descriptions"], correctAnswer: "Through voice tone, facial expressions, gestures, and word choice", t: "storytelling" },
+                { q: "What is 'show, don't tell' in storytelling?", opts: ["Only describing actions", "Letting readers experience the story through details and actions instead of just stating facts", "Telling the ending first", "Using only dialogue"], correctAnswer: "Letting readers experience the story through details and actions instead of just stating facts", t: "storytelling" },
+                { q: "Which animation principle means making movements look natural?", opts: ["Squash and stretch", "Exaggeration only", "Ignoring physics", "Using only straight lines"], correctAnswer: "Squash and stretch", t: "storytelling" },
+                { q: "Why is a story's 'resolution' important?", opts: ["It's not important", "It shows how the problem is solved and provides closure", "It makes the story longer", "It confuses the reader"], correctAnswer: "It shows how the problem is solved and provides closure", t: "storytelling" },
+                { q: "How can background music enhance a story?", opts: ["It makes it louder", "It sets mood, emphasizes emotions, and supports the narrative", "It replaces the story", "It confuses listeners"], correctAnswer: "It sets mood, emphasizes emotions, and supports the narrative", t: "storytelling" },
+                { q: "What is a 'flipbook' in animation?", opts: ["A type of book for reading", "A book with sequential images that create animation when flipped quickly", "A football playbook", "A music notebook"], correctAnswer: "A book with sequential images that create animation when flipped quickly", t: "storytelling" },
+                { q: "Why plan character designs before animating?", opts: ["It's not necessary", "To ensure consistency, express personality, and save time", "To use more colors", "To make characters look the same"], correctAnswer: "To ensure consistency, express personality, and save time", t: "storytelling" },
+                { q: "What is 'pacing' in animation?", opts: ["How fast you draw", "The timing of movements and scene changes to control story flow", "The number of frames", "The color scheme"], correctAnswer: "The timing of movements and scene changes to control story flow", t: "storytelling" },
+                { q: "How can sound effects be created for a simple animation?", opts: ["Only using expensive equipment", "Using voice, everyday objects, or free digital tools", "Ignoring sound", "Only using music"], correctAnswer: "Using voice, everyday objects, or free digital tools", t: "storytelling" },
+                { q: "Why get feedback on your story or animation?", opts: ["To feel bad", "To learn, improve, and see how others experience your work", "To copy others", "To avoid sharing"], correctAnswer: "To learn, improve, and see how others experience your work", t: "storytelling" },
+                
+                // Football (10)
+                { q: "When is it best to dribble past an opponent in football?", opts: ["Always, no matter what", "When you have space and a teammate isn't in a better position", "Never dribble", "Only near your own goal"], correctAnswer: "When you have space and a teammate isn't in a better position", t: "football" },
+                { q: "What is 'support play' in football attack?", opts: ["Only the striker runs forward", "Teammates position to offer passing options and create space", "All players stay back", "Only the goalkeeper attacks"], correctAnswer: "Teammates position to offer passing options and create space", t: "football" },
+                { q: "How should a defender position themselves?", opts: ["Between the attacker and the goal, staying on their feet", "Always trying to tackle immediately", "Standing far from the attacker", "Ignoring the ball"], correctAnswer: "Between the attacker and the goal, staying on their feet", t: "football" },
+                { q: "What is a 'through pass' in football?", opts: ["A pass to the goalkeeper", "A pass that goes between or behind defenders to a teammate running forward", "A throw-in", "A corner kick"], correctAnswer: "A pass that goes between or behind defenders to a teammate running forward", t: "football" },
+                { q: "Why is 'scanning' (looking around) important in football?", opts: ["It's not important", "To see teammates, opponents, and space before receiving the ball", "Only to find the referee", "To look at the crowd"], correctAnswer: "To see teammates, opponents, and space before receiving the ball", t: "football" },
+                { q: "What is the purpose of 'pressing' in defense?", opts: ["To rest", "To quickly close down opponents with the ball to win it back", "To let opponents pass easily", "To stand far away"], correctAnswer: "To quickly close down opponents with the ball to win it back", t: "football" },
+                { q: "How can a team maintain possession in football?", opts: ["Only kick long balls", "Use short passes, movement, and support to keep the ball", "Always dribble alone", "Avoid passing"], correctAnswer: "Use short passes, movement, and support to keep the ball", t: "football" },
+                { q: "What should you do when your team loses the ball?", opts: ["Celebrate", "Immediately try to win it back or drop into defensive shape", "Stop playing", "Argue with teammates"], correctAnswer: "Immediately try to win it back or drop into defensive shape", t: "football" },
+                { q: "Why is fitness important for football players?", opts: ["It's not important", "To maintain performance, prevent injury, and recover quickly", "Only for the goalkeeper", "Only for scoring"], correctAnswer: "To maintain performance, prevent injury, and recover quickly", t: "football" },
+                { q: "What is a 'set piece' in football?", opts: ["A piece of equipment", "A restart situation like free kicks, corners, or throw-ins with planned strategies", "A type of shoe", "A practice drill only"], correctAnswer: "A restart situation like free kicks, corners, or throw-ins with planned strategies", t: "football" }
+            ],
+            4: [ // Level 4: Integration and Creativity - Answers distributed evenly
+                // Handball (10)
+                { q: "How can handball skills help in other sports?", opts: ["They don't help at all", "Throwing, catching, agility, and teamwork apply to many sports", "Only to football", "Only to swimming"], correctAnswer: "Throwing, catching, agility, and teamwork apply to many sports", t: "handball" },
+                { q: "What is 'game sense' in handball?", opts: ["Knowing the rules only", "Understanding when to pass, shoot, move, or defend based on the game situation", "Only scoring goals", "Only playing defense"], correctAnswer: "Understanding when to pass, shoot, move, or defend based on the game situation", t: "handball" },
+                { q: "How can you adapt handball for different abilities?", opts: ["Only play one way", "Modify rules, equipment, or space to include everyone", "Exclude players who are different", "Make the court smaller only"], correctAnswer: "Modify rules, equipment, or space to include everyone", t: "handball" },
+                { q: "Why learn about handball history and culture?", opts: ["It's not important", "To appreciate the sport's development and global connections", "Only to win games", "To copy other sports"], correctAnswer: "To appreciate the sport's development and global connections", t: "handball" },
+                { q: "How does handball promote health?", opts: ["Only by winning", "Through cardiovascular exercise, strength, coordination, and teamwork", "Only by playing occasionally", "Only for the goalkeeper"], correctAnswer: "Through cardiovascular exercise, strength, coordination, and teamwork", t: "handball" },
+                { q: "What is 'tactical awareness' in handball?", opts: ["Only knowing your position", "Reading the game, anticipating plays, and making smart decisions", "Only following the coach", "Ignoring opponents"], correctAnswer: "Reading the game, anticipating plays, and making smart decisions", t: "handball" },
+                { q: "How can reflection improve your handball performance?", opts: ["It doesn't help", "By analyzing what worked, learning from mistakes, and setting goals", "Only celebrating wins", "Only blaming others"], correctAnswer: "By analyzing what worked, learning from mistakes, and setting goals", t: "handball" },
+                { q: "Why is respect important in handball?", opts: ["Only for the referee", "For teammates, opponents, officials, and the game itself to ensure fair play and enjoyment", "Only when winning", "It's not important"], correctAnswer: "For teammates, opponents, officials, and the game itself to ensure fair play and enjoyment", t: "handball" },
+                { q: "How can handball be used for community building?", opts: ["Only for competitions", "By bringing people together across differences through shared activity and values", "Only for professionals", "Only in schools"], correctAnswer: "By bringing people together across differences through shared activity and values", t: "handball" },
+                { q: "What is the value of playing multiple positions in handball?", opts: ["It confuses players", "Develops versatile skills, understanding of the game, and team empathy", "Only specialists should play", "It slows down learning"], correctAnswer: "Develops versatile skills, understanding of the game, and team empathy", t: "handball" },
+                
+                // Descant Recorder (10)
+                { q: "How can recorder skills transfer to other musical instruments?", opts: ["They don't transfer", "Breath control, finger dexterity, reading music, and ear training apply to many instruments", "Only to piano", "Only to drums"], correctAnswer: "Breath control, finger dexterity, reading music, and ear training apply to many instruments", t: "recorder" },
+                { q: "What is 'musical expression' on the recorder?", opts: ["Playing only the notes correctly", "Using dynamics, articulation, and phrasing to convey emotion and meaning", "Playing as fast as possible", "Only playing loud"], correctAnswer: "Using dynamics, articulation, and phrasing to convey emotion and meaning", t: "recorder" },
+                { q: "Why learn to play with others on recorders?", opts: ["It's harder alone", "To develop listening, ensemble skills, and enjoy making music together", "Only to perform", "To compete"], correctAnswer: "To develop listening, ensemble skills, and enjoy making music together", t: "recorder" },
+                { q: "How can recorder playing support academic learning?", opts: ["It doesn't", "By improving focus, memory, pattern recognition, and cultural understanding", "Only for music class", "Only for art"], correctAnswer: "By improving focus, memory, pattern recognition, and cultural understanding", t: "recorder" },
+                { q: "What is 'improvisation' on the recorder?", opts: ["Playing wrong notes", "Creating music spontaneously within a structure, using learned patterns", "Only copying songs", "Only playing scales"], correctAnswer: "Creating music spontaneously within a structure, using learned patterns", t: "recorder" },
+                { q: "Why explore music from different cultures on the recorder?", opts: ["It's not important", "To broaden musical understanding, appreciation, and creativity", "Only to play Kenyan songs", "Only to play Western songs"], correctAnswer: "To broaden musical understanding, appreciation, and creativity", t: "recorder" },
+                { q: "How does regular recorder practice build discipline?", opts: ["It doesn't", "Through consistent effort, goal-setting, and overcoming challenges", "Only when performing", "Only with a teacher"], correctAnswer: "Through consistent effort, goal-setting, and overcoming challenges", t: "recorder" },
+                { q: "What is the value of performing recorder music?", opts: ["Only to show off", "To build confidence, share joy, and connect with audiences", "Only for competitions", "Only for grades"], correctAnswer: "To build confidence, share joy, and connect with audiences", t: "recorder" },
+                { q: "How can technology enhance recorder learning?", opts: ["It can't", "Apps for tuning, metronomes, recording for self-review, and digital sheet music", "Only for games", "Only for watching videos"], correctAnswer: "Apps for tuning, metronomes, recording for self-review, and digital sheet music", t: "recorder" },
+                { q: "Why is it important to care for your recorder?", opts: ["It's not important", "Proper care ensures longevity, hygiene, and consistent sound quality", "Only when it breaks", "Only for new recorders"], correctAnswer: "Proper care ensures longevity, hygiene, and consistent sound quality", t: "recorder" },
+                
+                // Storytelling & Animation (10)
+                { q: "How can storytelling preserve culture?", opts: ["It can't", "By sharing traditions, values, history, and language through narratives", "Only by writing books", "Only by filming"], correctAnswer: "By sharing traditions, values, history, and language through narratives", t: "storytelling" },
+                { q: "What is 'audience awareness' in storytelling?", opts: ["Ignoring who is listening", "Adapting language, pace, and content to connect with your listeners", "Only telling stories you like", "Only using complex words"], correctAnswer: "Adapting language, pace, and content to connect with your listeners", t: "storytelling" },
+                { q: "How can animation be used for education?", opts: ["It can't", "To explain concepts visually, engage learners, and make abstract ideas concrete", "Only for entertainment", "Only for commercials"], correctAnswer: "To explain concepts visually, engage learners, and make abstract ideas concrete", t: "storytelling" },
+                { q: "Why collaborate on storytelling or animation projects?", opts: ["It's harder alone", "To combine ideas, skills, and perspectives for richer creations", "Only to finish faster", "Only to share credit"], correctAnswer: "To combine ideas, skills, and perspectives for richer creations", t: "storytelling" },
+                { q: "What is 'visual storytelling'?", opts: ["Only using words", "Conveying narrative through images, composition, color, and movement", "Only using text", "Only using sound"], correctAnswer: "Conveying narrative through images, composition, color, and movement", t: "storytelling" },
+                { q: "How can feedback improve your creative work?", opts: ["It can't", "By providing new perspectives, identifying strengths, and suggesting refinements", "Only to criticize", "Only to praise"], correctAnswer: "By providing new perspectives, identifying strengths, and suggesting refinements", t: "storytelling" },
+                { q: "Why learn about story structure?", opts: ["It's not important", "To organize ideas effectively, create satisfying narratives, and understand how stories work", "Only for writing", "Only for animation"], correctAnswer: "To organize ideas effectively, create satisfying narratives, and understand how stories work", t: "storytelling" },
+                { q: "How can personal experiences inspire stories?", opts: ["They can't", "By providing authentic emotions, details, and perspectives that resonate with others", "Only fictional stories matter", "Only copy others"], correctAnswer: "By providing authentic emotions, details, and perspectives that resonate with others", t: "storytelling" },
+                { q: "What is the value of revising a story or animation?", opts: ["It's not necessary", "To refine ideas, improve clarity, and strengthen impact", "Only for professionals", "Only when forced"], correctAnswer: "To refine ideas, improve clarity, and strengthen impact", t: "storytelling" },
+                { q: "How can creative arts promote empathy?", opts: ["They can't", "By allowing us to experience different perspectives, emotions, and cultures through stories and characters", "Only by winning awards", "Only by performing"], correctAnswer: "By allowing us to experience different perspectives, emotions, and cultures through stories and characters", t: "storytelling" },
+                
+                // Football (10)
+                { q: "How can football skills apply to daily life?", opts: ["They don't", "Teamwork, discipline, resilience, and strategic thinking transfer to many situations", "Only to other sports", "Only to physical activities"], correctAnswer: "Teamwork, discipline, resilience, and strategic thinking transfer to many situations", t: "football" },
+                { q: "What is 'decision-making' under pressure in football?", opts: ["Always kicking hard", "Choosing the best option (pass, dribble, shoot) quickly based on game context", "Only following the coach", "Ignoring opponents"], correctAnswer: "Choosing the best option (pass, dribble, shoot) quickly based on game context", t: "football" },
+                { q: "Why is adaptability important in football?", opts: ["It's not", "To adjust tactics, positions, and effort based on opponents, score, and conditions", "Only for professionals", "Only in training"], correctAnswer: "To adjust tactics, positions, and effort based on opponents, score, and conditions", t: "football" },
+                { q: "How does football promote inclusion?", opts: ["It doesn't", "By providing a common language and activity that brings diverse people together with shared goals", "Only for boys", "Only for skilled players"], correctAnswer: "By providing a common language and activity that brings diverse people together with shared goals", t: "football" },
+                { q: "What is 'mental toughness' in football?", opts: ["Only physical strength", "Staying focused, confident, and resilient through challenges and mistakes", "Only when winning", "Only for the captain"], correctAnswer: "Staying focused, confident, and resilient through challenges and mistakes", t: "football" },
+                { q: "Why learn football history and global culture?", opts: ["It's not important", "To appreciate the sport's evolution, values, and role in communities worldwide", "Only to copy teams", "Only for trivia"], correctAnswer: "To appreciate the sport's evolution, values, and role in communities worldwide", t: "football" },
+                { q: "How can reflection improve football performance?", opts: ["It can't", "By analyzing games, identifying improvements, and setting personal/team goals", "Only celebrating wins", "Only blaming referees"], correctAnswer: "By analyzing games, identifying improvements, and setting personal/team goals", t: "football" },
+                { q: "What is the value of playing different positions in football?", opts: ["It confuses players", "Develops comprehensive understanding, versatility, and appreciation for teammates' roles", "Only specialists should play", "It slows development"], correctAnswer: "Develops comprehensive understanding, versatility, and appreciation for teammates' roles", t: "football" },
+                { q: "How does football support health and wellness?", opts: ["Only by winning", "Through physical activity, stress relief, social connection, and healthy habits", "Only for professionals", "Only occasionally"], correctAnswer: "Through physical activity, stress relief, social connection, and healthy habits", t: "football" },
+                { q: "Why is leadership important in football teams?", opts: ["Only for the coach", "To motivate, organize, communicate, and inspire teammates toward common goals", "Only when losing", "Only for captains"], correctAnswer: "To motivate, organize, communicate, and inspire teammates toward common goals", t: "football" }
+            ],
+            5: [ // Level 5: Mastery and Synthesis - Answers distributed evenly
+                // Handball (10)
+                { q: "How can you design a handball drill to improve passing accuracy?", opts: ["Only kick the ball", "Create progressive challenges with targets, distances, and movement", "Only practice alone", "Avoid structure"], correctAnswer: "Create progressive challenges with targets, distances, and movement", t: "handball" },
+                { q: "What is 'tactical periodization' in simple terms for Grade 7?", opts: ["Only playing games", "Planning training to develop skills, fitness, and game understanding together", "Only resting", "Only watching videos"], correctAnswer: "Planning training to develop skills, fitness, and game understanding together", t: "handball" },
+                { q: "How can handball promote gender equality?", opts: ["It can't", "By providing equal opportunities, respect, and visibility for all players regardless of gender", "Only for boys", "Only for girls"], correctAnswer: "By providing equal opportunities, respect, and visibility for all players regardless of gender", t: "handball" },
+                { q: "What is 'game intelligence' in handball?", opts: ["Only knowing rules", "Anticipating plays, reading opponents, and making smart decisions in real-time", "Only physical skills", "Only following instructions"], correctAnswer: "Anticipating plays, reading opponents, and making smart decisions in real-time", t: "handball" },
+                { q: "How can you use video analysis to improve handball?", opts: ["It's not useful", "Reviewing recordings to identify strengths, weaknesses, and tactical patterns", "Only to show off", "Only for professionals"], correctAnswer: "Reviewing recordings to identify strengths, weaknesses, and tactical patterns", t: "handball" },
+                { q: "Why is nutrition important for handball players?", opts: ["It's not", "Proper fuel supports energy, recovery, focus, and overall health for performance", "Only for weight loss", "Only before games"], correctAnswer: "Proper fuel supports energy, recovery, focus, and overall health for performance", t: "handball" },
+                { q: "What is 'periodization' of training?", opts: ["Only playing", "Planning training in cycles to peak for competitions and prevent burnout", "Only resting", "Only practicing skills"], correctAnswer: "Planning training in cycles to peak for competitions and prevent burnout", t: "handball" },
+                { q: "How can handball foster community development?", opts: ["It can't", "Through clubs, events, and programs that build social bonds, teach values, and promote health", "Only for competitions", "Only in schools"], correctAnswer: "Through clubs, events, and programs that build social bonds, teach values, and promote health", t: "handball" },
+                { q: "What is 'adaptive handball'?", opts: ["Only for professionals", "Modified versions of handball to include players with different abilities", "Only for children", "Only for adults"], correctAnswer: "Modified versions of handball to include players with different abilities", t: "handball" },
+                { q: "How can you mentor younger handball players?", opts: ["Only by winning", "By sharing knowledge, encouraging effort, modeling sportsmanship, and supporting growth", "Only by criticizing", "Only by playing against them"], correctAnswer: "By sharing knowledge, encouraging effort, modeling sportsmanship, and supporting growth", t: "handball" },
+                
+                // Descant Recorder (10)
+                { q: "How can you compose a simple melody for the recorder?", opts: ["Only copy songs", "Use scales, rhythm patterns, and phrasing to create original musical ideas", "Only play random notes", "Only use one note"], correctAnswer: "Use scales, rhythm patterns, and phrasing to create original musical ideas", t: "recorder" },
+                { q: "What is 'musical form' in recorder pieces?", opts: ["Only the title", "The structure of a piece (e.g., verse-chorus, ABA) that organizes musical ideas", "Only the tempo", "Only the dynamics"], correctAnswer: "The structure of a piece (e.g., verse-chorus, ABA) that organizes musical ideas", t: "recorder" },
+                { q: "How can recorder playing support language learning?", opts: ["It can't", "Through rhythm, pitch patterns, and cultural songs that reinforce pronunciation and vocabulary", "Only for music class", "Only for singing"], correctAnswer: "Through rhythm, pitch patterns, and cultural songs that reinforce pronunciation and vocabulary", t: "recorder" },
+                { q: "What is 'ensemble balance' when playing recorders together?", opts: ["Only playing loud", "Adjusting volume and tone so all parts are heard clearly and blend well", "Only the melody should be loud", "Ignoring others"], correctAnswer: "Adjusting volume and tone so all parts are heard clearly and blend well", t: "recorder" },
+                { q: "Why learn about recorder history and global traditions?", opts: ["It's not important", "To understand the instrument's evolution, cultural contexts, and diverse musical roles", "Only to play modern songs", "Only to play Western music"], correctAnswer: "To understand the instrument's evolution, cultural contexts, and diverse musical roles", t: "recorder" },
+                { q: "How can technology aid recorder composition?", opts: ["It can't", "Using notation software, recording tools, and digital audio workstations to create and refine pieces", "Only for games", "Only for listening"], correctAnswer: "Using notation software, recording tools, and digital audio workstations to create and refine pieces", t: "recorder" },
+                { q: "What is 'interpretation' in recorder performance?", opts: ["Only playing the notes", "Making artistic choices about tempo, dynamics, and phrasing to convey the music's character", "Only playing fast", "Only playing loud"], correctAnswer: "Making artistic choices about tempo, dynamics, and phrasing to convey the music's character", t: "recorder" },
+                { q: "How can recorder skills support other academic areas?", opts: ["They can't", "Through pattern recognition (math), cultural studies (social studies), and focused practice (executive function)", "Only for art", "Only for PE"], correctAnswer: "Through pattern recognition (math), cultural studies (social studies), and focused practice (executive function)", t: "recorder" },
+                { q: "Why is lifelong learning valuable in music?", opts: ["It's not", "Music offers continuous growth, joy, cognitive benefits, and community at any age", "Only for professionals", "Only in school"], correctAnswer: "Music offers continuous growth, joy, cognitive benefits, and community at any age", t: "recorder" },
+                { q: "How can you share recorder music with your community?", opts: ["Only in concerts", "Through performances, recordings, workshops, or collaborations that connect and inspire", "Only online", "Only for family"], correctAnswer: "Through performances, recordings, workshops, or collaborations that connect and inspire", t: "recorder" },
+                
+                // Storytelling & Animation (10)
+                { q: "How can you create a story that addresses a community issue?", opts: ["Ignore the issue", "Research, empathize, craft characters and plot that explore the issue respectfully and hopefully", "Only complain", "Only use fiction"], correctAnswer: "Research, empathize, craft characters and plot that explore the issue respectfully and hopefully", t: "storytelling" },
+                { q: "What is 'transmedia storytelling'?", opts: ["Only one medium", "Telling a story across multiple platforms (book, animation, game) with each adding unique value", "Only using video", "Only using text"], correctAnswer: "Telling a story across multiple platforms (book, animation, game) with each adding unique value", t: "storytelling" },
+                { q: "How can animation promote environmental awareness?", opts: ["It can't", "By visualizing impacts, solutions, and inspiring action through engaging narratives and characters", "Only by showing problems", "Only by using green colors"], correctAnswer: "By visualizing impacts, solutions, and inspiring action through engaging narratives and characters", t: "storytelling" },
+                { q: "What is 'character development' in a story?", opts: ["Only the name", "How a character changes, grows, or reveals depth through the narrative", "Only the appearance", "Only the dialogue"], correctAnswer: "How a character changes, grows, or reveals depth through the narrative", t: "storytelling" },
+                { q: "Why learn about diverse storytelling traditions?", opts: ["It's not important", "To broaden perspectives, honor cultures, and enrich your own creative voice", "Only to copy", "Only for school"], correctAnswer: "To broaden perspectives, honor cultures, and enrich your own creative voice", t: "storytelling" },
+                { q: "How can feedback loops improve animation projects?", opts: ["They can't", "By testing with audiences, iterating based on responses, and refining for clarity and impact", "Only at the end", "Only from experts"], correctAnswer: "By testing with audiences, iterating based on responses, and refining for clarity and impact", t: "storytelling" },
+                { q: "What is 'visual metaphor' in animation?", opts: ["Only literal images", "Using symbols and imagery to represent abstract ideas or emotions", "Only using text", "Only using realistic art"], correctAnswer: "Using symbols and imagery to represent abstract ideas or emotions", t: "storytelling" },
+                { q: "How can storytelling build digital literacy?", opts: ["It can't", "By creating digital content, understanding media, and communicating effectively across platforms", "Only for coding", "Only for social media"], correctAnswer: "By creating digital content, understanding media, and communicating effectively across platforms", t: "storytelling" },
+                { q: "Why is ethical storytelling important?", opts: ["It's not", "To represent others respectfully, avoid harm, and promote truth and empathy", "Only for fiction", "Only for documentaries"], correctAnswer: "To represent others respectfully, avoid harm, and promote truth and empathy", t: "storytelling" },
+                { q: "How can you measure the impact of your story or animation?", opts: ["Only by views", "Through audience feedback, behavior changes, discussions, and personal growth indicators", "Only by awards", "Only by sales"], correctAnswer: "Through audience feedback, behavior changes, discussions, and personal growth indicators", t: "storytelling" },
+                
+                // Football (10)
+                { q: "How can you design a football session that develops multiple skills?", opts: ["Only practice shooting", "Integrate technical drills, small-sided games, and tactical scenarios with clear objectives", "Only run laps", "Only watch videos"], correctAnswer: "Integrate technical drills, small-sided games, and tactical scenarios with clear objectives", t: "football" },
+                { q: "What is 'periodization' in football training?", opts: ["Only playing matches", "Planning training cycles to develop fitness, skills, and tactics while managing fatigue", "Only resting", "Only practicing skills"], correctAnswer: "Planning training cycles to develop fitness, skills, and tactics while managing fatigue", t: "football" },
+                { q: "How can football promote peace and reconciliation?", opts: ["It can't", "By creating shared goals, respectful dialogue, and community bonds across divides through the sport", "Only for professionals", "Only in competitions"], correctAnswer: "By creating shared goals, respectful dialogue, and community bonds across divides through the sport", t: "football" },
+                { q: "What is 'football intelligence'?", opts: ["Only physical ability", "Reading the game, anticipating plays, and making effective decisions under pressure", "Only knowing rules", "Only following the coach"], correctAnswer: "Reading the game, anticipating plays, and making effective decisions under pressure", t: "football" },
+                { q: "How can data analysis improve football performance?", opts: ["It can't", "Using stats, video, and tracking to identify patterns, strengths, and areas for improvement", "Only for professionals", "Only for coaches"], correctAnswer: "Using stats, video, and tracking to identify patterns, strengths, and areas for improvement", t: "football" },
+                { q: "Why is mental preparation important in football?", opts: ["It's not", "Visualization, focus techniques, and resilience strategies enhance performance under pressure", "Only for penalties", "Only for the goalkeeper"], correctAnswer: "Visualization, focus techniques, and resilience strategies enhance performance under pressure", t: "football" },
+                { q: "What is 'holistic player development'?", opts: ["Only technical skills", "Nurturing technical, tactical, physical, psychological, and social growth together", "Only winning", "Only fitness"], correctAnswer: "Nurturing technical, tactical, physical, psychological, and social growth together", t: "football" },
+                { q: "How can football support education?", opts: ["It can't", "Through programs linking sport to academics, teaching life skills, and promoting school engagement", "Only for PE class", "Only for scholarships"], correctAnswer: "Through programs linking sport to academics, teaching life skills, and promoting school engagement", t: "football" },
+                { q: "Why is inclusive football important?", opts: ["It's not", "To ensure everyone can participate, benefit, and feel valued regardless of ability, gender, or background", "Only for boys", "Only for skilled players"], correctAnswer: "To ensure everyone can participate, benefit, and feel valued regardless of ability, gender, or background", t: "football" },
+                { q: "How can you lead a football initiative in your community?", opts: ["Only by playing", "By organizing, inspiring, collaborating, and creating opportunities that promote health, skills, and values", "Only by coaching", "Only by fundraising"], correctAnswer: "By organizing, inspiring, collaborating, and creating opportunities that promote health, skills, and values", t: "football" }
+            ]
+        };
+
+        // Game State Management
+        const gameState = {
+            currentLevel: 1,
+            currentQuestionIndex: 0,
+            score: 0,
+            correctAnswers: 0,
+            timer: null,
+            timeLeft: 30,
+            questions: [],
+            unlockedLevels: [1],
+            totalScore: 0,
+            starsEarned: 0,
+            speechSynthesis: window.speechSynthesis || window.webkitSpeechSynthesis,
+            voiceEnabled: true,
+            currentQuestion: null,
+            answerSelected: false
+        };
+
+        // DOM Elements Cache
+        const elements = {
+            screens: {
+                start: document.getElementById('start-screen'),
+                levelSelect: document.getElementById('level-select-screen'),
+                quiz: document.getElementById('quiz-screen'),
+                levelComplete: document.getElementById('level-complete-screen'),
+                gameComplete: document.getElementById('game-complete-screen')
+            },
+            // Quiz elements
+            questionText: document.getElementById('question-text'),
+            optionsContainer: document.getElementById('options-container'),
+            feedback: document.getElementById('feedback'),
+            progressBar: document.getElementById('progress-bar'),
+            questionNumber: document.getElementById('question-number'),
+            currentLevelEl: document.getElementById('current-level'),
+            levelTitleEl: document.getElementById('level-title'),
+            scoreEl: document.getElementById('score'),
+            correctCountEl: document.getElementById('correct-count'),
+            timerDisplay: document.getElementById('timer-display'),
+            mainTimer: document.getElementById('main-timer'),
+            voiceBtn: document.getElementById('voice-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            // Level select elements
+            levelSelectContainer: document.getElementById('level-select-container'),
+            totalScoreEl: document.getElementById('total-score'),
+            levelsCompletedEl: document.getElementById('levels-completed'),
+            starsEarnedEl: document.getElementById('stars-earned'),
+            // Level complete elements
+            levelScoreEl: document.getElementById('level-score'),
+            percentageEl: document.getElementById('percentage'),
+            starsDisplayEl: document.getElementById('stars-display'),
+            progressionMessage: document.getElementById('progression-message'),
+            nextLevelBtn: document.getElementById('next-level-btn'),
+            retryBtn: document.getElementById('retry-btn'),
+            // Game complete elements
+            finalScoreEl: document.getElementById('final-score'),
+            finalStarsEl: document.getElementById('final-stars')
+        };
+
+        // Level titles and topics mapping
+        const levelInfo = [
+            { title: "Handball Basics", topic: "🤾 Handball Introduction" },
+            { title: "Recorder Fundamentals", topic: "🎵 Descant Recorder Basics" },
+            { title: "Storytelling & Animation Start", topic: "📚 Creative Expression" },
+            { title: "Football Foundations", topic: "⚽ Football Essentials" },
+            { title: "Creative Integration Challenge", topic: "✨ All Topics Mastery" }
+        ];
+
+        // Initialize the Game
+        function initGame() {
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Initialize level selection
+            renderLevelSelect();
+            
+            // Check speech synthesis support
+            checkSpeechSupport();
+            
+            // Load voices for speech synthesis (Chrome needs this)
+            if (gameState.speechSynthesis && 'onvoiceschanged' in gameState.speechSynthesis) {
+                gameState.speechSynthesis.onvoiceschanged = () => {};
+            }
+            
+            console.log("🎮 CBC Creative Arts & Sports Quest loaded for Grade 7!");
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Navigation buttons
+            document.getElementById('start-btn').addEventListener('click', showLevelSelect);
+            document.getElementById('back-to-start').addEventListener('click', showStartScreen);
+            document.getElementById('back-to-levels').addEventListener('click', showLevelSelect);
+            document.getElementById('retry-btn').addEventListener('click', retryLevel);
+            document.getElementById('next-level-btn').addEventListener('click', goToNextLevel);
+            document.getElementById('play-again-btn').addEventListener('click', restartGame);
+            
+            // Quiz controls
+            elements.voiceBtn.addEventListener('click', toggleVoice);
+            elements.nextBtn.addEventListener('click', nextQuestion);
+            
+            // Handle window visibility change to pause timers
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            
+            // Handle orientation change for mobile responsiveness
+            window.addEventListener('orientationchange', handleOrientationChange);
+        }
+
+        // Screen Navigation Functions
+        function showScreen(screenName) {
+            // Hide all screens
+            Object.values(elements.screens).forEach(screen => {
+                screen.classList.remove('active');
+                screen.style.display = 'none';
+            });
+            
+            // Show target screen
+            const targetScreen = elements.screens[screenName];
+            targetScreen.style.display = 'flex';
+            // Small delay to allow display:flex to apply before adding active class for animation
+            setTimeout(() => {
+                targetScreen.classList.add('active');
+            }, 10);
+        }
+
+        function showStartScreen() {
+            showScreen('start');
+        }
+
+        function showLevelSelect() {
+            renderLevelSelect();
+            updateStatsDisplay();
+            showScreen('levelSelect');
+        }
+
+        function startLevel(levelNumber) {
+            gameState.currentLevel = levelNumber;
+            gameState.currentQuestionIndex = 0;
+            gameState.score = 0;
+            gameState.correctAnswers = 0;
+            gameState.answerSelected = false;
+            
+            // Get and shuffle questions for this level
+            const levelQuestions = [...questionsDatabase[levelNumber]];
+            gameState.questions = shuffleArray(levelQuestions);
+            
+            // Update UI
+            updateLevelHeader();
+            renderQuestion();
+            
+            showScreen('quiz');
+        }
+
+        function showLevelComplete() {
+            const percentage = Math.round((gameState.correctAnswers / 40) * 100);
+            const stars = calculateStars(percentage);
+            
+            // Update UI elements
+            elements.levelScoreEl.textContent = `${gameState.correctAnswers}/40`;
+            elements.percentageEl.textContent = percentage;
+            elements.starsDisplayEl.textContent = '★'.repeat(stars) + '☆'.repeat(5-stars);
+            
+            // Update progression message and buttons
+            updateProgressionUI(percentage);
+            
+            // Update global stats
+            gameState.totalScore += gameState.score;
+            gameState.starsEarned += stars;
+            
+            // Celebration effects for high scores
+            if (percentage >= 80) {
+                createConfetti(40);
+                if (gameState.currentLevel === 5) {
+                    // Final level completion
+                    setTimeout(() => {
+                        showGameComplete();
+                    }, 2000);
+                }
+            }
+            
+            showScreen('levelComplete');
+        }
+
+        function showGameComplete() {
+            elements.finalScoreEl.textContent = `${gameState.totalScore}/200`;
+            elements.finalStarsEl.textContent = gameState.starsEarned;
+            createConfetti(75); // Big celebration
+            showScreen('gameComplete');
+        }
+
+        // Level Selection Functions
+        function renderLevelSelect() {
+            elements.levelSelectContainer.innerHTML = '';
+            
+            const levelTopics = [
+                "Handball Basics",
+                "Recorder Skills", 
+                "Storytelling & Animation",
+                "Football Fundamentals",
+                "Creative Mastery"
+            ];
+            
+            for (let i = 1; i <= 5; i++) {
+                const levelCard = document.createElement('div');
+                levelCard.className = `level-card ${gameState.unlockedLevels.includes(i) ? 'unlocked' : 'locked'}`;
+                levelCard.innerHTML = `
+                    <div class="level-number">${i}</div>
+                    <div class="level-title">${levelTopics[i-1]}</div>
+                    <div class="level-topic">${levelInfo[i-1].topic}</div>
+                `;
+                
+                if (gameState.unlockedLevels.includes(i)) {
+                    levelCard.addEventListener('click', () => startLevel(i));
+                }
+                
+                elements.levelSelectContainer.appendChild(levelCard);
+            }
+        }
+
+        function updateStatsDisplay() {
+            elements.totalScoreEl.textContent = gameState.totalScore;
+            elements.levelsCompletedEl.textContent = `${gameState.unlockedLevels.length}/5`;
+            elements.starsEarnedEl.textContent = gameState.starsEarned;
+        }
+
+        function updateProgressionUI(percentage) {
+            if (percentage >= 80 && gameState.currentLevel < 5) {
+                // Unlocked next level
+                elements.progressionMessage.textContent = `🎉 Excellent! You've unlocked Level ${gameState.currentLevel + 1}!`;
+                elements.progressionMessage.className = 'progression-message success';
+                elements.nextLevelBtn.disabled = false;
+                
+                // Unlock next level if not already unlocked
+                if (!gameState.unlockedLevels.includes(gameState.currentLevel + 1)) {
+                    gameState.unlockedLevels.push(gameState.currentLevel + 1);
+                }
+            } else if (gameState.currentLevel === 5 && percentage >= 80) {
+                // Completed all levels
+                elements.progressionMessage.textContent = `🏆 Amazing! You're a Creative Champion!`;
+                elements.progressionMessage.className = 'progression-message success';
+                elements.nextLevelBtn.style.display = 'none';
+                elements.retryBtn.textContent = '🔄 Play Again';
+            } else {
+                // Needs more practice
+                elements.progressionMessage.textContent = `🎯 You need 80% (32/40) to unlock the next level. Keep practicing!`;
+                elements.progressionMessage.className = 'progression-message';
+                elements.nextLevelBtn.disabled = true;
+                elements.nextLevelBtn.style.display = 'inline-flex';
+            }
+        }
+
+        // Quiz Functions
+        function updateLevelHeader() {
+            elements.currentLevelEl.textContent = gameState.currentLevel;
+            elements.levelTitleEl.textContent = levelInfo[gameState.currentLevel - 1].title;
+        }
+
+        function renderQuestion() {
+            // Update progress bar and question number
+            const progress = (gameState.currentQuestionIndex / 40) * 100;
+            elements.progressBar.style.width = `${progress}%`;
+            elements.questionNumber.textContent = gameState.currentQuestionIndex + 1;
+            
+            // Get current question
+            gameState.currentQuestion = gameState.questions[gameState.currentQuestionIndex];
+            elements.questionText.textContent = gameState.currentQuestion.q;
+            
+            // Reset UI states
+            elements.feedback.textContent = '';
+            elements.feedback.className = 'feedback-panel';
+            elements.nextBtn.disabled = true;
+            gameState.answerSelected = false;
+            elements.voiceBtn.classList.remove('speaking');
+            
+            // Render options with randomized positions (A, B, C, D)
+            renderOptions();
+            
+            // Start timer
+            startTimer();
+            
+            // Auto-speak question if voice is enabled and supported
+            if (gameState.voiceEnabled && gameState.speechSynthesis) {
+                setTimeout(speakQuestion, 500);
+            }
+        }
+
+        function renderOptions() {
+            elements.optionsContainer.innerHTML = '';
+            const question = gameState.currentQuestion;
+            
+            // Create array of option objects with text and labels
+            const options = question.opts.map((text, index) => ({
+                text,
+                label: String.fromCharCode(65 + index) // A, B, C, D
+            }));
+            
+            // Shuffle options for display
+            const shuffledOptions = shuffleArray([...options]);
+            
+            // Render each option
+            shuffledOptions.forEach((option, visualIndex) => {
+                const optionBtn = document.createElement('button');
+                optionBtn.className = 'option-btn';
+                optionBtn.innerHTML = `
+                    <span class="option-label">${String.fromCharCode(65 + visualIndex)}</span>
+                    <span>${option.text}</span>
+                `;
+                // Store the actual answer text for comparison (not index)
+                optionBtn.dataset.answerText = option.text;
+                optionBtn.addEventListener('click', () => handleOptionSelect(option.text));
+                elements.optionsContainer.appendChild(optionBtn);
+            });
+        }
+
+        function startTimer() {
+            // Clear any existing timer
+            if (gameState.timer) clearInterval(gameState.timer);
+            
+            gameState.timeLeft = 30;
+            updateTimerDisplay();
+            
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                // Visual warning for last 10 seconds
+                if (gameState.timeLeft <= 10) {
+                    elements.mainTimer.classList.add('warning');
+                    elements.timerDisplay.classList.add('warning');
+                }
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            elements.timerDisplay.textContent = `${gameState.timeLeft}s`;
+            elements.mainTimer.textContent = `${gameState.timeLeft} seconds`;
+        }
+
+        function handleTimeUp() {
+            // Disable all options
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.style.pointerEvents = 'none';
+                
+                // Highlight correct answer by comparing text
+                if (btn.dataset.answerText === gameState.currentQuestion.correctAnswer) {
+                    btn.classList.add('correct');
+                }
+            });
+            
+            // Show feedback
+            showFeedback(false);
+            elements.nextBtn.disabled = false;
+            gameState.answerSelected = true;
+        }
+
+        function handleOptionSelect(selectedAnswerText) {
+            // Prevent multiple selections
+            if (gameState.answerSelected) return;
+            gameState.answerSelected = true;
+            
+            // Stop timer
+            clearInterval(gameState.timer);
+            
+            // Get all option buttons
+            const optionBtns = document.querySelectorAll('.option-btn');
+            
+            // Disable all options and highlight correct/incorrect
+            optionBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.style.pointerEvents = 'none';
+                
+                const optionText = btn.dataset.answerText;
+                
+                // Highlight correct answer
+                if (optionText === gameState.currentQuestion.correctAnswer) {
+                    btn.classList.add('correct');
+                }
+                
+                // Highlight selected answer if incorrect
+                if (optionText === selectedAnswerText && optionText !== gameState.currentQuestion.correctAnswer) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            // Check if answer is correct by comparing text
+            const isCorrect = selectedAnswerText === gameState.currentQuestion.correctAnswer;
+            
+            if (isCorrect) {
+                gameState.score += 10; // 10 points per correct answer
+                gameState.correctAnswers++;
+                elements.scoreEl.textContent = gameState.score;
+                elements.correctCountEl.textContent = gameState.correctAnswers;
+            }
+            
+            // Show feedback
+            showFeedback(isCorrect);
+            elements.nextBtn.disabled = false;
+        }
+
+        function showFeedback(isCorrect) {
+            if (isCorrect) {
+                elements.feedback.textContent = '🌟 Excellent! That\'s correct!';
+                elements.feedback.className = 'feedback-panel correct';
+            } else {
+                elements.feedback.textContent = '💡 Keep learning! Review the correct answer highlighted above.';
+                elements.feedback.className = 'feedback-panel incorrect';
+            }
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestionIndex++;
+            
+            if (gameState.currentQuestionIndex >= 40) {
+                // Level complete
+                clearInterval(gameState.timer);
+                showLevelComplete();
+            } else {
+                renderQuestion();
+            }
+        }
+
+        function retryLevel() {
+            if (gameState.currentLevel === 5 && gameState.correctAnswers >= 32) {
+                showGameComplete();
+            } else {
+                startLevel(gameState.currentLevel);
+            }
+        }
+
+        function goToNextLevel() {
+            if (gameState.currentLevel < 5) {
+                startLevel(gameState.currentLevel + 1);
+            } else {
+                showGameComplete();
+            }
+        }
+
+        function restartGame() {
+            // Reset game state
+            gameState.currentLevel = 1;
+            gameState.totalScore = 0;
+            gameState.starsEarned = 0;
+            gameState.unlockedLevels = [1];
+            
+            showStartScreen();
+        }
+
+        // Voice/Speech Functions
+        function checkSpeechSupport() {
+            if (!gameState.speechSynthesis) {
+                elements.voiceBtn.style.display = 'none';
+                gameState.voiceEnabled = false;
+                console.log("⚠️ Speech synthesis not supported in this browser");
+            }
+        }
+
+        function toggleVoice() {
+            if (!gameState.voiceEnabled || !gameState.speechSynthesis) return;
+            
+            // Toggle speaking state
+            if (elements.voiceBtn.classList.contains('speaking')) {
+                // Stop speaking
+                gameState.speechSynthesis.cancel();
+                elements.voiceBtn.classList.remove('speaking');
+                elements.voiceBtn.textContent = '🔊';
+            } else {
+                // Start speaking
+                speakQuestion();
+            }
+        }
+
+        function speakQuestion() {
+            if (!gameState.voiceEnabled || !gameState.speechSynthesis || !gameState.currentQuestion) return;
+            
+            // Cancel any ongoing speech
+            gameState.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(gameState.currentQuestion.q);
+            
+            // Configure voice for child-friendly delivery
+            utterance.rate = 0.9; // Slightly slower for clarity
+            utterance.pitch = 1.1; // Slightly higher pitch
+            utterance.volume = 1.0;
+            
+            // Try to select a good voice
+            if ('getVoices' in gameState.speechSynthesis) {
+                const voices = gameState.speechSynthesis.getVoices();
+                // Prefer English voices with good clarity
+                const preferredVoice = voices.find(voice => 
+                    voice.lang.includes('en') && 
+                    (voice.name.includes('Google') || voice.name.includes('Samantha') || voice.name.includes('Karen'))
+                ) || voices.find(voice => voice.lang.includes('en'));
+                
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+            }
+            
+            // Visual feedback
+            elements.voiceBtn.classList.add('speaking');
+            elements.voiceBtn.textContent = '🔇';
+            
+            // Handle end of speech
+            utterance.onend = () => {
+                elements.voiceBtn.classList.remove('speaking');
+                elements.voiceBtn.textContent = '🔊';
+            };
+            
+            // Handle errors
+            utterance.onerror = (event) => {
+                console.error("Speech synthesis error:", event);
+                elements.voiceBtn.classList.remove('speaking');
+                elements.voiceBtn.textContent = '🔊';
+            };
+            
+            gameState.speechSynthesis.speak(utterance);
+        }
+
+        // Utility Functions
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function calculateStars(percentage) {
+            if (percentage >= 95) return 5;
+            if (percentage >= 90) return 4;
+            if (percentage >= 85) return 4;
+            if (percentage >= 80) return 3;
+            if (percentage >= 70) return 2;
+            return 1;
+        }
+
+        function createConfetti(count = 30) {
+            const colors = ['#4361ee', '#3f37c9', '#4895ef', '#4cc9f0', '#f72585', '#ffd166', '#06d6a0'];
+            const container = document.getElementById('game-container');
+            const rect = container.getBoundingClientRect();
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random position, size, color, and animation
+                const size = Math.random() * 8 + 6;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confetti.style.animationDelay = `${Math.random() * 1}s`;
+                confetti.style.zIndex = '100';
+                
+                container.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Event Handlers
+        function handleVisibilityChange() {
+            if (document.hidden && gameState.timer) {
+                // Pause timer when tab is not visible
+                clearInterval(gameState.timer);
+            }
+        }
+
+        function handleOrientationChange() {
+            // Adjust font sizes for very small screens
+            if (window.innerWidth < 400) {
+                document.body.style.fontSize = '13px';
+            } else {
+                document.body.style.fontSize = '';
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Preload voices for speech synthesis (Chrome)
+            if (gameState.speechSynthesis && 'onvoiceschanged' in gameState.speechSynthesis) {
+                gameState.speechSynthesis.onvoiceschanged = () => {
+                    // Voices loaded, ready to use
+                };
+                // Trigger voice loading
+                gameState.speechSynthesis.getVoices();
+            }
+            
+            // Initialize the game
+            initGame();
+        });
+
+        // Handle page unload to clean up speech
+        window.addEventListener('beforeunload', () => {
+            if (gameState.speechSynthesis) {
+                gameState.speechSynthesis.cancel();
+            }
+        });
+    </script>
+</body>
+</html>

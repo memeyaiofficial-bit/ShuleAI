@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Bobo's House of God - Grade 1 CRE | A House of God & A House of Prayer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #6b3a1f 0%, #4a2612 100%);
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 70px 70px 80px 80px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #ffb84d;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #e09d32;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2e241f;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #ffecb3;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #5a3e2e, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            background: #9b4b1f;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .story-area {
+            background: #fff1df;
+            padding: 25px 20px 15px 20px;
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #6b3a1f;
+            border-bottom: 3px dashed #f7d98c;
+            min-height: 130px;
+        }
+
+        .question-area {
+            padding: 25px 20px 20px;
+            background: #fff9ef;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .speaker-btn {
+            background: #2c7a47;
+            border: none;
+            font-size: 1.6rem;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #1a5a34;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speaker-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1a5a34;
+        }
+
+        .narrative-question {
+            background: #f5ebd2;
+            border-radius: 60px;
+            padding: 20px 18px;
+            font-size: 1.6rem;
+            text-align: center;
+            color: #2c4727;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.05);
+            font-weight: bold;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .answer-input-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            flex: 3;
+            min-width: 180px;
+            padding: 16px 20px;
+            font-size: 1.3rem;
+            font-family: inherit;
+            border-radius: 60px;
+            border: 3px solid #c8b27a;
+            background: white;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        #answerInput:focus {
+            border-color: #f3a712;
+            box-shadow: 0 0 0 3px rgba(243,167,18,0.3);
+        }
+
+        .btn-check {
+            background: #f3a712;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c2416;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b4621a;
+        }
+
+        .btn-check:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b4621a;
+        }
+
+        .feedback {
+            background: #e9e0cb;
+            border-radius: 50px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            min-height: 85px;
+            font-weight: bold;
+        }
+
+        .next-level-msg {
+            background: #cae3b5;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 550px) {
+            .narrative-question { font-size: 1.3rem; }
+            .story-area { font-size: 1.2rem; }
+            .level-badge, .score-badge, .timer-box { font-size: 0.9rem; padding: 5px 12px; }
+            .btn-check { padding: 10px 18px; font-size: 1.1rem; }
+            .speaker-btn { font-size: 1.3rem; padding: 6px 12px; }
+            #answerInput { font-size: 1rem; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level: 1</div>
+        <div class="score-badge" id="scoreDisplay">Score: 0 / 40</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="story-area" id="storyArea">
+        ⛪🙏 Bobo's House of God! Learn about God's House and the House of Prayer.
+    </div>
+    <div class="question-area">
+        <div class="question-header">
+            <div class="narrative-question" id="questionText">
+                Question will appear here...
+            </div>
+            <button class="speaker-btn" id="speakQuestionBtn">🔊 Read Question</button>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" placeholder="Write your answer here..." autocomplete="off">
+            <button class="btn-check" id="submitBtn">✅ Check Answer</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">
+            🎤 Bobo will help you! Type the correct answer. Click the speaker to hear the question.
+        </div>
+        <div id="nextLevelMsg" class="next-level-msg"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- ENGLISH VOICE OUTPUT ----------
+    function speakEnglish(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function readCurrentQuestion() {
+        if (!allowAnswer) {
+            speakEnglish("Wait, this question is already answered. Next question coming soon.");
+            return;
+        }
+        const qData = currentQuestions[currentQuestionIndex];
+        if (qData) speakEnglish(qData.text);
+        else speakEnglish("No question at the moment.");
+    }
+
+    // ---------- QUESTION BANK: House of God & House of Prayer ----------
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        
+        // HOUSE OF GOD (church, temple, worship, respect, what we do there)
+        const houseOfGod = [
+            { q: "The place where Christians go to worship God is called a ______.", a: "church" },
+            { q: "In the Old Testament, God's house was called the ______.", a: "temple" },
+            { q: "We go to God's house to ______ Him.", a: "worship" },
+            { q: "We should be ______ when we are inside the church.", a: "quiet" },
+            { q: "The leader who teaches us at church is called a ______.", a: "pastor" },
+            { q: "We sing songs of praise called ______ in God's house.", a: "hymns" },
+            { q: "The holy book we read in church is the ______.", a: "bible" },
+            { q: "We can pray to God anywhere, but the church is His special ______.", a: "house" },
+            { q: "Jesus called the temple 'My Father's ______.'", a: "house" },
+            { q: "We should dress ______ when we go to church.", a: "properly" },
+            { q: "The day when Christians go to church is called ______.", a: "sunday" },
+            { q: "A church building often has a tall tower called a ______.", a: "steeple" },
+            { q: "The table at the front of the church is called the ______.", a: "altar" },
+            { q: "We give money to help the church. This is called an ______.", a: "offering" },
+            { q: "The part of the church where people sit are called ______.", a: "pews" }
+        ];
+        
+        // HOUSE OF PRAYER (prayer, communication with God, Jesus' teaching)
+        const houseOfPrayer = [
+            { q: "Talking to God is called ______.", a: "prayer" },
+            { q: "Jesus said, 'My house shall be called a house of ______.'", a: "prayer" },
+            { q: "We can pray in the morning, at night, and ______ the day.", a: "throughout" },
+            { q: "When we pray, we can close our ______ to focus.", a: "eyes" },
+            { q: "We can thank God, ask for help, and say we are ______.", a: "sorry" },
+            { q: "The prayer that Jesus taught us is called the ______ Prayer.", a: "lord's" },
+            { q: "The first word of the Lord's Prayer is 'Our ______' .", a: "father" },
+            { q: "We should pray with a ______ heart.", a: "humble" },
+            { q: "When we pray together at church, it is called ______ prayer.", a: "corporate" },
+            { q: "Jesus went to a quiet place to ______.", a: "pray" },
+            { q: "Prayer is like talking to our heavenly ______.", a: "father" },
+            { q: "We can pray silently or say our prayers ______ loud.", a: "out" },
+            { q: "Praying before meals is called saying ______.", a: "grace" },
+            { q: "We should pray for our family, friends, and even our ______.", a: "enemies" },
+            { q: "God always ______ our prayers.", a: "hears" }
+        ];
+        
+        // BEHAVIOR IN GOD'S HOUSE (respect, reverence)
+        const behavior = [
+            { q: "Running and shouting in church is not ______.", a: "respectful" },
+            { q: "We should listen to the ______ when he preaches.", a: "pastor" },
+            { q: "We should turn off our ______ phones in church.", a: "cell" },
+            { q: "When we enter the church, we should be ______.", a: "reverent" },
+            { q: "We should help keep the church ______ by not littering.", a: "clean" }
+        ];
+        
+        // BIBLE VERSES ABOUT GOD'S HOUSE
+        const bibleVerses = [
+            { q: "The Bible says, 'I was glad when they said to me, 'Let us go to the house of the ______.'", a: "lord" },
+            { q: "King Solomon built a beautiful ______ for God in Jerusalem.", a: "temple" },
+            { q: "Jesus drove out the money changers from the ______.", a: "temple" },
+            { q: "The Bible says, 'Pray without ______.'", a: "ceasing" },
+            { q: "In the house of God, we learn to ______ one another.", a: "love" }
+        ];
+        
+        const allTopics = [...houseOfGod, ...houseOfPrayer, ...behavior, ...bibleVerses];
+        
+        for (let i = 1; i <= 40; i++) {
+            let idx = (i * level + i * 2) % allTopics.length;
+            let item = allTopics[idx];
+            let qText = item.q;
+            let correctAnswer = item.a;
+            
+            // Narrative variety based on level
+            if (level >= 2 && i % 5 === 0) {
+                qText = "Bobo goes to God's house every Sunday. This special building is called a ______.";
+                correctAnswer = "church";
+            }
+            if (level >= 3 && i % 6 === 0) {
+                qText = "Jesus said, 'My house shall be called a house of ______.'";
+                correctAnswer = "prayer";
+            }
+            if (level >= 4 && i % 7 === 0) {
+                qText = "When Bobo is in church, he sits quietly and listens. He is being ______.";
+                correctAnswer = "respectful";
+            }
+            if (i % 8 === 0) {
+                qText = "Talking to God is called ______. We can do it anywhere, even at church.";
+                correctAnswer = "prayer";
+            }
+            if (i % 9 === 0) {
+                qText = "The leader who teaches the people at church is called a ______.";
+                correctAnswer = "pastor";
+            }
+            if (i % 11 === 0) {
+                qText = "The prayer that Jesus taught His disciples is called the ______'s Prayer.";
+                correctAnswer = "lord";
+            }
+            questions.push({ text: qText, answer: correctAnswer.trim().toLowerCase() });
+        }
+        return questions.slice(0, 40);
+    }
+    
+    // Preload 5 levels
+    const levelsData = {
+        1: generateQuestionsForLevel(1),
+        2: generateQuestionsForLevel(2),
+        3: generateQuestionsForLevel(3),
+        4: generateQuestionsForLevel(4),
+        5: generateQuestionsForLevel(5)
+    };
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let currentQuestions = [...levelsData[1]];
+    let scoreCorrect = 0;
+    let totalQuestionsInLevel = 40;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let isWaitingForNext = false;
+    let allowAnswer = true;
+    let nextLevelUnlocked = false;
+    
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const storyAreaDiv = document.getElementById('storyArea');
+    const questionTextDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextLevelMsgDiv = document.getElementById('nextLevelMsg');
+    const speakBtn = document.getElementById('speakQuestionBtn');
+    
+    function updateScoreUI() {
+        scoreDisplay.innerText = `Score: ${scoreCorrect} / ${totalQuestionsInLevel}`;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        stopTimer();
+        if (!allowAnswer) return;
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+        timerInterval = setInterval(() => {
+            if (!allowAnswer) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (allowAnswer) {
+                    allowAnswer = false;
+                    timerDisplaySpan.innerText = `⏱️ 0s`;
+                    const correctAns = currentQuestions[currentQuestionIndex].answer;
+                    speakEnglish(`Time is up! The correct answer is ${correctAns}.`);
+                    feedbackMsgDiv.innerHTML = `⏰ Time's up! Correct answer: <strong>${correctAns}</strong>. Moving to next question.`;
+                    moveToNextQuestionAfterDelay();
+                }
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+            }
+        }, 1000);
+    }
+    
+    function moveToNextQuestionAfterDelay() {
+        if (isWaitingForNext) return;
+        isWaitingForNext = true;
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestionsInLevel) {
+                resetForNewQuestion();
+            } else {
+                endOfLevel();
+            }
+        }, 2000);
+    }
+    
+    function resetForNewQuestion() {
+        isWaitingForNext = false;
+        allowAnswer = true;
+        stopTimer();
+        const qData = currentQuestions[currentQuestionIndex];
+        questionTextDiv.innerText = qData.text;
+        answerInput.value = '';
+        feedbackMsgDiv.innerHTML = "🎤 Write your answer! Click the speaker to hear the question again.";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answerInput.focus();
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        startTimer();
+        updateStoryNarrative();
+    }
+    
+    function updateStoryNarrative() {
+        let levelDesc = "";
+        if (currentLevel === 1) levelDesc = "Level 1: What is God's House? The church, temple, and how we behave there.";
+        else if (currentLevel === 2) levelDesc = "Level 2: What is a House of Prayer? Talking to God at church and at home.";
+        else if (currentLevel === 3) levelDesc = "Level 3: Respect in God's House! Being quiet, listening, and dressing well.";
+        else if (currentLevel === 4) levelDesc = "Level 4: Jesus and the Temple. Learn what Jesus taught about prayer and God's house.";
+        else levelDesc = "Level 5: Final challenge! Become a Grade 1 House of God Champion!";
+        const reqPass = Math.ceil(totalQuestionsInLevel * 0.8);
+        storyAreaDiv.innerHTML = `📘 ${levelDesc} | Question ${currentQuestionIndex+1}/${totalQuestionsInLevel}. Need at least ${reqPass} correct to proceed. ⏱️ 40s each.`;
+    }
+    
+    function endOfLevel() {
+        stopTimer();
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        const required = Math.ceil(totalQuestionsInLevel * 0.8);
+        const passed = (scoreCorrect >= required);
+        
+        if (passed) {
+            if (currentLevel === 5) {
+                feedbackMsgDiv.innerHTML = "🎉🏆 AMAZING! You completed all 5 levels! Bobo gives you the House of God Champion Medal! 🏆🎉";
+                speakEnglish("Congratulations! You finished all five levels. You are a champion of the House of God and the House of Prayer! Always honor God's house and pray without ceasing!");
+                storyAreaDiv.innerHTML = "🏁 GAME COMPLETE! Bobo is proud of you! You know about God's house, how to behave there, and that it is a house of prayer! ⛪🙏✨";
+                nextLevelMsgDiv.innerHTML = "✨ YOU WIN! Refresh the page to play again ✨";
+                return;
+            } else {
+                nextLevelUnlocked = true;
+                feedbackMsgDiv.innerHTML = `🎉 You passed! Score: ${scoreCorrect}/${totalQuestionsInLevel} (≥${required}). Moving to Level ${currentLevel+1}! 🎉`;
+                speakEnglish(`Congratulations! You passed level ${currentLevel}. Now moving to level ${currentLevel+1}. Keep learning about God's house!`);
+                nextLevelMsgDiv.innerHTML = "";
+                const nextBtn = document.createElement('button');
+                nextBtn.innerText = `🔓 Go to Level ${currentLevel+1}`;
+                nextBtn.className = "btn-check";
+                nextBtn.style.background = "#4caf50";
+                nextBtn.style.marginTop = "10px";
+                nextBtn.onclick = () => {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                };
+                nextLevelMsgDiv.appendChild(nextBtn);
+                return;
+            }
+        } else {
+            feedbackMsgDiv.innerHTML = `😭 Oops! You didn't reach 80%. Score: ${scoreCorrect}/${totalQuestionsInLevel}. Need ${required}. Try Level ${currentLevel} again.`;
+            speakEnglish(`Oh no! You need at least 80 percent to pass. You have ${scoreCorrect} out of ${totalQuestionsInLevel}. Please try level ${currentLevel} again.`);
+            nextLevelMsgDiv.innerHTML = "";
+            const retryBtn = document.createElement('button');
+            retryBtn.innerText = `🔄 Retry Level ${currentLevel}`;
+            retryBtn.className = "btn-check";
+            retryBtn.style.background = "#ff9800";
+            retryBtn.onclick = () => {
+                loadLevel(currentLevel);
+            };
+            nextLevelMsgDiv.appendChild(retryBtn);
+            return;
+        }
+    }
+    
+    function loadLevel(level) {
+        currentLevel = level;
+        currentQuestions = [...levelsData[level]];
+        currentQuestionIndex = 0;
+        scoreCorrect = 0;
+        totalQuestionsInLevel = 40;
+        allowAnswer = true;
+        nextLevelUnlocked = false;
+        isWaitingForNext = false;
+        stopTimer();
+        levelDisplay.innerText = `Level: ${currentLevel}`;
+        updateScoreUI();
+        const firstQ = currentQuestions[0];
+        questionTextDiv.innerText = firstQ.text;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        feedbackMsgDiv.innerHTML = "🎤 Bobo is waiting! Type your answer. Click the speaker to hear the question.";
+        nextLevelMsgDiv.innerHTML = "";
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        updateStoryNarrative();
+        startTimer();
+    }
+    
+    function checkAnswer() {
+        if (!allowAnswer) return;
+        const userAnswerRaw = answerInput.value.trim().toLowerCase();
+        if (userAnswerRaw === "") {
+            feedbackMsgDiv.innerHTML = "🔊 Please write an answer! Bobo is waiting.";
+            speakEnglish("Please write your answer.");
+            return;
+        }
+        const currentQ = currentQuestions[currentQuestionIndex];
+        const correctAns = currentQ.answer.toLowerCase();
+        const normalizedUser = userAnswerRaw.replace(/\s+/g, ' ').trim();
+        const normalizedCorrect = correctAns.replace(/\s+/g, ' ').trim();
+        let isCorrect = (normalizedUser === normalizedCorrect);
+        
+        // Forgiving variations for English answers
+        if (!isCorrect) {
+            const forgiving = {
+                "church": ["the church", "god's house", "house of god"],
+                "temple": ["the temple", "god's temple"],
+                "worship": ["praise", "honor", "glorify"],
+                "quiet": ["silent", "peaceful", "calm"],
+                "pastor": ["minister", "priest", "reverend"],
+                "hymns": ["songs", "praise songs", "worship songs"],
+                "bible": ["the bible", "holy bible", "scripture"],
+                "house": ["home", "dwelling"],
+                "properly": ["nicely", "decently", "modestly"],
+                "sunday": ["the lord's day", "sabbath"],
+                "steeple": ["spire", "tower"],
+                "altar": ["communion table", "front table"],
+                "offering": ["donation", "gift", "tithe"],
+                "pews": ["benches", "seats", "chairs"],
+                "prayer": ["talking to god", "communication with god"],
+                "throughout": ["all through", "during"],
+                "eyes": ["eye", "eyelids"],
+                "sorry": ["repentant", "remorseful", "apologetic"],
+                "lord's": ["our father", "the lord's prayer"],
+                "father": ["heavenly father", "god"],
+                "humble": ["modest", "lowly", "simple"],
+                "corporate": ["group", "together", "congregational"],
+                "pray": ["talk to god", "communicate with god"],
+                "out": ["aloud", "out loud"],
+                "grace": ["thanks", "blessing"],
+                "enemies": ["foes", "those who hate us"],
+                "hears": ["listens to", "answers"],
+                "respectful": ["polite", "mannerly", "considerate"],
+                "cell": ["mobile", "smartphone", "phone"],
+                "reverent": ["respectful", "devout", "pious"],
+                "clean": ["tidy", "neat", "spotless"],
+                "lord": ["god", "the lord"],
+                "temple": ["house of god", "sanctuary"],
+                "ceasing": ["stopping", "ending"],
+                "love": ["care for", "cherish"]
+            };
+            for (let key in forgiving) {
+                if (normalizedCorrect === key && forgiving[key].includes(normalizedUser)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+            // Accept plural/singular
+            if (!isCorrect && (normalizedCorrect + "s" === normalizedUser || (normalizedCorrect.endsWith('s') && normalizedCorrect.slice(0,-1) === normalizedUser))) {
+                isCorrect = true;
+            }
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            scoreCorrect++;
+            updateScoreUI();
+            feedbackMsgDiv.innerHTML = `✅ Correct! "${currentQ.answer}" is right! +1 point ✅`;
+            speakEnglish(`Correct! The answer is ${currentQ.answer}. You earned a point!`);
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Not correct. The correct answer is: "${currentQ.answer}". Keep learning about God's house! ❌`;
+            speakEnglish(`Not correct. The correct answer is ${currentQ.answer}. Don't give up!`);
+        }
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        moveToNextQuestionAfterDelay();
+    }
+    
+    submitBtn.addEventListener('click', checkAnswer);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && allowAnswer) {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    loadLevel(1);
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            speakEnglish("Welcome to Bobo's House of God! Learn about God's house and the house of prayer. You have 40 seconds for each question. Click the speaker to hear the question. Type your answer. Let's honor God's house together!");
+        }, 500);
+    });
+</script>
+</body>
+</html>

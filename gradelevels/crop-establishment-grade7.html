@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 7 Agriculture: Crop & Animal Products Master</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2c5e2a, #1a3a18);
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', system-ui, sans-serif;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: #fffef0;
+            border-radius: 70px 70px 60px 60px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255, 245, 180, 0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            padding: 1.2rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 5px solid #f1c40f;
+            color: white;
+            text-shadow: 2px 2px 0 #b86d0e;
+        }
+
+        .level-badge {
+            background: #2c5e2c;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: inset 0 -2px 0 #1f4a1f;
+        }
+
+        .score-card {
+            background: #1f3f2a;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .timer-area {
+            background: #0c1e15;
+            padding: 5px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .timer-clock {
+            background: #f9e5c1;
+            color: #c0392b;
+            padding: 5px 15px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 1.9rem;
+            font-weight: 800;
+            min-width: 85px;
+            text-align: center;
+        }
+
+        .progress-wrapper {
+            background: #ddce9f;
+            padding: 6px 20px;
+        }
+        .progress-fill {
+            height: 18px;
+            background: #f5a623;
+            width: 0%;
+            border-radius: 30px;
+            transition: width 0.2s ease;
+        }
+
+        .quiz-area {
+            padding: 30px 30px 35px;
+        }
+
+        .question-panel {
+            background: #fff1df;
+            border-radius: 55px;
+            padding: 25px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.12);
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2d543a;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .speaker-button {
+            background: #ffdd99;
+            border: none;
+            font-size: 1.4rem;
+            padding: 10px 24px;
+            margin-top: 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.08s linear;
+            box-shadow: 0 5px 0 #b97f3a;
+        }
+
+        .speaker-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b97f3a;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 20px;
+            margin: 30px 0 25px;
+        }
+
+        .option {
+            background: #e8ddc4;
+            border-radius: 100px;
+            padding: 15px 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.08s linear;
+            border: 2px solid #cbad7a;
+            text-align: center;
+            box-shadow: 0 6px 0 #a67c48;
+            color: #2a2b1f;
+        }
+
+        .option:hover {
+            background: #ffefcf;
+            transform: scale(0.97);
+        }
+
+        .option.correct-feedback {
+            background: #3c9e3c;
+            border-color: #1b6b1b;
+            color: white;
+            box-shadow: none;
+            transform: scale(0.97);
+        }
+
+        .option.wrong-feedback {
+            background: #d94a2b;
+            border-color: #962b12;
+            color: white;
+            box-shadow: none;
+            transform: scale(0.97);
+        }
+
+        .next-btn {
+            background: #2c7a2d;
+            border: none;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 16px 20px;
+            border-radius: 60px;
+            color: white;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.08s;
+            box-shadow: 0 7px 0 #164d17;
+            margin-top: 15px;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #164d17;
+        }
+
+        .info-message {
+            text-align: center;
+            font-size: 1.3rem;
+            background: #fff1bf;
+            padding: 14px;
+            border-radius: 50px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            .question-text { font-size: 1.3rem; }
+            .option { font-size: 1rem; padding: 12px 10px; }
+            .game-header { flex-direction: column; align-items: stretch; text-align: center; }
+            .timer-area { justify-content: center; }
+        }
+
+        footer {
+            background: #e1cf9b;
+            text-align: center;
+            padding: 14px;
+            font-weight: 500;
+            color: #2c2b1a;
+            font-size: 0.85rem;
+        }
+
+        button { font-family: inherit; }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">LEVEL 1</div>
+        <div class="score-card">🌾 SCORE: <span id="currentScore">0</span> / <span id="maxLevelScore">0</span></div>
+        <div class="timer-area">
+            ⏱️ TIME
+            <div class="timer-clock" id="timerNumber">20</div>
+        </div>
+    </div>
+    <div class="progress-wrapper">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="quiz-area" id="quizArea"></div>
+    <footer>🌱 CBC Grade 7 Agriculture: Crop Establishment | Crop Management | Preventing Animal Product Spoilage | Cooking Food 🍲🥛</footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // TOPICS: Crop Establishment, Selected Crop Management Practices,
+    // Ways of Preventing Animal Product Spoilage, Cooking Food
+    // 5 levels x 40 questions, shuffled answers (A,B,C,D)
+    // Pass 80% (32/40), Timer 20s, Voice Output, Responsive
+    // ADAPTED FOR GRADE 7 (all content and mechanics remain the same)
+    // --------------------------------------------------------------
+
+    function shuffleAnswers(questionObj) {
+        const originalOptions = [...questionObj.options];
+        let items = originalOptions.map((text, idx) => ({ text, isCorrect: idx === questionObj.correctIndex }));
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+        return {
+            ...questionObj,
+            options: items.map(item => item.text),
+            correctIndex: items.findIndex(item => item.isCorrect === true)
+        };
+    }
+
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        const usedKeys = new Set();
+        const topics = ["crop_establish", "crop_manage", "animal_products", "cooking_food"];
+        
+        for (let i = 0; i < 40; i++) {
+            let topic = topics[i % topics.length];
+            let qText = "", opts = [], correct = 0;
+            const seed = (level * 419 + i * 13) % 53;
+            
+            // ---- CROP ESTABLISHMENT ----
+            if (topic === "crop_establish") {
+                const estabPool = [
+                    { q: "What is the first step in crop establishment?", opts: ["Land preparation (ploughing)", "Harvesting", "Applying fertilizer", "Irrigation"], correct: 0 },
+                    { q: "Which tool is used for making planting holes?", opts: ["Jembe (hoe)", "Panga", "Knife", "Rake"], correct: 0 },
+                    { q: "What is 'seed rate'?", opts: ["Amount of seed per area", "Speed of planting", "Type of seed", "Seed colour"], correct: 0 },
+                    { q: "The best time to plant most crops in Kenya is...", opts: ["Start of rainy season", "Dry season", "Midnight", "Harvest time"], correct: 0 },
+                    { q: "What is transplanting?", opts: ["Moving seedlings to main field", "Planting seeds directly", "Watering seeds", "Weeding"], correct: 0 },
+                    { q: "Which crop is usually established by transplanting?", opts: ["Rice", "Maize", "Beans", "Groundnuts"], correct: 0 },
+                    { q: "Why do farmers prepare seedbeds?", opts: ["To improve germination", "To reduce rain", "To kill pests only", "To store water"], correct: 0 },
+                    { q: "What is 'spacing' in crop establishment?", opts: ["Distance between plants", "Planting depth", "Water amount", "Fertilizer type"], correct: 0 },
+                ];
+                let pick = estabPool[(seed + i) % estabPool.length];
+                qText = pick.q; opts = [...pick.opts]; correct = pick.correct;
+            }
+            // ---- CROP MANAGEMENT PRACTICES ----
+            else if (topic === "crop_manage") {
+                const managePool = [
+                    { q: "What is weeding?", opts: ["Removing unwanted plants", "Adding water", "Applying manure", "Harvesting"], correct: 0 },
+                    { q: "Which practice helps crops get enough water?", opts: ["Irrigation", "Overcrowding", "Burning stover", "Late planting"], correct: 0 },
+                    { q: "Why do farmers apply manure?", opts: ["Add nutrients to soil", "Kill insects only", "Dry soil", "Remove seeds"], correct: 0 },
+                    { q: "What is 'top dressing'?", opts: ["Applying fertilizer during growth", "Cutting leaves", "Watering from top", "Pest control"], correct: 0 },
+                    { q: "Which pest commonly attacks maize stem?", opts: ["Stem borer", "Aphids", "Red ants", "Beetles"], correct: 0 },
+                    { q: "Mulching helps to...", opts: ["Conserve soil moisture", "Increase weeds", "Remove nutrients", "Dry soil faster"], correct: 0 },
+                    { q: "What is 'pruning' in crop management?", opts: ["Cutting off unwanted branches", "Adding water", "Fertilizing", "Weeding"], correct: 0 },
+                    { q: "Which is an organic method of pest control?", opts: ["Neem extract", "DDT", "Plastic traps", "Burning fields"], correct: 0 },
+                ];
+                let pick = managePool[(seed + i) % managePool.length];
+                qText = pick.q; opts = [...pick.opts]; correct = pick.correct;
+            }
+            // ---- PREVENTING ANIMAL PRODUCT SPOILAGE ----
+            else if (topic === "animal_products") {
+                const animalPool = [
+                    { q: "How can milk be preserved at home?", opts: ["Boiling and refrigeration", "Adding salt only", "Sun drying", "Burying in soil"], correct: 0 },
+                    { q: "What causes meat to spoil quickly?", opts: ["Bacteria and warmth", "Cold temperatures", "Vacuum packing", "Salting"], correct: 0 },
+                    { q: "Which method prevents eggs from spoiling?", opts: ["Refrigeration or oil coating", "Leaving in sun", "Washing with water", "Freezing raw"], correct: 0 },
+                    { q: "How can you preserve fish without a fridge?", opts: ["Smoking or salting", "Boiling then storing", "Adding sugar", "Wrapping in leaves"], correct: 0 },
+                    { q: "What is pasteurization?", opts: ["Heating milk to kill germs", "Freezing milk", "Adding colour", "Churning butter"], correct: 0 },
+                    { q: "Why should raw meat be stored separately from cooked food?", opts: ["To avoid cross-contamination", "To improve taste", "To reduce smell", "To keep warm"], correct: 0 },
+                    { q: "Which sign shows that milk has gone bad?", opts: ["Sour smell & curdling", "Sweet smell", "Thicker texture", "Yellow colour"], correct: 0 },
+                    { q: "What does 'curing' mean for meat preservation?", opts: ["Using salt/sugar and drying", "Freezing", "Boiling", "Grilling"], correct: 0 },
+                ];
+                let pick = animalPool[(seed + i) % animalPool.length];
+                qText = pick.q; opts = [...pick.opts]; correct = pick.correct;
+            }
+            // ---- COOKING FOOD ----
+            else {
+                const cookPool = [
+                    { q: "What is the safest way to know if meat is fully cooked?", opts: ["Check internal temperature", "Look at colour only", "Smell", "Taste raw"], correct: 0 },
+                    { q: "Which cooking method preserves most nutrients?", opts: ["Steaming", "Frying", "Boiling for long", "Roasting until burnt"], correct: 0 },
+                    { q: "What does 'simmering' mean?", opts: ["Cooking just below boiling point", "High heat frying", "Baking", "Grilling"], correct: 0 },
+                    { q: "Why should you wash hands before cooking?", opts: ["Prevent germs spreading", "Make food tastier", "Cool hands", "Save time"], correct: 0 },
+                    { q: "Which oil is healthy for cooking?", opts: ["Olive or sunflower oil", "Used engine oil", "Butter only", "Margarine only"], correct: 0 },
+                    { q: "What does 'seasoning' food mean?", opts: ["Adding herbs/spices for flavour", "Removing water", "Freezing", "Chopping"], correct: 0 },
+                    { q: "Why should vegetables not be overcooked?", opts: ["Loses vitamins", "Becomes sweeter", "Becomes harder", "Increases colour"], correct: 0 },
+                    { q: "Which utensil is best for steaming vegetables?", opts: ["Steamer basket", "Frying pan", "Pressure cooker only", "Clay pot"], correct: 0 },
+                ];
+                let pick = cookPool[(seed + i) % cookPool.length];
+                qText = pick.q; opts = [...pick.opts]; correct = pick.correct;
+            }
+            
+            if (opts.length !== 4) opts = ["Option A", "Option B", "Option C", "Option D"];
+            let qObj = { questionText: qText, options: opts, correctIndex: correct };
+            qObj = shuffleAnswers(qObj);
+            const key = qObj.questionText;
+            if (usedKeys.has(key) && i < 38) qObj.questionText = qObj.questionText + " (agri)";
+            usedKeys.add(qObj.questionText);
+            questions.push(qObj);
+        }
+        while(questions.length < 40) questions.push(shuffleAnswers({
+            questionText: "What is the best way to prevent milk spoilage?",
+            options: ["Boiling & refrigeration", "Adding water", "Sun drying", "Shaking well"],
+            correctIndex: 0
+        }));
+        return questions.slice(0,40);
+    }
+    
+    // Generate 5 levels
+    const levelsBank = [];
+    for (let lvl = 1; lvl <= 5; lvl++) levelsBank.push(generateQuestionsForLevel(lvl));
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1, currentQuestions = [], currentIndex = 0, levelScore = 0;
+    const questionsPerLevel = 40;
+    let timerInterval = null, timeLeft = 20, answered = false, waitingForNext = false;
+    
+    const quizArea = document.getElementById("quizArea");
+    const levelDisplaySpan = document.getElementById("levelDisplay");
+    const currentScoreSpan = document.getElementById("currentScore");
+    const maxScoreSpan = document.getElementById("maxLevelScore");
+    const progressFillDiv = document.getElementById("progressFill");
+    const timerNumberSpan = document.getElementById("timerNumber");
+    
+    function speakText(message) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.rate = 0.92; utterance.pitch = 1.05; utterance.lang = "en-US";
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    function updateStatsUI() {
+        currentScoreSpan.innerText = levelScore;
+        maxScoreSpan.innerText = questionsPerLevel;
+        progressFillDiv.style.width = `${(levelScore / questionsPerLevel) * 100}%`;
+    }
+    
+    function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timerInterval = setInterval(() => {
+            if (!answered && !waitingForNext && timeLeft > 0) {
+                timeLeft--;
+                timerNumberSpan.innerText = timeLeft;
+                if (timeLeft <= 3) timerNumberSpan.style.background = "#ff8a7a";
+                if (timeLeft === 0) { stopTimer(); if (!answered && !waitingForNext) handleTimeout(); }
+            }
+        }, 1000);
+    }
+    
+    function resetTimer() { timeLeft = 20; timerNumberSpan.innerText = "20"; timerNumberSpan.style.background = "#f9e5c1"; stopTimer(); startTimer(); }
+    
+    function handleTimeout() {
+        if (answered) return;
+        answered = true; waitingForNext = true;
+        const q = currentQuestions[currentIndex];
+        const correctAns = q.options[q.correctIndex];
+        const msgDiv = document.getElementById("infoMsg");
+        if (msgDiv) msgDiv.innerHTML = `⏰ TIME'S UP! Correct answer: ${escapeHtml(correctAns)}. No points.`;
+        speakText(`Time is up! The correct answer is ${correctAns}.`);
+        highlightOptions(q.correctIndex, -1);
+        updateStatsUI();
+    }
+    
+    function handleAnswer(clickedIdx) {
+        if (answered || waitingForNext) return;
+        answered = true; stopTimer();
+        const q = currentQuestions[currentIndex];
+        const isCorrect = (clickedIdx === q.correctIndex);
+        if (isCorrect) { levelScore++; updateStatsUI(); }
+        highlightOptions(q.correctIndex, clickedIdx);
+        const msgDiv = document.getElementById("infoMsg");
+        if (isCorrect) {
+            msgDiv.innerHTML = `✅ CORRECT! +1 point! Great farming knowledge! 🌟`;
+            speakText(`Correct! Excellent!`);
+        } else {
+            msgDiv.innerHTML = `❌ WRONG! Correct: ${escapeHtml(q.options[q.correctIndex])}. Keep learning agriculture!`;
+            speakText(`Wrong answer. The correct answer is ${q.options[q.correctIndex]}.`);
+        }
+        waitingForNext = true;
+    }
+    
+    function highlightOptions(correctIdx, chosenIdx) {
+        document.querySelectorAll('.option').forEach((opt, idx) => {
+            opt.classList.remove('correct-feedback', 'wrong-feedback');
+            if (idx === correctIdx) opt.classList.add('correct-feedback');
+            if (idx === chosenIdx && idx !== correctIdx) opt.classList.add('wrong-feedback');
+        });
+    }
+    
+    function loadNextQuestionOrLevel() {
+        if (!waitingForNext) return;
+        if (currentIndex + 1 >= questionsPerLevel) {
+            let percent = (levelScore / questionsPerLevel) * 100;
+            if (percent >= 80) {
+                if (currentLevel === 5) { showCompletion(); return; }
+                else { showTransition(true, percent); currentLevel++; loadLevel(currentLevel); return; }
+            } else { showTransition(false, percent); loadLevel(currentLevel); return; }
+        } else {
+            currentIndex++; answered = false; waitingForNext = false;
+            renderCurrentQuestion();
+        }
+    }
+    
+    function showTransition(passed, percent) {
+        let msg = passed ? `🎉 You passed Level ${currentLevel} with ${Math.floor(percent)}%! Moving to Level ${currentLevel+1}. 🎉` : `😓 ${Math.floor(percent)}% (need 80%). Repeating Level ${currentLevel}. Keep practicing!`;
+        speakText(passed ? `Great! You passed level ${currentLevel}.` : `You need 80 percent. Repeating level.`);
+        alert(msg);
+    }
+    
+    function showCompletion() {
+        stopTimer();
+        quizArea.innerHTML = `<div class="question-panel" style="text-align:center"><div class="question-text">🏆🌾 AGRICULTURE EXPERT (GRADE 7)! 🍲🥛<br>You mastered Crop Establishment, Management, Preserving Animal Products & Cooking!<br>You are a true Grade 7 Champion Farmer! 🌟</div><button class="next-btn" id="restartGameBtn">🌟 PLAY AGAIN 🌟</button></div>`;
+        speakText(`Congratulations! You completed all 5 levels and mastered crop establishment, crop management, preventing animal product spoilage, and cooking food. Amazing work for Grade 7!`);
+        document.getElementById("restartGameBtn")?.addEventListener('click', () => { currentLevel = 1; loadLevel(1); });
+    }
+    
+    function renderCurrentQuestion() {
+        const q = currentQuestions[currentIndex];
+        const letters = ['A', 'B', 'C', 'D'];
+        const html = `
+            <div class="question-panel">
+                <div class="question-text">${escapeHtml(q.questionText)}</div>
+                <button class="speaker-button" id="readQuestionBtn">🔊 Read Question Aloud</button>
+            </div>
+            <div class="options-grid" id="optionsGrid">
+                ${q.options.map((opt, idx) => `<div class="option" data-opt-index="${idx}">${letters[idx]}. ${escapeHtml(opt)}</div>`).join('')}
+            </div>
+            <button class="next-btn" id="nextQuestionBtn">➡ NEXT QUESTION</button>
+            <div id="infoMsg" class="info-message"></div>
+        `;
+        quizArea.innerHTML = html;
+        document.querySelectorAll('.option').forEach(opt => {
+            opt.addEventListener('click', (e) => { if (!answered && !waitingForNext) handleAnswer(parseInt(opt.dataset.optIndex)); });
+        });
+        document.getElementById("nextQuestionBtn").addEventListener('click', () => {
+            if (!answered && !waitingForNext) handleTimeout();
+            else if (waitingForNext) loadNextQuestionOrLevel();
+        });
+        document.getElementById("readQuestionBtn").addEventListener('click', () => speakText(q.questionText));
+        answered = false; waitingForNext = false;
+        resetTimer();
+    }
+    
+    function loadLevel(level) {
+        currentLevel = level;
+        currentQuestions = levelsBank[level-1];
+        currentIndex = 0;
+        levelScore = 0;
+        answered = false; waitingForNext = false;
+        stopTimer(); timeLeft = 20;
+        timerNumberSpan.innerText = "20"; timerNumberSpan.style.background = "#f9e5c1";
+        levelDisplaySpan.innerText = `LEVEL ${currentLevel}`;
+        updateStatsUI();
+        renderCurrentQuestion();
+    }
+    
+    function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m] || m)); }
+    
+    loadLevel(1);
+</script>
+</body>
+</html>

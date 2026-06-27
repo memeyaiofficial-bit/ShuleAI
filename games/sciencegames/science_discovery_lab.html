@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Science Discovery Lab - Multi-Level Exploration</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #7c3aed 0%,
+          #a855f7 50%,
+          #c084fc 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 1000px;
+        width: 100%;
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(90deg, #7c3aed, #10b981, #f59e0b);
+      }
+
+      h1 {
+        color: #581c87;
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #7c3aed;
+        font-size: 1.2em;
+        margin-bottom: 30px;
+        font-weight: bold;
+      }
+
+      .level-selector {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
+
+      .level-btn {
+        padding: 10px 15px;
+        background: #ede9fe;
+        border: 2px solid #7c3aed;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+        color: #581c87;
+        font-size: 0.9em;
+      }
+
+      .level-btn:hover,
+      .level-btn.active {
+        background: #7c3aed;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .experiment-area {
+        background: #f8fafc;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 3px solid #ddd6fe;
+        min-height: 400px;
+      }
+
+      .experiment-title {
+        text-align: center;
+        font-size: 1.5em;
+        color: #581c87;
+        margin-bottom: 20px;
+        font-weight: bold;
+        padding: 15px;
+        background: #ede9fe;
+        border-radius: 15px;
+      }
+
+      .experiment-visual {
+        text-align: center;
+        font-size: 4em;
+        margin: 30px 0;
+        padding: 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .question-section {
+        background: #f3f4f6;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        border-left: 5px solid #7c3aed;
+      }
+
+      .question-text {
+        font-size: 1.3em;
+        color: #374151;
+        margin-bottom: 20px;
+        font-weight: bold;
+        line-height: 1.5;
+      }
+
+      .answer-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .answer-btn {
+        padding: 15px 20px;
+        font-size: 1.1em;
+        background: #ede9fe;
+        border: 3px solid #7c3aed;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-weight: bold;
+        color: #581c87;
+        text-align: left;
+      }
+
+      .answer-btn:hover {
+        background: #ddd6fe;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .answer-btn.correct {
+        background: #10b981;
+        border-color: #059669;
+        color: white;
+        animation: bounce 0.5s;
+      }
+
+      .answer-btn.incorrect {
+        background: #ef4444;
+        border-color: #dc2626;
+        color: white;
+        animation: shake 0.5s;
+      }
+
+      .lab-stats {
+        display: flex;
+        justify-content: space-between;
+        background: #fef3c7;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 0.9em;
+        color: #92400e;
+        margin-bottom: 5px;
+      }
+
+      .stat-value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #d97706;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #7c3aed, #a855f7);
+        width: 0%;
+        transition: width 0.5s ease;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .control-btn {
+        padding: 15px 30px;
+        font-size: 1.1em;
+        background: #7c3aed;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-weight: bold;
+      }
+
+      .control-btn:hover {
+        background: #6d28d9;
+        transform: translateY(-3px);
+      }
+
+      .feedback {
+        text-align: center;
+        font-size: 1.2em;
+        margin: 20px 0;
+        font-weight: bold;
+        min-height: 40px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .feedback.correct {
+        color: #10b981;
+        background: #d1fae5;
+        border: 2px solid #6ee7b7;
+      }
+
+      .feedback.incorrect {
+        color: #ef4444;
+        background: #fee2e2;
+        border: 2px solid #fca5a5;
+      }
+
+      .science-fact {
+        background: #dbeafe;
+        border-left: 4px solid #3b82f6;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+        font-style: italic;
+        color: #1e3a8a;
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #7c3aed;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .back-btn:hover {
+        background: #6d28d9;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        80% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-10px);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(10px);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .level-selector {
+          justify-content: center;
+        }
+
+        .answer-options {
+          grid-template-columns: 1fr;
+        }
+
+        .experiment-visual {
+          font-size: 3em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="../games.html" class="back-btn">← Back to Games</a>
+
+      <h1>🔬 Science Discovery Lab</h1>
+      <p class="subtitle">
+        Explore science from basic observation to advanced concepts!
+      </p>
+
+      <div class="level-selector">
+        <div class="level-btn active" onclick="selectLevel('elementary')">
+          Grades 1-3
+        </div>
+        <div class="level-btn" onclick="selectLevel('intermediate')">
+          Grades 4-6
+        </div>
+        <div class="level-btn" onclick="selectLevel('advanced')">
+          Grades 7-9
+        </div>
+      </div>
+
+      <div class="lab-stats">
+        <div class="stat-item">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="score">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Experiments</div>
+          <div class="stat-value" id="experiments">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Discovery Streak</div>
+          <div class="stat-value" id="streak">0</div>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+
+      <div class="experiment-area">
+        <div class="experiment-title" id="experimentTitle">
+          Elementary Science - Living vs Non-Living
+        </div>
+
+        <div class="experiment-visual" id="experimentVisual">🌱</div>
+
+        <div class="question-section">
+          <div class="question-text" id="questionText">
+            Is a plant a living thing or non-living thing?
+          </div>
+
+          <div class="answer-options" id="answerOptions">
+            <button class="answer-btn" onclick="selectAnswer(0)">
+              Living thing
+            </button>
+            <button class="answer-btn" onclick="selectAnswer(1)">
+              Non-living thing
+            </button>
+            <button class="answer-btn" onclick="selectAnswer(2)">
+              Sometimes living
+            </button>
+            <button class="answer-btn" onclick="selectAnswer(3)">
+              I don't know
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="control-btn" onclick="nextExperiment()">
+          Next Experiment
+        </button>
+        <button class="control-btn" onclick="resetLab()">
+          New Lab Session
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const scienceTopics = {
+        elementary: {
+          name: "Elementary Science (Grades 1-3)",
+          experiments: [
+            {
+              title: "Living vs Non-Living",
+              visual: "🌱",
+              question: "Is a plant a living thing or non-living thing?",
+              options: [
+                "Living thing",
+                "Non-living thing",
+                "Sometimes living",
+                "I don't know",
+              ],
+              correct: 0,
+              fact: "Plants are living things because they grow, need food and water, and can reproduce!",
+            },
+            {
+              title: "Weather Patterns",
+              visual: "☀️",
+              question: "What happens to water when the sun shines on it?",
+              options: [
+                "It disappears forever",
+                "It turns into vapor",
+                "It becomes ice",
+                "Nothing happens",
+              ],
+              correct: 1,
+              fact: "When the sun heats water, it evaporates and turns into invisible water vapor in the air!",
+            },
+            {
+              title: "Animal Homes",
+              visual: "🐝",
+              question: "Where do bees live?",
+              options: ["In trees", "In hives", "Underground", "In water"],
+              correct: 1,
+              fact: "Bees live in hives where they make honey and take care of their young!",
+            },
+            {
+              title: "Body Parts",
+              visual: "👁️",
+              question: "Which body part helps us see?",
+              options: ["Ears", "Eyes", "Nose", "Mouth"],
+              correct: 1,
+              fact: "Our eyes are amazing organs that detect light and help us see the world around us!",
+            },
+          ],
+        },
+        intermediate: {
+          name: "Intermediate Science (Grades 4-6)",
+          experiments: [
+            {
+              title: "States of Matter",
+              visual: "🧊",
+              question: "What happens when ice melts?",
+              options: [
+                "It becomes gas directly",
+                "It becomes liquid water",
+                "It stays the same",
+                "It becomes smaller ice",
+              ],
+              correct: 1,
+              fact: "Ice melts at 0°C (32°F) and becomes liquid water. This is a physical change!",
+            },
+            {
+              title: "Plant Life Cycle",
+              visual: "🌿",
+              question: "What do plants need to make their own food?",
+              options: [
+                "Only water",
+                "Sunlight, water, and carbon dioxide",
+                "Only soil",
+                "Only sunlight",
+              ],
+              correct: 1,
+              fact: "Plants use photosynthesis to make food from sunlight, water, and carbon dioxide!",
+            },
+            {
+              title: "Simple Machines",
+              visual: "⚙️",
+              question: "A wheelbarrow is an example of which simple machine?",
+              options: ["Pulley", "Lever", "Wedge", "Screw"],
+              correct: 1,
+              fact: "A wheelbarrow is a lever that helps us lift heavy loads with less effort!",
+            },
+            {
+              title: "Solar System",
+              visual: "🪐",
+              question: "Which planet is closest to the Sun?",
+              options: ["Venus", "Earth", "Mercury", "Mars"],
+              correct: 2,
+              fact: "Mercury is the closest planet to the Sun and has extreme temperature changes!",
+            },
+          ],
+        },
+        advanced: {
+          name: "Advanced Science (Grades 7-9)",
+          experiments: [
+            {
+              title: "Chemical Reactions",
+              visual: "⚗️",
+              question: "What type of reaction occurs when iron rusts?",
+              options: [
+                "Decomposition",
+                "Synthesis",
+                "Oxidation",
+                "Neutralization",
+              ],
+              correct: 2,
+              fact: "Rusting is an oxidation reaction where iron combines with oxygen to form iron oxide!",
+            },
+            {
+              title: "Cell Biology",
+              visual: "🦠",
+              question:
+                "Which organelle is known as the 'powerhouse of the cell'?",
+              options: ["Nucleus", "Mitochondria", "Chloroplast", "Ribosome"],
+              correct: 1,
+              fact: "Mitochondria produce ATP (energy) for the cell through cellular respiration!",
+            },
+            {
+              title: "Physics - Forces",
+              visual: "🎯",
+              question:
+                "According to Newton's Third Law, for every action there is:",
+              options: [
+                "An equal reaction",
+                "An opposite reaction",
+                "An equal and opposite reaction",
+                "A greater reaction",
+              ],
+              correct: 2,
+              fact: "Newton's Third Law states that forces always come in pairs - equal and opposite!",
+            },
+            {
+              title: "Genetics",
+              visual: "🧬",
+              question: "DNA stands for:",
+              options: [
+                "Deoxyribose Nucleic Acid",
+                "Deoxyribonucleic Acid",
+                "Double Nuclear Acid",
+                "Dynamic Nucleic Acid",
+              ],
+              correct: 1,
+              fact: "DNA contains the genetic instructions for all living organisms!",
+            },
+          ],
+        },
+      };
+
+      let currentLevel = "elementary";
+      let currentExperimentIndex = 0;
+      let score = 0;
+      let experimentsCompleted = 0;
+      let streak = 0;
+      let gameActive = true;
+
+      function selectLevel(level) {
+        currentLevel = level;
+        currentExperimentIndex = 0;
+
+        // Update level buttons
+        document.querySelectorAll(".level-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        displayExperiment();
+      }
+
+      function displayExperiment() {
+        const levelData = scienceTopics[currentLevel];
+        const experiments = levelData.experiments;
+
+        if (currentExperimentIndex >= experiments.length) {
+          currentExperimentIndex = 0;
+        }
+
+        const experiment = experiments[currentExperimentIndex];
+
+        document.getElementById(
+          "experimentTitle"
+        ).textContent = `${levelData.name} - ${experiment.title}`;
+        document.getElementById("experimentVisual").textContent =
+          experiment.visual;
+        document.getElementById("questionText").textContent =
+          experiment.question;
+
+        const optionsContainer = document.getElementById("answerOptions");
+        optionsContainer.innerHTML = "";
+
+        experiment.options.forEach((option, index) => {
+          const button = document.createElement("button");
+          button.className = "answer-btn";
+          button.textContent = option;
+          button.onclick = () => selectAnswer(index);
+          optionsContainer.appendChild(button);
+        });
+
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+        gameActive = true;
+      }
+
+      function selectAnswer(selectedIndex) {
+        if (!gameActive) return;
+
+        const levelData = scienceTopics[currentLevel];
+        const experiment = levelData.experiments[currentExperimentIndex];
+        const buttons = document.querySelectorAll(".answer-btn");
+
+        gameActive = false;
+
+        if (selectedIndex === experiment.correct) {
+          buttons[selectedIndex].classList.add("correct");
+          showFeedback(true, experiment.fact);
+
+          score += getCurrentLevelScore();
+          streak++;
+          experimentsCompleted++;
+
+          if (streak > 0 && streak % 4 === 0) {
+            score += 100; // Discovery bonus
+          }
+        } else {
+          buttons[selectedIndex].classList.add("incorrect");
+          buttons[experiment.correct].classList.add("correct");
+          showFeedback(false, experiment.fact);
+
+          streak = 0;
+        }
+
+        updateDisplay();
+        setTimeout(() => nextExperiment(), 4000);
+      }
+
+      function getCurrentLevelScore() {
+        const scores = { elementary: 10, intermediate: 20, advanced: 30 };
+        return scores[currentLevel];
+      }
+
+      function showFeedback(isCorrect, fact) {
+        const feedback = document.getElementById("feedback");
+
+        if (isCorrect) {
+          feedback.innerHTML = `
+                    <div>🎉 Excellent scientific thinking!</div>
+                    <div class="science-fact">🔬 Science Fact: ${fact}</div>
+                `;
+          feedback.className = "feedback correct";
+        } else {
+          feedback.innerHTML = `
+                    <div>🤔 Good try! Let's learn together.</div>
+                    <div class="science-fact">🔬 Science Fact: ${fact}</div>
+                `;
+          feedback.className = "feedback incorrect";
+        }
+      }
+
+      function nextExperiment() {
+        currentExperimentIndex++;
+        displayExperiment();
+      }
+
+      function updateDisplay() {
+        document.getElementById("score").textContent = score;
+        document.getElementById("experiments").textContent =
+          experimentsCompleted;
+        document.getElementById("streak").textContent = streak;
+
+        const progress = ((currentExperimentIndex % 4) / 4) * 100;
+        document.getElementById("progress").style.width = progress + "%";
+      }
+
+      function resetLab() {
+        score = 0;
+        experimentsCompleted = 0;
+        streak = 0;
+        currentExperimentIndex = 0;
+        updateDisplay();
+        displayExperiment();
+      }
+
+      // Initialize the lab
+      resetLab();
+    </script>
+  </body>
+</html>

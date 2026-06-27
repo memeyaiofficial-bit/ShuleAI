@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>⭐ Time Mastery | CBC Grade 1 - Days, Months & Activities</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* better for kids, but not on inputs */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1e2a3e 0%, #0f1724 100%);
+            font-family: 'Nunito', 'Comic Neue', 'Segoe UI Emoji', cursive, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px;
+        }
+
+        /* Main game card */
+        .master-container {
+            max-width: 580px;
+            width: 100%;
+            background: #fffef7;
+            border-radius: 64px 64px 72px 72px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,220,0.8);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header / HUD */
+        .game-hud {
+            background: #FFB74D;
+            padding: 18px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 5px solid #E67E22;
+        }
+
+        .hud-badge {
+            background: #2c6e5c;
+            padding: 8px 20px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #1b4e40, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .hud-score {
+            background: #F9A825;
+            padding: 7px 18px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #2c2c2c;
+        }
+
+        .timer-panel {
+            background: #1f2f3a;
+            border-radius: 60px;
+            padding: 5px 18px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .timer-digits {
+            background: #000000cc;
+            font-family: monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 4px 14px;
+            border-radius: 50px;
+            letter-spacing: 2px;
+        }
+
+        /* progress bar */
+        .progress-section {
+            padding: 16px 24px 8px;
+        }
+        .progress-bar-bg {
+            background: #E0E0E0;
+            border-radius: 20px;
+            height: 14px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #FF9800, #FFC107);
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+        .q-counter {
+            text-align: center;
+            font-weight: 700;
+            color: #5D4037;
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+
+        /* question area */
+        .question-area {
+            padding: 18px 24px 12px;
+            text-align: center;
+        }
+
+        .question-card {
+            background: #FFF3E0;
+            border-radius: 60px;
+            padding: 26px 16px;
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.02), 0 12px 20px rgba(0,0,0,0.1);
+            border: 3px solid #FFCF9A;
+            margin-bottom: 16px;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1.4;
+            color: #3E2723;
+        }
+
+        .visual-hint-area {
+            background: #FFECB3;
+            border-radius: 50px;
+            padding: 12px 14px;
+            margin: 12px 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #5D4037;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 70px;
+        }
+
+        /* days / months chips */
+        .day-wheel, .month-flex {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .chip {
+            background: #E3F2FD;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #1565C0;
+            border: 2px solid #90CAF9;
+        }
+        .chip.active {
+            background: #2196F3;
+            color: white;
+            border-color: #0D47A1;
+        }
+        .activity-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .activity-badge {
+            background: white;
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-weight: bold;
+            border: 2px solid #FFB74D;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* answer row */
+        .answer-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 16px 0 10px;
+        }
+        #studentAnswer {
+            flex: 2;
+            min-width: 180px;
+            font-size: 1.3rem;
+            padding: 14px 20px;
+            border-radius: 60px;
+            border: 3px solid #FFB465;
+            font-family: inherit;
+            text-align: center;
+            font-weight: 600;
+            background: white;
+            outline: none;
+        }
+        .check-btn, .voice-action, .next-action {
+            border: none;
+            font-weight: bold;
+            border-radius: 60px;
+            padding: 10px 24px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+        }
+        .check-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        .voice-action {
+            background: #FFB74D;
+            color: #3E2723;
+        }
+        .next-action {
+            background: #2196F3;
+            color: white;
+        }
+        .check-btn:active, .voice-action:active, .next-action:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+        }
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .feedback-msg {
+            margin: 12px 0 8px;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        /* LEVEL END SCREEN (modal style inside container) */
+        .level-overlay {
+            background: #FFF8E7;
+            border-radius: 56px;
+            padding: 32px 20px;
+            text-align: center;
+            margin: 16px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .level-overlay.hide {
+            display: none;
+        }
+
+        .final-badge {
+            font-size: 4rem;
+        }
+        .stars-reward {
+            font-size: 2.5rem;
+            letter-spacing: 8px;
+        }
+
+        @media (max-width: 500px) {
+            .question-text { font-size: 1.3rem; }
+            .chip { font-size: 0.7rem; padding: 4px 10px; }
+            .game-hud { flex-direction: column; align-items: stretch; text-align: center; }
+            .check-btn, .voice-action, .next-action { padding: 8px 18px; font-size: 1rem; }
+            #studentAnswer { font-size: 1.1rem; padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="master-container" id="appRoot">
+    <!-- DYNAMIC CONTENT WILL BE RENDERED HERE VIA JS -->
+</div>
+
+<script>
+    (function(){
+        // ---------- MERGED GAME LOGIC: combines Days of week, Months, Home/School activities, Time Concepts ----------
+        // Two original games merged: "CBC Grade 1 Time Quest" + "Days & Months Math Game"
+        // Unified question bank supports:
+        // 1) Days of the week (before/after, activities, school/home blend)
+        // 2) Months of the year (before/after, special months)
+        // 3) Home vs School activities (from first game)
+        // 4) Time order context (coming after, weekend)
+        
+        // ------ SPEECH ------
+        let synth = window.speechSynthesis;
+        let voiceReady = false;
+        function loadVoices() { try { if(synth?.getVoices) voiceReady=true; } catch(e){} }
+        if(synth?.onvoiceschanged) synth.onvoiceschanged = loadVoices;
+        setTimeout(loadVoices, 300);
+        function speak(txt) {
+            if(!synth) return;
+            synth.cancel();
+            try{
+                let u = new SpeechSynthesisUtterance(txt);
+                u.lang = 'en-US'; u.rate = 0.85; u.pitch = 1.1;
+                synth.speak(u);
+            }catch(e){}
+        }
+        
+        // ---------- DATA ----------
+        const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        
+        const SCHOOL_ACT = [
+            {n:'Reading', e:'📖'},{n:'Writing', e:'✍️'},{n:'Playing', e:'⚽'},{n:'Learning', e:'🧠'},
+            {n:'Drawing', e:'🎨'},{n:'Singing', e:'🎵'},{n:'Eating lunch', e:'🍽️'},{n:'Recess', e:'🛝'}
+        ];
+        const HOME_ACT = [
+            {n:'Sleeping', e:'😴'},{n:'Eating dinner', e:'🍲'},{n:'Brushing teeth', e:'🪥'},{n:'Bathing', e:'🛁'},
+            {n:'Watching TV', e:'📺'},{n:'Helping parents', e:'🤲'},{n:'Playing with toys', e:'🧸'},{n:'Homework', e:'📚'}
+        ];
+        
+        // ---------- QUESTION GENERATORS (merged richness) ----------
+        let globalUsed = new Set();
+        function resetUsed() { globalUsed.clear(); }
+        
+        function norm(str) { return String(str).trim().toLowerCase().replace(/\s+/g, ' '); }
+        
+        // 1) Days ordering
+        function genDayAfter() {
+            const day = DAYS[Math.floor(Math.random()*DAYS.length)];
+            const next = DAYS[(DAYS.indexOf(day)+1)%7];
+            const id = `dayAfter_${day}`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return {
+                text: `What day comes after ${day}?`,
+                correct: next,
+                visual: `<div class="day-wheel">${DAYS.map(d=>`<span class="chip ${d===day?'active':''}">${d.slice(0,3)}</span>`).join('')}</div>`,
+                topic: "Days"
+            };
+        }
+        function genDayBefore() {
+            const day = DAYS[Math.floor(Math.random()*DAYS.length)];
+            const prev = DAYS[(DAYS.indexOf(day)-1+7)%7];
+            const id = `dayBefore_${day}`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return { text: `What day comes before ${day}?`, correct: prev, visual: `<div class="day-wheel"><span class="chip">⬅️ ${prev}</span> → <span class="chip active">${day}</span></div>`, topic: "Days" };
+        }
+        // 2) Months ordering
+        function genMonthAfter() {
+            const m = MONTHS[Math.floor(Math.random()*MONTHS.length)];
+            const idx = MONTHS.indexOf(m);
+            const nextMon = MONTHS[(idx+1)%12];
+            const id = `monAfter_${m}`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return { text: `Which month comes after ${m}?`, correct: nextMon, visual: `<div class="month-flex"><span class="chip">${m}</span> ➡️ <span class="chip">${nextMon}</span></div>`, topic: "Months" };
+        }
+        function genMonthBefore() {
+            const m = MONTHS[Math.floor(Math.random()*MONTHS.length)];
+            const idx = MONTHS.indexOf(m);
+            const prev = MONTHS[(idx-1+12)%12];
+            const id = `monBefore_${m}`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return { text: `Which month comes before ${m}?`, correct: prev, visual: `<div><span class="chip">${prev}</span> ← <span class="chip active">${m}</span></div>`, topic: "Months" };
+        }
+        // 3) School vs Home activity
+        function genHomeSchool() {
+            const isHome = Math.random()>0.5;
+            const pool = isHome ? HOME_ACT : SCHOOL_ACT;
+            const act = pool[Math.floor(Math.random()*pool.length)];
+            const id = `hs_${act.n}_${isHome}`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return {
+                text: `Is "${act.n}" a home activity or school activity?`,
+                correct: isHome ? 'home' : 'school',
+                visual: `<div class="activity-grid"><span class="activity-badge">${act.e} ${act.n}</span> ➡️ ?</div>`,
+                topic: "Home/School"
+            };
+        }
+        // 4) Month facts (days, holidays, special)
+        function genMonthFact() {
+            const facts = [
+                { q: "How many months are in a year?", a: "12" },
+                { q: "Which month has Valentine's Day?", a: "February" },
+                { q: "What is the first month of the year?", a: "January" },
+                { q: "What is the last month of the year?", a: "December" },
+                { q: "Which month has Christmas?", a: "December" },
+                { q: "Which month is the shortest?", a: "February" },
+                { q: "Which month is in the middle of the year? (June/July)", a: "June" },
+                { q: "Name a month with 31 days.", a: "January" }
+            ];
+            const f = facts[Math.floor(Math.random()*facts.length)];
+            const id = `fact_${f.q}`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return { text: f.q, correct: f.a, visual: `📅🧠`, topic: "Months" };
+        }
+        // 5) Days activity: typical weekday activity
+        function genDayActivity() {
+            const weekdays = DAYS.slice(0,5);
+            const day = weekdays[Math.floor(Math.random()*weekdays.length)];
+            const acts = ['go to school', 'learn math', 'play during break', 'write in notebook'];
+            const act = acts[Math.floor(Math.random()*acts.length)];
+            const id = `dayAct_${day}`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return { text: `On which day do you usually ${act}? (Monday to Friday)`, correct: day, visual: `📚 ${day}`, topic: "Days" };
+        }
+        function genWeekend() {
+            const id = `weekend_q`;
+            if(globalUsed.has(id)) return null;
+            globalUsed.add(id);
+            return { text: "Which two days make the weekend?", correct: "Saturday Sunday", visual: "🎉 weekend", topic: "Days" };
+        }
+        // full bank array
+        const generatorPool = [
+            genDayAfter, genDayBefore, genMonthAfter, genMonthBefore,
+            genHomeSchool, genMonthFact, genDayActivity, genWeekend
+        ];
+        
+        function generateLevelQuestions(levelNum) {
+            globalUsed.clear();
+            let questions = [];
+            let attempts = 0;
+            const needed = 30;
+            while(questions.length < needed && attempts < 300) {
+                for(let gen of generatorPool) {
+                    if(questions.length >= needed) break;
+                    const q = gen();
+                    if(q) {
+                        // ensure different variations
+                        if(!questions.some(ex => ex.text === q.text)) {
+                            questions.push(q);
+                        }
+                    }
+                }
+                attempts++;
+            }
+            // fallback guarantee
+            if(questions.length < 30) {
+                for(let i=0;i<10;i++) questions.push({ text: "What day comes after Monday?", correct: "Tuesday", visual: "📆", topic: "Days" });
+            }
+            // shuffle and slice
+            for(let i=questions.length-1;i>0;i--){
+                const j=Math.floor(Math.random()*(i+1));
+                [questions[i], questions[j]]=[questions[j], questions[i]];
+            }
+            return questions.slice(0,30);
+        }
+        
+        // ---------- GAME STATE ----------
+        let currentLevel = 0;          // 0-indexed 0..4
+        let currentQuestions = [];
+        let qIndex = 0;
+        let correctCount = 0;
+        let answeredCount = 0;
+        let timeLeft = 40;
+        let timerInterval = null;
+        let waitingForAnswer = true;
+        let answerSubmitted = false;
+        let gameActive = true;
+        let levelTransition = false;
+        let currentQObj = null;
+        
+        // DOM elements dynamic
+        const root = document.getElementById('appRoot');
+        let elements = {};
+        
+        function renderUI() {
+            root.innerHTML = `
+                <div class="game-hud">
+                    <div class="hud-badge" id="levelBadge">📅 LEVEL ${currentLevel+1}/5</div>
+                    <div class="hud-score" id="scoreBadge">✅ SCORE: 0 / 0</div>
+                    <div class="timer-panel">⏱️ <span class="timer-digits" id="timerVal">40</span></div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="q-counter" id="qCounter">Question 1 / 30</div>
+                </div>
+                <div class="question-area">
+                    <div class="question-card">
+                        <div class="question-text" id="questionTxt">Loading...</div>
+                        <div class="visual-hint-area" id="visualHint">✨ 🎨 🕒</div>
+                    </div>
+                    <div class="answer-row">
+                        <input type="text" id="studentAnswer" placeholder="Type answer..." autocomplete="off">
+                        <button class="check-btn" id="checkBtn">✔️ CHECK</button>
+                        <button class="voice-action" id="readBtn">🔊 READ</button>
+                        <button class="next-action" id="nextBtn">⏩ NEXT</button>
+                    </div>
+                    <div class="feedback-msg" id="feedbackMsg">🌟 Answer each question! 80% to pass level.</div>
+                </div>
+                <div id="levelEndOverlay" class="level-overlay hide">
+                    <div class="final-badge" id="endEmoji">🏆</div>
+                    <h2 id="endTitle">Level Complete!</h2>
+                    <div class="stars-reward" id="starsReward">⭐⭐⭐</div>
+                    <div id="endInfo">Score: 0/30</div>
+                    <p id="endMessage" style="margin:12px 0; font-weight:bold;"></p>
+                    <button class="check-btn" id="continueBtn" style="background:#FF9800;">➡️ Next Level</button>
+                    <button class="voice-action" id="retryLevelBtn" style="background:#F44336; color:white;">🔄 Retry Level</button>
+                </div>
+            `;
+            elements = {
+                levelBadge: document.getElementById('levelBadge'),
+                scoreBadge: document.getElementById('scoreBadge'),
+                timerVal: document.getElementById('timerVal'),
+                progressFill: document.getElementById('progressFill'),
+                qCounter: document.getElementById('qCounter'),
+                questionTxt: document.getElementById('questionTxt'),
+                visualHint: document.getElementById('visualHint'),
+                studentAnswer: document.getElementById('studentAnswer'),
+                checkBtn: document.getElementById('checkBtn'),
+                readBtn: document.getElementById('readBtn'),
+                nextBtn: document.getElementById('nextBtn'),
+                feedbackMsg: document.getElementById('feedbackMsg'),
+                levelOverlay: document.getElementById('levelEndOverlay'),
+                endEmoji: document.getElementById('endEmoji'),
+                endTitle: document.getElementById('endTitle'),
+                starsReward: document.getElementById('starsReward'),
+                endInfo: document.getElementById('endInfo'),
+                endMessage: document.getElementById('endMessage'),
+                continueBtn: document.getElementById('continueBtn'),
+                retryLevelBtn: document.getElementById('retryLevelBtn')
+            };
+            attachEvents();
+        }
+        
+        function attachEvents() {
+            elements.checkBtn.onclick = () => checkAnswerWrapper();
+            elements.readBtn.onclick = () => { if(currentQObj && !levelTransition) speak(currentQObj.text); };
+            elements.nextBtn.onclick = () => manualNext();
+            elements.continueBtn.onclick = () => nextLevelProceed();
+            elements.retryLevelBtn.onclick = () => restartCurrentLevel();
+            elements.studentAnswer.addEventListener('keypress', (e) => { if(e.key==='Enter' && !answerSubmitted && waitingForAnswer) checkAnswerWrapper(); });
+        }
+        
+        function updateHUD() {
+            elements.scoreBadge.innerText = `✅ SCORE: ${correctCount} / ${answeredCount}`;
+            elements.qCounter.innerText = `Question ${answeredCount+1} / ${currentQuestions.length}`;
+            const percent = ((answeredCount) / currentQuestions.length) * 100;
+            elements.progressFill.style.width = `${percent}%`;
+        }
+        
+        function stopTimer() { if(timerInterval){ clearInterval(timerInterval); timerInterval=null; } }
+        
+        function startTimer() {
+            if(timerInterval) stopTimer();
+            timeLeft = 40;
+            elements.timerVal.innerText = timeLeft;
+            updateHintVisual(timeLeft);
+            timerInterval = setInterval(()=>{
+                if(!waitingForAnswer || levelTransition || !gameActive || answerSubmitted) return;
+                if(timeLeft <= 1) {
+                    stopTimer();
+                    if(waitingForAnswer && !answerSubmitted) {
+                        speak("Time is up!");
+                        waitingForAnswer = false;
+                        answerSubmitted = true;
+                        elements.feedbackMsg.innerHTML = "⏰ TIME'S UP! Moving to next question.";
+                        elements.feedbackMsg.style.background = "#ffccbb";
+                        setTimeout(()=>{ if(!levelTransition) moveToNext(); }, 1500);
+                    }
+                } else {
+                    timeLeft--;
+                    elements.timerVal.innerText = timeLeft;
+                    updateHintVisual(timeLeft);
+                }
+            },1000);
+        }
+        
+        function updateHintVisual(sec) {
+            if(!currentQObj) return;
+            if(sec > 28) elements.visualHint.innerHTML = `💡 ${currentQObj.visual || "✨ Try your best!"} <span>🎓 Topic: ${currentQObj.topic}</span>`;
+            else if(sec > 15) elements.visualHint.innerHTML = `🔎 Hint: think about calendar! ${currentQObj.topic === "Days" ? "📆 Days of week" : "📅 Months"}`;
+            else if(sec > 5) elements.visualHint.innerHTML = `✨ Strong hint: the answer starts with "${currentQObj.correct.substring(0,3)}..." ✨`;
+            else elements.visualHint.innerHTML = `⚡ Last seconds! Answer: ${currentQObj.correct} ⚡`;
+        }
+        
+        function checkAnswerWrapper() {
+            if(!waitingForAnswer || levelTransition || !gameActive || answerSubmitted) {
+                elements.feedbackMsg.innerHTML = "⚠️ Already answered or locked!";
+                return;
+            }
+            let raw = elements.studentAnswer.value.trim().toLowerCase();
+            if(raw === "") { speak("Please type an answer"); elements.feedbackMsg.innerHTML = "✏️ Type your answer!"; return; }
+            let correctAns = currentQObj.correct.toLowerCase();
+            // flexible matching for weekend case
+            let isCorrect = false;
+            if(currentQObj.text.includes("two days make the weekend")) {
+                if(raw.includes("saturday") && raw.includes("sunday")) isCorrect = true;
+                else isCorrect = false;
+            } else {
+                isCorrect = (raw === correctAns) || (correctAns === "january" && (raw === "jan" || raw === "january")) || (correctAns === "february" && raw==="feb")
+                || (correctAns === "december" && raw==="dec") || (correctAns === "saturday sunday" && raw.includes("saturday") && raw.includes("sunday"));
+                if(!isCorrect && currentQObj.correct === "June" && raw === "jun") isCorrect=true;
+                if(!isCorrect && currentQObj.correct === "July" && raw === "jul") isCorrect=true;
+                if(!isCorrect && currentQObj.correct === "April" && raw === "apr") isCorrect=true;
+            }
+            answerSubmitted = true;
+            waitingForAnswer = false;
+            stopTimer();
+            if(isCorrect) {
+                correctCount++;
+                speak("Correct! Great job!");
+                elements.feedbackMsg.innerHTML = "🎉 CORRECT! +1 point 🎉";
+                elements.feedbackMsg.style.background = "#C8E6C9";
+            } else {
+                speak(`Incorrect. Answer is ${currentQObj.correct}.`);
+                elements.feedbackMsg.innerHTML = `❌ INCORRECT! Right answer: "${currentQObj.correct}". Keep learning!`;
+                elements.feedbackMsg.style.background = "#FFCDD2";
+            }
+            answeredCount++;
+            updateHUD();
+            elements.checkBtn.disabled = true;
+            elements.studentAnswer.disabled = true;
+        }
+        
+        function moveToNext() {
+            if(levelTransition) return;
+            if(answeredCount >= currentQuestions.length) {
+                finishLevel();
+                return;
+            }
+            qIndex++;
+            loadQuestion(qIndex);
+        }
+        
+        function manualNext() {
+            if(levelTransition || !gameActive) { elements.feedbackMsg.innerHTML = "Level finishing..."; return; }
+            if(!answerSubmitted && waitingForAnswer) {
+                elements.feedbackMsg.innerHTML = "⚠️ Please check your answer first!";
+                speak("Please check your answer before moving.");
+                return;
+            }
+            if(answerSubmitted && !waitingForAnswer) {
+                stopTimer();
+                moveToNext();
+            }
+        }
+        
+        function loadQuestion(index) {
+            if(index >= currentQuestions.length) { finishLevel(); return; }
+            currentQObj = currentQuestions[index];
+            elements.questionTxt.innerText = currentQObj.text;
+            elements.visualHint.innerHTML = currentQObj.visual || "📖 What is the answer?";
+            waitingForAnswer = true;
+            answerSubmitted = false;
+            elements.checkBtn.disabled = false;
+            elements.studentAnswer.disabled = false;
+            elements.studentAnswer.value = "";
+            elements.studentAnswer.focus();
+            elements.feedbackMsg.innerHTML = "📝 Type and click CHECK!";
+            elements.feedbackMsg.style.background = "#FFF3E0";
+            updateHUD();
+            stopTimer();
+            startTimer();
+        }
+        
+        function finishLevel() {
+            levelTransition = true;
+            stopTimer();
+            const percent = (correctCount / currentQuestions.length) * 100;
+            const pass = percent >= 80;
+            elements.levelOverlay.classList.remove('hide');
+            if(pass) {
+                elements.endEmoji.innerHTML = "🏆🎉";
+                elements.endTitle.innerText = `Level ${currentLevel+1} COMPLETE!`;
+                let stars = Math.floor(percent/20);
+                elements.starsReward.innerHTML = "⭐".repeat(stars);
+                elements.endInfo.innerHTML = `Score: ${correctCount}/${currentQuestions.length} (${Math.floor(percent)}%)`;
+                elements.endMessage.innerHTML = "Amazing! Next level unlocked!";
+                elements.continueBtn.style.display = "inline-block";
+                elements.retryLevelBtn.style.display = "none";
+                if(currentLevel+1 >= 5) elements.continueBtn.innerText = "🏁 FINISH GAME 🏁";
+            } else {
+                elements.endEmoji.innerHTML = "💪📚";
+                elements.endTitle.innerText = `Level ${currentLevel+1} - Try Again`;
+                elements.starsReward.innerHTML = "⭐";
+                elements.endInfo.innerHTML = `Score: ${correctCount}/${currentQuestions.length} (${Math.floor(percent)}%) need 80%`;
+                elements.endMessage.innerHTML = "Practice more! Retry this level with new questions!";
+                elements.continueBtn.style.display = "none";
+                elements.retryLevelBtn.style.display = "inline-block";
+            }
+        }
+        
+        function nextLevelProceed() {
+            if(currentLevel+1 >= 5) {
+                elements.levelOverlay.classList.add('hide');
+                elements.feedbackMsg.innerHTML = "🏆🏆🏆 GRAND CHAMPION! You mastered Grade 1 Time! 🏆🏆🏆";
+                elements.feedbackMsg.style.background = "#FFF176";
+                elements.checkBtn.disabled = true;
+                elements.nextBtn.disabled = true;
+                elements.readBtn.disabled = true;
+                elements.studentAnswer.disabled = true;
+                speak("Congratulations! You finished Time Mastery! Superstar!");
+                gameActive = false;
+                return;
+            }
+            currentLevel++;
+            startNewLevel();
+        }
+        
+        function restartCurrentLevel() {
+            startNewLevel();
+        }
+        
+        function startNewLevel() {
+            levelTransition = false;
+            gameActive = true;
+            currentQuestions = generateLevelQuestions(currentLevel);
+            qIndex = 0;
+            correctCount = 0;
+            answeredCount = 0;
+            answerSubmitted = false;
+            waitingForAnswer = true;
+            elements.levelOverlay.classList.add('hide');
+            updateHUD();
+            elements.levelBadge.innerText = `📅 LEVEL ${currentLevel+1}/5`;
+            loadQuestion(0);
+        }
+        
+        function initGame() {
+            renderUI();
+            currentLevel = 0;
+            startNewLevel();
+        }
+        
+        initGame();
+    })();
+</script>
+</body>
+</html>

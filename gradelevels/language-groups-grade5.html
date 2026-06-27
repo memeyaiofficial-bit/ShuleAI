@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 5 Social Studies - Culture & School Administration Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c1e3a 0%, #1a1225 100%);
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 70px 50px 70px 50px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.6);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .game-header {
+            background: #d68b45;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #a55d2a;
+            color: #2d2b1f;
+            font-weight: bold;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2d2b26;
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: #ffeaac;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -1px 0 #5e5b56, 0 3px 0 #12100e;
+            font-weight: 600;
+        }
+
+        .timer-box {
+            background: #1f3e2c;
+            color: #f9e47a;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer-warning {
+            background: #c73d23;
+            color: white;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            100% { opacity: 0.7; transform: scale(1.02);}
+        }
+
+        .question-area {
+            padding: 30px 28px 25px;
+            background: #fffff5;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 20px;
+            color: #5d3a1a;
+            background: #fef3e0;
+            padding: 22px;
+            border-radius: 55px;
+            text-align: center;
+            word-break: break-word;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #6b4c3b;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 5px 0 #3e2c22;
+        }
+
+        .voice-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #3e2c22;
+        }
+
+        .hint-area {
+            background: #fff2df;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            flex: 1;
+            text-align: center;
+            color: #b45f1b;
+            font-weight: 600;
+            border-left: 6px solid #ffaa44;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .answer-input-area {
+            margin: 15px 0 10px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            border-radius: 100px;
+            border: 2px solid #d4b87a;
+            background: white;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #e07c2c;
+            box-shadow: 0 0 0 3px rgba(224,124,44,0.3);
+        }
+
+        .submit-btn {
+            background: #b96f30;
+            width: 100%;
+            margin-top: 18px;
+            padding: 16px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 6px 0 #7a4a1f;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7a4a1f;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            background: #eae2cc;
+            padding: 14px;
+            border-radius: 50px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: #fff7e8;
+            max-width: 90%;
+            width: 420px;
+            padding: 30px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            border: 3px solid #ffbc6e;
+        }
+
+        .modal-card button {
+            background: #6b4c3b;
+            margin-top: 25px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .question-text {
+                font-size: 1.2rem;
+                padding: 16px;
+            }
+            .game-header {
+                justify-content: center;
+            }
+            .voice-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+            .submit-btn {
+                font-size: 1.2rem;
+            }
+        }
+
+        .correct-feedback {
+            background: #c8e6c1;
+            color: #1c631c;
+            border-left: 8px solid #2e7d32;
+        }
+
+        .wrong-feedback {
+            background: #ffe0db;
+            color: #b33;
+            border-left: 8px solid #d32f2f;
+        }
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">🎭 Level 1</div>
+        <div class="score-badge" id="scoreDisplay">⭐ Score: 0 / 0</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Welcome! Let's explore Culture, School Administration & Social Organizations in Kenya.</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-area" id="hintMessage">💡 Hint appears when 10 seconds remain</div>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✅ CHECK ANSWER</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">✨ Answer each question. Score 80% to advance to next level!</div>
+    </div>
+</div>
+
+<script>
+    // ------------------- VOICE SYSTEM -------------------
+    function speakMessage(message, pitchVal = 1.0) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.92;
+            utterance.pitch = pitchVal;
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    // ------------------- ANSWER NORMALIZATION -------------------
+    function normalize(ans) {
+        let norm = ans.trim().toLowerCase();
+        norm = norm.replace(/[.,?!;:()]/g, '');
+        return norm;
+    }
+
+    function isAnswerCorrect(correct, user) {
+        const normUser = normalize(user);
+        const normCorrect = normalize(correct);
+        if (normUser === normCorrect) return true;
+        // common variations for culture & school admin
+        const variations = {
+            "kikuyu": ["gikuyu", "kikuyu tribe"],
+            "luo": ["luo tribe", "joluo"],
+            "luhya": ["luhya tribe", "abaluhya"],
+            "kalenjin": ["kalenjin tribe"],
+            "maasai": ["masai", "maasai tribe"],
+            "swahili": ["kiswahili", "swahili culture"],
+            "prefect": ["school prefect", "class prefect"],
+            "head teacher": ["principal", "headmaster", "headteacher"],
+            "board of management": ["bom", "school board"],
+            "pta": ["parent teacher association", "parents teachers association"],
+            "guidance and counseling": ["guidance & counseling", "guidance"],
+            "nyayo": ["nyayo era"],
+            "harambee": ["harambee movement"]
+        };
+        for (let [key, aliases] of Object.entries(variations)) {
+            if (normCorrect === key && aliases.includes(normUser)) return true;
+            if (normCorrect === key && normUser === key) return true;
+            if (aliases.includes(normCorrect) && normUser === key) return true;
+        }
+        return false;
+    }
+
+    // ------------------- QUESTION BANK: Culture, School Admin, Social Organizations -------------------
+    const LEVELS = 5;
+    const QUESTIONS_PER_LEVEL = 30;
+    const PASS_PERCENT = 80;
+    const BASE_TIME_SEC = 40;
+
+    const questionBank = [[], [], [], [], []];
+
+    function addToLevel(level, qArray) {
+        questionBank[level].push(...qArray);
+    }
+
+    // ========== LEVEL 1: Culture (Traditions, Customs, Ethnic groups in Kenya) ==========
+    const l1 = [
+        { text: "What is the name of the traditional Maasai jumping dance?", correct: "adumu" },
+        { text: "Which Kenyan community is known for the 'Isukuti' drum dance?", correct: "Luhya" },
+        { text: "What is the traditional Luo string instrument called?", correct: "nyatiti" },
+        { text: "Which ceremony marks the transition from boyhood to adulthood among the Kikuyu?", correct: "irua" },
+        { text: "Name the staple food made from maize flour commonly eaten across many Kenyan cultures.", correct: "ugali" },
+        { text: "What is the traditional Kikuyu garment made from animal skins called?", correct: "muthuru" },
+        { text: "Which coastal community celebrates the 'Mombasa Carnival' with vibrant cultural displays?", correct: "Swahili" },
+        { text: "Name the Mijikenda sacred forest where rituals are performed.", correct: "kaya" },
+        { text: "What is the name of the Kalenjin coming-of-age ceremony for boys?", correct: "tumdo" },
+        { text: "Which instrument is made from a gourd and used by the Luo people?", correct: "nyatiti" },
+        { text: "What is the traditional Maasai blanket worn as a shuka called?", correct: "shuka" },
+        { text: "Name the Somali community's camel meat dish served during festivals.", correct: "hilib" },
+        { text: "Which Kenyan culture performs the 'Mugithi' music using a guitar?", correct: "Kikuyu" },
+        { text: "What is the name of the Turkana headrest made of wood?", correct: "ekicholong" },
+        { text: "The 'Chakacha' dance is popular among which coastal community?", correct: "Swahili" },
+        { text: "Name the common greeting in Kiswahili that means 'peace be upon you'.", correct: "salamu" },
+        { text: "Which community celebrates 'Lamu Cultural Festival' with dhow races?", correct: "Swahili" },
+        { text: "What is the traditional Kamba dance called?", correct: "kilumi" },
+        { text: "The 'Olpul' is a traditional meat-eating ceremony of which community?", correct: "Maasai" },
+        { text: "Name the beaded jewellery worn by Maasai women around the neck.", correct: "nkorea" },
+        { text: "Which community uses the 'Onyiego' funeral dance?", correct: "Luo" },
+        { text: "What is the name of the Kikuyu traditional council of elders?", correct: "kiama" },
+        { text: "The 'Eng'iyo' is a calabash used by the Maasai for storing what?", correct: "milk" },
+        { text: "Name the harvest festival of the Luhya community.", correct: "buluhya" },
+        { text: "What is the traditional weapon of the Turkana herders?", correct: "spear" },
+        { text: "Which community performs the 'Irua' circumcision ceremony?", correct: "Kikuyu" },
+        { text: "The 'Mwaka Kogwa' is a New Year festival celebrated by which community?", correct: "Shirazi" },
+        { text: "Name the Kamba traditional soup made from goat meat.", correct: "mbuli" },
+        { text: "What is the name of the Mijikenda elder's stool?", correct: "viti" },
+        { text: "Which Kenyan community is known for the 'Bullfighting' tradition?", correct: "Luhya" }
+    ];
+    addToLevel(0, l1.slice(0,30));
+
+    // ========== LEVEL 2: School Administration (Leadership, Roles, Governance) ==========
+    const l2 = [
+        { text: "What is the title of the teacher in charge of the whole school?", correct: "head teacher" },
+        { text: "Who is the head boy or head girl responsible for in a school?", correct: "prefects" },
+        { text: "Which group of parents helps the school in decision making?", correct: "PTA" },
+        { text: "What is the name of the school governing body that includes the head teacher and community reps?", correct: "board of management" },
+        { text: "Who is responsible for discipline in a class (a student leader)?", correct: "class prefect" },
+        { text: "Which teacher is in charge of all academic matters in a school?", correct: "deputy head teacher" },
+        { text: "What document contains the rules and regulations of a school?", correct: "school rules" },
+        { text: "Who is the overall leader of a primary school in Kenya?", correct: "head teacher" },
+        { text: "Name the student leader in charge of games and sports.", correct: "games prefect" },
+        { text: "What does BOM stand for in school administration?", correct: "board of management" },
+        { text: "Who collects school fees and keeps financial records?", correct: "school bursar" },
+        { text: "What is the meeting where teachers discuss student progress called?", correct: "staff meeting" },
+        { text: "Who is responsible for guiding and counseling students in school?", correct: "teacher counselor" },
+        { text: "Name the student leader who helps in the library.", correct: "library prefect" },
+        { text: "Which organ represents students' voice in school administration?", correct: "student council" },
+        { text: "The person in charge of school cleanliness and environment is the _______ prefect.", correct: "environment" },
+        { text: "What is the name of the report given to parents at the end of term?", correct: "report card" },
+        { text: "Who signs the leaving certificate for a student?", correct: "head teacher" },
+        { text: "Which teacher is in charge of the school timetable?", correct: "academic master" },
+        { text: "What is the assembly where students receive announcements called?", correct: "morning assembly" },
+        { text: "Who is the head of the school's security team?", correct: "security prefect" },
+        { text: "Name the register that records student attendance.", correct: "attendance register" },
+        { text: "What is the term for the money paid for extracurricular activities?", correct: "activity fee" },
+        { text: "Who supervises the school kitchen and meals?", correct: "catering master" },
+        { text: "The body that inspects schools to ensure quality is called _______", correct: "quality assurance" },
+        { text: "Name the student leader in charge of health and first aid.", correct: "health prefect" },
+        { text: "What does PTA stand for?", correct: "parent teacher association" },
+        { text: "Who is the chairperson of the school Board of Management?", correct: "chairperson" },
+        { text: "What is the name of the diary where parents and teachers communicate?", correct: "school diary" },
+        { text: "Which teacher handles student enrollment and transfers?", correct: "admissions teacher" }
+    ];
+    addToLevel(1, l2.slice(0,30));
+
+    // ========== LEVEL 3: Social Organizations (Types, Roles, Importance) ==========
+    const l3 = [
+        { text: "What is a group of people who come together to achieve a common goal called?", correct: "social organization" },
+        { text: "Name a social organization that helps the poor in the community.", correct: "red cross" },
+        { text: "What does NGO stand for?", correct: "non governmental organization" },
+        { text: "Which Kenyan organization helps protect children's rights?", correct: "Kinderhilfe" },
+        { text: "Name the religious organization that runs many schools and hospitals in Kenya.", correct: "church" },
+        { text: "What is the name of the youth group that promotes environmental conservation?", correct: "scouts" },
+        { text: "Which organization provides first aid and disaster response in Kenya?", correct: "Kenya Red Cross" },
+        { text: "A group of women saving money together is called a _______ group.", correct: "chama" },
+        { text: "Name a social organization that supports people living with disabilities.", correct: "APDK" },
+        { text: "What is the name of the UN agency that cares for children worldwide?", correct: "UNICEF" },
+        { text: "Which organization fights corruption in Kenya?", correct: "EACC" },
+        { text: "Name a community-based organization that builds schools in villages.", correct: "CBO" },
+        { text: "What is the main role of the Red Cross during floods?", correct: "rescue" },
+        { text: "Which organization registers all political parties in Kenya?", correct: "IEBC" },
+        { text: "A group of farmers working together to sell their produce is called a _______", correct: "cooperative" },
+        { text: "Name the organization that provides legal aid to the poor in Kenya.", correct: "KELIN" },
+        { text: "What is the main aim of the 'Maendeleo ya Wanawake' organization?", correct: "women empowerment" },
+        { text: "Which social organization helps street children get education?", correct: "Undugu Society" },
+        { text: "What does FBO stand for?", correct: "faith based organization" },
+        { text: "Name an environmental social organization that plants trees.", correct: "green belt movement" },
+        { text: "Which organization takes care of abandoned animals in Kenya?", correct: "KSPCA" },
+        { text: "The 'Girl Guides' organization mainly focuses on _______ for girls.", correct: "leadership" },
+        { text: "What is the name of the organization that provides affordable housing?", correct: "NHC" },
+        { text: "Which social organization helps people with albinism?", correct: "Albinism Society" },
+        { text: "Name the body that regulates social organizations in Kenya.", correct: "NGO board" },
+        { text: "What is the main role of a 'welfare association'?", correct: "support members" },
+        { text: "Which organization provides micro-loans to small business owners?", correct: "Kiva" },
+        { text: "The 'Rotary Club' is an example of a _______ organization.", correct: "service" },
+        { text: "Name a social organization that fights drug abuse among youth.", correct: "NACADA" },
+        { text: "What is the main benefit of joining a 'savings group'?", correct: "financial security" }
+    ];
+    addToLevel(2, l3.slice(0,30));
+
+    // ========== LEVEL 4: Mix of Culture, School & Social Organizations (Advanced) ==========
+    const l4 = [
+        { text: "Which cultural practice involves respecting elders in the Kikuyu community?", correct: "kuhinyia" },
+        { text: "Name the school document that contains the vision and mission.", correct: "school charter" },
+        { text: "What is the role of the 'Guidance and Counseling Department' in school?", correct: "student support" },
+        { text: "Which social organization advocates for children's education in slums?", correct: "Child Fund" },
+        { text: "The 'Omutibo' dance belongs to which Kenyan community?", correct: "Luhya" },
+        { text: "Who is the senior teacher responsible for student discipline?", correct: "discipline master" },
+        { text: "What is the name of the Kikuyu traditional beer used in ceremonies?", correct: "muratin" },
+        { text: "Which organization helps refugees in Kenya?", correct: "UNHCR" },
+        { text: "Name the prefect responsible for the school choir.", correct: "music prefect" },
+        { text: "The 'Dodo' dance is performed by which community during harvest?", correct: "Kisii" },
+        { text: "What does the 'School Bank' teach students?", correct: "saving" },
+        { text: "Which social organization provides sanitary towels to school girls?", correct: "ZanaAfrica" },
+        { text: "What is the name of the Luo traditional wedding ceremony?", correct: "nyombo" },
+        { text: "Who chairs the PTA meetings in a school?", correct: "head teacher" },
+        { text: "Name the organization that promotes sports in Kenyan schools.", correct: "KSSHA" },
+        { text: "The 'Njuri Ncheke' is the council of elders for which community?", correct: "Meru" },
+        { text: "What is the role of the 'Health Prefect' in a school?", correct: "first aid" },
+        { text: "Which organization builds libraries in rural Kenya?", correct: "Book Aid" },
+        { text: "Name the Maasai naming ceremony for a newborn.", correct: "enkarna" },
+        { text: "Who is responsible for organizing school trips?", correct: "trips coordinator" },
+        { text: "The 'Gura' dance is performed by which community during initiation?", correct: "Kikuyu" },
+        { text: "Which social organization supports cancer patients?", correct: "Faraja" },
+        { text: "What is the name of the student leader in charge of the debating club?", correct: "debating prefect" },
+        { text: "Name the Swahili traditional wedding called.", correct: "harusi" },
+        { text: "Which school committee plans the annual prize giving day?", correct: "events committee" },
+        { text: "The 'Olubayi' is a traditional stool of which community?", correct: "Luhya" },
+        { text: "What organization provides free primary education advocacy?", correct: "UNESCO" },
+        { text: "Name the person who represents students in the Board of Management?", correct: "student representative" },
+        { text: "The 'Sigana' is a traditional storytelling event of which community?", correct: "Mijikenda" },
+        { text: "Which social organization protects the rights of domestic workers?", correct: "KUDHEIHA" }
+    ];
+    addToLevel(3, l4.slice(0,30));
+
+    // ========== LEVEL 5: Comprehensive Challenge (All Topics Deep Dive) ==========
+    const l5 = [
+        { text: "What is the name of the Kamba puberty rite for girls?", correct: "nzango" },
+        { text: "Who is the overall chairman of the School Board of Management?", correct: "chairperson bom" },
+        { text: "Name the international organization that helps during famines in Kenya.", correct: "world food programme" },
+        { text: "Which traditional garment do Maasai warriors wear?", correct: "shuka" },
+        { text: "What is the main role of the 'Academic Prefect' in school?", correct: "academic excellence" },
+        { text: "Which social organization fights gender-based violence in Kenya?", correct: "FIDA" },
+        { text: "Name the Turkana coming-of-age ceremony for young men.", correct: "asapan" },
+        { text: "What is the document that shows the school's budget?", correct: "school budget" },
+        { text: "Which organization provides clean water in rural schools?", correct: "water.org" },
+        { text: "The 'Ekitabu' is a traditional book used by which community?", correct: "Bukusu" },
+        { text: "Who handles student transfer certificates in a school?", correct: "registrar" },
+        { text: "Name the organization that supports small scale farmers with seeds.", correct: "One Acre Fund" },
+        { text: "What is the name of the Luo traditional dance for heroes?", correct: "ramogi" },
+        { text: "Which prefect is in charge of the school farm?", correct: "agriculture prefect" },
+        { text: "Name the social organization that runs animal shelters in Kenya.", correct: "KSPCA" },
+        { text: "The 'Gicandi' is a traditional music genre of which community?", correct: "Kikuyu" },
+        { text: "Who approves the school calendar of events?", correct: "head teacher" },
+        { text: "Which organization promotes digital literacy in Kenyan schools?", correct: "KICD" },
+        { text: "Name the Kalenjin traditional beverage made from fermented milk.", correct: "mursik" },
+        { text: "What is the role of the 'Environment Prefect' in school?", correct: "tree planting" },
+        { text: "Which social organization advocates for mental health awareness?", correct: "BasicNeeds" },
+        { text: "The 'Isikuti' drum is used by which community for celebrations?", correct: "Luhya" },
+        { text: "Who leads the school's academic committee?", correct: "deputy head teacher" },
+        { text: "Name the organization that helps children with cancer in Kenya.", correct: "Faraja" },
+        { text: "What is the traditional Kikuyu weapon called 'rungu' used for?", correct: "defense" },
+        { text: "Which school leader is responsible for the assembly programs?", correct: "assembly prefect" },
+        { text: "Name the organization that provides vocational training to youth.", correct: "KVT" },
+        { text: "The 'Mashujaa Day' celebrates what aspect of culture?", correct: "heroes" },
+        { text: "What is the main function of the 'Student Council' in a school?", correct: "student voice" },
+        { text: "Name a social organization that plants trees in schools through 'Eco-Schools' program.", correct: "Green Africa" }
+    ];
+    addToLevel(4, l5.slice(0,30));
+
+    // ------------------- GAME ENGINE -------------------
+    let currentLevel = 0;
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let score = 0;
+    let answeredCount = 0;
+    let timerInterval = null;
+    let timeLeft = BASE_TIME_SEC;
+    let canAnswer = true;
+    let waitingNext = false;
+
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const questionText = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintDiv = document.getElementById('hintMessage');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+
+    function updateUI() {
+        levelDisplay.innerText = `🎭 Level ${currentLevel+1}`;
+        scoreDisplay.innerText = `⭐ Score: ${score} / ${answeredCount}`;
+        if (currentQuestions[currentQIndex])
+            questionText.innerText = currentQuestions[currentQIndex].text;
+    }
+
+    function stopTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function startTimer() {
+        stopTimer();
+        timeLeft = BASE_TIME_SEC;
+        timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+        timerDisplay.classList.remove('timer-warning');
+        timerInterval = setInterval(() => {
+            if (!canAnswer) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+                if (timeLeft <= 10) {
+                    timerDisplay.classList.add('timer-warning');
+                    const curr = currentQuestions[currentQIndex];
+                    if (curr && curr.correct) {
+                        hintDiv.innerHTML = `⏰ Hint: answer starts with "${curr.correct.substring(0,3)}..." Think culture, school admin or social org.`;
+                    } else {
+                        hintDiv.innerHTML = `💡 Focus on Kenyan traditions, school leaders, or community groups!`;
+                    }
+                } else {
+                    timerDisplay.classList.remove('timer-warning');
+                    hintDiv.innerHTML = `💡 Read carefully! 40 seconds. Type your answer.`;
+                }
+            }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if (!canAnswer) return;
+        canAnswer = false;
+        const correctAns = currentQuestions[currentQIndex].correct;
+        speakMessage(`Time is up! The correct answer is ${correctAns}.`, 0.8);
+        feedbackDiv.innerHTML = `⏰ TIME'S UP! Correct: "${correctAns}". Next question...`;
+        feedbackDiv.classList.add('wrong-feedback');
+        setTimeout(() => nextQuestion(), 1600);
+    }
+
+    function checkAnswer() {
+        if (!canAnswer || waitingNext) {
+            feedbackDiv.innerHTML = "⏳ Please wait...";
+            return;
+        }
+        const userAns = answerInput.value.trim();
+        if (userAns === "") {
+            feedbackDiv.innerHTML = "📝 Type your answer before submitting!";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        const correctFlag = isAnswerCorrect(currentQ.correct, userAns);
+        stopTimer();
+        canAnswer = false;
+        if (correctFlag) {
+            score++;
+            feedbackDiv.innerHTML = `✅ CORRECT! "${userAns}" is right! +1 point 🎉`;
+            feedbackDiv.classList.add('correct-feedback');
+            speakMessage("Correct! Excellent work.", 1.2);
+        } else {
+            feedbackDiv.innerHTML = `❌ INCORRECT! "${userAns}" is wrong. Correct: ${currentQ.correct}. Keep trying!`;
+            feedbackDiv.classList.add('wrong-feedback');
+            speakMessage(`Incorrect. The correct answer is ${currentQ.correct}.`, 0.9);
+        }
+        answeredCount++;
+        updateUI();
+        setTimeout(() => nextQuestion(), 1500);
+    }
+
+    function nextQuestion() {
+        waitingNext = false;
+        currentQIndex++;
+        if (currentQIndex >= currentQuestions.length) {
+            const percent = (score / QUESTIONS_PER_LEVEL) * 100;
+            if (percent >= PASS_PERCENT) {
+                if (currentLevel + 1 < LEVELS) {
+                    showModal(`🎉 Level ${currentLevel+1} complete! ${Math.floor(percent)}% (${score}/${QUESTIONS_PER_LEVEL}). Proceed to Level ${currentLevel+2}.`, true);
+                } else {
+                    showModal(`🏆 AMAZING! You mastered Culture, School Admin & Social Organizations! Final Score: ${score}/${QUESTIONS_PER_LEVEL}. You're a champion!`, false);
+                }
+            } else {
+                showModal(`😓 Level ${currentLevel+1} failed. ${Math.floor(percent)}% (need 80%). Restarting level...`, false);
+                resetCurrentLevel();
+            }
+            return;
+        }
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetCurrentLevel() {
+        stopTimer();
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+        loadQuestionsForLevel(currentLevel);
+        resetQInterface();
+        loadCurrentQuestion();
+    }
+
+    function resetQInterface() {
+        answerInput.value = "";
+        feedbackDiv.classList.remove('correct-feedback', 'wrong-feedback');
+        feedbackDiv.innerHTML = "✨ New question! Type your answer carefully.";
+        hintDiv.innerHTML = "💡 Hint will appear when 10 seconds remain.";
+        timerDisplay.classList.remove('timer-warning');
+        canAnswer = true;
+        waitingNext = false;
+        if (timerInterval) stopTimer();
+        startTimer();
+    }
+
+    function loadCurrentQuestion() {
+        if (currentQuestions[currentQIndex]) {
+            questionText.innerText = currentQuestions[currentQIndex].text;
+            updateUI();
+            startTimer();
+            canAnswer = true;
+        }
+    }
+
+    function loadQuestionsForLevel(level) {
+        currentQuestions = [...questionBank[level]];
+        score = 0;
+        answeredCount = 0;
+        currentQIndex = 0;
+        canAnswer = true;
+        waitingNext = false;
+    }
+
+    function showModal(message, goNext) {
+        stopTimer();
+        canAnswer = false;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `<div class="modal-card"><p>${message}</p><button id="modalBtn">${goNext ? '➡️ NEXT LEVEL ⬅️' : '🔄 RESTART LEVEL'}</button></div>`;
+        document.body.appendChild(overlay);
+        document.getElementById('modalBtn').addEventListener('click', () => {
+            overlay.remove();
+            if (goNext) {
+                currentLevel++;
+                loadQuestionsForLevel(currentLevel);
+                resetQInterface();
+                loadCurrentQuestion();
+            } else {
+                resetCurrentLevel();
+            }
+        });
+    }
+
+    function init() {
+        loadQuestionsForLevel(0);
+        resetQInterface();
+        loadCurrentQuestion();
+        speakBtn.addEventListener('click', () => {
+            if (currentQuestions[currentQIndex])
+                speakMessage(currentQuestions[currentQIndex].text, 1.0);
+        });
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    }
+    init();
+</script>
+</body>
+</html>

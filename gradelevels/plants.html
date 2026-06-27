@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Bobo's Plant Adventure - Grade 1 CBC | Parts of a Plant & Caring for Plants</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2d6a4f 0%, #1b4d3a 100%);
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 70px 70px 80px 80px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #ffb84d;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #e09d32;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2e241f;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #ffecb3;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #5a3e2e, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            background: #9b4b1f;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .story-area {
+            background: #fff1df;
+            padding: 25px 20px 15px 20px;
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #2d6a4f;
+            border-bottom: 3px dashed #f7d98c;
+            min-height: 130px;
+        }
+
+        .question-area {
+            padding: 25px 20px 20px;
+            background: #fff9ef;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .speaker-btn {
+            background: #2c7a47;
+            border: none;
+            font-size: 1.6rem;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #1a5a34;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speaker-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1a5a34;
+        }
+
+        .narrative-question {
+            background: #f5ebd2;
+            border-radius: 60px;
+            padding: 20px 18px;
+            font-size: 1.6rem;
+            text-align: center;
+            color: #2c4727;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.05);
+            font-weight: bold;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .answer-input-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            flex: 3;
+            min-width: 180px;
+            padding: 16px 20px;
+            font-size: 1.3rem;
+            font-family: inherit;
+            border-radius: 60px;
+            border: 3px solid #c8b27a;
+            background: white;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        #answerInput:focus {
+            border-color: #f3a712;
+            box-shadow: 0 0 0 3px rgba(243,167,18,0.3);
+        }
+
+        .btn-check {
+            background: #f3a712;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c2416;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b4621a;
+        }
+
+        .btn-check:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b4621a;
+        }
+
+        .feedback {
+            background: #e9e0cb;
+            border-radius: 50px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            min-height: 85px;
+            font-weight: bold;
+        }
+
+        .next-level-msg {
+            background: #cae3b5;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 550px) {
+            .narrative-question { font-size: 1.3rem; }
+            .story-area { font-size: 1.2rem; }
+            .level-badge, .score-badge, .timer-box { font-size: 0.9rem; padding: 5px 12px; }
+            .btn-check { padding: 10px 18px; font-size: 1.1rem; }
+            .speaker-btn { font-size: 1.3rem; padding: 6px 12px; }
+            #answerInput { font-size: 1rem; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level: 1</div>
+        <div class="score-badge" id="scoreDisplay">Score: 0 / 40</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="story-area" id="storyArea">
+        🌱🌿 Bobo's Plant Adventure! Learn about Parts of a Plant & Caring for Plants.
+    </div>
+    <div class="question-area">
+        <div class="question-header">
+            <div class="narrative-question" id="questionText">
+                Question will appear here...
+            </div>
+            <button class="speaker-btn" id="speakQuestionBtn">🔊 Read Question</button>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" placeholder="Write your answer here..." autocomplete="off">
+            <button class="btn-check" id="submitBtn">✅ Check Answer</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">
+            🎤 Bobo will help you! Type the correct answer. Click the speaker to hear the question.
+        </div>
+        <div id="nextLevelMsg" class="next-level-msg"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- ENGLISH VOICE OUTPUT ----------
+    function speakEnglish(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function readCurrentQuestion() {
+        if (!allowAnswer) {
+            speakEnglish("Wait, this question is already answered. Next question coming soon.");
+            return;
+        }
+        const qData = currentQuestions[currentQuestionIndex];
+        if (qData) speakEnglish(qData.text);
+        else speakEnglish("No question at the moment.");
+    }
+
+    // ---------- QUESTION BANK: Parts of a Plant & Caring for Plants ----------
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        
+        // PARTS OF A PLANT
+        const plantParts = [
+            { q: "The part of a plant that grows underground and takes in water is the ______.", a: "root" },
+            { q: "The main stem of a plant that stands up tall is called the ______.", a: "stem" },
+            { q: "The flat, green part of a plant that makes food is the ______.", a: "leaf" },
+            { q: "The colorful part of a plant that turns into a fruit is the ______.", a: "flower" },
+            { q: "The part of a plant that holds the seeds is the ______.", a: "fruit" },
+            { q: "Tiny parts inside a flower that grow into new plants are called ______.", a: "seeds" },
+            { q: "The top part of a plant that grows toward the sun is the ______.", a: "shoot" },
+            { q: "Small hair-like parts on roots that absorb water are called ______.", a: "root hairs" },
+            { q: "The part of a plant that carries water from roots to leaves is the ______.", a: "stem" },
+            { q: "The part of a plant that attracts bees and butterflies is the ______.", a: "flower" }
+        ];
+        
+        // CARING FOR PLANTS
+        const plantCare = [
+            { q: "Plants need ______ to grow big and healthy.", a: "water" },
+            { q: "Plants need ______ from the sun to make food.", a: "sunlight" },
+            { q: "We should remove ______ weeds that compete with plants.", a: "unwanted" },
+            { q: "Adding ______ to soil gives plants nutrients.", a: "fertilizer" },
+            { q: "We should ______ plants gently so we don't break them.", a: "touch" },
+            { q: "Plants need ______ to breathe and grow.", a: "air" },
+            { q: "We should plant trees to help our ______.", a: "environment" },
+            { q: "Too much water can make plant roots ______.", a: "rot" },
+            { q: "We should protect plants from ______ and insects.", a: "pests" },
+            { q: "Giving plants the right amount of ______ helps them grow strong.", a: "care" }
+        ];
+        
+        // MORE PLANT PARTS (advanced for higher levels)
+        const advancedParts = [
+            { q: "The green pigment in leaves that helps make food is called ______.", a: "chlorophyll" },
+            { q: "The process by which plants make their own food is called ______.", a: "photosynthesis" },
+            { q: "The bud that grows into a flower is called a ______.", a: "flower bud" },
+            { q: "The thin stalk that holds the leaf is called the ______.", a: "petiole" },
+            { q: "The tip of a root that grows downward is called the ______ cap.", a: "root" }
+        ];
+        
+        // MORE CARING TIPS
+        const moreCare = [
+            { q: "We should ______ plants regularly, especially during dry seasons.", a: "water" },
+            { q: "Putting mulch around plants helps keep the soil ______.", a: "moist" },
+            { q: "We should plant trees along roads to provide ______.", a: "shade" },
+            { q: "Plants give us ______ to breathe.", a: "oxygen" },
+            { q: "We should not ______ plants by picking their leaves.", a: "hurt" }
+        ];
+        
+        const allTopics = [...plantParts, ...plantCare, ...advancedParts, ...moreCare];
+        
+        for (let i = 1; i <= 40; i++) {
+            let idx = (i * level + i * 2) % allTopics.length;
+            let item = allTopics[idx];
+            let qText = item.q;
+            let correctAnswer = item.a;
+            
+            // Narrative variety based on level
+            if (level >= 2 && i % 5 === 0) {
+                qText = "Bobo looks at a plant. The part that grows underground and drinks water is the ______.";
+                correctAnswer = "root";
+            }
+            if (level >= 3 && i % 6 === 0) {
+                qText = "Bobo gives his plant water every day. Plants need ______ to survive.";
+                correctAnswer = "water";
+            }
+            if (level >= 4 && i % 7 === 0) {
+                qText = "The flat green part of a plant that makes food using sunlight is called the ______.";
+                correctAnswer = "leaf";
+            }
+            if (i % 8 === 0) {
+                qText = "Bobo puts his plant near the window so it can get ______ from the sun.";
+                correctAnswer = "sunlight";
+            }
+            if (i % 9 === 0) {
+                qText = "The colorful part of a plant that turns into a fruit is the ______.";
+                correctAnswer = "flower";
+            }
+            if (i % 11 === 0) {
+                qText = "Bobo removes unwanted plants called ______ that steal nutrients from his flowers.";
+                correctAnswer = "weeds";
+            }
+            questions.push({ text: qText, answer: correctAnswer.trim().toLowerCase() });
+        }
+        return questions.slice(0, 40);
+    }
+    
+    // Preload 5 levels
+    const levelsData = {
+        1: generateQuestionsForLevel(1),
+        2: generateQuestionsForLevel(2),
+        3: generateQuestionsForLevel(3),
+        4: generateQuestionsForLevel(4),
+        5: generateQuestionsForLevel(5)
+    };
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let currentQuestions = [...levelsData[1]];
+    let scoreCorrect = 0;
+    let totalQuestionsInLevel = 40;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let isWaitingForNext = false;
+    let allowAnswer = true;
+    let nextLevelUnlocked = false;
+    
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const storyAreaDiv = document.getElementById('storyArea');
+    const questionTextDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextLevelMsgDiv = document.getElementById('nextLevelMsg');
+    const speakBtn = document.getElementById('speakQuestionBtn');
+    
+    function updateScoreUI() {
+        scoreDisplay.innerText = `Score: ${scoreCorrect} / ${totalQuestionsInLevel}`;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        stopTimer();
+        if (!allowAnswer) return;
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+        timerInterval = setInterval(() => {
+            if (!allowAnswer) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (allowAnswer) {
+                    allowAnswer = false;
+                    timerDisplaySpan.innerText = `⏱️ 0s`;
+                    const correctAns = currentQuestions[currentQuestionIndex].answer;
+                    speakEnglish(`Time is up! The correct answer is ${correctAns}.`);
+                    feedbackMsgDiv.innerHTML = `⏰ Time's up! Correct answer: <strong>${correctAns}</strong>. Moving to next question.`;
+                    moveToNextQuestionAfterDelay();
+                }
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+            }
+        }, 1000);
+    }
+    
+    function moveToNextQuestionAfterDelay() {
+        if (isWaitingForNext) return;
+        isWaitingForNext = true;
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestionsInLevel) {
+                resetForNewQuestion();
+            } else {
+                endOfLevel();
+            }
+        }, 2000);
+    }
+    
+    function resetForNewQuestion() {
+        isWaitingForNext = false;
+        allowAnswer = true;
+        stopTimer();
+        const qData = currentQuestions[currentQuestionIndex];
+        questionTextDiv.innerText = qData.text;
+        answerInput.value = '';
+        feedbackMsgDiv.innerHTML = "🎤 Write your answer! Click the speaker to hear the question again.";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answerInput.focus();
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        startTimer();
+        updateStoryNarrative();
+    }
+    
+    function updateStoryNarrative() {
+        let levelDesc = "";
+        if (currentLevel === 1) levelDesc = "Level 1: What are the parts of a plant? Roots, stem, leaves, flowers, fruits, and seeds!";
+        else if (currentLevel === 2) levelDesc = "Level 2: How do plants grow? Learn about roots taking in water and leaves making food!";
+        else if (currentLevel === 3) levelDesc = "Level 3: Caring for plants! Water, sunlight, and removing weeds help plants grow!";
+        else if (currentLevel === 4) levelDesc = "Level 4: More plant parts and care tips! Photosynthesis, chlorophyll, and mulch!";
+        else levelDesc = "Level 5: Final challenge! Become a Grade 1 Plant Champion!";
+        const reqPass = Math.ceil(totalQuestionsInLevel * 0.8);
+        storyAreaDiv.innerHTML = `📘 ${levelDesc} | Question ${currentQuestionIndex+1}/${totalQuestionsInLevel}. Need at least ${reqPass} correct to proceed. ⏱️ 40s each.`;
+    }
+    
+    function endOfLevel() {
+        stopTimer();
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        const required = Math.ceil(totalQuestionsInLevel * 0.8);
+        const passed = (scoreCorrect >= required);
+        
+        if (passed) {
+            if (currentLevel === 5) {
+                feedbackMsgDiv.innerHTML = "🎉🏆 AMAZING! You completed all 5 levels! Bobo gives you the Plant Champion Medal! 🏆🎉";
+                speakEnglish("Congratulations! You finished all five levels. You are a champion of plant parts and plant care! Keep growing and caring for plants!");
+                storyAreaDiv.innerHTML = "🏁 GAME COMPLETE! Bobo is proud of you! You know all about roots, stems, leaves, flowers, and how to care for plants! 🌱🌿🌻";
+                nextLevelMsgDiv.innerHTML = "✨ YOU WIN! Refresh the page to play again ✨";
+                return;
+            } else {
+                nextLevelUnlocked = true;
+                feedbackMsgDiv.innerHTML = `🎉 You passed! Score: ${scoreCorrect}/${totalQuestionsInLevel} (≥${required}). Moving to Level ${currentLevel+1}! 🎉`;
+                speakEnglish(`Congratulations! You passed level ${currentLevel}. Now moving to level ${currentLevel+1}. Keep learning about plants!`);
+                nextLevelMsgDiv.innerHTML = "";
+                const nextBtn = document.createElement('button');
+                nextBtn.innerText = `🔓 Go to Level ${currentLevel+1}`;
+                nextBtn.className = "btn-check";
+                nextBtn.style.background = "#4caf50";
+                nextBtn.style.marginTop = "10px";
+                nextBtn.onclick = () => {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                };
+                nextLevelMsgDiv.appendChild(nextBtn);
+                return;
+            }
+        } else {
+            feedbackMsgDiv.innerHTML = `😭 Oops! You didn't reach 80%. Score: ${scoreCorrect}/${totalQuestionsInLevel}. Need ${required}. Try Level ${currentLevel} again.`;
+            speakEnglish(`Oh no! You need at least 80 percent to pass. You have ${scoreCorrect} out of ${totalQuestionsInLevel}. Please try level ${currentLevel} again.`);
+            nextLevelMsgDiv.innerHTML = "";
+            const retryBtn = document.createElement('button');
+            retryBtn.innerText = `🔄 Retry Level ${currentLevel}`;
+            retryBtn.className = "btn-check";
+            retryBtn.style.background = "#ff9800";
+            retryBtn.onclick = () => {
+                loadLevel(currentLevel);
+            };
+            nextLevelMsgDiv.appendChild(retryBtn);
+            return;
+        }
+    }
+    
+    function loadLevel(level) {
+        currentLevel = level;
+        currentQuestions = [...levelsData[level]];
+        currentQuestionIndex = 0;
+        scoreCorrect = 0;
+        totalQuestionsInLevel = 40;
+        allowAnswer = true;
+        nextLevelUnlocked = false;
+        isWaitingForNext = false;
+        stopTimer();
+        levelDisplay.innerText = `Level: ${currentLevel}`;
+        updateScoreUI();
+        const firstQ = currentQuestions[0];
+        questionTextDiv.innerText = firstQ.text;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        feedbackMsgDiv.innerHTML = "🎤 Bobo is waiting! Type your answer. Click the speaker to hear the question.";
+        nextLevelMsgDiv.innerHTML = "";
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        updateStoryNarrative();
+        startTimer();
+    }
+    
+    function checkAnswer() {
+        if (!allowAnswer) return;
+        const userAnswerRaw = answerInput.value.trim().toLowerCase();
+        if (userAnswerRaw === "") {
+            feedbackMsgDiv.innerHTML = "🔊 Please write an answer! Bobo is waiting.";
+            speakEnglish("Please write your answer.");
+            return;
+        }
+        const currentQ = currentQuestions[currentQuestionIndex];
+        const correctAns = currentQ.answer.toLowerCase();
+        const normalizedUser = userAnswerRaw.replace(/\s+/g, ' ').trim();
+        const normalizedCorrect = correctAns.replace(/\s+/g, ' ').trim();
+        let isCorrect = (normalizedUser === normalizedCorrect);
+        
+        // Forgiving variations for English answers
+        if (!isCorrect) {
+            const forgiving = {
+                "root": ["roots", "taproot", "main root"],
+                "stem": ["stems", "stalk", "trunk"],
+                "leaf": ["leaves", "foliage"],
+                "flower": ["flowers", "blossom", "bloom"],
+                "fruit": ["fruits", "berry", "pod"],
+                "seeds": ["seed", "kernels", "grains"],
+                "shoot": ["shoots", "sprout", "new growth"],
+                "root hairs": ["root hair", "tiny roots"],
+                "water": ["h2o", "liquid", "moisture"],
+                "sunlight": ["sun", "light", "solar energy"],
+                "unwanted": ["bad", "harmful", "competing"],
+                "fertilizer": ["plant food", "nutrients", "compost"],
+                "touch": ["handle", "care for"],
+                "air": ["oxygen", "carbon dioxide"],
+                "environment": ["nature", "earth", "planet"],
+                "rot": ["decay", "die", "mushy"],
+                "pests": ["bugs", "insects", "animals"],
+                "care": ["attention", "love", "nurturing"],
+                "chlorophyll": ["green pigment", "plant dye"],
+                "photosynthesis": ["food making", "plant process"],
+                "flower bud": ["bud", "unopened flower"],
+                "petiole": ["leaf stalk", "leaf stem"],
+                "root cap": ["cap", "tip"],
+                "moist": ["wet", "damp", "hydrated"],
+                "shade": ["shadow", "coolness"],
+                "oxygen": ["o2", "air"],
+                "hurt": ["damage", "harm", "break"],
+                "weeds": ["weed", "unwanted plants", "wild plants"]
+            };
+            for (let key in forgiving) {
+                if (normalizedCorrect === key && forgiving[key].includes(normalizedUser)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+            // Accept plural/singular
+            if (!isCorrect && (normalizedCorrect + "s" === normalizedUser || (normalizedCorrect.endsWith('s') && normalizedCorrect.slice(0,-1) === normalizedUser))) {
+                isCorrect = true;
+            }
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            scoreCorrect++;
+            updateScoreUI();
+            feedbackMsgDiv.innerHTML = `✅ Correct! "${currentQ.answer}" is right! +1 point ✅`;
+            speakEnglish(`Correct! The answer is ${currentQ.answer}. You earned a point!`);
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Not correct. The correct answer is: "${currentQ.answer}". Keep learning about plants! ❌`;
+            speakEnglish(`Not correct. The correct answer is ${currentQ.answer}. Don't give up!`);
+        }
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        moveToNextQuestionAfterDelay();
+    }
+    
+    submitBtn.addEventListener('click', checkAnswer);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && allowAnswer) {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    loadLevel(1);
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            speakEnglish("Welcome to Bobo's Plant Adventure! Learn about the parts of a plant and how to care for plants. You have 40 seconds for each question. Click the speaker to hear the question. Type your answer. Let's grow together!");
+        }, 500);
+    });
+</script>
+</body>
+</html>

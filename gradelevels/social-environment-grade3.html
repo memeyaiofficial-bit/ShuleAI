@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Community Quest: Grade 3 Social Environment</title>
+    <style>
+        :root {
+            --primary: #27ae60; --secondary: #2ecc71; --accent: #3498db;
+            --success: #27ae60; --warning: #f39c12; --danger: #e74c3c;
+            --light: #f8f9fa; --dark: #2c3e50; --radius: 20px;
+            --transition: all 0.25s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body {
+            background: linear-gradient(135deg, #27ae60, #3498db, #9b59b6);
+            color: var(--light); min-height: 100vh; padding: 10px; overflow-x: hidden;
+        }
+        .container { max-width: 850px; margin: 0 auto; padding: 10px; }
+        
+        header { text-align: center; padding: 15px; background: rgba(255,255,255,0.15); border-radius: var(--radius); margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); backdrop-filter: blur(10px); }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        header p { font-size: 1.1rem; opacity: 0.95; }
+        
+        .screen { background: rgba(30, 39, 65, 0.95); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 2px solid rgba(39, 174, 96, 0.4); position: relative; overflow: hidden; }
+        .screen::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--warning), var(--primary)); animation: shimmer 3s infinite linear; }
+        @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+        
+        .stats-bar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .stat { background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 12px; font-size: 0.95rem; text-align: center; min-width: 70px; }
+        .stat span { display: block; font-size: 1.3rem; font-weight: 700; color: var(--warning); }
+        
+        .progress-container { background: rgba(0,0,0,0.3); height: 18px; border-radius: 10px; overflow: hidden; margin: 10px 0; position: relative; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--success), var(--accent)); transition: width 0.4s ease; }
+        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.75rem; font-weight: 700; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        
+        .timer-wrap { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; }
+        .timer { font-size: 2.8rem; font-weight: 800; background: linear-gradient(45deg, var(--danger), var(--warning)); -webkit-background-clip: text; background-clip: text; color: transparent; min-width: 70px; text-align: center; }
+        .timer.pulse { animation: pulse 0.6s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+        
+        .voice-btn { background: rgba(255,255,255,0.2); border: 2px solid var(--accent); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.4rem; color: white; transition: var(--transition); }
+        .voice-btn:hover { background: var(--accent); transform: scale(1.1); }
+        .voice-btn.speaking { animation: pulse 0.6s infinite; background: var(--warning); border-color: var(--warning); }
+        
+        .question-box { background: rgba(40, 55, 85, 0.9); border-radius: 16px; padding: 18px; margin: 15px 0; min-height: 90px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.25rem; line-height: 1.4; position: relative; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .hint-box { background: rgba(52, 152, 219, 0.15); border-left: 4px solid var(--accent); padding: 12px; margin: 10px 0; border-radius: 0 12px 12px 0; font-style: italic; display: none; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        
+        .input-area { position: relative; margin: 15px 0; }
+        .answer-input { width: 100%; padding: 15px 20px; border: 3px solid var(--secondary); border-radius: 14px; background: rgba(20, 30, 50, 0.9); color: white; font-size: 1.3rem; text-align: center; transition: var(--transition); }
+        .answer-input:focus { outline: none; border-color: var(--warning); box-shadow: 0 0 0 4px rgba(243, 156, 18, 0.3); }
+        .answer-input::placeholder { color: rgba(255,255,255,0.5); font-style: italic; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 8px 0; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background: linear-gradient(45deg, var(--success), #219a52); color: white; }
+        .btn-secondary { background: linear-gradient(45deg, var(--accent), #2980b9); color: white; }
+        .btn-warning { background: linear-gradient(45deg, var(--warning), #d35400); color: var(--dark); }
+        .btn-muted { background: rgba(255,255,255,0.15); color: white; }
+        
+        .feedback { text-align: center; padding: 12px; margin: 10px 0; border-radius: 12px; font-weight: 600; display: none; }
+        .feedback.correct { background: rgba(39, 174, 96, 0.25); color: #a8e6cf; border: 1px solid var(--success); animation: bounce 0.4s; }
+        .feedback.incorrect { background: rgba(231, 76, 60, 0.25); color: #fab1a0; border: 1px solid var(--danger); animation: shake 0.4s; }
+        .feedback.timeout { background: rgba(243, 156, 18, 0.25); color: #ffeaa7; border: 1px solid var(--warning); }
+        
+        @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-12px)} }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+        
+        .center-text { text-align: center; padding: 20px 0; }
+        .title { font-size: 2rem; margin-bottom: 10px; color: var(--warning); text-shadow: 0 0 10px rgba(243, 156, 18, 0.5); }
+        .desc { font-size: 1.15rem; opacity: 0.9; margin-bottom: 20px; }
+        .big-score { font-size: 4.5rem; font-weight: 800; margin: 20px 0; background: linear-gradient(to right, var(--warning), var(--danger)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .instructions { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 14px; margin: 15px 0; text-align: left; line-height: 1.6; }
+        .instructions ul { padding-left: 20px; }
+        .instructions li { margin: 6px 0; }
+        
+        .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 15px 0; }
+        .tag { background: rgba(39, 174, 96, 0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--primary); }
+        
+        .hidden { display: none !important; }
+        .level-up { animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes popIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+        
+        .confetti { position: fixed; width: 10px; height: 10px; background: var(--warning); border-radius: 50%; z-index: 999; opacity: 0; animation: fall 4s linear forwards; }
+        @keyframes fall { 0%{transform:translateY(-10vh) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+        
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.5rem; }
+            .question-box { font-size: 1.1rem; padding: 14px; min-height: 80px; }
+            .timer { font-size: 2.2rem; }
+            .btn { padding: 12px; font-size: 1.1rem; }
+            .answer-input { font-size: 1.2rem; padding: 12px; }
+            .stats-bar { justify-content: space-around; }
+            .title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Community Quest 🏘️</h1>
+            <p>Grade 3 Social Environment Challenge</p>
+        </header>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen center-text">
+            <h2 class="title">✨ Welcome, Community Explorer! ✨</h2>
+            <p class="desc">Learn about your environment, family, food, community, and culture!</p>
+            <div class="instructions">
+                <p><strong>How to Play:</strong></p>
+                <ul>
+                    <li>🔊 Tap the speaker to hear questions out loud</li>
+                    <li>⏱️ 40 seconds per question</li>
+                    <li>✍️ Type your answer (no multiple choice!)</li>
+                    <li>💡 Hints appear when time runs low</li>
+                    <li>🎯 Score 80%+ to unlock the next level</li>
+                    <li>🏆 5 exciting levels • 150 unique questions</li>
+                </ul>
+            </div>
+            <div class="topic-tags">
+                <span class="tag">Living Environment</span><span class="tag">Family Needs</span>
+                <span class="tag">Food Sources</span><span class="tag">Our Community</span>
+                <span class="tag">Cultural Events</span>
+            </div>
+            <button id="start-btn" class="btn btn-primary">🚀 Start Adventure</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="stats-bar">
+                <div class="stat">Level <span id="lvl">1</span>/5</div>
+                <div class="stat">Q <span id="qnum">1</span>/30</div>
+                <div class="stat">Score <span id="score">0</span></div>
+            </div>
+            <div class="progress-container" style="position:relative;">
+                <div class="progress-fill" id="progress"></div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            <div class="timer-wrap">
+                <div class="timer" id="timer">40</div>
+                <button id="speak-btn" class="voice-btn">🔊</button>
+            </div>
+            <div class="question-box" id="question">Loading...</div>
+            <div class="hint-box" id="hint"></div>
+            <div class="input-area">
+                <input type="text" id="answer" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button id="submit-btn" class="btn btn-primary">✅ Check Answer</button>
+            <button id="next-btn" class="btn btn-secondary hidden">➡️ Next Question</button>
+        </div>
+
+        <!-- Level Complete Screen -->
+        <div id="level-screen" class="screen hidden center-text">
+            <h2 class="title">🎉 Level Complete! 🎉</h2>
+            <p class="desc" id="lvl-msg">Great learning!</p>
+            <div class="big-score" id="lvl-score">0</div>
+            <div class="stats-bar">
+                <div class="stat">Correct <span id="lvl-correct">0</span>/30</div>
+                <div class="stat">Accuracy <span id="lvl-percent">0</span>%</div>
+                <div class="stat">Status <span id="lvl-status">Pass</span></div>
+            </div>
+            <button id="next-lvl-btn" class="btn btn-primary hidden">🌟 Next Level</button>
+            <button id="retry-btn" class="btn btn-warning hidden">🔄 Try Again</button>
+            <button id="home-btn" class="btn btn-muted">🏠 Main Menu</button>
+        </div>
+
+        <!-- Final Screen -->
+        <div id="final-screen" class="screen hidden center-text">
+            <h2 class="title">🏆 COMMUNITY CHAMPION! 🏆</h2>
+            <p class="desc">You mastered all 5 Social Environment levels!</p>
+            <div class="big-score" id="final-score">0</div>
+            <div class="stats-bar">
+                <div class="stat">Total <span id="final-correct">0</span>/150</div>
+                <div class="stat">Overall <span id="final-percent">0</span>%</div>
+                <div class="stat">Rank 🌍🤝🎉</div>
+            </div>
+            <button id="restart-btn" class="btn btn-primary">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const state = {
+            lvl: 1, qIdx: 0, score: 0, correct: 0, timeLeft: 40,
+            timer: null, voiceEnabled: 'speechSynthesis' in window,
+            questions: [], current: null, active: false
+        };
+
+        // DOM Elements
+        const $ = id => document.getElementById(id);
+        const els = {
+            start: $('start-screen'), game: $('game-screen'), level: $('level-screen'), final: $('final-screen'),
+            lvl: $('lvl'), qnum: $('qnum'), score: $('score'), timer: $('timer'), progress: $('progress'),
+            progressText: $('progress-text'), question: $('question'), hint: $('hint'),
+            answer: $('answer'), feedback: $('feedback'), submit: $('submit-btn'), next: $('next-btn'),
+            speak: $('speak-btn'), startBtn: $('start-btn'), nextLvl: $('next-lvl-btn'), retry: $('retry-btn'),
+            homeBtn: $('home-btn'), restartBtn: $('restart-btn'),
+            lvlScore: $('lvl-score'), lvlCorrect: $('lvl-correct'), lvlPercent: $('lvl-percent'), lvlStatus: $('lvl-status'),
+            finalScore: $('final-score'), finalCorrect: $('final-correct'), finalPercent: $('final-percent')
+        };
+
+        // 150 Unique Questions (5 Levels x 30) - Social Environment Grade 3 CBC
+        const qb = {
+            1: [ // Our Living Environment
+                {q:"What do we call the place where we live?",a:["home","house","dwelling"],h:"Where your family stays"},
+                {q:"What should we do with trash to keep our environment clean?",a:["dispose properly","throw in bin","recycle"],h:"Don't litter"},
+                {q:"What natural thing gives us fresh air?",a:["trees","plants","forests"],h:"Green living things"},
+                {q:"What do we need to keep our home safe?",a:["cleanliness","locks","good habits"],h:"Healthy practices"},
+                {q:"What is a source of water in our environment?",a:["river","well","tap","rain"],h:"Liquid we drink"},
+                {q:"Why is sunlight important for our environment?",a:["gives light","helps plants grow","warmth"],h:"Energy from sky"},
+                {q:"What should we do to save water at home?",a:["turn off tap","use wisely","don't waste"],h:"Conserve resource"},
+                {q:"What animal helps pollinate flowers in our environment?",a:["bee","butterfly"],h:"Flying insect"},
+                {q:"What do we call the air around us?",a:["atmosphere","air"],h:"What we breathe"},
+                {q:"What is a good way to reduce waste?",a:["recycle","reuse","reduce"],h:"3 R's of environment"},
+                {q:"What natural resource do we get from trees?",a:["wood","oxygen","fruit"],h:"Forest product"},
+                {q:"What should we do with plastic bottles?",a:["recycle","reuse","dispose properly"],h:"Don't throw everywhere"},
+                {q:"What helps soil stay healthy for plants?",a:["compost","organic matter","worms"],h:"Natural fertilizer"},
+                {q:"What is the main source of energy for Earth?",a:["sun","sunlight"],h:"Big star in sky"},
+                {q:"What do we call protecting our environment?",a:["conservation","care","preservation"],h:"Keeping nature safe"},
+                {q:"What type of home is made of mud and grass?",a:["traditional","mud house","thatched"],h:"Local building style"},
+                {q:"What should we do to keep our school environment clean?",a:["sweep","pick litter","clean up"],h:"Take responsibility"},
+                {q:"What natural thing helps prevent soil erosion?",a:["trees","grass","plants"],h:"Roots hold soil"},
+                {q:"What do we call the variety of living things in an area?",a:["biodiversity","diversity"],h:"Many species"},
+                {q:"What is a simple way to save energy at home?",a:["turn off lights","unplug devices"],h:"Reduce electricity use"},
+                {q:"What do plants give us that we need to breathe?",a:["oxygen"],h:"Gas from photosynthesis"},
+                {q:"What should we do with food scraps?",a:["compost","feed animals","dispose"],h:"Organic waste handling"},
+                {q:"What is a clean source of energy?",a:["solar","wind","hydro"],h:"Renewable power"},
+                {q:"What do we call a group of houses together?",a:["neighborhood","village","community"],h:"People living nearby"},
+                {q:"What helps keep our water clean?",a:["not polluting","treatment","protection"],h:"Prevent contamination"},
+                {q:"What natural event brings water to plants?",a:["rain","rainfall"],h:"Water from clouds"},
+                {q:"What should we do to protect wild animals?",a:["not disturb","preserve habitat","conserve"],h:"Respect nature"},
+                {q:"What is a benefit of planting trees?",a:["clean air","shade","beauty"],h:"Multiple advantages"},
+                {q:"What do we call the land where we grow food?",a:["farm","garden","field"],h:"Agricultural area"},
+                {q:"What is important for a healthy living environment?",a:["clean water","clean air","sanitation"],h:"Basic needs"}
+            ],
+            2: [ // Family Needs - Emotional Needs
+                {q:"What do children need from parents to feel loved?",a:["affection","care","hugs"],h:"Emotional support"},
+                {q:"What is an emotional need in a family?",a:["love","security","belonging"],h:"Feeling valued"},
+                {q:"How can family members show they care?",a:["listening","helping","spending time"],h:"Actions of love"},
+                {q:"What do we call feeling safe with family?",a:["security","safety"],h:"Protected environment"},
+                {q:"Why is talking important in a family?",a:["communication","sharing feelings","understanding"],h:"Express emotions"},
+                {q:"What helps children feel valued at home?",a:["praise","attention","encouragement"],h:"Positive recognition"},
+                {q:"What is a way to show respect in a family?",a:["listening","polite words","helping"],h:"Considerate behavior"},
+                {q:"What do family members share to build trust?",a:["honesty","truth","openness"],h:"Being sincere"},
+                {q:"How can parents support children's feelings?",a:["validate","listen","comfort"],h:"Acknowledge emotions"},
+                {q:"What is important when a family member is sad?",a:["comfort","support","being there"],h:"Emotional presence"},
+                {q:"What helps build strong family bonds?",a:["time together","shared activities","communication"],h:"Quality moments"},
+                {q:"What do children need to develop confidence?",a:["encouragement","support","belief"],h:"Positive reinforcement"},
+                {q:"What is a sign of a healthy family?",a:["love","respect","good communication"],h:"Positive relationships"},
+                {q:"How can siblings support each other?",a:["helping","sharing","being kind"],h:"Brotherly/sisterly love"},
+                {q:"What do we call the feeling of being part of a family?",a:["belonging","connection"],h:"Included and accepted"},
+                {q:"Why is play important for children's emotional health?",a:["joy","expression","development"],h:"Fun and learning"},
+                {q:"What helps children feel secure during changes?",a:["routine","reassurance","stability"],h:"Predictable environment"},
+                {q:"What is a way to resolve family disagreements?",a:["talking","listening","compromise"],h:"Peaceful solutions"},
+                {q:"What do parents provide for emotional growth?",a:["guidance","love","teaching"],h:"Nurturing care"},
+                {q:"How can family traditions help emotional needs?",a:["connection","identity","belonging"],h:"Shared heritage"},
+                {q:"What is important for children to express feelings?",a:["safe space","listening","acceptance"],h:"Open environment"},
+                {q:"What helps build self-esteem in children?",a:["praise","achievements","support"],h:"Feeling capable"},
+                {q:"What do family members do during difficult times?",a:["support","stay together","help"],h:"Unity in challenges"},
+                {q:"Why is forgiveness important in families?",a:["healing","moving forward","peace"],h:"Letting go of hurt"},
+                {q:"What is a basic emotional need for all people?",a:["love","acceptance","respect"],h:"Universal requirement"},
+                {q:"How can grandparents contribute to family emotional health?",a:["wisdom","stories","love"],h:"Intergenerational bond"},
+                {q:"What helps children learn to manage emotions?",a:["modeling","teaching","practice"],h:"Emotional skills"},
+                {q:"What is the role of family in emotional development?",a:["foundation","support","guidance"],h:"Primary influence"},
+                {q:"What do children need to feel heard?",a:["attention","listening","response"],h:"Being acknowledged"},
+                {q:"What strengthens family emotional bonds?",a:["shared experiences","communication","love"],h:"Deep connections"}
+            ],
+            3: [ // Food in Our Environment
+                {q:"Where do we get fruits and vegetables?",a:["farm","garden","market"],h:"Where plants grow"},
+                {q:"What animal gives us milk?",a:["cow","goat"],h:"Farm animal"},
+                {q:"What is a source of protein from animals?",a:["eggs","meat","fish"],h:"Building food"},
+                {q:"What do we call food grown without chemicals?",a:["organic","natural"],h:"Chemical-free farming"},
+                {q:"What is a staple food in Kenya?",a:["ugali","maize","corn"],h:"Common meal base"},
+                {q:"What do plants need to grow food?",a:["sunlight","water","soil"],h:"Basic growth needs"},
+                {q:"What is a healthy snack from nature?",a:["fruit","nuts","vegetables"],h:"Natural food"},
+                {q:"What do we call preparing food to eat?",a:["cooking","preparation"],h:"Making meals ready"},
+                {q:"What is important for food safety?",a:["cleanliness","proper storage","cooking"],h:"Prevent illness"},
+                {q:"What do we get from bees?",a:["honey"],h:"Sweet natural product"},
+                {q:"What is a source of carbohydrates?",a:["maize","rice","potatoes"],h:"Energy-giving food"},
+                {q:"What do we call growing food at home?",a:["kitchen garden","home farming"],h:"Small-scale cultivation"},
+                {q:"What helps preserve food for later?",a:["drying","cooling","canning"],h:"Storage methods"},
+                {q:"What is a traditional Kenyan vegetable?",a:["sukuma wiki","kale","terere"],h:"Leafy green"},
+                {q:"What do we need to keep food fresh?",a:["refrigeration","proper storage"],h:"Temperature control"},
+                {q:"What is a healthy drink from nature?",a:["water","fresh juice","milk"],h:"Natural beverage"},
+                {q:"What do farmers do to prepare soil?",a:["plough","dig","till"],h:"Get land ready"},
+                {q:"What is a benefit of eating local food?",a:["fresh","supports farmers","nutritious"],h:"Community advantage"},
+                {q:"What do we call food that gives energy?",a:["carbohydrates","energy foods"],h:"Fuel for body"},
+                {q:"What is important when buying food?",a:["freshness","quality","safety"],h:"Good selection"},
+                {q:"What do we get from chickens?",a:["eggs","meat"],h:"Poultry products"},
+                {q:"What is a way to reduce food waste?",a:["plan meals","store properly","use leftovers"],h:"Conserve resources"},
+                {q:"What do plants provide that we eat?",a:["fruits","vegetables","grains"],h:"Plant-based foods"},
+                {q:"What is a traditional cooking method?",a:["roasting","boiling","steaming"],h:"Heat preparation"},
+                {q:"What helps food grow well?",a:["good soil","water","sun"],h:"Optimal conditions"},
+                {q:"What is a source of vitamins?",a:["fruits","vegetables"],h:"Health-protecting nutrients"},
+                {q:"What do we call sharing food with others?",a:["hospitality","generosity"],h:"Community value"},
+                {q:"What is important for balanced meals?",a:["variety","all food groups"],h:"Complete nutrition"},
+                {q:"What do we get from fishing?",a:["fish","seafood"],h:"Water-based protein"},
+                {q:"What helps us appreciate food?",a:["gratitude","not wasting","thankfulness"],h:"Value what we have"}
+            ],
+            4: [ // Our Community
+                {q:"Who helps us when we are sick in the community?",a:["doctor","nurse","health worker"],h:"Medical professional"},
+                {q:"What is a place where we learn in the community?",a:["school"],h:"Educational institution"},
+                {q:"Who keeps our community safe?",a:["police","security","chiefs"],h:"Law enforcement"},
+                {q:"What is a community gathering place?",a:["market","church","community center"],h:"People meet here"},
+                {q:"Who helps deliver letters and packages?",a:["postman","postal worker"],h:"Mail service"},
+                {q:"What do we call people living in the same area?",a:["neighbors","community members"],h:"Local residents"},
+                {q:"Who fixes things that break in the community?",a:["craftsman","technician","repair person"],h:"Skilled worker"},
+                {q:"What is a service that provides clean water?",a:["water company","utility"],h:"Essential service"},
+                {q:"Who teaches children in school?",a:["teacher"],h:"Educator"},
+                {q:"What is a community responsibility?",a:["cleaning","helping others","following rules"],h:"Shared duty"},
+                {q:"Who helps when there is a fire?",a:["firefighter"],h:"Emergency responder"},
+                {q:"What is a place to buy food in the community?",a:["market","shop","store"],h:"Retail location"},
+                {q:"Who helps build houses and roads?",a:["builder","construction worker"],h:"Infrastructure worker"},
+                {q:"What is important for a strong community?",a:["cooperation","respect","working together"],h:"Unity"},
+                {q:"Who helps farmers grow better crops?",a:["agricultural officer","extension worker"],h:"Farming advisor"},
+                {q:"What is a community celebration?",a:["festival","holiday","event"],h:"Special gathering"},
+                {q:"Who helps resolve conflicts in the community?",a:["elder","chief","mediator"],h:"Peacemaker"},
+                {q:"What is a way to help the community?",a:["volunteering","cleaning","helping neighbors"],h:"Service"},
+                {q:"Who provides electricity to homes?",a:["power company","utility"],h:"Energy service"},
+                {q:"What is a community resource?",a:["school","clinic","water point"],h:"Shared facility"},
+                {q:"Who helps keep the environment clean?",a:["sanitation worker","everyone"],h:"Waste management"},
+                {q:"What is important when meeting new community members?",a:["welcome","respect","kindness"],h:"Inclusive attitude"},
+                {q:"Who helps children play and learn?",a:["coach","youth leader","teacher"],h:"Child development"},
+                {q:"What is a community decision-making process?",a:["meeting","discussion","voting"],h:"Group choice"},
+                {q:"Who helps during emergencies?",a:["emergency services","volunteers"],h:"Crisis response"},
+                {q:"What is a benefit of community cooperation?",a:["stronger","safer","happier"],h:"Collective advantage"},
+                {q:"Who helps preserve community traditions?",a:["elders","cultural leaders"],h:"Heritage keepers"},
+                {q:"What is a way to show community pride?",a:["participation","care","celebration"],h:"Positive engagement"},
+                {q:"Who helps connect people in the community?",a:["leader","organizer","social worker"],h:"Network builder"},
+                {q:"What is the role of children in the community?",a:["learning","helping","future leaders"],h:"Growing contribution"}
+            ],
+            5: [ // Cultural Events
+                {q:"What do we call special days celebrated by a community?",a:["cultural events","festivals","celebrations"],h:"Traditional occasions"},
+                {q:"What is a traditional Kenyan celebration?",a:["jamhuri day","madaraka day","cultural festival"],h:"National/cultural day"},
+                {q:"What do people wear during cultural events?",a:["traditional dress","cultural attire"],h:"Heritage clothing"},
+                {q:"What is a common activity at cultural celebrations?",a:["dancing","singing","feasting"],h:"Joyful expression"},
+                {q:"What do cultural events help preserve?",a:["traditions","heritage","identity"],h:"Cultural values"},
+                {q:"What is a traditional Kenyan dance?",a:["adumu","ohangla","isukuti"],h:"Ethnic performance"},
+                {q:"What food is often shared at cultural events?",a:["traditional food","local dishes"],h:"Heritage cuisine"},
+                {q:"What is the purpose of storytelling in culture?",a:["teaching","entertainment","preserving history"],h:"Oral tradition"},
+                {q:"What do cultural events teach children?",a:["values","history","identity"],h:"Life lessons"},
+                {q:"What is a traditional musical instrument in Kenya?",a:["nyatiti","orutu","drum"],h:"Cultural music"},
+                {q:"What is important when participating in cultural events?",a:["respect","learning","appreciation"],h:"Cultural sensitivity"},
+                {q:"What do cultural celebrations strengthen?",a:["community bonds","identity","pride"],h:"Social connections"},
+                {q:"What is a traditional ceremony for children?",a:["naming","initiation","graduation"],h:"Life milestone"},
+                {q:"What role do elders play in cultural events?",a:["guidance","leadership","teaching"],h:"Wisdom keepers"},
+                {q:"What is a benefit of learning about different cultures?",a:["understanding","respect","unity"],h:"Appreciating diversity"},
+                {q:"What is a traditional Kenyan craft?",a:["beadwork","basket weaving","pottery"],h:"Handmade art"},
+                {q:"What do cultural events often include?",a:["music","dance","food","dress"],h:"Multiple elements"},
+                {q:"What is the importance of cultural diversity?",a:["richness","learning","unity in difference"],h:"Variety of traditions"},
+                {q:"What is a traditional way to greet in Kenyan cultures?",a:["handshake","bow","specific words"],h:"Cultural courtesy"},
+                {q:"What do cultural events help children develop?",a:["identity","pride","belonging"],h:"Self-understanding"},
+                {q:"What is a traditional Kenyan game?",a:["bao","morabaraba","traditional sports"],h:"Cultural play"},
+                {q:"What is the role of music in cultural events?",a:["expression","unity","celebration"],h:"Emotional connection"},
+                {q:"What do we learn from cultural traditions?",a:["values","history","skills"],h:"Ancestral wisdom"},
+                {q:"What is important for preserving cultural events?",a:["participation","teaching","documentation"],h:"Active maintenance"},
+                {q:"What is a traditional Kenyan wedding custom?",a:["dowry","ceremony","celebration"],h:"Marriage tradition"},
+                {q:"What do cultural events promote in communities?",a:["unity","pride","continuity"],h:"Social cohesion"},
+                {q:"What is a traditional way to pass knowledge?",a:["storytelling","demonstration","apprenticeship"],h:"Oral teaching"},
+                {q:"What is the value of cultural festivals for tourists?",a:["education","appreciation","exchange"],h:"Cultural sharing"},
+                {q:"What do children gain from cultural participation?",a:["confidence","skills","identity"],h:"Personal growth"},
+                {q:"What is the most important aspect of cultural events?",a:["community","tradition","meaning"],h:"Shared significance"}
+            ]
+        };
+
+        // Initialize Game
+        function init() {
+            els.startBtn.addEventListener('click', startGame);
+            els.speak.addEventListener('click', speak);
+            els.submit.addEventListener('click', checkAnswer);
+            els.next.addEventListener('click', nextQ);
+            els.nextLvl.addEventListener('click', startNextLevel);
+            els.retry.addEventListener('click', retryLevel);
+            els.homeBtn.addEventListener('click', showHome);
+            els.restartBtn.addEventListener('click', showHome);
+            els.answer.addEventListener('keypress', e => e.key === 'Enter' && checkAnswer());
+            
+            if(!state.voiceEnabled) els.speak.style.display = 'none';
+            console.log("Community Quest Initialized!");
+        }
+
+        function startGame() {
+            console.log("Starting Game...");
+            state.lvl = 1; 
+            state.qIdx = 0; 
+            state.score = 0; 
+            state.correct = 0; 
+            state.active = true;
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            els.game.classList.add('level-up');
+            loadLevel();
+        }
+
+        function loadLevel() {
+            // Create a shuffled copy of questions to prevent repetition within a level
+            state.questions = shuffle([...qb[state.lvl]]);
+            state.qIdx = 0; 
+            state.score = 0; 
+            state.correct = 0;
+            updateUI(); 
+            loadQ();
+        }
+
+        function loadQ() {
+            if(state.qIdx >= 30) { 
+                completeLevel(); 
+                return; 
+            }
+            state.current = state.questions[state.qIdx];
+            els.question.textContent = state.current.q;
+            els.answer.value = ''; 
+            els.answer.disabled = false; 
+            els.answer.focus();
+            els.hint.style.display = 'none'; 
+            els.hint.textContent = '';
+            els.feedback.style.display = 'none'; 
+            els.feedback.className = 'feedback';
+            els.submit.style.display = 'block'; 
+            els.next.classList.add('hidden');
+            resetTimer();
+            if(state.voiceEnabled) setTimeout(speak, 300);
+            updateUI();
+        }
+
+        function updateUI() {
+            els.lvl.textContent = state.lvl;
+            els.qnum.textContent = state.qIdx + 1;
+            els.score.textContent = state.score;
+            const pct = ((state.qIdx) / 30) * 100;
+            els.progress.style.width = pct + '%';
+            els.progressText.textContent = Math.round(pct) + '%';
+        }
+
+        function startTimer() {
+            state.timeLeft = 40;
+            els.timer.textContent = 40;
+            els.timer.classList.remove('pulse');
+            state.timer = setInterval(() => {
+                state.timeLeft--;
+                els.timer.textContent = state.timeLeft;
+                if(state.timeLeft <= 10) els.timer.classList.add('pulse');
+                
+                if(state.timeLeft === 30 && state.current.h) showHint("💡 Think about your social environment...");
+                if(state.timeLeft === 20 && state.current.h) showHint(`💡 Hint: ${state.current.h}`);
+                if(state.timeLeft === 10 && state.current.h) showHint(`💡 Quick! ${state.current.h}`);
+                
+                if(state.timeLeft <= 0) timeUp();
+            }, 1000);
+        }
+
+        function resetTimer() { 
+            clearInterval(state.timer); 
+            startTimer(); 
+        }
+
+        function showHint(txt) { 
+            els.hint.textContent = txt; 
+            els.hint.style.display = 'block'; 
+        }
+
+        function timeUp() {
+            clearInterval(state.timer);
+            els.answer.disabled = true;
+            els.submit.style.display = 'none'; 
+            els.next.classList.remove('hidden');
+            showFeedback("⏰ Time is up! The answer was: " + state.current.a[0].toUpperCase(), "timeout");
+            if(state.voiceEnabled) {
+                const u = new SpeechSynthesisUtterance("Time is up!");
+                u.lang = 'en-US'; 
+                speechSynthesis.speak(u);
+            }
+        }
+
+        function speak() {
+            if(!state.current) return;
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(state.current.q);
+            u.lang = 'en-US'; 
+            u.rate = 0.9;
+            els.speak.classList.add('speaking');
+            u.onend = () => els.speak.classList.remove('speaking');
+            speechSynthesis.speak(u);
+        }
+
+        function checkAnswer() {
+            if(!state.active || state.timeLeft <= 0) return;
+            clearInterval(state.timer);
+            const ans = els.answer.value.trim().toLowerCase();
+            const valid = state.current.a.some(a => 
+                ans === a || ans.includes(a) || a.includes(ans) ||
+                (a === "zero" && (ans === "0" || ans === "none")) ||
+                (a === "0" && (ans === "zero" || ans === "none"))
+            );
+            els.answer.disabled = true; 
+            els.submit.style.display = 'none'; 
+            els.next.classList.remove('hidden');
+            
+            if(valid) {
+                state.score += 10; 
+                state.correct++;
+                showFeedback("✅ Correct! Great learning!", "correct");
+                playSound(true);
+            } else {
+                showFeedback(`❌ Not quite. Answer: ${state.current.a[0].toUpperCase()}`, "incorrect");
+                playSound(false);
+            }
+            updateUI();
+        }
+
+        function showFeedback(msg, type) {
+            els.feedback.textContent = msg; 
+            els.feedback.className = `feedback ${type}`; 
+            els.feedback.style.display = 'block';
+        }
+
+        function playSound(isCorrect) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator(); 
+                const gain = ctx.createGain();
+                osc.connect(gain); 
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = isCorrect ? 523.25 : 300;
+                gain.gain.value = 0.1;
+                osc.start(); 
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        function nextQ() { 
+            state.qIdx++; 
+            loadQ(); 
+        }
+
+        function completeLevel() {
+            state.active = false; 
+            clearInterval(state.timer);
+            const pct = Math.round((state.correct / 30) * 100);
+            els.lvlScore.textContent = state.score;
+            els.lvlCorrect.textContent = state.correct;
+            els.lvlPercent.textContent = pct;
+            
+            if(pct >= 80) {
+                els.lvlStatus.textContent = "Pass 🎉"; 
+                els.lvlStatus.style.color = "#00b894";
+                if(state.lvl < 5) els.nextLvl.classList.remove('hidden');
+                else showFinal();
+            } else {
+                els.lvlStatus.textContent = "Retry 📚"; 
+                els.lvlStatus.style.color = "#fdcb6e";
+                els.retry.classList.remove('hidden');
+            }
+            hideAll(); 
+            els.level.classList.remove('hidden');
+        }
+
+        function startNextLevel() { 
+            state.lvl++; 
+            state.active = true; 
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            loadLevel(); 
+        }
+
+        function retryLevel() { 
+            state.active = true; 
+            hideAll(); 
+            els.game.classList.remove('hidden'); 
+            loadLevel(); 
+        }
+
+        function showHome() { 
+            hideAll(); 
+            els.start.classList.remove('hidden'); 
+        }
+
+        function showFinal() {
+            const totalC = state.correct + (state.lvl-1)*24;
+            const totalS = state.score + (state.lvl-1)*300;
+            const pct = Math.round((totalC/150)*100);
+            els.finalScore.textContent = totalS;
+            els.finalCorrect.textContent = `${totalC}/150`;
+            els.finalPercent.textContent = `${pct}%`;
+            hideAll(); 
+            els.final.classList.remove('hidden');
+            if(pct >= 80) createConfetti();
+        }
+
+        function hideAll() {
+            els.start.classList.add('hidden');
+            els.game.classList.add('hidden');
+            els.level.classList.add('hidden');
+            els.final.classList.add('hidden');
+        }
+
+        function shuffle(arr) { 
+            for(let i=arr.length-1;i>0;i--){
+                const j=Math.floor(Math.random()*(i+1));
+                [arr[i],arr[j]]=[arr[j],arr[i]];
+            } 
+            return arr; 
+        }
+
+        function createConfetti() {
+            for(let i=0;i<50;i++){
+                const c=document.createElement('div'); c.className='confetti';
+                c.style.left=Math.random()*100+'%'; c.style.background=['#f39c12','#3498db','#27ae60','#9b59b6'][i%4];
+                c.style.animationDelay=Math.random()*2+'s'; document.body.appendChild(c);
+                setTimeout(()=>c.remove(),4000);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

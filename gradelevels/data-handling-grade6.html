@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>📊 Bar Graph Blitz | Grade 6 CBC Data Handling Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* smoother mobile tap */
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a2f3f 0%, #0b1c26 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+            padding: 20px;
+        }
+
+        /* main game panel */
+        .game-container {
+            max-width: 950px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px 50px 70px 50px;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255, 250, 200, 0.9);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* header with chart vibe */
+        .game-header {
+            background: linear-gradient(135deg, #2c7a4d, #1e5a3a);
+            padding: 20px 20px 15px;
+            text-align: center;
+            border-bottom: 5px solid #f5b042;
+        }
+
+        .game-header h1 {
+            font-size: 2rem;
+            letter-spacing: -1px;
+            background: #fff3cf;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: none;
+            font-weight: 800;
+            display: inline-block;
+            padding: 0 10px;
+        }
+
+        .badge-strip {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            background: #2c3e2b;
+            padding: 10px 18px;
+            border-radius: 60px;
+        }
+
+        .topic-tag, .level-tag, .score-tag {
+            background: #0f2c1e;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #ffeaac;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: inset 0 -1px 0 #1f4d2a, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .topic-tag { background: #1f7a5c; color: white; }
+        .level-tag { background: #d47a2c; }
+        .score-tag { background: #f3a712; font-size: 1.3rem; letter-spacing: 1px; color: #1e3a2f; }
+
+        /* progress bar */
+        .progress-area {
+            padding: 18px 25px 5px;
+        }
+        .progress-bar-bg {
+            background: #dfd5b5;
+            border-radius: 30px;
+            height: 16px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 4px #8b7a5a;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #f5b042, #e67e22);
+            width: 0%;
+            height: 100%;
+            transition: width 0.25s ease;
+            border-radius: 30px;
+        }
+        .counter-text {
+            text-align: right;
+            font-weight: 600;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #2d4a2b;
+        }
+
+        /* question zone */
+        .question-zone {
+            padding: 20px 25px 10px;
+        }
+        .question-panel {
+            background: #fff9ed;
+            border-radius: 48px;
+            padding: 20px 16px;
+            border: 2px solid #ffd966;
+            box-shadow: 0 8px 0 #d9b34c;
+        }
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: #1e3b2f;
+            line-height: 1.4;
+            word-break: break-word;
+            background: #faf2de;
+            padding: 15px 10px;
+            border-radius: 40px;
+        }
+
+        /* mini bar graph visualization for some questions */
+        .mini-chart {
+            background: #e7e2cf;
+            border-radius: 28px;
+            padding: 12px;
+            margin: 12px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .bar-item {
+            text-align: center;
+            width: 50px;
+        }
+        .bar {
+            background: #3e8e5e;
+            width: 35px;
+            margin: 0 auto;
+            border-radius: 10px 10px 4px 4px;
+            transition: height 0.2s;
+        }
+
+        /* options grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+            margin: 25px 0 20px;
+        }
+        .data-option {
+            background: #efe2c6;
+            border: 2px solid #c2a15b;
+            border-radius: 60px;
+            padding: 14px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.08s linear;
+            color: #2a421f;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .data-option:active { transform: scale(0.97); }
+        .correct-highlight {
+            background: #9de0ad;
+            border-color: #2c7840;
+            color: #144d21;
+            box-shadow: 0 0 0 2px #c8ffc3;
+        }
+        .wrong-highlight {
+            background: #f3bcb0;
+            border-color: #bc3f2e;
+            color: #6b1f10;
+            text-decoration: line-through;
+        }
+        .disabled-opt {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .feedback-area {
+            padding: 5px 25px 10px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            text-align: center;
+            min-height: 70px;
+        }
+        .next-button {
+            background: #f39c12;
+            border: none;
+            width: 80%;
+            margin: 0 auto 20px;
+            display: block;
+            padding: 14px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            text-shadow: 0 1px 2px black;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 6px 0 #b45f1b;
+        }
+        .next-button:active { transform: translateY(3px); box-shadow: 0 2px 0 #b45f1b; }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            padding: 5px 20px 25px;
+        }
+        .action-btn {
+            background: #5f7a6b;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.05s linear;
+        }
+        .action-btn:active { transform: scale(0.96); background: #3e5a4b; }
+        footer {
+            background: #eadabc;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #2c4433;
+        }
+        @media (max-width: 600px) {
+            .question-text { font-size: 1.2rem; }
+            .data-option { padding: 12px 6px; font-size: 0.85rem; }
+            .badge-strip { flex-direction: column; align-items: stretch; text-align: center; }
+            .game-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="dataGame">
+    <div class="game-header">
+        <h1>📊 BAR GRAPH BLASTER 🎯</h1>
+        <div class="badge-strip">
+            <span class="topic-tag" id="topicDisplay">Bar Graphs</span>
+            <span class="level-tag" id="levelDisplay">Level 1</span>
+            <span class="score-tag" id="scoreDisplay">🏆 0</span>
+        </div>
+    </div>
+    <div class="progress-area">
+        <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="counter-text" id="qCounter">Question 0 / 30</div>
+    </div>
+    <div class="question-zone">
+        <div class="question-panel">
+            <div class="question-text" id="questionText">Loading Data Challenge...</div>
+            <div id="miniGraphContainer" class="mini-chart" style="display: none;"></div>
+            <div class="options-grid" id="optionsContainer"></div>
+        </div>
+    </div>
+    <div class="feedback-area" id="feedbackMsg"></div>
+    <button class="next-button" id="nextBtn">➡ NEXT QUESTION</button>
+    <div class="action-buttons">
+        <button class="action-btn" id="resetGameBtn">🔄 Restart Game</button>
+    </div>
+    <footer>📈 CBC Grade 6 | Bar Graphs | 4 Levels • 30 Q each | Read, interpret & master data handling!</footer>
+</div>
+
+<script>
+    // ----------------------------- BAR GRAPH SPECIALIZED QUESTION GENERATOR -------------------------
+    // Topic: Bar Graphs (Single topic with 4 levels, each level 30 questions)
+    // Questions include: reading values, comparing bars, finding totals, differences, scale interpretation, etc.
+    const TOPIC_NAME = "Bar Graphs";
+    let currentLevel = 1;        // 1,2,3,4
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let totalScore = 0;
+    let answered = false;
+    let nextLock = false;
+
+    // DOM elements
+    const topicDisplay = document.getElementById("topicDisplay");
+    const levelDisplay = document.getElementById("levelDisplay");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const progressFill = document.getElementById("progressFill");
+    const qCounterSpan = document.getElementById("qCounter");
+    const questionTextDiv = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const feedbackMsgDiv = document.getElementById("feedbackMsg");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetGameBtn = document.getElementById("resetGameBtn");
+    const miniGraphContainer = document.getElementById("miniGraphContainer");
+
+    // Helper: shuffle array
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Helper random
+    function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // generate a random bar graph dataset (categories + values)
+    function generateRandomBarData(level) {
+        const categories = ["Apples", "Bananas", "Oranges", "Mangoes", "Grapes", "Books", "Pens", "Math", "Science", "Art"];
+        const selected = categories.slice(0, rand(4, 6));
+        let scale = (level === 1) ? 1 : (level === 2 ? 2 : (level === 3 ? 5 : 10));
+        let maxVal = (level === 1) ? 20 : (level === 2 ? 40 : (level === 3 ? 100 : 200));
+        let values = [];
+        for (let i = 0; i < selected.length; i++) {
+            let val = rand(2, maxVal);
+            if (level >= 3) val = rand(10, maxVal);
+            values.push(val);
+        }
+        return { categories: selected, values: values, scale: scale };
+    }
+
+    // generate 30 UNIQUE bar graph questions for given level (each question includes optional inline viz)
+    function generateBarGraphQuestions(level) {
+        const questions = [];
+        const qCount = 30;
+        for (let i = 0; i < qCount; i++) {
+            let data = generateRandomBarData(level);
+            let cats = data.categories;
+            let vals = data.values;
+            let qType = (i % 8); // varied question styles
+            
+            let qText = "";
+            let correctAnswer = "";
+            let optionsList = [];
+            let extraGraph = { show: false, cats: cats, vals: vals };
+            
+            if (qType === 0) {
+                // "What is the value of [category]?"
+                let idx = rand(0, cats.length-1);
+                let cat = cats[idx];
+                let val = vals[idx];
+                qText = `📊 According to the bar graph, what is the number of ${cat}?`;
+                correctAnswer = String(val);
+                let offsets = [0, rand(1, Math.max(2, Math.floor(val/3))), rand(2, Math.max(3, Math.floor(val/2))), rand(1, val+2)];
+                offsets = offsets.map(o => o === 0 ? val : (val + (o%2===0? o : -o))).map(v => Math.abs(v));
+                optionsList = [correctAnswer, String(offsets[1]), String(offsets[2]), String(offsets[3])];
+                optionsList = [...new Set(optionsList)];
+                while(optionsList.length < 4) optionsList.push(String(val + rand(1,5)));
+                shuffleArray(optionsList);
+            } 
+            else if (qType === 1) {
+                // total sum of all categories
+                let total = vals.reduce((a,b) => a+b, 0);
+                qText = `What is the TOTAL number of items represented in this bar graph?`;
+                correctAnswer = String(total);
+                optionsList = [correctAnswer, String(total + rand(2,15)), String(Math.max(0,total - rand(3,12))), String(total + rand(5,20))];
+                shuffleArray(optionsList);
+            }
+            else if (qType === 2) {
+                // difference between highest and lowest
+                let maxVal = Math.max(...vals);
+                let minVal = Math.min(...vals);
+                let diff = maxVal - minVal;
+                qText = `What is the DIFFERENCE between the highest and lowest bar values?`;
+                correctAnswer = String(diff);
+                optionsList = [correctAnswer, String(diff + rand(1,8)), String(Math.abs(diff - rand(2,7))), String(diff + rand(3,10))];
+                shuffleArray(optionsList);
+            }
+            else if (qType === 3) {
+                // which category has the highest?
+                let maxIdx = vals.indexOf(Math.max(...vals));
+                let topCat = cats[maxIdx];
+                qText = `Which category has the GREATEST value?`;
+                correctAnswer = topCat;
+                let others = cats.filter(c => c !== topCat);
+                optionsList = [correctAnswer, others[0] || cats[1], others[1] || cats[2], others[2] || cats[0]];
+                shuffleArray(optionsList);
+            }
+            else if (qType === 4) {
+                // which category has the smallest?
+                let minIdx = vals.indexOf(Math.min(...vals));
+                let minCat = cats[minIdx];
+                qText = `Which category has the SMALLEST value?`;
+                correctAnswer = minCat;
+                let others = cats.filter(c => c !== minCat);
+                optionsList = [correctAnswer, others[0] || cats[1], others[1] || cats[2], others[2] || cats[0]];
+                shuffleArray(optionsList);
+            }
+            else if (qType === 5) {
+                // combine two specific categories
+                let idx1 = 0, idx2 = 1;
+                if(cats.length>2) { idx1 = 0; idx2 = 2; }
+                let combined = vals[idx1] + vals[idx2];
+                qText = `What is the sum of ${cats[idx1]} and ${cats[idx2]}?`;
+                correctAnswer = String(combined);
+                optionsList = [correctAnswer, String(combined + rand(2,10)), String(Math.max(0,combined - rand(2,9))), String(combined + rand(4,14))];
+                shuffleArray(optionsList);
+            }
+            else if (qType === 6) {
+                // scale question: if each unit represents something
+                let scaleFactor = (level === 1) ? 2 : (level === 2 ? 5 : (level === 3 ? 10 : 20));
+                let barValue = rand(3, 12);
+                let actual = barValue * scaleFactor;
+                qText = `If each 📊 block represents ${scaleFactor} items, and a bar shows ${barValue} blocks, how many items does it represent?`;
+                correctAnswer = String(actual);
+                optionsList = [correctAnswer, String(actual + scaleFactor), String(Math.max(0, actual - scaleFactor)), String(actual + rand(2, scaleFactor+3))];
+                shuffleArray(optionsList);
+            }
+            else {
+                // interpretation: how many more?
+                let idxBig = 0, idxSmall = 1;
+                if(vals[0] < vals[1]) { idxBig = 1; idxSmall = 0; }
+                let more = vals[idxBig] - vals[idxSmall];
+                qText = `How many more ${cats[idxBig]} than ${cats[idxSmall]} are there?`;
+                correctAnswer = String(more);
+                optionsList = [correctAnswer, String(more + rand(1,6)), String(Math.abs(more - rand(1,5))), String(more + rand(2,9))];
+                shuffleArray(optionsList);
+            }
+            
+            // attach graph data for visual representation (optional to make immersive)
+            let graphForDisplay = { categories: cats, values: vals, level: level };
+            
+            questions.push({
+                text: qText,
+                options: optionsList,
+                correct: correctAnswer,
+                graphData: graphForDisplay
+            });
+        }
+        return questions.slice(0,30);
+    }
+    
+    // render mini bar graph inside panel if needed (adds visual flair)
+    function displayMiniGraph(graphData) {
+        if (!graphData || !graphData.categories) {
+            miniGraphContainer.style.display = "none";
+            return;
+        }
+        miniGraphContainer.style.display = "flex";
+        miniGraphContainer.innerHTML = "";
+        const cats = graphData.categories;
+        const vals = graphData.values;
+        const maxVal = Math.max(...vals, 1);
+        const maxHeight = 70;
+        for (let i = 0; i < cats.length; i++) {
+            let heightPercent = (vals[i] / maxVal) * maxHeight;
+            let barHeight = Math.max(20, heightPercent);
+            let barDiv = document.createElement("div");
+            barDiv.className = "bar-item";
+            barDiv.innerHTML = `<div style="height:${barHeight}px; background:#3e8e5e; width:38px; margin:0 auto; border-radius:8px 8px 4px 4px;"></div>
+                                 <div style="font-weight:bold; margin-top:5px;">${cats[i]}</div>
+                                 <div style="font-size:11px;">${vals[i]}</div>`;
+            miniGraphContainer.appendChild(barDiv);
+        }
+    }
+    
+    // load questions for current level
+    function loadQuestionsForLevel() {
+        currentQuestions = generateBarGraphQuestions(currentLevel);
+        currentQIndex = 0;
+        answered = false;
+        nextLock = false;
+        renderCurrentQuestion();
+        updateProgressAndScoreUI();
+        enableOptions(true);
+        feedbackMsgDiv.innerHTML = "📊 Read the bar graph carefully! Choose the correct answer. 📈";
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = "1";
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentQIndex >= currentQuestions.length) {
+            if (currentQIndex >= 30) handleLevelComplete();
+            return;
+        }
+        const q = currentQuestions[currentQIndex];
+        questionTextDiv.innerText = q.text;
+        // Display mini graph from question data
+        if (q.graphData) {
+            displayMiniGraph(q.graphData);
+        } else {
+            miniGraphContainer.style.display = "none";
+        }
+        // render options
+        optionsContainer.innerHTML = "";
+        q.options.forEach(opt => {
+            const btn = document.createElement("div");
+            btn.classList.add("data-option");
+            btn.innerText = opt;
+            btn.addEventListener("click", () => handleAnswer(opt, btn));
+            optionsContainer.appendChild(btn);
+        });
+        updateProgressAndScoreUI();
+    }
+    
+    function handleAnswer(selected, btnElement) {
+        if (answered || nextLock) {
+            feedbackMsgDiv.innerHTML = "⚠️ Already answered! Click NEXT to continue.";
+            return;
+        }
+        const currentQ = currentQuestions[currentQIndex];
+        const isCorrect = (selected === currentQ.correct);
+        const allOptions = document.querySelectorAll(".data-option");
+        allOptions.forEach(opt => {
+            opt.classList.add("disabled-opt");
+            if (opt.innerText === currentQ.correct) {
+                opt.classList.add("correct-highlight");
+            }
+            if (opt.innerText === selected && !isCorrect) {
+                opt.classList.add("wrong-highlight");
+            }
+        });
+        let pointsEarned = 10 + (currentLevel * 2); // level bonus: L1=12, L2=14, L3=16, L4=18
+        if (isCorrect) {
+            totalScore += pointsEarned;
+            feedbackMsgDiv.innerHTML = `✅ CORRECT! +${pointsEarned} points! 🎉 (Level ${currentLevel} bonus)`;
+            scoreDisplay.innerText = `🏆 ${totalScore}`;
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ WRONG! Correct answer: ${currentQ.correct}. Keep practicing! +0 points.`;
+            scoreDisplay.innerText = `🏆 ${totalScore}`;
+        }
+        answered = true;
+        nextBtn.disabled = false;
+    }
+    
+    function nextQuestion() {
+        if (!answered) {
+            feedbackMsgDiv.innerHTML = "❗ Please answer the current question before proceeding!";
+            return;
+        }
+        if (currentQIndex + 1 < currentQuestions.length) {
+            currentQIndex++;
+            answered = false;
+            renderCurrentQuestion();
+            enableOptions(true);
+            feedbackMsgDiv.innerHTML = "➡ Next bar graph challenge! Analyze the data!";
+        } else {
+            handleLevelComplete();
+        }
+    }
+    
+    function handleLevelComplete() {
+        if (currentLevel < 4) {
+            feedbackMsgDiv.innerHTML = `🏆✨ LEVEL ${currentLevel} COMPLETE! Moving to LEVEL ${currentLevel+1} ✨🏆`;
+            currentLevel++;
+            levelDisplay.innerText = `Level ${currentLevel}`;
+            loadQuestionsForLevel();
+        } else {
+            // ALL 4 LEVELS COMPLETED!
+            feedbackMsgDiv.innerHTML = "🏅🏆 GRAND MASTER OF BAR GRAPHS! 🏆🏅 You aced all 4 levels! Press Restart to play again!";
+            nextBtn.disabled = true;
+            disableAllOptionsPermanently();
+        }
+        updateProgressAndScoreUI();
+    }
+    
+    function disableAllOptionsPermanently() {
+        const btns = document.querySelectorAll(".data-option");
+        btns.forEach(btn => btn.style.pointerEvents = "none");
+        nextBtn.disabled = true;
+    }
+    
+    function enableOptions(enable) {
+        const btns = document.querySelectorAll(".data-option");
+        btns.forEach(btn => {
+            if (enable) {
+                btn.classList.remove("disabled-opt", "correct-highlight", "wrong-highlight");
+                btn.style.pointerEvents = "auto";
+            } else {
+                btn.classList.add("disabled-opt");
+            }
+        });
+    }
+    
+    function updateProgressAndScoreUI() {
+        const progressPercent = ((currentQIndex) / 30) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+        qCounterSpan.innerText = `Question ${currentQIndex+1} / 30`;
+        scoreDisplay.innerText = `🏆 ${totalScore}`;
+    }
+    
+    function fullGameReset() {
+        currentLevel = 1;
+        totalScore = 0;
+        answered = false;
+        nextLock = false;
+        levelDisplay.innerText = `Level ${currentLevel}`;
+        scoreDisplay.innerText = `🏆 0`;
+        loadQuestionsForLevel();
+        feedbackMsgDiv.innerHTML = "🔄 Game restarted! Tackle bar graphs from Level 1. Good luck!";
+        nextBtn.disabled = false;
+        nextBtn.style.pointerEvents = "auto";
+    }
+    
+    // event listeners
+    nextBtn.addEventListener("click", nextQuestion);
+    resetGameBtn.addEventListener("click", fullGameReset);
+    
+    // initialize game
+    topicDisplay.innerText = TOPIC_NAME;
+    loadQuestionsForLevel();
+</script>
+</body>
+</html>

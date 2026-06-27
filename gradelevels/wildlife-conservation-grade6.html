@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Wildlife Shield | Physical Deterrents | Grade 6 CBC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #eef2ff 0%, #ffffff 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 3rem 2rem 3rem 2rem;
+            box-shadow: 0 30px 45px -12px rgba(2, 62, 138, 0.3);
+            overflow: hidden;
+            border: 2px solid #60a5fa;
+        }
+
+        .game-header {
+            background: #1e3a8a;
+            padding: 1.2rem 1.8rem;
+            color: white;
+            text-align: center;
+            border-bottom: 6px solid #fcd34d;
+        }
+
+        .game-header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .kenyan-flag-badge {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kenyan-fact {
+            background: #dbeafe;
+            margin: 14px 20px 0;
+            padding: 10px 18px;
+            border-radius: 48px;
+            color: #0c4a6e;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-left: 10px solid #fbbf24;
+        }
+
+        .levels-row {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f9ff;
+            padding: 14px 22px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 2px dashed #93c5fd;
+        }
+
+        .level-btn {
+            background: white;
+            border: none;
+            padding: 10px 0;
+            flex: 1;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .level-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 8px 18px rgba(37,99,235,0.4);
+            border-color: #2563eb;
+            transform: scale(0.97);
+        }
+
+        .level-btn:hover:not(.active) {
+            background: #bfdbfe;
+            transform: translateY(-3px);
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 10px 28px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .score-box, .q-counter {
+            background: #e0e7ff;
+            padding: 5px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .score-box span, .q-counter span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-left: 8px;
+            color: #0f3b5c;
+        }
+
+        .quiz-area {
+            padding: 1.5rem 1.5rem 0.8rem;
+            text-align: center;
+        }
+
+        .question-card {
+            background: linear-gradient(105deg, #fefefe, #eff6ff);
+            padding: 20px 18px;
+            border-radius: 48px;
+            margin-bottom: 20px;
+            border: 2px solid #93c5fd;
+            box-shadow: 0 12px 18px -12px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #93c5fd;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1e40af;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .option-btn:hover:not(.disabled-opt) {
+            background: #dbeafe;
+            transform: translateX(5px);
+            border-color: #2563eb;
+        }
+
+        .option-btn.selected-correct {
+            background: #22c55e;
+            color: white;
+            border-color: #16a34a;
+        }
+
+        .option-btn.selected-wrong {
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .disabled-opt {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .voice-zone {
+            background: #ffffff;
+            border-radius: 56px;
+            padding: 15px;
+            margin: 10px 0 5px;
+            border: 2px dashed #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mic-button {
+            background: #2563eb;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: 0.08s linear;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-button:active {
+            transform: scale(0.92);
+            background: #1e40af;
+        }
+
+        .voice-status {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f4c5f;
+            flex: 1;
+            text-align: left;
+        }
+
+        .answer-status {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 8px;
+            min-height: 55px;
+            color: #0f4c5f;
+            text-align: center;
+        }
+
+        .hint-box {
+            background: #fef9e3;
+            border-left: 12px solid #fbbf24;
+            padding: 12px 20px;
+            margin: 8px 20px 20px;
+            border-radius: 36px;
+            font-size: 0.95rem;
+            color: #0a537c;
+            font-weight: 500;
+        }
+
+        .next-level-msg {
+            background: #0d9488;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 60px;
+            margin: 10px 24px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 14px;
+            color: #22668d;
+        }
+
+        @keyframes pulseMic {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 #3b82f6; }
+            50% { transform: scale(1.03); background: #0d9488; box-shadow: 0 0 0 8px rgba(59,130,246,0.3);}
+            100% { transform: scale(1); }
+        }
+        .mic-button.listening-active {
+            animation: pulseMic 1s infinite;
+            background: #0d9488;
+        }
+
+        .mic-button.mic-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.1rem; }
+            .option-btn { font-size: 0.85rem; padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <h1>🦁 WILDLIFE SHIELD 🛡️
+            <span class="kenyan-flag-badge">🇰🇪 GRADE 6 • PHYSICAL DETERRENTS & CONSERVATION</span>
+        </h1>
+        <div class="kenyan-fact">
+            🌍 <strong>Kenyan Fact:</strong> In Kenya's Tsavo region, farmers use "beehive fences" — hanging beehives around farms. Elephants hate bees! This physical deterrent protects crops while helping bees produce honey.
+        </div>
+    </div>
+
+    <div class="levels-row" id="levelButtonsContainer"></div>
+
+    <div class="info-panel">
+        <div class="score-box">⭐ SCORE: <span id="scoreValue">0</span></div>
+        <div class="q-counter">📖 QUESTION: <span id="currentQNumber">1</span> / <span id="totalQperLevel">15</span></div>
+    </div>
+
+    <div class="quiz-area">
+        <div class="question-card">
+            <div class="question-text" id="questionText">What is a physical deterrent?</div>
+            <div class="option-buttons" id="optionsContainer"></div>
+        </div>
+        <div class="voice-zone">
+            <button class="mic-button" id="micBtn">🎤</button>
+            <div class="voice-status" id="voiceStatusMsg">🎙️ Ready • Click mic and say A, B, C, or D</div>
+            <div class="answer-status" id="answerFeedback"></div>
+        </div>
+        <div class="hint-box" id="hintDisplay">
+            💡 Hint: A physical barrier or object that prevents wild animals from accessing crops or livestock.
+        </div>
+    </div>
+
+    <div id="levelCompleteMsg"></div>
+    <div class="footer-note">🎤 Speak A, B, C, or D • +10 points • Learn to protect farms using humane physical deterrents!</div>
+</div>
+
+<script>
+    // ==============================================================
+    // PHYSICAL DETERRENTS FOR WILD ANIMALS | CONSERVATION OF RESOURCES
+    // Grade 6 CBC - Agriculture & Environmental Conservation
+    // 4 Levels, 15 questions each - challenging and educational
+    // ==============================================================
+    const QUESTIONS_DB = {
+        1: [
+            { q: "What is a physical deterrent?", options: ["A) A chemical poison to kill animals", "B) A physical barrier or object that keeps wild animals away", "C) A type of animal feed", "D) A veterinary medicine"], correct: "B", hint: "Think of fences, scarecrows, or barriers." },
+            { q: "Which of these is an example of a physical deterrent for elephants?", options: ["A) Shooting fireworks", "B) Beehive fences", "C) Poisoned meat", "D) Loudspeakers playing music"], correct: "B", hint: "Bees naturally repel elephants." },
+            { q: "What is a scarecrow?", options: ["A) A machine that makes noise", "B) A human-like figure placed in fields to scare birds", "C) A type of fence", "D) A chemical spray"], correct: "B", hint: "Looks like a person standing in the field." },
+            { q: "Which physical deterrent uses light to scare animals at night?", options: ["A) Solar-powered flashing lights", "B) Loud horns", "C) Barbed wire", "D) Deep trenches"], correct: "A", hint: "Flashing lights mimic danger." },
+            { q: "What is the purpose of a predator-proof fence?", options: ["A) To keep domestic animals in", "B) To keep wild predators away from livestock", "C) To grow crops", "D) To store water"], correct: "B", hint: "Protects sheep, goats, and chickens." },
+            { q: "Which material is commonly used to make thorn fences in Kenya?", options: ["A) Plastic", "B) Acacia thorns or Euphorbia branches", "C) Concrete", "D) Glass"], correct: "B", hint: "Traditional, cheap, and effective." },
+            { q: "What is a chili fence?", options: ["A) A fence made of chili peppers ground into a paste on ropes", "B) A fence made of metal", "C) A type of electric fence", "D) A water barrier"], correct: "A", hint: "Elephants hate chili." },
+            { q: "How does a trench work as a deterrent?", options: ["A) Animals fall in and cannot cross", "B) It stores water", "C) It grows grass", "D) It attracts animals"], correct: "A", hint: "A deep ditch stops animals from crossing." },
+            { q: "Which deterrent is effective against monkeys raiding crops?", options: ["A) Electric fencing", "B) Metal sheets with oil", "C) Slippery plastic sheets", "D) All of the above"], correct: "D", hint: "Monkeys can't climb slippery surfaces." },
+            { q: "What is a 'lion light'?", options: ["A) A flashing light that mimics a person walking with a torch", "B) A very bright lamp", "C) A laser pointer", "D) A fire torch"], correct: "A", hint: "Developed in Kenya to scare lions without killing them." },
+            { q: "Why are physical deterrents preferred over killing wild animals?", options: ["A) They are cheaper in the long run", "B) They protect biodiversity", "C) They avoid human-wildlife conflict deaths", "D) All of the above"], correct: "D", hint: "Conservation and safety." },
+            { q: "What is a 'turkey chaser' or guard animal?", options: ["A) A dog trained to chase away predators", "B) A type of machine", "C) A chemical spray", "D) A fence post"], correct: "A", hint: "Donkeys, llamas, and dogs can protect livestock." },
+            { q: "Which physical deterrent uses sound to scare birds from rice fields?", options: ["A) Bird scaring cannon or banger", "B) Silent fence", "C) Water spray", "D) Netting"], correct: "A", hint: "Makes loud booming noises." },
+            { q: "What is the main advantage of using netting over crops?", options: ["A) It physically blocks birds and insects", "B) It adds nutrients", "C) It waters plants", "D) It kills pests"], correct: "A", hint: "Like a protective blanket." },
+            { q: "Which of these is NOT a physical deterrent?", options: ["A) Poison bait", "B) Barbed wire fence", "C) Stone wall", "D) Scarecrow"], correct: "A", hint: "Poison is chemical, not physical." }
+        ],
+        2: [
+            { q: "What is the purpose of a 'cattle grid' (or vehicle pass) in wildlife areas?", options: ["A) To stop wild animals from crossing roads", "B) To feed animals", "C) To water livestock", "D) To trap animals"], correct: "A", hint: "Metal bars over a ditch that animals won't cross." },
+            { q: "Which deterrent works well against snakes entering chicken coops?", options: ["A) Fine mesh wire buried around the coop", "B) Loud music", "C) Bright lights", "D) Smelly chemicals"], correct: "A", hint: "Snakes cannot pass through small gaps." },
+            { q: "What is a 'flash tape' (reflective tape)?", options: ["A) A shiny ribbon that moves in wind to scare birds", "B) A type of adhesive", "C) A recording device", "D) A water pipe"], correct: "A", hint: "Reflects light and makes noise." },
+            { q: "How does a 'pyrotechnic bang' help farmers?", options: ["A) It creates loud noise to scare crop-raiding animals", "B) It waters crops", "C) It fertilizes soil", "D) It builds fences"], correct: "A", hint: "Like a loud firecracker." },
+            { q: "What is the main challenge of using electric fences?", options: ["A) High cost and maintenance", "B) They are ineffective", "C) They kill animals instantly", "D) They attract more animals"], correct: "A", hint: "Requires batteries and solar panels." },
+            { q: "Which traditional Kenyan deterrent uses old cans tied to strings?", options: ["A) Tin can alarm", "B) Chemical spray", "C) Electric wire", "D) Concrete wall"], correct: "A", hint: "Makes noise when animals touch strings." },
+            { q: "What is a 'living fence'?", options: ["A) Thorny plants grown as a barrier", "B) A fence made of dead wood", "C) A concrete wall", "D) A plastic net"], correct: "A", hint: "Plants that grow and remain as fence." },
+            { q: "Why are cactus fences effective in dry areas?", options: ["A) Animals avoid the sharp spines", "B) They provide shade", "C) They produce fruit", "D) All of the above"], correct: "D", hint: "Multi-purpose and low water." },
+            { q: "What is the purpose of a 'moat' around a farm?", options: ["A) A water-filled ditch to block animals", "B) A type of fertilizer", "C) A feeding trough", "D) A shelter"], correct: "A", hint: "Animals cannot swim across easily." },
+            { q: "Which physical deterrent uses rotating arms or windmills to scare birds?", options: ["A) Wind-powered scarecrow", "B) Laser", "C) Chemical spray", "D) Electric shock"], correct: "A", hint: "Moves with the wind." },
+            { q: "How does a 'trap crop' work as a deterrent?", options: ["A) It attracts pests away from main crop, then is removed", "B) It poisons pests", "C) It blocks pests", "D) It feeds animals"], correct: "A", hint: "Sacrificial planting." },
+            { q: "What is the best physical deterrent for warthogs digging up roots?", options: ["A) Buried chicken wire just below surface", "B) Loud music", "C) Bright lights", "D) Water sprinklers"], correct: "A", hint: "Stops them from digging." },
+            { q: "Which of these is a sustainable physical deterrent that also produces food?", options: ["A) Beehive fence", "B) Plastic netting", "C) Barbed wire", "D) Glass shards"], correct: "A", hint: "Bees produce honey." },
+            { q: "What is the main purpose of using guard donkeys?", options: ["A) They bray loudly and chase away predators like coyotes or wild dogs", "B) They provide milk", "C) They pull carts", "D) They entertain"], correct: "A", hint: "Donkeys are very protective." },
+            { q: "What is a 'scare balloon' often used for?", options: ["A) A large balloon with predator eyes to scare birds", "B) A water container", "C) A fertilizer spreader", "D) A livestock shelter"], correct: "A", hint: "Looks like a big owl or predator." }
+        ],
+        3: [
+            { q: "Which physical deterrent is most effective against leopards attacking goats?", options: ["A) Predator-proof enclosure with roof", "B) Single strand wire", "C) Wooden fence", "D) Small trench"], correct: "A", hint: "Leopards can climb and jump." },
+            { q: "How does 'visual scaring' work with balloons or kites?", options: ["A) Moving objects frighten animals", "B) They poison animals", "C) They trap animals", "D) They feed animals"], correct: "A", hint: "Unpredictable movement scares herbivores." },
+            { q: "What is a disadvantage of using loud noise deterrents in residential areas?", options: ["A) It disturbs neighbors and may violate noise ordinances", "B) It is expensive", "C) It kills animals", "D) It requires water"], correct: "A", hint: "Consideration for people." },
+            { q: "Which material is used to make 'slippery fences' to stop snakes and rats?", options: ["A) Smooth metal or plastic sheets", "B) Wood", "C) Fabric", "D) Rubber"], correct: "A", hint: "No grip for climbing." },
+            { q: "What is the concept of 'habitat modification' as a deterrent?", options: ["A) Removing bushes and tall grass near farm to reduce hiding spots for predators", "B) Planting more trees", "C) Adding water sources", "D) Building more houses"], correct: "A", hint: "Clear zones around livestock." },
+            { q: "Which Kenyan innovation uses a recording of growling dogs to scare away monkeys?", options: ["A) Monkey-scaring audio device", "B) Chemical spray", "C) Water cannon", "D) Electric wire"], correct: "A", hint: "Solar-powered speaker." },
+            { q: "How does 'fladry' work as a deterrent for wolves?", options: ["A) Rope with hanging red flags that wolves fear", "B) Loud noises", "C) Bright lights", "D) Chemical smells"], correct: "A", hint: "Wolves are neophobic (fear new things)." },
+            { q: "What is the main advantage of a 'living wall' made of thorny euphorbia?", options: ["A) It self-regenerates and requires no replacement", "B) It is expensive", "C) It attracts more animals", "D) It provides no shade"], correct: "A", hint: "Grows and stays green." },
+            { q: "Which deterrent uses water spray triggered by motion sensors?", options: ["A) Motion-activated sprinkler", "B) Electric wire", "C) Chemical sprayer", "D) Sound cannon"], correct: "A", hint: "Surprises animals with water." },
+            { q: "What is the purpose of a 'trellis fence' for climbing animals?", options: ["A) It collapses under weight", "B) It is very high", "C) It is electrified", "D) It has moving parts"], correct: "A", hint: "Animals can't rely on climbing." },
+            { q: "Which physical deterrent is most effective against hippos damaging crops near rivers?", options: ["A) Strong wire fence with large mesh (hippo wire)", "B) Small stones", "C) Plastic net", "D) Wooden sticks"], correct: "A", hint: "Hippos are very strong." },
+            { q: "What is the role of 'guard llamas' in protecting sheep?", options: ["A) They are territorial and chase away coyotes and dogs", "B) They provide wool", "C) They carry loads", "D) They produce milk"], correct: "A", hint: "Llamas naturally bond with sheep." },
+            { q: "How does a 'rotating grazing system' help reduce wildlife conflict?", options: ["A) Moves livestock away from wildlife corridors periodically", "B) Keeps animals in one place", "C) Uses chemicals", "D) Builds more fences"], correct: "A", hint: "Seasonal movement." },
+            { q: "Which deterrent uses old CDs or aluminum foil strips to reflect sunlight?", options: ["A) Reflective scare tape", "B) Poison", "C) Netting", "D) Water spray"], correct: "A", hint: "Birds dislike flashing lights." },
+            { q: "What is a 'bio-acoustic' deterrent?", options: ["A) Playing recorded sounds of predators or distress calls", "B) A type of fence", "C) A chemical repellent", "D) A water tank"], correct: "A", hint: "Uses animal sounds to scare." }
+        ],
+        4: [
+            { q: "Which combination of deterrents works best against elephants according to Kenyan research?", options: ["A) Beehive fence + chili rope + flashing lights", "B) Single electric wire", "C) Wooden fence only", "D) Trench only"], correct: "A", hint: "Multiple layers are most effective." },
+            { q: "What is the concept of 'aversive conditioning' using physical deterrents?", options: ["A) Teaching animals to avoid an area using unpleasant but harmless stimuli", "B) Killing animals", "C) Feeding animals", "D) Relocating animals"], correct: "A", hint: "Animals learn through experience." },
+            { q: "Which physical deterrent is used to prevent squirrels from climbing bird feeders?", options: ["A) Baffle (cone-shaped barrier)", "B) Poison", "C) Net", "D) Water"], correct: "A", hint: "Slides down when they try to climb." },
+            { q: "What is the main challenge of using chili fences in humid climates?", options: ["A) Chili loses potency quickly in rain and humidity", "B) It attracts bees", "C) It is too expensive", "D) It kills plants"], correct: "A", hint: "Weather affects chili." },
+            { q: "How does a 'solar-powered electric fence' conserve resources compared to diesel generators?", options: ["A) Uses renewable energy, no fuel needed", "B) It is cheaper to install", "C) It works at night only", "D) It requires no maintenance"], correct: "A", hint: "Sun is free energy." },
+            { q: "What is a 'ground vibration' deterrent for rodents?", options: ["A) Stakes that vibrate with wind creating underground noise", "B) Poison", "C) Traps", "D) Water flooding"], correct: "A", hint: "Moles dislike vibrations." },
+            { q: "Which physical deterrent uses rotating owl decoys to scare birds?", options: ["A) Motion-activated owl", "B) Laser", "C) Net", "D) Sound cannon"], correct: "A", hint: "Looks like predator moving." },
+            { q: "What is the advantage of using 'double-strand electric fence' for livestock protection?", options: ["A) More reliable if one strand fails; works for both large and small animals", "B) Cheaper", "C) Easier to install", "D) No electricity needed"], correct: "A", hint: "Redundancy." },
+            { q: "How can farmers use 'smoke deterrents' to protect beehives from honey badgers?", options: ["A) Smoky rags hung near hives deter badgers", "B) Poison smoke", "C) Loud noise", "D) Water sprays"], correct: "A", hint: "Badgers dislike smoke." },
+            { q: "What is a 'predator decoy' (e.g., fake crocodile in pond) used for?", options: ["A) To scare fish-eating birds", "B) To catch fish", "C) To feed animals", "D) To decorate"], correct: "A", hint: "Birds see 'danger' and stay away." },
+            { q: "Which physical deterrent is best for protecting grain stores from rats?", options: ["A) Metal bins with smooth sides and tight lids", "B) Wooden boxes", "C) Cloth bags", "D) Open baskets"], correct: "A", hint: "Rats cannot climb smooth metal." },
+            { q: "How does a 'water laser' or 'water cannon' work as a deterrent?", options: ["A) Motion sensor triggers a harmless jet of water", "B) It kills insects", "C) It fertilizes soil", "D) It lights up"], correct: "A", hint: "Startles but does not harm." },
+            { q: "What is the main principle of 'integrated pest and wildlife management'?", options: ["A) Combining physical, biological, and cultural methods without harmful chemicals", "B) Using only poisons", "C) Killing all animals", "D) Building more houses"], correct: "A", hint: "Balance and sustainability." },
+            { q: "Which Kenyan innovation uses 'lion lights' (LED flashing) to reduce livestock killings?", options: ["A) Lights that mimic a person walking with a torch", "B) Very bright floodlights", "C) Lasers", "D) Fire torches"], correct: "A", hint: "Developed by Richard Turere, a young Kenyan." },
+            { q: "What is the overall environmental benefit of using physical deterrents instead of poisons?", options: ["A) They protect non-target species and prevent bioaccumulation", "B) They are cheaper", "C) They work faster", "D) They require no maintenance"], correct: "A", hint: "Ecosystem health." }
+        ]
+    };
+
+    // Ensure each level has exactly 15 questions
+    for(let lvl=1; lvl<=4; lvl++){
+        while(QUESTIONS_DB[lvl].length < 15){
+            QUESTIONS_DB[lvl].push({ q: "What is a good physical deterrent for wild animals?", options: ["A) Fence", "B) Poison", "C) Gun", "D) Trap"], correct: "A", hint: "Barrier." });
+        }
+    }
+
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let scores = {1:0,2:0,3:0,4:0};
+    let levelCompleteFlag = false;
+    const totalPerLevel = 15;
+    let recognition = null;
+    let listening = false;
+    let speechSupported = true;
+    let answeringLock = false;
+
+    const questionTextEl = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const scoreValueSpan = document.getElementById('scoreValue');
+    const currentQNumberSpan = document.getElementById('currentQNumber');
+    const totalQperLevelSpan = document.getElementById('totalQperLevel');
+    const micBtn = document.getElementById('micBtn');
+    const voiceStatusMsg = document.getElementById('voiceStatusMsg');
+    const answerFeedback = document.getElementById('answerFeedback');
+    const hintDisplay = document.getElementById('hintDisplay');
+    const levelCompleteDiv = document.getElementById('levelCompleteMsg');
+    
+    totalQperLevelSpan.innerText = totalPerLevel;
+
+    function speakEnglish(text, isSuccess=true){
+        if(!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = isSuccess ? 1.1 : 0.9;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+    }
+
+    function loadQuestion(){
+        const item = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(item){
+            questionTextEl.innerText = item.q;
+            hintDisplay.innerText = `💡 Hint: ${item.hint}`;
+            optionsContainer.innerHTML = '';
+            item.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.setAttribute('data-value', opt.charAt(0));
+                btn.addEventListener('click', () => handleOptionClick(opt.charAt(0)));
+                optionsContainer.appendChild(btn);
+            });
+        }
+        answeringLock = false;
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('selected-correct', 'selected-wrong', 'disabled-opt');
+            btn.style.pointerEvents = 'auto';
+        });
+    }
+
+    function handleOptionClick(selectedLetter){
+        if(answeringLock) return;
+        const currentItem = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(!currentItem) return;
+        const isCorrect = (selectedLetter === currentItem.correct);
+        
+        answeringLock = true;
+        
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+            btn.classList.add('disabled-opt');
+        });
+        
+        const clickedBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === selectedLetter);
+        if(clickedBtn){
+            if(isCorrect){
+                clickedBtn.classList.add('selected-correct');
+                answerFeedback.innerHTML = `✅ Correct! ${currentItem.correct}) ${currentItem.options.find(o => o.startsWith(currentItem.correct)).substring(3)} +10 points! 🎉`;
+                speakEnglish("Excellent! That is correct! You're helping protect farms and wildlife!", true);
+                scores[currentLevel] += 10;
+                scoreValueSpan.innerText = scores[currentLevel];
+                
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 AMAZING! You completed Level ${currentLevel} with ${scores[currentLevel]} points! Click Next Level to continue!`;
+                        speakEnglish(`Congratulations! You finished level ${currentLevel}. You are a conservation champion!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE TO NEXT LEVEL ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! More challenging questions ahead!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("INCREDIBLE! You've mastered all four levels! You are a true Wildlife Conservation Expert!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏅 WILDLIFE CONSERVATION HERO CERTIFICATE! 🏅</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1000);
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+                const correctLetter = currentItem.correct;
+                const correctOptionText = currentItem.options.find(o => o.startsWith(correctLetter));
+                answerFeedback.innerHTML = `❌ Sorry! "${selectedLetter}" is incorrect. The correct answer is ${correctLetter}) ${correctOptionText.substring(3)}. Hint: ${currentItem.hint}`;
+                speakEnglish(`That is not correct. The right answer is ${correctLetter}. ${correctOptionText.substring(3)}. Keep learning about physical deterrents!`, false);
+                
+                const correctBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === correctLetter);
+                if(correctBtn) correctBtn.classList.add('selected-correct');
+                
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        updateUI();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 Level ${currentLevel} completed! Score: ${scores[currentLevel]}. Click Next Level!`;
+                        speakEnglish(`You finished level ${currentLevel}. Great effort!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! Stay focused!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("FANTASTIC! You completed all levels! You are a Physical Deterrents Expert!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏆 MASTER OF PHYSICAL DETERRENTS & CONSERVATION! 🏆</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1500);
+            }
+        }
+    }
+
+    function processVoiceAnswer(spoken){
+        if(levelCompleteFlag){
+            answerFeedback.innerHTML = "⚠️ Level complete! Click Next Level to continue.";
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock) return;
+        
+        let letter = spoken.trim().toUpperCase();
+        if(letter.includes("CHOICE") || letter.includes("OPTION") || letter.includes("LETTER")){
+            if(letter.includes("A")) letter = "A";
+            else if(letter.includes("B")) letter = "B";
+            else if(letter.includes("C")) letter = "C";
+            else if(letter.includes("D")) letter = "D";
+        } else if(letter.length > 1){
+            letter = letter.charAt(0);
+        }
+        
+        if(!['A','B','C','D'].includes(letter)){
+            answerFeedback.innerHTML = "⚠️ Please say A, B, C, or D only!";
+            speakEnglish("Please say A, B, C, or D only.", false);
+            return;
+        }
+        
+        handleOptionClick(letter);
+    }
+
+    function updateCounter(){
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function updateUI(){
+        scoreValueSpan.innerText = scores[currentLevel];
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function initSpeech(){
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SpeechRec){
+            voiceStatusMsg.innerHTML = "❌ Your browser doesn't support voice input. Use Chrome, Edge, or Safari.";
+            micBtn.disabled = true;
+            micBtn.classList.add('mic-disabled');
+            speechSupported = false;
+            return false;
+        }
+        recognition = new SpeechRec();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onstart = () => { listening=true; voiceStatusMsg.innerHTML="🎤 Listening... Say A, B, C, or D 🎤"; micBtn.classList.add('listening-active'); };
+        recognition.onend = () => { listening=false; voiceStatusMsg.innerHTML="✅ Ready • Click mic and say A, B, C, or D"; micBtn.classList.remove('listening-active'); };
+        recognition.onresult = (ev) => { let spoken = ev.results[0][0].transcript; voiceStatusMsg.innerHTML=`🗣️ You said: "${spoken}"`; processVoiceAnswer(spoken); };
+        recognition.onerror = (e) => { 
+            let msg = e.error === 'not-allowed' ? "❌ Microphone permission denied. Please allow access." : "❌ Speech error. Click mic again.";
+            voiceStatusMsg.innerHTML = msg; 
+            micBtn.classList.remove('listening-active'); 
+            listening=false; 
+        };
+        return true;
+    }
+
+    micBtn.addEventListener('click', ()=>{
+        if(!speechSupported && !recognition && !window.SpeechRecognition && !window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "Sorry, your browser doesn't support voice input.";
+            return;
+        }
+        if(levelCompleteFlag){
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock){
+            speakEnglish("Please wait, processing your previous answer.", false);
+            return;
+        }
+        if(!recognition){
+            if(!initSpeech()) return;
+        }
+        if(listening){
+            recognition.stop();
+            return;
+        }
+        try{ recognition.start(); } catch(e){ recognition = null; initSpeech(); }
+    });
+
+    function highlightActiveLevel(){
+        document.querySelectorAll('.level-btn').forEach(btn=>{
+            if(parseInt(btn.getAttribute('data-level'))===currentLevel) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+
+    function buildLevels(){
+        const container = document.getElementById('levelButtonsContainer');
+        container.innerHTML = '';
+        for(let l=1; l<=4; l++){
+            const btn = document.createElement('button');
+            btn.className = 'level-btn';
+            if(l===currentLevel) btn.classList.add('active');
+            btn.innerText = `LEVEL ${l}`;
+            btn.setAttribute('data-level', l);
+            btn.addEventListener('click', ()=>{
+                if(levelCompleteFlag && currentLevel !== l) levelCompleteFlag = false;
+                currentLevel = l;
+                currentQIndex = 0;
+                levelCompleteFlag = false;
+                levelCompleteDiv.innerHTML = "";
+                loadQuestion();
+                updateUI();
+                highlightActiveLevel();
+                answerFeedback.innerHTML = "";
+                speakEnglish(`Level ${l} selected. Answer questions about physical deterrents to protect wildlife and farms!`, true);
+                setTimeout(() => { answeringLock = false; }, 100);
+            });
+            container.appendChild(btn);
+        }
+    }
+
+    function startGame(){ 
+        buildLevels(); 
+        loadQuestion(); 
+        updateUI(); 
+        highlightActiveLevel();
+        if(window.SpeechRecognition || window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "🎙️ Ready! Click the microphone and say A, B, C, or D";
+        }
+        answeringLock = false;
+    }
+    startGame();
+</script>
+</body>
+</html>

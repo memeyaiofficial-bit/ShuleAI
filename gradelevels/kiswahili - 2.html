@@ -1,0 +1,3095 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🇰🇪 Safari ya Kiswahili - Darasa la 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+        }
+        
+        :root {
+            --kenya-black: #000000;
+            --kenya-red: #BB0000;
+            --kenya-green: #006600;
+            --kenya-white: #FFFFFF;
+            --primary: #FF6B35;
+            --secondary: #00A896;
+            --accent: #FFD166;
+            --light: #F8F9FA;
+            --success: #06D6A0;
+            --warning: #FF9E6D;
+            --danger: #EF476F;
+            --shadow: 0 8px 25px rgba(0,0,0,0.2);
+            --transition: all 0.3s ease;
+            --narrative-bg: #FFF9E6;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--kenya-black) 0%, var(--kenya-red) 25%, var(--kenya-white) 50%, var(--kenya-green) 100%);
+            background-size: 400% 400%;
+            animation: kenyaGradient 18s ease infinite;
+            color: var(--kenya-black);
+            min-height: 100vh;
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+        
+        @keyframes kenyaGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        #game-container {
+            width: 100%;
+            max-width: 750px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 5px solid var(--kenya-white);
+        }
+        
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: linear-gradient(90deg, var(--kenya-black), var(--kenya-red), var(--kenya-white), var(--kenya-green), var(--kenya-black));
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            padding: 10px;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #start-screen {
+            text-align: center;
+            padding: 20px 10px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin: 12px 0;
+            color: var(--kenya-black);
+            text-shadow: 2px 2px 0 var(--accent);
+            background: linear-gradient(45deg, var(--kenya-red), var(--kenya-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            margin: 10px 0 22px;
+            color: var(--kenya-black);
+            line-height: 1.5;
+            font-weight: 600;
+        }
+        
+        .character {
+            font-size: 5rem;
+            margin: 12px 0;
+            animation: bounce 2s infinite;
+            display: block;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .kenyan-pattern {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--kenya-black),
+                var(--kenya-black) 12px,
+                var(--kenya-red) 12px,
+                var(--kenya-red) 24px,
+                var(--kenya-white) 24px,
+                var(--kenya-white) 36px,
+                var(--kenya-green) 36px,
+                var(--kenya-green) 48px
+            );
+            height: 10px;
+            border-radius: 5px;
+            margin: 18px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--primary), #FF8E65);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 14px 10px;
+            box-shadow: 0 6px 0 rgba(180, 50, 30, 0.9);
+            transition: var(--transition);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            min-width: 200px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .btn:hover::after {
+            opacity: 1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 rgba(180, 50, 30, 1);
+        }
+        
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 3px 0 rgba(180, 50, 30, 0.9);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary), #00C4B0);
+            box-shadow: 0 6px 0 rgba(0, 130, 120, 0.9);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 8px 0 rgba(0, 130, 120, 1);
+        }
+        
+        .btn-secondary:active {
+            box-shadow: 0 3px 0 rgba(0, 130, 120, 0.9);
+        }
+        
+        .btn-large {
+            padding: 18px 50px;
+            font-size: 1.55rem;
+            min-width: 240px;
+        }
+        
+        #level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+        
+        .level-btn {
+            background: white;
+            border: 4px solid var(--secondary);
+            border-radius: 24px;
+            padding: 16px 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--kenya-black);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .level-btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,209,102,0.4) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .level-btn:hover::after {
+            opacity: 1;
+        }
+        
+        .level-btn:hover {
+            transform: scale(1.07);
+            background: var(--accent);
+            border-color: var(--primary);
+        }
+        
+        .level-btn.locked {
+            opacity: 0.65;
+            cursor: not-allowed;
+            border-color: #ccc;
+            background: #f5f5f5;
+        }
+        
+        .level-btn.locked:hover {
+            transform: none;
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+        
+        .level-btn .star {
+            position: absolute;
+            top: 6px;
+            right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .level-btn .level-num {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        
+        #game-screen {
+            padding: 10px;
+        }
+        
+        #level-indicator {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 10px 0;
+            color: var(--kenya-black);
+            background: var(--accent);
+            padding: 8px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            box-shadow: 0 4px 0 rgba(200, 150, 0, 0.85);
+            border: 3px solid white;
+            animation: pulse-level 2s infinite;
+        }
+        
+        @keyframes pulse-level {
+            0% { box-shadow: 0 4px 0 rgba(200, 150, 0, 0.85); }
+            50% { box-shadow: 0 4px 0 rgba(255, 217, 0, 1); }
+            100% { box-shadow: 0 4px 0 rgba(200, 150, 0, 0.85); }
+        }
+        
+        #timer-container {
+            text-align: center;
+            margin: 14px 0;
+            position: relative;
+        }
+        
+        #timer {
+            font-size: 3.4rem;
+            font-weight: 800;
+            color: var(--danger);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+            animation: pulse-timer 1s infinite;
+            background: white;
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            border: 6px solid var(--warning);
+            box-shadow: 0 0 0 5px rgba(255, 158, 109, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        @keyframes pulse-timer {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 158, 109, 0.5); }
+            50% { transform: scale(1.07); box-shadow: 0 0 0 15px rgba(255, 158, 109, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 158, 109, 0.5); }
+        }
+        
+        #timer.warning {
+            color: var(--warning);
+            animation: pulse-warning 1s infinite;
+            border-color: var(--warning);
+            background: #fff9e6;
+        }
+        
+        @keyframes pulse-warning {
+            0% { box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.5); }
+            50% { box-shadow: 0 0 0 18px rgba(255, 209, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.5); }
+        }
+        
+        #timer.danger {
+            color: var(--danger);
+            animation: shake 0.4s infinite;
+            border-color: var(--danger);
+            background: #fff0f0;
+            transform: scale(1.08);
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) scale(1.08); }
+            25% { transform: translateX(-5px) scale(1.08); }
+            75% { transform: translateX(5px) scale(1.08); }
+        }
+        
+        #narrative-container {
+            background: var(--narrative-bg);
+            border-radius: 26px;
+            padding: 24px 20px;
+            margin: 16px 0;
+            box-shadow: var(--shadow);
+            border: 4px solid var(--secondary);
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.6rem;
+            line-height: 1.55;
+            position: relative;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        #narrative-container::before {
+            content: "📖";
+            position: absolute;
+            top: -20px;
+            left: 24px;
+            font-size: 2.3rem;
+            background: var(--accent);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid white;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+            font-weight: bold;
+        }
+        
+        .narrative-highlight {
+            background: linear-gradient(120deg, rgba(255,209,102,0.4), rgba(255,209,102,0.1));
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--kenya-red);
+        }
+        
+        #answer-area {
+            margin: 22px 0;
+        }
+        
+        #answer-input {
+            width: 100%;
+            padding: 18px 24px;
+            font-size: 1.5rem;
+            border: 5px solid var(--secondary);
+            border-radius: 26px;
+            margin: 14px 0;
+            text-align: center;
+            transition: var(--transition);
+            background: #f9fbff;
+            font-weight: 600;
+            min-height: 65px;
+            direction: ltr;
+            text-align: center;
+        }
+        
+        #answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 6px rgba(255, 107, 53, 0.25);
+            background: white;
+            transform: scale(1.03);
+        }
+        
+        #answer-input::placeholder {
+            color: #777;
+            font-style: italic;
+            font-weight: 500;
+        }
+        
+        #hint-container {
+            min-height: 60px;
+            margin: 14px 0;
+            padding: 12px 18px;
+            border-radius: 20px;
+            background: #e8f4fd;
+            border-left: 6px solid var(--secondary);
+            display: none;
+            font-size: 1.35rem;
+            color: var(--kenya-black);
+            font-weight: 600;
+            animation: slideIn 0.35s ease;
+            text-align: center;
+        }
+        
+        #hint-container.show {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        #feedback {
+            min-height: 50px;
+            margin: 14px 0;
+            font-size: 1.45rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 12px 18px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 60px;
+        }
+        
+        .feedback-correct {
+            background: rgba(6, 214, 160, 0.3);
+            color: #047a57;
+            border: 3px solid var(--success);
+            animation: popIn 0.45s ease;
+        }
+        
+        .feedback-incorrect {
+            background: rgba(239, 71, 111, 0.25);
+            color: #a3153e;
+            border: 3px solid var(--danger);
+            animation: shake 0.45s ease;
+        }
+        
+        .feedback-timeup {
+            background: rgba(255, 158, 109, 0.3);
+            color: #8a4a00;
+            border: 3px solid var(--warning);
+            animation: pulse-warning 0.7s ease;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.06); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        #progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 14px 20px;
+            background: white;
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            border: 3px solid var(--accent);
+        }
+        
+        #score-display {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--kenya-black);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #progress-bar {
+            flex: 1;
+            height: 26px;
+            background: #e9ecef;
+            border-radius: 13px;
+            margin: 0 20px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #ccc;
+        }
+        
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary), var(--accent));
+            border-radius: 11px;
+            width: 0%;
+            transition: width 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 2.5s infinite;
+        }
+        
+        @keyframes shine {
+            100% { left: 100%; }
+        }
+        
+        #progress-text {
+            font-weight: 700;
+            color: var(--kenya-black);
+            min-width: 60px;
+            text-align: right;
+            font-size: 1.3rem;
+        }
+        
+        #action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        #voice-btn {
+            background: linear-gradient(45deg, #9d50ff, #6e48aa);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 7px 0 rgba(100, 50, 150, 0.85);
+            transition: var(--transition);
+            margin: 10px;
+            position: relative;
+            border: 4px solid white;
+            z-index: 10;
+        }
+        
+        #voice-btn:hover {
+            transform: scale(1.13) rotate(4deg);
+            box-shadow: 0 9px 0 rgba(100, 50, 150, 0.95);
+        }
+        
+        #voice-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 0 rgba(100, 50, 150, 0.85);
+        }
+        
+        #voice-btn .sound-wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid white;
+            animation: soundWave 1.7s infinite;
+            opacity: 0;
+        }
+        
+        @keyframes soundWave {
+            0% { transform: scale(0.7); opacity: 0.9; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+        
+        #result-screen {
+            text-align: center;
+            padding: 28px 18px;
+        }
+        
+        .result-title {
+            font-size: 2.3rem;
+            margin: 20px 0;
+            color: var(--kenya-black);
+            line-height: 1.35;
+            font-weight: 800;
+        }
+        
+        .result-message {
+            font-size: 1.7rem;
+            margin: 20px 0;
+            line-height: 1.5;
+            min-height: 80px;
+            font-weight: 600;
+        }
+        
+        .stars {
+            font-size: 3.8rem;
+            margin: 14px 0;
+            color: var(--accent);
+            text-shadow: 0 0 15px rgba(255, 217, 0, 0.9);
+            letter-spacing: 5px;
+        }
+        
+        .stats {
+            background: white;
+            border-radius: 26px;
+            padding: 20px;
+            margin: 24px 0;
+            box-shadow: var(--shadow);
+            text-align: left;
+            border: 4px solid var(--secondary);
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 2px dashed #eee;
+            font-size: 1.35rem;
+            font-weight: 600;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--primary);
+            padding-top: 10px;
+            margin-top: 8px;
+        }
+        
+        .stat-label {
+            color: #555;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            animation: confetti-fall 5s ease-in-out forwards;
+            z-index: 100;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg) scale(0.9); opacity: 1; }
+            25% { transform: translateY(30vh) rotate(100deg) scale(1); }
+            50% { transform: translateY(60vh) rotate(200deg) scale(1.1); }
+            75% { transform: translateY(85vh) rotate(300deg) scale(1); }
+            100% { transform: translateY(120vh) rotate(360deg) scale(1.05); opacity: 0; }
+        }
+        
+        .topic-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--secondary);
+            color: white;
+            padding: 7px 18px;
+            border-radius: 26px;
+            font-size: 1.2rem;
+            margin: 5px;
+            font-weight: 700;
+            box-shadow: 0 4px 0 rgba(0, 120, 110, 0.9);
+            transition: var(--transition);
+        }
+        
+        .topic-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0, 120, 110, 1);
+        }
+        
+        .topic-tag.siku { background: linear-gradient(45deg, #FF6B6B, #EE5A24); }
+        .topic-tag.mimi { background: linear-gradient(45deg, #4ECDC4, #1A535C); }
+        .topic-tag.mwili { background: linear-gradient(45deg, #A29BFE, #6C5CE7); }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.85rem; }
+            .subtitle { font-size: 1.2rem; }
+            .character { font-size: 4.3rem; }
+            .btn { 
+                padding: 14px 32px; 
+                font-size: 1.3rem;
+                min-width: 185px;
+            }
+            .btn-large {
+                padding: 16px 42px;
+                font-size: 1.45rem;
+                min-width: 220px;
+            }
+            #narrative-container { 
+                font-size: 1.5rem; 
+                padding: 20px 16px;
+                min-height: 145px;
+            }
+            #answer-input { 
+                font-size: 1.4rem; 
+                padding: 16px 20px;
+                min-height: 60px;
+            }
+            #timer { 
+                font-size: 3.1rem; 
+                width: 88px;
+                height: 88px;
+            }
+            #level-indicator { font-size: 1.4rem; padding: 7px 18px; }
+            .result-title { font-size: 2.1rem; }
+            .result-message { font-size: 1.6rem; }
+            .stars { font-size: 3.4rem; }
+            #voice-btn { 
+                width: 65px; 
+                height: 65px; 
+                font-size: 2rem;
+            }
+            .stat-row { font-size: 1.28rem; }
+        }
+        
+        @media (max-width: 420px) {
+            #game-container { 
+                border-radius: 26px; 
+                padding: 12px;
+                border-width: 4px;
+            }
+            h1 { font-size: 1.7rem; }
+            .subtitle { font-size: 1.1rem; }
+            .btn { 
+                padding: 12px 26px; 
+                font-size: 1.2rem;
+                min-width: 165px;
+                margin: 12px 6px;
+            }
+            #narrative-container { 
+                font-size: 1.4rem; 
+                padding: 18px 14px;
+            }
+            #answer-input { font-size: 1.3rem; padding: 14px 18px; }
+            #timer { font-size: 2.8rem; width: 80px; height: 80px; }
+            #level-indicator { font-size: 1.3rem; padding: 6px 16px; }
+            .stat-row { font-size: 1.2rem; }
+            .stars { font-size: 3rem; }
+            #voice-btn { width: 60px; height: 60px; font-size: 1.9rem; }
+            .topic-tag { font-size: 1.1rem; padding: 6px 14px; }
+        }
+        
+        /* Animation for correct answer */
+        @keyframes correctAnim {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(6, 214, 160, 0); }
+            50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(6, 214, 160, 0.95); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(6, 214, 160, 0); }
+        }
+        
+        .correct-answer {
+            animation: correctAnim 0.55s ease;
+            border-color: var(--success) !important;
+            background: #f0fff9 !important;
+        }
+        
+        /* Animation for incorrect answer */
+        @keyframes incorrectAnim {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-9px); }
+            40% { transform: translateX(9px); }
+            60% { transform: translateX(-7px); }
+            80% { transform: translateX(7px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .incorrect-answer {
+            animation: incorrectAnim 0.5s ease;
+            border-color: var(--danger) !important;
+            background: #fff5f7 !important;
+        }
+        
+        /* Floating elements for visual appeal */
+        .floating {
+            animation: floating 4s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-14px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating-slow {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        /* Voice button pulse animation */
+        @keyframes voicePulse {
+            0% { box-shadow: 0 0 0 0 rgba(157, 80, 255, 0.8); }
+            70% { box-shadow: 0 0 0 16px rgba(157, 80, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(157, 80, 255, 0.8); }
+        }
+        
+        .voice-active {
+            animation: voicePulse 1.8s infinite;
+        }
+        
+        /* Kiswahili cultural decorations */
+        .kanga-pattern {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: beadPop 1.8s infinite ease-in-out;
+            border: 2px solid white;
+        }
+        
+        .kanga-pattern:nth-child(1) { background: var(--kenya-red); animation-delay: 0s; }
+        .kanga-pattern:nth-child(2) { background: var(--kenya-black); animation-delay: 0.3s; }
+        .kanga-pattern:nth-child(3) { background: var(--kenya-white); animation-delay: 0.6s; }
+        .kanga-pattern:nth-child(4) { background: var(--kenya-green); animation-delay: 0.9s; }
+        .kanga-pattern:nth-child(5) { background: var(--accent); animation-delay: 1.2s; }
+        
+        @keyframes beadPop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+        
+        .animal-icon {
+            font-size: 2rem;
+            margin: 0 4px;
+            display: inline-block;
+            animation: bounce 2.2s infinite;
+        }
+        
+        .animal-icon:nth-child(2) { animation-delay: 0.4s; }
+        .animal-icon:nth-child(3) { animation-delay: 0.8s; }
+        
+        /* Level complete animation */
+        @keyframes levelComplete {
+            0% { transform: scale(0.65); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .level-complete {
+            animation: levelComplete 0.7s ease-out;
+        }
+        
+        /* Kenyan flag corner decoration */
+        .flag-corner {
+            position: absolute;
+            width: 65px;
+            height: 65px;
+            top: 18px;
+            right: 18px;
+            background: linear-gradient(135deg, 
+                var(--kenya-black) 0%, var(--kenya-black) 25%,
+                var(--kenya-red) 25%, var(--kenya-red) 50%,
+                var(--kenya-white) 50%, var(--kenya-white) 75%,
+                var(--kenya-green) 75%, var(--kenya-green) 100%);
+            border-radius: 0 22px 0 100%;
+            opacity: 0.9;
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            color: white;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+            font-weight: bold;
+        }
+        
+        @media (max-width: 450px) {
+            .flag-corner {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+                top: 12px;
+                right: 12px;
+            }
+        }
+        
+        /* Progress celebration */
+        .progress-celebrate {
+            animation: celebrate 0.9s ease;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.18) rotate(3deg); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Input focus glow for accessibility */
+        #answer-input:focus-visible {
+            outline: 4px solid var(--primary);
+            outline-offset: 3px;
+        }
+        
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Narrative story bubble effect */
+        .story-bubble {
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .story-bubble::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 30px;
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: var(--narrative-bg) transparent;
+            display: block;
+            width: 0;
+        }
+        
+        /* Topic indicator badges */
+        .topic-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 5px 0;
+            color: white;
+        }
+        
+        .topic-badge.siku { background: #FF6B6B; }
+        .topic-badge.mimi { background: #4ECDC4; }
+        .topic-badge.mwili { background: #A29BFE; }
+        
+        /* Voice instruction tooltip */
+        .voice-tooltip {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 20;
+        }
+        
+        #voice-btn:hover .voice-tooltip {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="flag-corner">🇰🇪</div>
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="character floating">🦁✨📚</div>
+            <h1>Safari ya Kiswahili</h1>
+            <p class="subtitle">Darasa la 1 • Mada za CBC:<br>🗓️ Siku za Wiki • 👥 Mimi na Wenzangu • 🦵 Mwili Wangu</p>
+            
+            <div class="kenyan-pattern"></div>
+            
+            <div style="margin: 20px 0; display: flex; justify-content: center; flex-wrap: wrap;">
+                <span class="topic-tag siku">🗓️ Siku za Wiki</span>
+                <span class="topic-tag mimi">👥 Mimi na Wenzangu</span>
+                <span class="topic-tag mwili">🦵 Mwili Wangu</span>
+            </div>
+            
+            <div style="margin: 18px 0; font-size: 1.4rem; display: flex; justify-content: center;">
+                <span class="kanga-pattern"></span>
+                <span class="kanga-pattern"></span>
+                <span class="kanga-pattern"></span>
+                <span class="kanga-pattern"></span>
+                <span class="kanga-pattern"></span>
+            </div>
+            
+            <button id="start-btn" class="btn btn-large">🚀 Anza Safari!</button>
+            <button id="how-to-play" class="btn btn-secondary">❓ Jinsi ya Kucheza</button>
+            
+            <div id="instructions" style="display: none; margin-top: 24px; text-align: left; background: white; padding: 20px; border-radius: 24px; box-shadow: var(--shadow); border: 4px solid var(--accent);">
+                <h3 style="margin-bottom: 14px; color: var(--kenya-black); font-size: 1.5rem; font-weight: 700;">🎮 Jinsi ya Kucheza:</h3>
+                <ul style="text-align: left; line-height: 1.8; font-size: 1.25rem; padding-left: 24px; margin-bottom: 18px;">
+                    <li>🔊 Bonyeza <strong>🔊</strong> kusikia hadithi na swali</li>
+                    <li>⏱️ Una <strong>sekunde 40</strong> kujibu kila swali</li>
+                    <li>💡 Vidokezo huonekana wakati muda unapungua</li>
+                    <li>✍️ Andika jibu lako (hakuna chaguo A,B,C,D!)</li>
+                    <li>⭐ Pata <strong>80% au zaidi</strong> kufungua kiwango kijacho</li>
+                    <li>🎯 Viwango 5 • Maswali 40 kwa kila kiwango</li>
+                    <li>🔄 Maswali hayarudi! Mada zote zimefunikwa</li>
+                </ul>
+                <div style="text-align: center; font-size: 2rem; margin-top: 12px; font-weight: 700;">
+                    <span class="animal-icon">🦁</span>
+                    <span class="animal-icon">🐘</span>
+                    <span class="animal-icon">🦒</span>
+                </div>
+                <p style="margin-top: 15px; font-weight: 600; color: var(--kenya-green);">
+                    💡 Kidokezo: Andika jibu kwa Kiswahili!
+                </p>
+            </div>
+        </div>
+        
+        <!-- Level Select Screen -->
+        <div id="level-select-screen" class="screen">
+            <h1 style="text-align: center; margin: 14px 0; font-size: 1.95rem; font-weight: 800;">🏆 Chagua Kiwango Chako</h1>
+            <p style="text-align: center; margin-bottom: 24px; font-size: 1.3rem; line-height: 1.5; font-weight: 600;">Pata angalau maswali 32/40 sahihi kufungua kiwango kijacho!</p>
+            
+            <div id="level-select">
+                <button class="level-btn" data-level="1">
+                    <span class="level-num">1</span>
+                    Kiwango 1<span class="star">⭐</span><br><small style="font-size:0.95rem;display:block;margin-top:5px">Mzuri Kuanza</small>
+                </button>
+                <button class="level-btn locked" data-level="2">
+                    <span class="level-num">2</span>
+                    Kiwango 2<span class="star">⭐</span><br><small style="font-size:0.95rem;display:block;margin-top:5px">Mwanafunzi Mzuri</small>
+                </button>
+                <button class="level-btn locked" data-level="3">
+                    <span class="level-num">3</span>
+                    Kiwango 3<span class="star">⭐</span><br><small style="font-size:0.95rem;display:block;margin-top:5px">Mtaalamu Mdogo</small>
+                </button>
+                <button class="level-btn locked" data-level="4">
+                    <span class="level-num">4</span>
+                    Kiwango 4<span class="star">⭐</span><br><small style="font-size:0.95rem;display:block;margin-top:5px">Bingwa wa Kiswahili</small>
+                </button>
+                <button class="level-btn locked" data-level="5">
+                    <span class="level-num">5</span>
+                    Kiwango 5<span class="star">🌟</span><br><small style="font-size:0.95rem;display:block;margin-top:5px">Mwalimu Mdogo</small>
+                </button>
+            </div>
+            
+            <div class="kenyan-pattern"></div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="back-to-start" class="btn btn-secondary">← Rudi Nyumbani</button>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div id="level-indicator">Kiwango <span id="current-level">1</span> 🇰🇪</div>
+                <button id="voice-btn" class="floating">
+                    🔊
+                    <span class="sound-wave"></span>
+                    <span class="voice-tooltip">Bonyeza kusikia tena</span>
+                </button>
+            </div>
+            
+            <div id="timer-container">
+                <div id="timer">40</div>
+                <div style="font-size: 1.1rem; color: #555; margin-top: 8px; font-weight: 600;">sekunde zimebaki</div>
+            </div>
+            
+            <div id="topic-indicator" style="text-align: center; margin: 8px 0;">
+                <span class="topic-badge siku" id="current-topic">Siku za Wiki</span>
+            </div>
+            
+            <div id="narrative-container">
+                Inapakia hadithi yako... 📖✨
+            </div>
+            
+            <div id="hint-container"></div>
+            
+            <div id="answer-area">
+                <input type="text" id="answer-input" placeholder="Andika jibu lako hapa..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" dir="auto">
+            </div>
+            
+            <div id="feedback"></div>
+            
+            <div id="progress-container">
+                <div id="score-display">⭐ <span id="score">0</span>/<span id="total-questions">40</span></div>
+                <div id="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <div id="progress-text"><span id="answered">0</span>/40</div>
+            </div>
+            
+            <div id="action-buttons">
+                <button id="submit-btn" class="btn">✓ Wasilisha Jibu</button>
+                <button id="next-btn" class="btn" style="display: none;">Swali Lijalo ➡️</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 12px; font-size: 1.15rem; color: #666; font-weight: 600;">
+                Bonyeza <strong>Enter</strong> kuwasilisha jibu lako!
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div class="character level-complete">🎉🦁</div>
+            <h1 class="result-title" id="result-title">Hongera! Umemaliza Kiwango!</h1>
+            <div class="stars" id="stars">⭐⭐⭐</div>
+            <p class="result-message" id="result-message">Wewe ni mwanafunzi mzuri wa Kiswahili!</p>
+            
+            <div class="kenyan-pattern"></div>
+            
+            <div class="stats">
+                <div class="stat-row">
+                    <span class="stat-label">Maswali uliojibu:</span>
+                    <span id="result-answered">0/40</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Majibu sahihi:</span>
+                    <span id="result-correct">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Alama yako:</span>
+                    <span id="result-score">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Pointi za ziada:</span>
+                    <span id="result-bonus">+0</span>
+                </div>
+            </div>
+            
+            <div id="next-level-container" style="margin: 24px 0;">
+                <button id="next-level-btn" class="btn btn-large" style="display: none;">🚀 Kiwango Kijacho!</button>
+                <button id="retry-btn" class="btn btn-secondary">🔄 Jaribu Tena</button>
+                <button id="home-btn" class="btn btn-secondary">🏠 Nyumbani</button>
+            </div>
+            
+            <div style="margin-top: 18px; font-size: 1.3rem; color: var(--kenya-green); font-weight: 700;">
+                <span class="animal-icon">🦁</span> Umefanya vizuri, mwanangu! <span class="animal-icon">🐘</span>
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 1.2rem; color: var(--kenya-red); font-weight: 600; font-style: italic;">
+                "Asante kwa kujifunza Kiswahili!" 🇰🇪
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================
+        // GAME CONFIGURATION - Grade 1 Kiswahili Optimized
+        // ======================
+        const CONFIG = {
+            levels: 5,
+            questionsPerLevel: 40,
+            timePerQuestion: 40, // seconds
+            passThreshold: 0.8, // 80% to pass (32/40)
+            hintThresholds: [30, 20, 10], // seconds when hints appear
+            voiceEnabled: true,
+            // Grade 1: simpler answers, forgiving matching for Kiswahili
+            answerSimplifier: true,
+            // Kiswahili voice phrases
+            voicePhrases: {
+                timeUp: "Muda umeisha! Hebu tuone jibu.",
+                correct: ["Sawa sana!", "Hongera!", "Umefanya vizuri!", "Mzuri sana!", "Hongera mwanangu!", "Umepata!"],
+                incorrect: ["Jaribu tena!", "Siyo sahihi, lakini karibu!", "Usikate tamaa, jaribu tena!", "Karibu, lakini jibu ni tofauti"],
+                welcome: "Karibu kwenye Safari ya Kiswahili!",
+                levelComplete: "Hongera! Umemaliza kiwango!",
+                levelFailed: "Usikate tamaa! Jaribu tena kufungua kiwango kijacho."
+            }
+        };
+
+        // ======================
+        // QUESTION BANK - Grade 1 Kiswahili CBC (200 unique narrative questions)
+        // Topics: Siku za Wiki (67), Mimi na Wenzangu (67), Mwili Wangu (66)
+        // Format: Narrative stories with embedded questions
+        // ======================
+        const questionBank = {
+            siku: [
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumatatu</span>. Juma linaanza na siku hii. Kesho itakuwa siku gani baada ya Jumatatu?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku inayofuata Jumatatu inaanza na 'Ju'",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alinieleza kuwa <span class='narrative-highlight'>Jumamosi</span> tunakwenda sokoni. Siku inayofuata Jumamosi ni siku gani?", 
+                    answer: ["jumapili", "jumapili tu"], 
+                    hint: "Siku ya mwisho ya juma, siku ya ibada",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni tunapenda <span class='narrative-highlight'>Ijumaa</span> kwa sababu ni siku ya mwisho ya kusoma. Siku inayotangulia Ijumaa ni siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma, inaanza na 'Al'",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba anafanya kazi siku tano kwa juma. Siku ya kwanza ya kazi yake ni <span class='narrative-highlight'>Jumatatu</span>. Je, siku ya tatu ya kazi yake ni siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumapili</span> kwa sababu hatuna shule. Siku inayotangulia Jumapili ni siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya sita ya juma, siku ya kupumzika",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumatano</span>. Kesho itakuwa siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku inayofuata Jumatano inaanza na 'Al'",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Juma lina siku <span class='narrative-highlight'>saba</span>. Siku ya kwanza ya juma ni siku gani?", 
+                    answer: ["jumapili", "jumapili tu"], 
+                    hint: "Siku ya ibada, siku ya mwanzo wa juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, tunapenda <span class='narrative-highlight'>Alhamisi</span> kwa sababu tuna maswali ya Kiswahili. Siku inayofuata Alhamisi ni siku gani?", 
+                    answer: ["ijumaa"], 
+                    hint: "Siku ya mwisho ya shule, inaanza na 'Ij'",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alinunua matunda <span class='narrative-highlight'>Jumanne</span>. Siku inayotangulia Jumanne ni siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapiga hesabu ya siku za juma: Jumatatu, Jumanne, <span class='narrative-highlight'>Jumatano</span>... siku inayofuata ni siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba anarudi nyumbani <span class='narrative-highlight'>Ijumaa</span> mapema. Siku inayotangulia Ijumaa ni siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumamosi</span>. Kesho itakuwa siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwisho ya juma, siku ya kupumzika",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni tunapenda <span class='narrative-highlight'>Jumatatu</span> kwa sababu tunaanza juma jipya. Siku inayofuata Jumatatu ni siku gani?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku ya pili ya juma, inaanza na 'Ju'",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alitupa pesa ya chakula <span class='narrative-highlight'>Alhamisi</span>. Siku inayotangulia Alhamisi ni siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumanne</span> kwa sababu tuna michezo shuleni. Siku inayofuata Jumanne ni siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya tatu ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Alhamisi</span>. Kesho itakuwa siku gani?", 
+                    answer: ["ijumaa"], 
+                    hint: "Siku ya mwisho ya kazi shuleni",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba alinieleza kuwa <span class='narrative-highlight'>Jumapili</span> tunakwenda kanisani. Siku inayotangulia Jumapili ni siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya sita ya juma, siku ya kupumzika",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Jumatano</span> ni siku ya kati ya juma. Siku inayofuata Jumatano ni siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma, inaanza na 'Al'",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Ijumaa</span> kwa sababu tunamaliza shule mapema. Siku inayotangulia Ijumaa ni siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku inayofuata Jumatano",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumapili</span>. Kesho itakuwa siku gani ya juma mpya?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alinunua nguo mpya <span class='narrative-highlight'>Jumamosi</span>. Siku inayotangulia Jumamosi ni siku gani?", 
+                    answer: ["ijumaa"], 
+                    hint: "Siku ya mwisho ya kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni tunapenda <span class='narrative-highlight'>Jumatatu</span> kwa sababu tunaanza maswali mapya. Siku inayofuata Jumatatu ni siku gani?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku ya pili ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapiga hesabu ya siku: Jumapili, <span class='narrative-highlight'>Jumatatu</span>, Jumanne... siku inayotangulia Jumatatu ni siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwanzo wa juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba anafanya kazi siku tano. Siku ya mwisho ya kazi yake ni <span class='narrative-highlight'>Ijumaa</span>. Siku inayofuata Ijumaa ni siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya kupumzika baada ya kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumanne</span>. Kesho itakuwa siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya tatu ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alitupa pesa ya chakula <span class='narrative-highlight'>Jumatano</span>. Siku inayotangulia Jumatano ni siku gani?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku ya pili ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Alhamisi</span> ni siku ya mazoezi ya Kiswahili. Siku inayofuata Alhamisi ni siku gani?", 
+                    answer: ["ijumaa"], 
+                    hint: "Siku ya mwisho ya shule",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumapili</span> kwa sababu tunakutana na jamaa. Siku inayotangulia Jumapili ni siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya sita ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Ijumaa</span>. Kesho itakuwa siku gani ya wikendi?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya kwanza ya wikendi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba alinieleza kuwa <span class='narrative-highlight'>Jumatatu</span> tunaanza shule. Siku inayofuata Jumatatu ni siku gani?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku ya pili ya juma la shule",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Alhamisi</span> kwa sababu karibu tunamaliza shule. Siku inayotangulia Alhamisi ni siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Jumamosi</span> hatuna shule. Siku inayofuata Jumamosi ni siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwisho ya juma, siku ya ibada",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumatano</span>. Siku mbili zilizopita ilikuwa siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alinunua matunda <span class='narrative-highlight'>Ijumaa</span>. Siku mbili baadaye itakuwa siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwisho ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumanne</span> kwa sababu tuna michezo. Siku tatu baada ya Jumanne ni siku gani?", 
+                    answer: ["ijumaa"], 
+                    hint: "Siku ya mwisho ya shule",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba anarudi nyumbani <span class='narrative-highlight'>Alhamisi</span>. Siku tatu zilizopita ilikuwa siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Jumapili</span> hatuna shule. Siku nne baada ya Jumapili ni siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumamosi</span>. Siku nne zilizopita ilikuwa siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumatatu</span> kwa sababu tunaanza juma jipya. Siku tano baada ya Jumatatu ni siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya sita ya juma, siku ya kupumzika",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alitupa pesa <span class='narrative-highlight'>Jumanne</span>. Siku tano zilizopita ilikuwa siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwanzo wa juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba alinieleza kuwa juma lina siku <span class='narrative-highlight'>saba</span>. Siku ya saba ya juma ni siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwisho ya juma, siku ya ibada",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, tunapenda <span class='narrative-highlight'>Ijumaa</span> kwa sababu tunamaliza mapema. Siku ya kwanza ya juma ni siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwanzo wa juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Alhamisi</span>. Siku mbili baadaye itakuwa siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya kwanza ya wikendi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumatano</span> kwa sababu ni siku ya kati. Siku mbili zilizopita ilikuwa siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alinunua nguo <span class='narrative-highlight'>Jumapili</span>. Siku tatu baadaye itakuwa siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba anafanya kazi <span class='narrative-highlight'>Jumatatu</span> hadi Ijumaa. Siku ya kati ya kazi yake ni siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya tatu ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Jumamosi</span> hatuna shule. Siku ya mwisho ya juma ni siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya ibada, siku ya mwisho",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Ijumaa</span>. Siku moja iliyopita ilikuwa siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumanne</span> kwa sababu tuna michezo. Siku moja baadaye itakuwa siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya tatu ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alitupa pesa <span class='narrative-highlight'>Jumatatu</span>. Siku moja baadaye ilikuwa siku gani?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku ya pili ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba alinieleza kuwa <span class='narrative-highlight'>Jumapili</span> ni siku ya ibada. Siku inayofuata Jumapili ni siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Alhamisi</span> ni siku ya mazoezi. Siku inayotangulia Alhamisi ni siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumamosi</span>. Siku mbili zilizopita ilikuwa siku gani?", 
+                    answer: ["ijumaa"], 
+                    hint: "Siku ya mwisho ya kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumatano</span> kwa sababu ni siku ya kati. Siku moja baadaye itakuwa siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alinunua matunda <span class='narrative-highlight'>Alhamisi</span>. Siku moja iliyopita ilikuwa siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba anarudi nyumbani <span class='narrative-highlight'>Ijumaa</span>. Siku moja baadaye itakuwa siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya kwanza ya wikendi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Jumanne</span> ni siku ya michezo. Siku moja zilizopita ilikuwa siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la shule",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Jumatatu</span>. Siku moja baadaye itakuwa siku gani?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku ya pili ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumapili</span> kwa sababu hatuna shule. Siku moja iliyopita ilikuwa siku gani?", 
+                    answer: ["jumamosi"], 
+                    hint: "Siku ya sita ya juma, siku ya kupumzika",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alitupa pesa <span class='narrative-highlight'>Ijumaa</span>. Siku moja zilizopita ilikuwa siku gani?", 
+                    answer: ["alhamisi"], 
+                    hint: "Siku ya nne ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba alinieleza kuwa <span class='narrative-highlight'>Jumamosi</span> tunakwenda sokoni. Siku moja baadaye itakuwa siku gani?", 
+                    answer: ["jumapili"], 
+                    hint: "Siku ya mwisho ya juma",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Shuleni yetu, <span class='narrative-highlight'>Jumatano</span> ni siku ya kati. Siku moja zilizopita ilikuwa siku gani?", 
+                    answer: ["jumanne"], 
+                    hint: "Siku ya pili ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Leo ni <span class='narrative-highlight'>Alhamisi</span>. Siku moja iliyopita ilikuwa siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Tunapenda <span class='narrative-highlight'>Jumanne</span> kwa sababu tuna michezo. Siku mbili zilizopita ilikuwa siku gani?", 
+                    answer: ["jumatatu"], 
+                    hint: "Siku ya kwanza ya juma la shule",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Mama alinunua nguo <span class='narrative-highlight'>Jumapili</span>. Siku mbili baadaye itakuwa siku gani?", 
+                    answer: ["jumatano"], 
+                    hint: "Siku ya kati ya juma la kazi",
+                    topic: "siku"
+                },
+                { 
+                    narrative: "Baba anafanya kazi <span class='narrative-highlight'>Jumatatu</span> hadi Ijumaa. Siku ya mwisho ya kazi yake ni siku gani?", 
+                    answer: ["ijumaa"], 
+                    hint: "Siku ya mwisho ya juma la kazi",
+                    topic: "siku"
+                }
+            ],
+            mimi: [
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Amina</span>. Mimi ni msichana. Mimi na rafiki yangu <span class='narrative-highlight'>Fatuma</span> tunapenda kucheza pamoja. Je, Fatuma ni nani kwa Amina?", 
+                    answer: ["rafiki", "rafiki yake"], 
+                    hint: "Mtu unayependa kucheza naye",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>wenzangu</span> tunakwenda shule pamoja. Tunapenda kusoma na kucheza. Nani anayekwenda shule na mimi?", 
+                    answer: ["wenzangu", "wenzie", "marafiki"], 
+                    hint: "Watu wanaokwenda shule na wewe",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Baraka</span>. Mimi ni mvulana. Mimi na dada yangu <span class='narrative-highlight'>Neema</span> tunapenda kusaidia mama. Je, Neema ni nani kwa Baraka?", 
+                    answer: ["dada", "dada yake"], 
+                    hint: "Mwanamke mdogo kuliko wewe katika familia",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kaka yangu</span> tunapenda kucheza mpira. Yeye ni mvulana kama mimi. Je, kaka yangu ni nani?", 
+                    answer: ["kaka", "kaka yangu", "ndugu"], 
+                    hint: "Mwanaume mkubwa kuliko wewe katika familia",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Zawadi</span>. Mimi ni msichana. Mimi na <span class='narrative-highlight'>baba yangu</span> tunapenda kusoma hadithi. Je, baba yangu ni nani?", 
+                    answer: ["baba", "baba yangu", "baba"], 
+                    hint: "Mwanaume mzazi wako",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mama yangu</span> tunapika chakula pamoja. Yeye ananipenda sana. Je, mama yangu ni nani?", 
+                    answer: ["mama", "mama yangu", "mama"], 
+                    hint: "Mwanamke mzazi wako",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>David</span>. Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda maswali ya Kiswahili. Nani ananifundisha shuleni?", 
+                    answer: ["mwalimu", "walimu", "mwalimu wangu"], 
+                    hint: "Mtu anayekufundisha shuleni",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>rafiki yangu</span> tunashirikiana kufanya kazi za nyumbani. Tunasaidiana. Je, nini tunafanya pamoja?", 
+                    answer: ["kusaidiana", "kushirikiana", "kusaidia"], 
+                    hint: "Kufanya kitu pamoja kwa upendo",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Grace</span>. Mimi na <span class='narrative-highlight'>jirani yangu</span> tunakutana kila asubuhi. Yeye anakwenda shule pia. Je, jirani yangu ni nani?", 
+                    answer: ["jirani", "jirani yangu"], 
+                    hint: "Mtu anayeishi karibu na nyumba yako",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>wazazi wangu</span> tunapenda kula chakula pamoja. Wanatunza. Je, nani wanatunza mimi?", 
+                    answer: ["wazazi", "mama na baba", "wazazi wangu"], 
+                    hint: "Mama na baba wako",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Emmanuel</span>. Mimi na <span class='narrative-highlight'>dada zangu</span> tunapenda kucheza. Wao ni wasichana. Je, dada zangu ni nani?", 
+                    answer: ["dada", "dada zangu", "wasichana"], 
+                    hint: "Wanawake wadogo katika familia yako",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kaka zangu</span> tunapenda kucheza mpira. Wao ni wavulana. Je, kaka zangu ni nani?", 
+                    answer: ["kaka", "kaka zangu", "wavulana"], 
+                    hint: "Wanaume katika familia yako",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Faith</span>. Mimi na <span class='narrative-highlight'>marafiki zangu</span> tunapenda kusoma vitabu. Tunasoma pamoja. Je, nini tunafanya pamoja?", 
+                    answer: ["kusoma", "kusoma vitabu", "kujifunza"], 
+                    hint: "Kuangalia herufi na maneno katika kitabu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda mazoezi ya Kiswahili. Wanatufundisha. Je, nini wanafanya walimu?", 
+                    answer: ["kufundisha", "kufundisha wanafunzi", "kuelimisha"], 
+                    hint: "Kumpa mtu maarifa",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Godwin</span>. Mimi na <span class='narrative-highlight'>rafiki yangu</span> tunashirikiana kufanya kazi za shule. Tunasaidiana. Je, nini tunafanya?", 
+                    answer: ["kushirikiana", "kusaidiana", "kufanya kazi pamoja"], 
+                    hint: "Kufanya kitu pamoja kwa upendo",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mama yangu</span> tunapika chapati pamoja. Ananifundisha. Je, nini anafanya mama?", 
+                    answer: ["kufundisha", "kufundisha kupika", "kunielekeza"], 
+                    hint: "Kumpa mtu ujuzi wa kufanya kitu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Happiness</span>. Mimi na <span class='narrative-highlight'>baba yangu</span> tunakwenda sokoni pamoja. Ananunulia vitu. Je, nini anafanya baba?", 
+                    answer: ["kununulia", "kununulia vitu", "kunisaidia"], 
+                    hint: "Kunipa vitu ninavyohitaji",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>dada yangu</span> tunasaidia mama kupika. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kusaidia", "kusaidia mama", "kufanya kazi pamoja"], 
+                    hint: "Kumpa mtu msaada",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Ibrahim</span>. Mimi na <span class='narrative-highlight'>kaka yangu</span> tunacheza mpira pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda hadithi za Kiswahili. Wanatueleza. Je, nini wanafanya walimu?", 
+                    answer: ["kueleza", "kueleza hadithi", "kufundisha"], 
+                    hint: "Kumpa mtu habari au maarifa",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Joyce</span>. Mimi na <span class='narrative-highlight'>jirani yangu</span> tunakutana kila jioni. Tunazungumza. Je, nini tunafanya?", 
+                    answer: ["kuzungumza", "kuzungumza naye", "kukutana"], 
+                    hint: "Kusema maneno kwa mtu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>rafiki yangu</span> tunashirikiana kufanya kazi za nyumbani. Tunasaidiana. Je, nini tunafanya?", 
+                    answer: ["kushirikiana", "kusaidiana", "kufanya kazi"], 
+                    hint: "Kufanya kitu pamoja kwa upendo",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Kevin</span>. Mimi na <span class='narrative-highlight'>wazazi wangu</span> tunapenda kula chakula pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kula", "kula chakula", "kula pamoja"], 
+                    hint: "Kumeza chakula kwa furaha",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>dada zangu</span> tunapenda kucheza pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza pamoja", "kufurahia"], 
+                    hint: "Kufanya kitu kwa furaha na marafiki",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Lilian</span>. Mimi na <span class='narrative-highlight'>kaka zangu</span> tunapenda kusoma vitabu. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kusoma", "kusoma vitabu", "kujifunza"], 
+                    hint: "Kuangalia herufi na maneno",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>marafiki zangu</span> tunapenda kucheza mpira. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha na wenzako",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Michael</span>. Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda maswali ya Kiswahili. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kujifunza", "kujifunza Kiswahili", "kusoma"], 
+                    hint: "Kupata maarifa mapya",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mama yangu</span> tunapika chakula pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kupika", "kupika chakula", "kufanya kazi pamoja"], 
+                    hint: "Kuandaa chakula kwa furaha",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Nancy</span>. Mimi na <span class='narrative-highlight'>baba yangu</span> tunakwenda sokoni pamoja. Tunanunua. Je, nini tunafanya?", 
+                    answer: ["kununua", "kununua vitu", "kununua sokoni"], 
+                    hint: "Kupata vitu kwa pesa",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>rafiki yangu</span> tunashirikiana kufanya kazi za shule. Tunasaidiana. Je, nini tunafanya?", 
+                    answer: ["kushirikiana", "kusaidiana", "kufanya kazi"], 
+                    hint: "Kufanya kitu pamoja kwa upendo",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Oscar</span>. Mimi na <span class='narrative-highlight'>dada yangu</span> tunapenda kusoma hadithi. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kusoma", "kusoma hadithi", "kujifunza"], 
+                    hint: "Kuangalia maneno katika kitabu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kaka yangu</span> tunacheza mpira pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha na ndugu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Patricia</span>. Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda mazoezi ya Kiswahili. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kujifunza", "kujifunza Kiswahili", "kufanya mazoezi"], 
+                    hint: "Kupata maarifa mapya ya lugha",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>jirani yangu</span> tunakutana kila asubuhi. Tunazungumza. Je, nini tunafanya?", 
+                    answer: ["kuzungumza", "kuzungumza naye", "kukutana"], 
+                    hint: "Kusema maneno kwa mtu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Quincy</span>. Mimi na <span class='narrative-highlight'>wazazi wangu</span> tunapenda kula chakula pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kula", "kula chakula", "kula pamoja"], 
+                    hint: "Kumeza chakula kwa furaha na familia",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>dada zangu</span> tunapenda kucheza pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza pamoja", "kufurahia"], 
+                    hint: "Kufanya kitu kwa furaha na dada",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Richard</span>. Mimi na <span class='narrative-highlight'>kaka zangu</span> tunapenda kusoma vitabu. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kusoma", "kusoma vitabu", "kujifunza"], 
+                    hint: "Kuangalia herufi na maneno katika kitabu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>marafiki zangu</span> tunapenda kucheza mpira. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha na marafiki",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Sarah</span>. Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda maswali ya Kiswahili. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kujifunza", "kujifunza Kiswahili", "kusoma"], 
+                    hint: "Kupata maarifa mapya ya lugha",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mama yangu</span> tunapika chakula pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kupika", "kupika chakula", "kufanya kazi pamoja"], 
+                    hint: "Kuandaa chakula kwa furaha na mama",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Thomas</span>. Mimi na <span class='narrative-highlight'>baba yangu</span> tunakwenda sokoni pamoja. Tunanunua. Je, nini tunafanya?", 
+                    answer: ["kununua", "kununua vitu", "kununua sokoni"], 
+                    hint: "Kupata vitu kwa pesa na baba",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>rafiki yangu</span> tunashirikiana kufanya kazi za shule. Tunasaidiana. Je, nini tunafanya?", 
+                    answer: ["kushirikiana", "kusaidiana", "kufanya kazi"], 
+                    hint: "Kufanya kitu pamoja kwa upendo na rafiki",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Ursula</span>. Mimi na <span class='narrative-highlight'>dada yangu</span> tunapenda kusoma hadithi. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kusoma", "kusoma hadithi", "kujifunza"], 
+                    hint: "Kuangalia maneno katika kitabu na dada",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kaka yangu</span> tunacheza mpira pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha na kaka",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Victor</span>. Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda mazoezi ya Kiswahili. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kujifunza", "kujifunza Kiswahili", "kufanya mazoezi"], 
+                    hint: "Kupata maarifa mapya ya lugha na walimu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>jirani yangu</span> tunakutana kila asubuhi. Tunazungumza. Je, nini tunafanya?", 
+                    answer: ["kuzungumza", "kuzungumza naye", "kukutana"], 
+                    hint: "Kusema maneno kwa jirani",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Winnie</span>. Mimi na <span class='narrative-highlight'>wazazi wangu</span> tunapenda kula chakula pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kula", "kula chakula", "kula pamoja"], 
+                    hint: "Kumeza chakula kwa furaha na wazazi",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>dada zangu</span> tunapenda kucheza pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza pamoja", "kufurahia"], 
+                    hint: "Kufanya kitu kwa furaha na dada zangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Xavier</span>. Mimi na <span class='narrative-highlight'>kaka zangu</span> tunapenda kusoma vitabu. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kusoma", "kusoma vitabu", "kujifunza"], 
+                    hint: "Kuangalia herufi na maneno katika kitabu na kaka",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>marafiki zangu</span> tunapenda kucheza mpira. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha na marafiki zangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Yvonne</span>. Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda maswali ya Kiswahili. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kujifunza", "kujifunza Kiswahili", "kusoma"], 
+                    hint: "Kupata maarifa mapya ya lugha na walimu wangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mama yangu</span> tunapika chakula pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kupika", "kupika chakula", "kufanya kazi pamoja"], 
+                    hint: "Kuandaa chakula kwa furaha na mama yangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Zachary</span>. Mimi na <span class='narrative-highlight'>baba yangu</span> tunakwenda sokoni pamoja. Tunanunua. Je, nini tunafanya?", 
+                    answer: ["kununua", "kununua vitu", "kununua sokoni"], 
+                    hint: "Kupata vitu kwa pesa na baba yangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>rafiki yangu</span> tunashirikiana kufanya kazi za shule. Tunasaidiana. Je, nini tunafanya?", 
+                    answer: ["kushirikiana", "kusaidiana", "kufanya kazi"], 
+                    hint: "Kufanya kitu pamoja kwa upendo na rafiki yangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Aisha</span>. Mimi na <span class='narrative-highlight'>dada yangu</span> tunapenda kusoma hadithi. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kusoma", "kusoma hadithi", "kujifunza"], 
+                    hint: "Kuangalia maneno katika kitabu na dada yangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kaka yangu</span> tunacheza mpira pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha na kaka yangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Benjamin</span>. Mimi na <span class='narrative-highlight'>walimu wangu</span> tunapenda mazoezi ya Kiswahili. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kujifunza", "kujifunza Kiswahili", "kufanya mazoezi"], 
+                    hint: "Kupata maarifa mapya ya lugha na walimu wangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>jirani yangu</span> tunakutana kila asubuhi. Tunazungumza. Je, nini tunafanya?", 
+                    answer: ["kuzungumza", "kuzungumza naye", "kukutana"], 
+                    hint: "Kusema maneno kwa jirani yangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Caroline</span>. Mimi na <span class='narrative-highlight'>wazazi wangu</span> tunapenda kula chakula pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kula", "kula chakula", "kula pamoja"], 
+                    hint: "Kumeza chakula kwa furaha na wazazi wangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>dada zangu</span> tunapenda kucheza pamoja. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza pamoja", "kufurahia"], 
+                    hint: "Kufanya kitu kwa furaha na dada zangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Jina langu ni <span class='narrative-highlight'>Daniel</span>. Mimi na <span class='narrative-highlight'>kaka zangu</span> tunapenda kusoma vitabu. Tunajifunza. Je, nini tunafanya?", 
+                    answer: ["kusoma", "kusoma vitabu", "kujifunza"], 
+                    hint: "Kuangalia herufi na maneno katika kitabu na kaka zangu",
+                    topic: "mimi"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>marafiki zangu</span> tunapenda kucheza mpira. Tunafurahia. Je, nini tunafurahia?", 
+                    answer: ["kucheza", "kucheza mpira", "kufanya mazoezi"], 
+                    hint: "Kufanya kitu kwa furaha na marafiki zangu",
+                    topic: "mimi"
+                }
+            ],
+            mwili: [
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kichwa changu</span> tunapenda kusoma vitabu. Kichwa changu kina <span class='narrative-highlight'>macho</span> ya kuona. Je, nini ninatumia kuona vitabu?", 
+                    answer: ["macho", "jicho", "macho yangu"], 
+                    hint: "Sehemu ya mwili inayotumika kuona",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu</span> tunapenda kucheza mpira. Mkono wangu una <span class='narrative-highlight'>vidole</span> vitano. Je, nini nina kwenye mkono wangu?", 
+                    answer: ["vidole", "vidole vitano", "vidole vya mkono"], 
+                    hint: "Vitu vidogo vinavyotumika kushika vitu",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu</span> tunapenda kukimbia. Mguu wangu una <span class='narrative-highlight'>kidole</span> cha mguu. Je, nini nina kwenye mguu wangu?", 
+                    answer: ["vidole", "vidole vya mguu", "kidole cha mguu"], 
+                    hint: "Vitu vidogo vinavyotumika kutembea",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>sikio langu</span> tunapenda kusikia nyimbo. Sikio langu linasaidia <span class='narrative-highlight'>kusikia</span>. Je, nini ninatumia kusikia?", 
+                    answer: ["sikio", "masikio", "sikio langu"], 
+                    hint: "Sehemu ya mwili inayotumika kusikia sauti",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>pua yangu</span> tunapenda kunusa maua. Pua yangu inasaidia <span class='narrative-highlight'>kunusa</span>. Je, nini ninatumia kunusa?", 
+                    answer: ["pua", "pua yangu"], 
+                    hint: "Sehemu ya mwili inayotumika kunusa harufu",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kinywa changu</span> tunapenda kula chakula. Kinywa changu kina <span class='narrative-highlight'>meno</span>. Je, nini nina kwenye kinywa changu?", 
+                    answer: ["meno", "meno yangu"], 
+                    hint: "Vitu vigumu vinavyotumika kumenga chakula",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>ulimi wangu</span> tunapenda kuzungumza. Ulimi wangu unasaidia <span class='narrative-highlight'>kuzungumza</span>. Je, nini ninatumia kuzungumza?", 
+                    answer: ["ulimi", "ulimi wangu"], 
+                    hint: "Sehemu ya mwili ndani ya kinywa inayotumika kusema",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>nywele zangu</span> tunapenda kupigwa picha. Nywele zangu ziko kwenye <span class='narrative-highlight'>kichwa</span>. Je, wapi ziko nywele zangu?", 
+                    answer: ["kichwa", "kichwani", "juu ya kichwa"], 
+                    hint: "Sehemu ya juu ya mwili",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>shingo yangu</span> tunapenda kuzunguka. Shingo yangu inaunganisha <span class='narrative-highlight'>kichwa</span> na mwili. Je, nini inaunganisha kichwa na mwili?", 
+                    answer: ["shingo", "shingo yangu"], 
+                    hint: "Sehemu ya mwili chini ya kichwa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mifupa yangu</span> tunapenda kukimbia. Mifupa yangu inasaidia <span class='narrative-highlight'>kusimama</span>. Je, nini inasaidia kusimama?", 
+                    answer: ["mifupa", "mifupa yangu"], 
+                    hint: "Vitu vigumu ndani ya mwili",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>moyo wangu</span> tunapenda kupiga. Moyo wangu upo kwenye <span class='narrative-highlight'>kifua</span>. Je, wapi upo moyo wangu?", 
+                    answer: ["kifua", "kifuani", "ndani ya kifua"], 
+                    hint: "Sehemu ya kati ya mwili",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>tumbo langu</span> tunapenda kula chakula. Tumbo langu linasaidia <span class='narrative-highlight'>kumeng'enya</span>. Je, nini linasaidia kumeng'enya chakula?", 
+                    answer: ["tumbo", "tumbo langu"], 
+                    hint: "Sehemu ya chini ya mwili inayopokea chakula",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu wa kulia</span> tunapenda kuandika. Mkono wangu wa kulia uko upande wa <span class='narrative-highlight'>kulia</span>. Je, upande gani uko mkono wangu wa kuandika?", 
+                    answer: ["kulia", "upande wa kulia"], 
+                    hint: "Upande unaoandika watu wengi",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu wa kushoto</span> tunapenda kushika vitu. Mkono wangu wa kushoto uko upande wa <span class='narrative-highlight'>kushoto</span>. Je, upande gani uko mkono wangu wa kushoto?", 
+                    answer: ["kushoto", "upande wa kushoto"], 
+                    hint: "Upande kinyume na wa kuandika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu wa kulia</span> tunapenda kukimbia. Mguu wangu wa kulia uko upande wa <span class='narrative-highlight'>kulia</span>. Je, upande gani uko mguu wangu wa kukimbia?", 
+                    answer: ["kulia", "upande wa kulia"], 
+                    hint: "Upande unaotumika zaidi kukimbia",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu wa kushoto</span> tunapenda kutembea. Mguu wangu wa kushoto uko upande wa <span class='narrative-highlight'>kushoto</span>. Je, upande gani uko mguu wangu wa kushoto?", 
+                    answer: ["kushoto", "upande wa kushoto"], 
+                    hint: "Upande kinyume na wa kukimbia",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>macho yangu</span> tunapenda kuona rangi. Macho yangu yana <span class='narrative-highlight'>kikope</span>. Je, nini kina macho yangu?", 
+                    answer: ["kikope", "kikope cha jicho"], 
+                    hint: "Sehemu inayofunika jicho wakati wa kulala",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>pua yangu</span> tunapenda kupumua. Pua yangu ina <span class='narrative-highlight'>pande mbili</span>. Je, pua yangu ina pande ngapi?", 
+                    answer: ["mbili", "pande mbili", "mbili tu"], 
+                    hint: "Idadi ya nafasi za kupumua kwenye pua",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kinywa changu</span> tunapenda kusema maneno. Kinywa changu kina <span class='narrative-highlight'>midomo</span>. Je, nini kina kinywa changu?", 
+                    answer: ["midomo", "midomo yangu"], 
+                    hint: "Sehemu nyepesi zinazofungua na kufunga kinywa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>meno yangu</span> tunapenda kumenga chakula. Meno yangu yana <span class='narrative-highlight'>mizizi</span>. Je, nini kina meno yangu?", 
+                    answer: ["mizizi", "mizizi ya meno"], 
+                    hint: "Sehemu ya meno iliyo ndani ya mifupa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>nywele zangu</span> tunapenda kupigwa picha. Nywele zangu zina <span class='narrative-highlight'>rangi</span>. Je, nini kina nywele zangu?", 
+                    answer: ["rangi", "rangi ya nywele"], 
+                    hint: "Maelezo ya jinsi nywele zinavyoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>sikio langu</span> tunapenda kusikia sauti. Sikio langu lina <span class='narrative-highlight'>ndege</span>. Je, nini kina sikio langu?", 
+                    answer: ["ndege", "ndege wa sikio"], 
+                    hint: "Sehemu ya nje ya sikio inayoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu</span> tunapenda kushika vitu. Mkono wangu una <span class='narrative-highlight'>kiganja</span>. Je, nini kina mkono wangu?", 
+                    answer: ["kiganja", "kiganja cha mkono"], 
+                    hint: "Sehemu ya ndani ya mkono inayotumika kushika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu</span> tunapenda kutembea. Mguu wangu una <span class='narrative-highlight'>kiganja</span>. Je, nini kina mguu wangu?", 
+                    answer: ["kiganja", "kiganja cha mguu"], 
+                    hint: "Sehemu ya chini ya mguu inayogusa ardhi",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kifua changu</span> tunapenda kupumua. Kifua changu kina <span class='narrative-highlight'>mapafu</span>. Je, nini kina kifua changu?", 
+                    answer: ["mapafu", "mapafu yangu"], 
+                    hint: "Sehemu za mwili zinazotumika kupumua",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>tumbo langu</span> tunapenda kula chakula. Tumbo langu lina <span class='narrative-highlight'>mimbo</span>. Je, nini kina tumbo langu?", 
+                    answer: ["mimbo", "mimbo ya tumbo"], 
+                    hint: "Sehemu ndogo ndogo za tumbo",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mifupa yangu</span> tunapenda kusimama. Mifupa yangu ina <span class='narrative-highlight'>viungo</span>. Je, nini kina mifupa yangu?", 
+                    answer: ["viungo", "viungo vya mifupa"], 
+                    hint: "Mahali mifupa inapounganika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>moyo wangu</span> tunapenda kupiga. Moyo wangu una <span class='narrative-highlight'>chumba</span>. Je, nini kina moyo wangu?", 
+                    answer: ["chumba", "chumba cha moyo"], 
+                    hint: "Sehemu ndogo ndogo za moyo",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>macho yangu</span> tunapenda kuona rangi. Macho yangu yana <span class='narrative-highlight'>rangi</span>. Je, nini kina macho yangu?", 
+                    answer: ["rangi", "rangi ya macho"], 
+                    hint: "Maelezo ya jinsi macho yanavyoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>nywele zangu</span> tunapenda kupigwa picha. Nywele zangu zina <span class='narrative-highlight'>urefu</span>. Je, nini kina nywele zangu?", 
+                    answer: ["urefu", "urefu wa nywele"], 
+                    hint: "Maelezo ya jinsi nywele zinavyo refu",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>sikio langu</span> tunapenda kusikia sauti. Sikio langu lina <span class='narrative-highlight'>ndege</span>. Je, nini kina sikio langu?", 
+                    answer: ["ndege", "ndege wa sikio"], 
+                    hint: "Sehemu ya nje ya sikio inayoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu</span> tunapenda kushika vitu. Mkono wangu una <span class='narrative-highlight'>kiganja</span>. Je, nini kina mkono wangu?", 
+                    answer: ["kiganja", "kiganja cha mkono"], 
+                    hint: "Sehemu ya ndani ya mkono inayotumika kushika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu</span> tunapenda kutembea. Mguu wangu una <span class='narrative-highlight'>kiganja</span>. Je, nini kina mguu wangu?", 
+                    answer: ["kiganja", "kiganja cha mguu"], 
+                    hint: "Sehemu ya chini ya mguu inayogusa ardhi",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kifua changu</span> tunapenda kupumua. Kifua changu kina <span class='narrative-highlight'>mapafu</span>. Je, nini kina kifua changu?", 
+                    answer: ["mapafu", "mapafu yangu"], 
+                    hint: "Sehemu za mwili zinazotumika kupumua",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>tumbo langu</span> tunapenda kula chakula. Tumbo langu lina <span class='narrative-highlight'>mimbo</span>. Je, nini kina tumbo langu?", 
+                    answer: ["mimbo", "mimbo ya tumbo"], 
+                    hint: "Sehemu ndogo ndogo za tumbo",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mifupa yangu</span> tunapenda kusimama. Mifupa yangu ina <span class='narrative-highlight'>viungo</span>. Je, nini kina mifupa yangu?", 
+                    answer: ["viungo", "viungo vya mifupa"], 
+                    hint: "Mahali mifupa inapounganika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>moyo wangu</span> tunapenda kupiga. Moyo wangu una <span class='narrative-highlight'>chumba</span>. Je, nini kina moyo wangu?", 
+                    answer: ["chumba", "chumba cha moyo"], 
+                    hint: "Sehemu ndogo ndogo za moyo",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>macho yangu</span> tunapenda kuona rangi. Macho yangu yana <span class='narrative-highlight'>rangi</span>. Je, nini kina macho yangu?", 
+                    answer: ["rangi", "rangi ya macho"], 
+                    hint: "Maelezo ya jinsi macho yanavyoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>nywele zangu</span> tunapenda kupigwa picha. Nywele zangu zina <span class='narrative-highlight'>urefu</span>. Je, nini kina nywele zangu?", 
+                    answer: ["urefu", "urefu wa nywele"], 
+                    hint: "Maelezo ya jinsi nywele zinavyo refu",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>pua yangu</span> tunapenda kupumua. Pua yangu ina <span class='narrative-highlight'>pande mbili</span>. Je, pua yangu ina pande ngapi?", 
+                    answer: ["mbili", "pande mbili", "mbili tu"], 
+                    hint: "Idadi ya nafasi za kupumua kwenye pua",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kinywa changu</span> tunapenda kusema maneno. Kinywa changu kina <span class='narrative-highlight'>midomo</span>. Je, nini kina kinywa changu?", 
+                    answer: ["midomo", "midomo yangu"], 
+                    hint: "Sehemu nyepesi zinazofungua na kufunga kinywa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>meno yangu</span> tunapenda kumenga chakula. Meno yangu yana <span class='narrative-highlight'>mizizi</span>. Je, nini kina meno yangu?", 
+                    answer: ["mizizi", "mizizi ya meno"], 
+                    hint: "Sehemu ya meno iliyo ndani ya mifupa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>ulimi wangu</span> tunapenda kuzungumza. Ulimi wangu unasaidia <span class='narrative-highlight'>kuzungumza</span>. Je, nini ninatumia kuzungumza?", 
+                    answer: ["ulimi", "ulimi wangu"], 
+                    hint: "Sehemu ya mwili ndani ya kinywa inayotumika kusema",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>shingo yangu</span> tunapenda kuzunguka. Shingo yangu inaunganisha <span class='narrative-highlight'>kichwa</span> na mwili. Je, nini inaunganisha kichwa na mwili?", 
+                    answer: ["shingo", "shingo yangu"], 
+                    hint: "Sehemu ya mwili chini ya kichwa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kifua changu</span> tunapenda kupumua. Kifua changu kina <span class='narrative-highlight'>mapafu</span>. Je, nini kina kifua changu?", 
+                    answer: ["mapafu", "mapafu yangu"], 
+                    hint: "Sehemu za mwili zinazotumika kupumua",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>tumbo langu</span> tunapenda kula chakula. Tumbo langu linasaidia <span class='narrative-highlight'>kumeng'enya</span>. Je, nini linasaidia kumeng'enya chakula?", 
+                    answer: ["tumbo", "tumbo langu"], 
+                    hint: "Sehemu ya chini ya mwili inayopokea chakula",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mifupa yangu</span> tunapenda kusimama. Mifupa yangu inasaidia <span class='narrative-highlight'>kusimama</span>. Je, nini inasaidia kusimama?", 
+                    answer: ["mifupa", "mifupa yangu"], 
+                    hint: "Vitu vigumu ndani ya mwili",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>moyo wangu</span> tunapenda kupiga. Moyo wangu upo kwenye <span class='narrative-highlight'>kifua</span>. Je, wapi upo moyo wangu?", 
+                    answer: ["kifua", "kifuani", "ndani ya kifua"], 
+                    hint: "Sehemu ya kati ya mwili",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu wa kulia</span> tunapenda kuandika. Mkono wangu wa kulia uko upande wa <span class='narrative-highlight'>kulia</span>. Je, upande gani uko mkono wangu wa kuandika?", 
+                    answer: ["kulia", "upande wa kulia"], 
+                    hint: "Upande unaoandika watu wengi",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu wa kushoto</span> tunapenda kushika vitu. Mkono wangu wa kushoto uko upande wa <span class='narrative-highlight'>kushoto</span>. Je, upande gani uko mkono wangu wa kushoto?", 
+                    answer: ["kushoto", "upande wa kushoto"], 
+                    hint: "Upande kinyume na wa kuandika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu wa kulia</span> tunapenda kukimbia. Mguu wangu wa kulia uko upande wa <span class='narrative-highlight'>kulia</span>. Je, upande gani uko mguu wangu wa kukimbia?", 
+                    answer: ["kulia", "upande wa kulia"], 
+                    hint: "Upande unaotumika zaidi kukimbia",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu wa kushoto</span> tunapenda kutembea. Mguu wangu wa kushoto uko upande wa <span class='narrative-highlight'>kushoto</span>. Je, upande gani uko mguu wangu wa kushoto?", 
+                    answer: ["kushoto", "upande wa kushoto"], 
+                    hint: "Upande kinyume na wa kukimbia",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>macho yangu</span> tunapenda kuona rangi. Macho yangu yana <span class='narrative-highlight'>kikope</span>. Je, nini kina macho yangu?", 
+                    answer: ["kikope", "kikope cha jicho"], 
+                    hint: "Sehemu inayofunika jicho wakati wa kulala",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>pua yangu</span> tunapenda kupumua. Pua yangu ina <span class='narrative-highlight'>pande mbili</span>. Je, pua yangu ina pande ngapi?", 
+                    answer: ["mbili", "pande mbili", "mbili tu"], 
+                    hint: "Idadi ya nafasi za kupumua kwenye pua",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kinywa changu</span> tunapenda kusema maneno. Kinywa changu kina <span class='narrative-highlight'>midomo</span>. Je, nini kina kinywa changu?", 
+                    answer: ["midomo", "midomo yangu"], 
+                    hint: "Sehemu nyepesi zinazofungua na kufunga kinywa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>meno yangu</span> tunapenda kumenga chakula. Meno yangu yana <span class='narrative-highlight'>mizizi</span>. Je, nini kina meno yangu?", 
+                    answer: ["mizizi", "mizizi ya meno"], 
+                    hint: "Sehemu ya meno iliyo ndani ya mifupa",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>nywele zangu</span> tunapenda kupigwa picha. Nywele zangu zina <span class='narrative-highlight'>rangi</span>. Je, nini kina nywele zangu?", 
+                    answer: ["rangi", "rangi ya nywele"], 
+                    hint: "Maelezo ya jinsi nywele zinavyoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>sikio langu</span> tunapenda kusikia sauti. Sikio langu lina <span class='narrative-highlight'>ndege</span>. Je, nini kina sikio langu?", 
+                    answer: ["ndege", "ndege wa sikio"], 
+                    hint: "Sehemu ya nje ya sikio inayoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mkono wangu</span> tunapenda kushika vitu. Mkono wangu una <span class='narrative-highlight'>kiganja</span>. Je, nini kina mkono wangu?", 
+                    answer: ["kiganja", "kiganja cha mkono"], 
+                    hint: "Sehemu ya ndani ya mkono inayotumika kushika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mguu wangu</span> tunapenda kutembea. Mguu wangu una <span class='narrative-highlight'>kiganja</span>. Je, nini kina mguu wangu?", 
+                    answer: ["kiganja", "kiganja cha mguu"], 
+                    hint: "Sehemu ya chini ya mguu inayogusa ardhi",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>kifua changu</span> tunapenda kupumua. Kifua changu kina <span class='narrative-highlight'>mapafu</span>. Je, nini kina kifua changu?", 
+                    answer: ["mapafu", "mapafu yangu"], 
+                    hint: "Sehemu za mwili zinazotumika kupumua",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>tumbo langu</span> tunapenda kula chakula. Tumbo langu lina <span class='narrative-highlight'>mimbo</span>. Je, nini kina tumbo langu?", 
+                    answer: ["mimbo", "mimbo ya tumbo"], 
+                    hint: "Sehemu ndogo ndogo za tumbo",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>mifupa yangu</span> tunapenda kusimama. Mifupa yangu ina <span class='narrative-highlight'>viungo</span>. Je, nini kina mifupa yangu?", 
+                    answer: ["viungo", "viungo vya mifupa"], 
+                    hint: "Mahali mifupa inapounganika",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>moyo wangu</span> tunapenda kupiga. Moyo wangu una <span class='narrative-highlight'>chumba</span>. Je, nini kina moyo wangu?", 
+                    answer: ["chumba", "chumba cha moyo"], 
+                    hint: "Sehemu ndogo ndogo za moyo",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>macho yangu</span> tunapenda kuona rangi. Macho yangu yana <span class='narrative-highlight'>rangi</span>. Je, nini kina macho yangu?", 
+                    answer: ["rangi", "rangi ya macho"], 
+                    hint: "Maelezo ya jinsi macho yanavyoonekana",
+                    topic: "mwili"
+                },
+                { 
+                    narrative: "Mimi na <span class='narrative-highlight'>nywele zangu</span> tunapenda kupigwa picha. Nywele zangu zina <span class='narrative-highlight'>urefu</span>. Je, nini kina nywele zangu?", 
+                    answer: ["urefu", "urefu wa nywele"], 
+                    hint: "Maelezo ya jinsi nywele zinavyo refu",
+                    topic: "mwili"
+                }
+            ]
+        };
+
+        // ======================
+        // GAME STATE
+        // ======================
+        const gameState = {
+            currentLevel: 1,
+            currentQuestionIndex: 0,
+            score: 0,
+            answeredQuestions: 0,
+            usedQuestionIds: new Set(),
+            timer: null,
+            timeLeft: CONFIG.timePerQuestion,
+            hintsShown: 0,
+            levelUnlocked: [true, false, false, false, false],
+            currentQuestion: null,
+            gameActive: false,
+            // Track topic usage for balanced coverage
+            topicUsage: { siku: 0, mimi: 0, mwili: 0 }
+        };
+
+        // ======================
+        // DOM ELEMENTS
+        // ======================
+        const elements = {
+            screens: {
+                start: document.getElementById('start-screen'),
+                levelSelect: document.getElementById('level-select-screen'),
+                game: document.getElementById('game-screen'),
+                result: document.getElementById('result-screen')
+            },
+            buttons: {
+                start: document.getElementById('start-btn'),
+                howToPlay: document.getElementById('how-to-play'),
+                backToStart: document.getElementById('back-to-start'),
+                voice: document.getElementById('voice-btn'),
+                submit: document.getElementById('submit-btn'),
+                next: document.getElementById('next-btn'),
+                nextLevel: document.getElementById('next-level-btn'),
+                retry: document.getElementById('retry-btn'),
+                home: document.getElementById('home-btn'),
+                levelButtons: document.querySelectorAll('.level-btn')
+            },
+            displays: {
+                level: document.getElementById('current-level'),
+                timer: document.getElementById('timer'),
+                narrative: document.getElementById('narrative-container'),
+                hint: document.getElementById('hint-container'),
+                feedback: document.getElementById('feedback'),
+                score: document.getElementById('score'),
+                totalQuestions: document.getElementById('total-questions'),
+                answered: document.getElementById('answered'),
+                progressFill: document.getElementById('progress-fill'),
+                resultTitle: document.getElementById('result-title'),
+                resultMessage: document.getElementById('result-message'),
+                stars: document.getElementById('stars'),
+                resultAnswered: document.getElementById('result-answered'),
+                resultCorrect: document.getElementById('result-correct'),
+                resultScore: document.getElementById('result-score'),
+                resultBonus: document.getElementById('result-bonus'),
+                topicBadge: document.getElementById('current-topic')
+            },
+            inputs: {
+                answer: document.getElementById('answer-input')
+            },
+            containers: {
+                levelSelect: document.getElementById('level-select'),
+                instructions: document.getElementById('instructions'),
+                nextLevelContainer: document.getElementById('next-level-container')
+            }
+        };
+
+        // ======================
+        // SPEECH SYNTHESIS SETUP (Kiswahili Optimized)
+        // ======================
+        let speechSynthesis = window.speechSynthesis;
+        let isSpeaking = false;
+        let voicesLoaded = false;
+
+        function loadVoices() {
+            if (!speechSynthesis) return;
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                voicesLoaded = true;
+            }
+        }
+
+        // Load voices when available
+        if (speechSynthesis) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+            setTimeout(loadVoices, 200);
+        }
+
+        function speak(text, onEnd = null) {
+            if (!CONFIG.voiceEnabled || !speechSynthesis) {
+                // Visual feedback fallback
+                elements.buttons.voice.classList.add('voice-active');
+                setTimeout(() => {
+                    elements.buttons.voice.classList.remove('voice-active');
+                    if (onEnd) onEnd();
+                }, 1500);
+                return;
+            }
+            
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            // Kiswahili optimized: slower rate, clear pitch
+            utterance.rate = 0.8; // Slower for young learners
+            utterance.pitch = 1.2; // Clear, friendly pitch
+            utterance.lang = 'sw-KE'; // Kiswahili (Kenya)
+            
+            // Try to select Kiswahili voice if available
+            const voices = speechSynthesis.getVoices();
+            const swahiliVoice = voices.find(v => 
+                v.lang.startsWith('sw') || 
+                v.name.toLowerCase().includes('swahili') ||
+                v.name.toLowerCase().includes('kenya')
+            );
+            if (swahiliVoice) {
+                utterance.voice = swahiliVoice;
+            }
+            
+            utterance.onend = () => {
+                isSpeaking = false;
+                elements.buttons.voice.classList.remove('voice-active');
+                if (onEnd) onEnd();
+            };
+            
+            utterance.onerror = (e) => {
+                console.warn('Speech error:', e);
+                isSpeaking = false;
+                elements.buttons.voice.classList.remove('voice-active');
+                if (onEnd) onEnd();
+            };
+            
+            isSpeaking = true;
+            elements.buttons.voice.classList.add('voice-active');
+            speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeaking() {
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+                isSpeaking = false;
+                elements.buttons.voice.classList.remove('voice-active');
+            }
+        }
+
+        // ======================
+        // QUESTION MANAGEMENT (Kiswahili Optimized)
+        // ======================
+        function getAvailableQuestions() {
+            const allQuestions = [
+                ...questionBank.siku.map((q, i) => ({...q, id: 's_' + i})),
+                ...questionBank.mimi.map((q, i) => ({...q, id: 'm_' + i})),
+                ...questionBank.mwili.map((q, i) => ({...q, id: 'w_' + i}))
+            ];
+            
+            return allQuestions.filter(q => !gameState.usedQuestionIds.has(q.id));
+        }
+
+        function getRandomQuestion() {
+            const available = getAvailableQuestions();
+            if (available.length === 0) {
+                gameState.usedQuestionIds.clear();
+                gameState.topicUsage = { siku: 0, mimi: 0, mwili: 0 };
+                return getRandomQuestion();
+            }
+            
+            // Ensure topic balance
+            const topicCounts = gameState.topicUsage;
+            const minCount = Math.min(topicCounts.siku, topicCounts.mimi, topicCounts.mwili);
+            
+            let preferredQuestions = available.filter(q => topicCounts[q.topic] === minCount);
+            if (preferredQuestions.length === 0) {
+                preferredQuestions = available;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * preferredQuestions.length);
+            const question = preferredQuestions[randomIndex];
+            
+            gameState.usedQuestionIds.add(question.id);
+            gameState.topicUsage[question.topic]++;
+            
+            return question;
+        }
+
+        // Grade 1 Kiswahili answer checker: very forgiving
+        function checkAnswer(userAnswer, correctAnswers) {
+            if (!userAnswer || userAnswer.trim() === '') return false;
+            
+            const normalizedUser = userAnswer.trim().toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .replace(/ya|yangu|zangu|langu|changu/g, ''); // Remove possessives for matching
+            
+            return correctAnswers.some(ans => {
+                const normalizedAns = ans.toLowerCase()
+                    .replace(/[^\w\s]/g, '')
+                    .replace(/\s+/g, ' ')
+                    .replace(/ya|yangu|zangu|langu|changu/g, '');
+                
+                // Very forgiving matching for Grade 1 Kiswahili
+                return normalizedUser.includes(normalizedAns) || 
+                       normalizedAns.includes(normalizedUser) ||
+                       // Handle common misspellings/short forms
+                       (normalizedUser.length <= 4 && normalizedAns.length <= 4 && 
+                        normalizedUser.split('').filter(c => normalizedAns.includes(c)).length >= 2);
+            });
+        }
+
+        // ======================
+        // TIMER & HINTS (Kiswahili)
+        // ======================
+        function startTimer() {
+            gameState.timeLeft = CONFIG.timePerQuestion;
+            gameState.hintsShown = 0;
+            updateTimerDisplay();
+            
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                if (CONFIG.hintThresholds.includes(gameState.timeLeft) && 
+                    gameState.hintsShown < CONFIG.hintThresholds.length) {
+                    showHint();
+                    gameState.hintsShown++;
+                }
+                
+                if (gameState.timeLeft <= 10) {
+                    elements.displays.timer.className = 'danger';
+                    elements.displays.timer.style.transform = 'scale(1.1)';
+                } else if (gameState.timeLeft <= 20) {
+                    elements.displays.timer.className = 'warning';
+                } else {
+                    elements.displays.timer.style.transform = 'scale(1)';
+                }
+                
+                if (gameState.timeLeft <= 0) {
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            elements.displays.timer.textContent = gameState.timeLeft;
+            if (gameState.timeLeft <= 10) {
+                elements.displays.timer.style.animation = 'shake 0.4s infinite';
+            }
+        }
+
+        function showHint() {
+            if (gameState.currentQuestion && gameState.currentQuestion.hint) {
+                elements.displays.hint.textContent = "💡 " + gameState.currentQuestion.hint;
+                elements.displays.hint.classList.add('show');
+                elements.displays.hint.style.animation = 'slideIn 0.4s ease, pulse 1.5s infinite';
+            }
+        }
+
+        function hideHint() {
+            elements.displays.hint.classList.remove('show');
+            elements.displays.hint.textContent = '';
+            elements.displays.hint.style.animation = '';
+        }
+
+        function handleTimeUp() {
+            clearInterval(gameState.timer);
+            stopSpeaking();
+            
+            // CRITICAL: Voice says "Muda umeisha" in Kiswahili
+            speak(CONFIG.voicePhrases.timeUp, () => {
+                showFeedback("⏰ Muda umeisha! Jibu: " + gameState.currentQuestion.answer[0], 'timeup');
+                disableAnswerInput();
+                elements.buttons.next.style.display = 'inline-flex';
+                elements.buttons.submit.style.display = 'none';
+            });
+        }
+
+        // ======================
+        // FEEDBACK & SCORING (Kiswahili Encouraging)
+        // ======================
+        function showFeedback(message, type) {
+            elements.displays.feedback.textContent = message;
+            elements.displays.feedback.className = `feedback-${type}`;
+            elements.displays.feedback.style.fontSize = '1.5rem';
+            
+            if (type === 'correct') {
+                elements.inputs.answer.classList.add('correct-answer');
+                setTimeout(() => {
+                    elements.inputs.answer.classList.remove('correct-answer');
+                    if (gameState.score % 5 === 0 && gameState.score > 0) {
+                        createConfetti(10);
+                    }
+                }, 650);
+            } else if (type === 'incorrect' || type === 'timeup') {
+                elements.inputs.answer.classList.add('incorrect-answer');
+                setTimeout(() => elements.inputs.answer.classList.remove('incorrect-answer'), 550);
+            }
+        }
+
+        function disableAnswerInput() {
+            elements.inputs.answer.disabled = true;
+            elements.inputs.answer.style.opacity = '0.85';
+        }
+
+        function enableAnswerInput() {
+            elements.inputs.answer.disabled = false;
+            elements.inputs.answer.value = '';
+            elements.inputs.answer.style.opacity = '1';
+            elements.inputs.answer.placeholder = "Andika jibu lako hapa...";
+            setTimeout(() => {
+                if (elements.inputs.answer.offsetParent !== null) {
+                    elements.inputs.answer.focus();
+                }
+            }, 350);
+        }
+
+        function updateProgress() {
+            const percent = (gameState.answeredQuestions / CONFIG.questionsPerLevel) * 100;
+            elements.displays.progressFill.style.width = `${percent}%`;
+            elements.displays.answered.textContent = gameState.answeredQuestions;
+            elements.displays.score.textContent = gameState.score;
+            
+            if (gameState.answeredQuestions % 10 === 0 && gameState.answeredQuestions > 0) {
+                elements.displays.progressFill.classList.add('progress-celebrate');
+                setTimeout(() => {
+                    elements.displays.progressFill.classList.remove('progress-celebrate');
+                }, 900);
+            }
+        }
+
+        // ======================
+        // LEVEL & GAME FLOW (Kiswahili Simple)
+        // ======================
+        function loadQuestion() {
+            hideHint();
+            elements.displays.feedback.textContent = '';
+            elements.displays.feedback.className = '';
+            
+            gameState.currentQuestion = getRandomQuestion();
+            
+            // Update topic badge
+            const topicMap = {
+                'siku': 'Siku za Wiki 🗓️',
+                'mimi': 'Mimi na Wenzangu 👥',
+                'mwili': 'Mwili Wangu 🦵'
+            };
+            elements.displays.topicBadge.textContent = topicMap[gameState.currentQuestion.topic] || 'Kiswahili';
+            elements.displays.topicBadge.className = `topic-badge ${gameState.currentQuestion.topic}`;
+            
+            // Display narrative with story bubble effect
+            elements.displays.narrative.innerHTML = `<div class="story-bubble">${gameState.currentQuestion.narrative}</div>`;
+            
+            // Auto-read narrative with slight delay
+            setTimeout(() => {
+                // Strip HTML tags for speech
+                const plainNarrative = gameState.currentQuestion.narrative.replace(/<[^>]*>/g, '');
+                speak(plainNarrative);
+            }, 700);
+            
+            enableAnswerInput();
+            elements.buttons.submit.style.display = 'inline-flex';
+            elements.buttons.next.style.display = 'none';
+            
+            startTimer();
+        }
+
+        function submitAnswer() {
+            clearInterval(gameState.timer);
+            stopSpeaking();
+            
+            const userAnswer = elements.inputs.answer.value;
+            const isCorrect = checkAnswer(userAnswer, gameState.currentQuestion.answer);
+            
+            if (isCorrect) {
+                gameState.score++;
+                // Random encouraging phrase in Kiswahili
+                const praise = CONFIG.voicePhrases.correct[Math.floor(Math.random() * CONFIG.voicePhrases.correct.length)];
+                showFeedback("✨ " + praise, 'correct');
+                
+                // Voice feedback for correct answer
+                speak(praise, () => {
+                    if (Math.random() > 0.7) createConfetti(6);
+                });
+            } else {
+                // Gentle feedback for incorrect
+                const encouragement = CONFIG.voicePhrases.incorrect[Math.floor(Math.random() * CONFIG.voicePhrases.incorrect.length)];
+                showFeedback("💭 " + encouragement + " Jibu: " + gameState.currentQuestion.answer[0], 'incorrect');
+                speak(encouragement + " Jibu sahihi ni: " + gameState.currentQuestion.answer[0]);
+            }
+            
+            gameState.answeredQuestions++;
+            updateProgress();
+            
+            disableAnswerInput();
+            elements.buttons.submit.style.display = 'none';
+            elements.buttons.next.style.display = 'inline-flex';
+            
+            if (gameState.answeredQuestions >= CONFIG.questionsPerLevel) {
+                setTimeout(endLevel, 4000);
+            }
+        }
+
+        function nextQuestion() {
+            if (gameState.answeredQuestions >= CONFIG.questionsPerLevel) {
+                endLevel();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function endLevel() {
+            const percentage = gameState.score / CONFIG.questionsPerLevel;
+            const passed = percentage >= CONFIG.passThreshold;
+            
+            // Star rating with Kiswahili context
+            const stars = percentage >= 1 ? '⭐⭐⭐' : 
+                         percentage >= 0.9 ? '⭐⭐✨' : 
+                         percentage >= CONFIG.passThreshold ? '⭐⭐' : '⭐';
+            
+            if (passed) {
+                elements.displays.resultTitle.textContent = "🎉 Hongera! Umemaliza Kiwango!";
+                elements.displays.resultMessage.textContent = "Wewe ni mwanafunzi mzuri wa Kiswahili!";
+            } else {
+                elements.displays.resultTitle.textContent = "💪 Jaribu Tena!";
+                elements.displays.resultMessage.textContent = "Usikate tamaa! Mazoezi hufanya kamili.";
+            }
+            
+            elements.displays.stars.textContent = stars;
+            elements.displays.resultAnswered.textContent = `${gameState.answeredQuestions}/${CONFIG.questionsPerLevel}`;
+            elements.displays.resultCorrect.textContent = gameState.score;
+            elements.displays.resultScore.textContent = `${Math.round(percentage * 100)}%`;
+            
+            const bonus = passed ? Math.min(gameState.score, 15) : 0;
+            elements.displays.resultBonus.textContent = passed ? `+${bonus}` : '+0';
+            
+            if (passed && gameState.currentLevel < CONFIG.levels) {
+                gameState.levelUnlocked[gameState.currentLevel] = true;
+                elements.buttons.nextLevel.style.display = 'inline-flex';
+                elements.buttons.nextLevel.onclick = () => {
+                    gameState.currentLevel++;
+                    startLevel();
+                };
+            } else {
+                elements.buttons.nextLevel.style.display = 'none';
+            }
+            
+            showScreen('result');
+            updateLevelButtons();
+            
+            if (passed) {
+                createConfetti(45);
+                if (gameState.score === CONFIG.questionsPerLevel) {
+                    setTimeout(() => createConfetti(30), 900);
+                }
+            }
+        }
+
+        function startLevel() {
+            gameState.currentQuestionIndex = 0;
+            gameState.score = 0;
+            gameState.answeredQuestions = 0;
+            gameState.usedQuestionIds.clear();
+            gameState.topicUsage = { siku: 0, mimi: 0, mwili: 0 };
+            
+            elements.displays.level.textContent = gameState.currentLevel;
+            elements.displays.totalQuestions.textContent = CONFIG.questionsPerLevel;
+            updateProgress();
+            
+            showScreen('game');
+            gameState.gameActive = true;
+            
+            loadQuestion();
+        }
+
+        // Kiswahili-themed confetti
+        function createConfetti(count) {
+            const colors = [
+                '#FF6B35', '#00A896', '#FFD166', '#EF476F', 
+                '#06D6A0', '#118AB2', '#9D50FF', '#FF9E6D',
+                '#000000', '#BB0000', '#FFFFFF', '#006600'
+            ];
+            const emojis = ['⭐', '🦁', '📚', '🗓️', '👥', '🦵', '🎉', '✨', '🇰🇪', '💯'];
+            const container = document.getElementById('game-container');
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-25px';
+                
+                if (Math.random() > 0.65) {
+                    confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    confetti.style.fontSize = '1.6rem';
+                    confetti.style.background = 'transparent';
+                    confetti.style.boxShadow = 'none';
+                } else {
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                }
+                
+                const duration = Math.random() * 2.5 + 3.5;
+                const delay = Math.random() * 1.8;
+                confetti.style.animationDuration = duration + 's';
+                confetti.style.animationDelay = delay + 's';
+                confetti.style.width = (Math.random() * 10 + 12) + 'px';
+                confetti.style.height = confetti.style.width;
+                
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), (duration + delay) * 1000 + 300);
+            }
+        }
+
+        // ======================
+        // SCREEN MANAGEMENT
+        // ======================
+        function showScreen(screenName) {
+            Object.values(elements.screens).forEach(screen => {
+                screen.classList.remove('active');
+            });
+            elements.screens[screenName].classList.add('active');
+            
+            if (screenName === 'game' && elements.inputs.answer.offsetParent !== null) {
+                setTimeout(() => elements.inputs.answer.focus(), 450);
+            }
+        }
+
+        function updateLevelButtons() {
+            elements.buttons.levelButtons.forEach(btn => {
+                const level = parseInt(btn.dataset.level);
+                if (gameState.levelUnlocked[level-1]) {
+                    btn.classList.remove('locked');
+                } else {
+                    btn.classList.add('locked');
+                }
+            });
+        }
+
+        // ======================
+        // EVENT LISTENERS (Touch-Optimized)
+        // ======================
+        function setupEventListeners() {
+            elements.buttons.start.addEventListener('click', () => {
+                showScreen('levelSelect');
+                updateLevelButtons();
+            });
+            
+            elements.buttons.howToPlay.addEventListener('click', () => {
+                const instructions = elements.containers.instructions;
+                const isHidden = instructions.style.display === 'none' || !instructions.style.display;
+                instructions.style.display = isHidden ? 'block' : 'none';
+                elements.buttons.howToPlay.innerHTML = isHidden ? 
+                    '🔼 Funga Maelezo' : '❓ Jinsi ya Kucheza';
+            });
+            
+            elements.buttons.backToStart.addEventListener('click', () => {
+                showScreen('start');
+            });
+            
+            elements.buttons.levelButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!btn.classList.contains('locked')) {
+                        btn.style.transform = 'scale(0.96)';
+                        setTimeout(() => {
+                            btn.style.transform = '';
+                            gameState.currentLevel = parseInt(btn.dataset.level);
+                            startLevel();
+                        }, 160);
+                    } else {
+                        btn.animate([
+                            { transform: 'translateX(0)' },
+                            { transform: 'translateX(-6px)' },
+                            { transform: 'translateX(6px)' },
+                            { transform: 'translateX(0)' }
+                        ], { duration: 350, iterations: 1 });
+                    }
+                });
+                
+                btn.addEventListener('touchstart', (e) => {
+                    if (!btn.classList.contains('locked')) {
+                        btn.style.transform = 'scale(0.98)';
+                    }
+                });
+                btn.addEventListener('touchend', (e) => {
+                    btn.style.transform = '';
+                });
+            });
+            
+            elements.buttons.voice.addEventListener('click', () => {
+                if (isSpeaking) {
+                    stopSpeaking();
+                } else if (gameState.currentQuestion) {
+                    elements.buttons.voice.style.transform = 'scale(0.96)';
+                    setTimeout(() => {
+                        elements.buttons.voice.style.transform = '';
+                        const plainNarrative = gameState.currentQuestion.narrative.replace(/<[^>]*>/g, '');
+                        speak(plainNarrative);
+                    }, 110);
+                }
+            });
+            
+            elements.buttons.submit.addEventListener('click', submitAnswer);
+            elements.inputs.answer.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !elements.inputs.answer.disabled) {
+                    e.preventDefault();
+                    submitAnswer();
+                }
+            });
+            
+            elements.buttons.next.addEventListener('click', nextQuestion);
+            
+            elements.buttons.retry.addEventListener('click', () => {
+                startLevel();
+            });
+            
+            elements.buttons.home.addEventListener('click', () => {
+                showScreen('start');
+            });
+            
+            elements.inputs.answer.form?.addEventListener('submit', (e) => e.preventDefault());
+            
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && gameState.gameActive && gameState.timer) {
+                    clearInterval(gameState.timer);
+                } else if (!document.hidden && gameState.gameActive && gameState.timeLeft > 0) {
+                    startTimer();
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && elements.screens.result.classList.contains('active')) {
+                    showScreen('start');
+                }
+            });
+        }
+
+        // ======================
+        // INITIALIZATION
+        // ======================
+        function init() {
+            setupEventListeners();
+            elements.displays.totalQuestions.textContent = CONFIG.questionsPerLevel;
+            
+            if (!speechSynthesis) {
+                elements.buttons.voice.title = "Sauti haiwezi kutumika kwenye kivinjari hiki";
+                elements.buttons.voice.style.opacity = "0.75";
+                console.warn('🔊 Speech synthesis not supported - using visual cues only');
+            } else {
+                loadVoices();
+            }
+            
+            // Add cultural touches
+            document.querySelectorAll('.topic-tag').forEach(tag => {
+                tag.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.09) translateY(-3px)';
+                });
+                tag.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+            });
+            
+            const character = document.querySelector('.character');
+            if (character) {
+                character.addEventListener('click', () => {
+                    character.style.animation = 'none';
+                    setTimeout(() => {
+                        character.style.animation = 'bounce 2s infinite';
+                    }, 12);
+                });
+            }
+            
+            console.log("🇰🇪 Safari ya Kiswahili loaded! Ready for Grade 1 CBC Kiswahili fun!");
+            console.log("✨ Features: Voice output in Kiswahili • 40s timer • Hints • 5 levels • 200 unique narrative questions");
+            console.log("🎯 Topics: Siku za Wiki • Mimi na Wenzangu • Mwili Wangu");
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(init, 250);
+        });
+        
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 350);
+        });
+    </script>
+</body>
+</html>

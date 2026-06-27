@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Bobo Cheza na Jifunze - Darasa la 1 | Mchezo na Darasani | CBC Kiswahili</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* smooth interface, input remains editable */
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2c5f8a 0%, #1b3b54 100%);
+            font-family: 'Comic Neue', 'Comic Neue', 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 70px 70px 80px 80px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #f9b43a;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #d48d2b;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2e241f;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #ffecb3;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #5a3e2e, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            background: #9b4b1f;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .story-area {
+            background: #fff1df;
+            padding: 25px 20px 15px 20px;
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #2c5f8a;
+            border-bottom: 3px dashed #f7d98c;
+            min-height: 130px;
+        }
+
+        .question-area {
+            padding: 25px 20px 20px;
+            background: #fff9ef;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .speaker-btn {
+            background: #2c7a47;
+            border: none;
+            font-size: 1.6rem;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 3px 0 #1a5a34;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speaker-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1a5a34;
+        }
+
+        .narrative-question {
+            background: #f5ebd2;
+            border-radius: 60px;
+            padding: 20px 18px;
+            font-size: 1.6rem;
+            text-align: center;
+            color: #2c4727;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.05);
+            font-weight: bold;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .answer-input-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            flex: 3;
+            min-width: 180px;
+            padding: 16px 20px;
+            font-size: 1.3rem;
+            font-family: inherit;
+            border-radius: 60px;
+            border: 3px solid #c8b27a;
+            background: white;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        #answerInput:focus {
+            border-color: #f3a712;
+            box-shadow: 0 0 0 3px rgba(243,167,18,0.3);
+        }
+
+        .btn-check {
+            background: #f3a712;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c2416;
+            cursor: pointer;
+            transition: 0.1s linear;
+            font-family: inherit;
+            box-shadow: 0 5px 0 #b4621a;
+        }
+
+        .btn-check:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b4621a;
+        }
+
+        .feedback {
+            background: #e9e0cb;
+            border-radius: 50px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            min-height: 85px;
+            font-weight: bold;
+        }
+
+        .next-level-msg {
+            background: #cae3b5;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 550px) {
+            .narrative-question { font-size: 1.3rem; }
+            .story-area { font-size: 1.2rem; }
+            .level-badge, .score-badge, .timer-box { font-size: 0.9rem; padding: 5px 12px; }
+            .btn-check { padding: 10px 18px; font-size: 1.1rem; }
+            .speaker-btn { font-size: 1.3rem; padding: 6px 12px; }
+            #answerInput { font-size: 1rem; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Ngazi: 1</div>
+        <div class="score-badge" id="scoreDisplay">Alama: 0 / 40</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="story-area" id="storyArea">
+        ⚽📚 Hadithi ya Bobo: Jifunze kuhusu MICHEZO na DARASANI! Cheza na ujifunze Kiswahili.
+    </div>
+    <div class="question-area">
+        <div class="question-header">
+            <div class="narrative-question" id="questionText">
+                Swali litakuja hapa...
+            </div>
+            <button class="speaker-btn" id="speakQuestionBtn">🔊 Soma Swali</button>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" placeholder="Andika jibu lako hapa..." autocomplete="off">
+            <button class="btn-check" id="submitBtn">✅ Angalia</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">
+            🎤 Bobo atakusaidia! Andika jibu sahihi. Bonyeza sauti kusikia swali.
+        </div>
+        <div id="nextLevelMsg" class="next-level-msg"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- KISWAHILI VOICE OUTPUT ----------
+    function speakKiswahili(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'sw-KE';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Read current question aloud with friendly intro
+    function readCurrentQuestion() {
+        if (!allowAnswer) {
+            speakKiswahili("Subiri, swali limeshajibiwa. Subiri swali linalofuata.");
+            return;
+        }
+        const qData = currentQuestions[currentQuestionIndex];
+        if (qData) {
+            speakKiswahili(`Swali: ${qData.text}`);
+        } else {
+            speakKiswahili("Hakuna swali kwa sasa.");
+        }
+    }
+
+    // ---------- QUESTION BANK: MICHEZO (GAMES/SPORTS) & DARASANI (CLASSROOM) ----------
+    // Generate 40 unique narrative questions per level (levels 1-5)
+    // Topics alternate and increase in subtle difficulty, always grade 1 appropriate.
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        const topics = ['mchezo', 'darasani'];
+        
+        // Extensive word bank for Mchezo (sports, games, playground)
+        const michezoBank = [
+            { q: "Bobo anapiga mpira kwa miguu. Mchezo huo unaitwa _____.", a: "mpira wa miguu" },
+            { q: "Wanafunzi wanaruka kamba. Wanacheza _____.", a: "kamba" },
+            { q: "Kitu cha kurushwa na kukamatwa kwenye mchezo wa kufyatua ni _____.", a: "mpira" },
+            { q: "Bobo anaogelea majini. Anacheza _____.", a: "kuogelea" },
+            { q: "Wanapanda juu na kushuka kwenye uwanja wa michezo huitwa _____.", a: "slide" },
+            { q: "Mchezo wa kuhesabu na kuficha unaitwa _____.", a: "kificha" },
+            { q: "Mpira wa kikapu unaitwa _____.", a: "basketball" },
+            { q: "Wanapiga makapi kwa raketi, mchezo huo ni _____.", a: "tenisi" },
+            { q: "Bobo anapenda kuruka juu. Anacheza _____.", a: "kuruka" },
+            { q: "Mchezo wa kupigana kwa ngumi unaitwa _____.", a: "ndondi" }
+        ];
+        
+        // Extensive word bank for Darasani (classroom objects, actions, people)
+        const darasaniBank = [
+            { q: "Mwalimu anaandika ubaoni kwa _____.", a: "chaki" },
+            { q: "Wanafunzi hukaa kwenye _____.", a: "meza" },
+            { q: "Kitu cha kufutia ubaoni kinaitwa _____.", a: "mpangio" },
+            { q: "Ninaandika kwa penseli. Wakati wa kufuta makosa natumia _____.", a: "kifutio" },
+            { q: "Darasani tunaweka vitabu kwenye _____.", a: "rafu" },
+            { q: "Bobo anachora kwa rangi kwenye _____.", a: "karatasi" },
+            { q: "Mwanafunzi anabeba vitabu kwenye _____.", a: "begi" },
+            { q: "Saa ya ukutani darasani inaonyesha _____.", a: "wakati" },
+            { q: "Mwalimu anasoma hadithi kutoka _____.", a: "kitabu" },
+            { q: "Bobo anaweka kalamu kwenye _____.", a: "kalamu" }
+        ];
+        
+        for (let i = 1; i <= 40; i++) {
+            // Alternate topics but ensure mix: level influences but both topics appear
+            let topic;
+            if (i % 2 === 0) topic = 'mchezo';
+            else topic = 'darasani';
+            
+            // slight variation per level to keep fresh but always within scope
+            let qText = "";
+            let correctAnswer = "";
+            
+            if (topic === 'mchezo') {
+                let idx = (i * level + i) % michezoBank.length;
+                let item = michezoBank[idx];
+                qText = item.q;
+                correctAnswer = item.a;
+                // narrative enrichment
+                if (i % 7 === 0) qText = "Bobo na rafiki zake wanacheza mchezo wa kukimbia na kugusa. Mchezo huo huitwa _____.", correctAnswer = "kufyatuafyata";
+                if (i % 9 === 0) qText = "Wanapiga mpira wakiwa ndani ya maji. Mchezo huo ni _____.", correctAnswer = "mpira wa maji";
+                if (i % 11 === 0) qText = "Mchezo wa kuweka kete na kusonga hatua unaitwa _____.", correctAnswer = "bao";
+            } 
+            else { // darasani
+                let idx = (i * (level+1) + i) % darasaniBank.length;
+                let item = darasaniBank[idx];
+                qText = item.q;
+                correctAnswer = item.a;
+                if (i % 6 === 0) qText = "Darasani, Bobo anahesabu idadi ya wanafunzi. Anatumia _____.", correctAnswer = "vidole";
+                if (i % 8 === 0) qText = "Mwalimu anatoa zawadi kwa mwanafunzi bora. Zawadi hiyo inaweza kuwa _____.", correctAnswer = "stika";
+                if (i % 10 === 0) qText = "Wanafunzi wanaimba wimbo wa taifa asubuhi. Wanaimba kwa _____.", correctAnswer = "sauti";
+            }
+            
+            // final ensure answer is trimmed & lowercase
+            questions.push({ text: qText, answer: correctAnswer.trim().toLowerCase() });
+        }
+        return questions.slice(0,40);
+    }
+    
+    // Preload all 5 levels
+    const levelsData = {
+        1: generateQuestionsForLevel(1),
+        2: generateQuestionsForLevel(2),
+        3: generateQuestionsForLevel(3),
+        4: generateQuestionsForLevel(4),
+        5: generateQuestionsForLevel(5)
+    };
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let currentQuestions = [...levelsData[1]];
+    let scoreCorrect = 0;
+    let totalQuestionsInLevel = 40;
+    let timerInterval = null;
+    let timeLeft = 40;          // 40 seconds per question
+    let isWaitingForNext = false;
+    let allowAnswer = true;
+    let nextLevelUnlocked = false;
+    
+    // DOM elements
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const storyAreaDiv = document.getElementById('storyArea');
+    const questionTextDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextLevelMsgDiv = document.getElementById('nextLevelMsg');
+    const speakBtn = document.getElementById('speakQuestionBtn');
+    
+    function updateScoreUI() {
+        scoreDisplay.innerText = `Alama: ${scoreCorrect} / ${totalQuestionsInLevel}`;
+    }
+    
+    // Timer management
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        stopTimer();
+        if (!allowAnswer) return;
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+        timerInterval = setInterval(() => {
+            if (!allowAnswer) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (allowAnswer) {
+                    allowAnswer = false;
+                    timerDisplaySpan.innerText = `⏱️ 0s`;
+                    const correctAns = currentQuestions[currentQuestionIndex].answer;
+                    speakKiswahili(`Wakati umekwisha! Jibu sahihi ni ${correctAns}.`);
+                    feedbackMsgDiv.innerHTML = `⏰ Wakati umekwisha! Jibu sahihi: <strong>${correctAns}</strong>. Endelea kwenye swali linalofuata.`;
+                    moveToNextQuestionAfterDelay();
+                }
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+            }
+        }, 1000);
+    }
+    
+    function moveToNextQuestionAfterDelay() {
+        if (isWaitingForNext) return;
+        isWaitingForNext = true;
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestionsInLevel) {
+                resetForNewQuestion();
+            } else {
+                endOfLevel();
+            }
+        }, 2000);
+    }
+    
+    function resetForNewQuestion() {
+        isWaitingForNext = false;
+        allowAnswer = true;
+        stopTimer();
+        const qData = currentQuestions[currentQuestionIndex];
+        questionTextDiv.innerText = qData.text;
+        answerInput.value = '';
+        feedbackMsgDiv.innerHTML = "🎤 Andika jibu lako, Bobo anasubiri! Bonyeza sauti kusikia swali tena.";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answerInput.focus();
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        startTimer();
+        updateStoryNarrative();
+    }
+    
+    function updateStoryNarrative() {
+        let levelDesc = "";
+        if (currentLevel === 1) levelDesc = "Ngazi 1: Bobo anacheza michezo na kujifunza darasani! Anasaidia wandugu zake.";
+        else if (currentLevel === 2) levelDesc = "Ngazi 2: Michezo na darasani inakuwa ngumu kidogo. Bobo anaamini wewe!";
+        else if (currentLevel === 3) levelDesc = "Ngazi 3: Bobo anahitaji usaidizi wako. Kumbuka vitu vya uwanjani na darasani!";
+        else if (currentLevel === 4) levelDesc = "Ngazi 4: Changamoto kubwa! Unazidi kuwa bingwa wa michezo na elimu.";
+        else levelDesc = "Ngazi 5: Mwisho mzuri! Bobo atakupa tuzo baada ya kufaulu. Bingwa wa darasa la 1!";
+        const reqPass = Math.ceil(totalQuestionsInLevel * 0.8);
+        storyAreaDiv.innerHTML = `📘 ${levelDesc} | Swali ${currentQuestionIndex+1}/${totalQuestionsInLevel}. Unahitaji angalau ${reqPass} sahihi kusonga mbele. ⏱️ 40s/swali`;
+    }
+    
+    function endOfLevel() {
+        stopTimer();
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        const required = Math.ceil(totalQuestionsInLevel * 0.8);
+        const passed = (scoreCorrect >= required);
+        
+        if (passed) {
+            if (currentLevel === 5) {
+                feedbackMsgDiv.innerHTML = "🎉🏆 HONGERA SANA! Umemaliza ngazi zote 5! Bobo anakupa kombe la michezo na darasa! 🏆🎉";
+                speakKiswahili("Hongera! Umemaliza mchezo wa michezo na darasani! Wewe ni shujaa wa Kiswahili darasa la kwanza!");
+                storyAreaDiv.innerHTML = "🏁 Mwisho wa Mchezo! Bobo anacheza na kusoma sasa. Umefanya vizuri sana!";
+                nextLevelMsgDiv.innerHTML = "✨ UMEMALIZA Mchezo Kikamilifu! Bonyeza Refresh kucheza tena ✨";
+                return;
+            } else {
+                nextLevelUnlocked = true;
+                feedbackMsgDiv.innerHTML = `🎉 Umefuzu! Alama: ${scoreCorrect}/${totalQuestionsInLevel} (≥${required}). Unaenda Ngazi ${currentLevel+1}! 🎉`;
+                speakKiswahili(`Hongera! Umepita ngazi ${currentLevel}. Sasa ngazi ${currentLevel+1}. Endelea kujifunza michezo na darasani!`);
+                nextLevelMsgDiv.innerHTML = "";
+                const nextBtn = document.createElement('button');
+                nextBtn.innerText = `🔓 Nenda Ngazi ${currentLevel+1}`;
+                nextBtn.className = "btn-check";
+                nextBtn.style.background = "#4caf50";
+                nextBtn.style.marginTop = "10px";
+                nextBtn.onclick = () => {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                };
+                nextLevelMsgDiv.appendChild(nextBtn);
+                return;
+            }
+        } else {
+            feedbackMsgDiv.innerHTML = `😭 Pole! Hukupata 80%. Alama: ${scoreCorrect}/${totalQuestionsInLevel}. Unahitaji ${required}. Jaribu tena Ngazi ${currentLevel}.`;
+            speakKiswahili(`Pole, hukufaulu ngazi ${currentLevel}. Jaribu tena kwa makini. Fikiria michezo na darasani.`);
+            nextLevelMsgDiv.innerHTML = "";
+            const retryBtn = document.createElement('button');
+            retryBtn.innerText = `🔄 Jaribu Ngazi ${currentLevel} Tena`;
+            retryBtn.className = "btn-check";
+            retryBtn.style.background = "#ff9800";
+            retryBtn.onclick = () => {
+                loadLevel(currentLevel);
+            };
+            nextLevelMsgDiv.appendChild(retryBtn);
+            return;
+        }
+    }
+    
+    function loadLevel(level) {
+        currentLevel = level;
+        currentQuestions = [...levelsData[level]];
+        currentQuestionIndex = 0;
+        scoreCorrect = 0;
+        totalQuestionsInLevel = 40;
+        allowAnswer = true;
+        nextLevelUnlocked = false;
+        isWaitingForNext = false;
+        stopTimer();
+        levelDisplay.innerText = `Ngazi: ${currentLevel}`;
+        updateScoreUI();
+        const firstQ = currentQuestions[0];
+        questionTextDiv.innerText = firstQ.text;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        feedbackMsgDiv.innerHTML = "🎤 Bobo anasubiri jibu! Bonyeza sauti kusikia swali. Michezo na Darasani ni raha!";
+        nextLevelMsgDiv.innerHTML = "";
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        updateStoryNarrative();
+        startTimer();
+    }
+    
+    function checkAnswer() {
+        if (!allowAnswer) return;
+        const userAnswerRaw = answerInput.value.trim().toLowerCase();
+        if (userAnswerRaw === "") {
+            feedbackMsgDiv.innerHTML = "🔊 Tafadhali andika jibu! Bobo anakungoja.";
+            speakKiswahili("Tafadhali andika jibu.");
+            return;
+        }
+        const currentQ = currentQuestions[currentQuestionIndex];
+        const correctAns = currentQ.answer.toLowerCase();
+        const normalizedUser = userAnswerRaw.replace(/\s+/g, ' ').trim();
+        const normalizedCorrect = correctAns.replace(/\s+/g, ' ').trim();
+        let isCorrect = (normalizedUser === normalizedCorrect);
+        
+        // Kid-friendly forgiveness for synonyms or common variations
+        if (!isCorrect) {
+            if ((normalizedCorrect === "mpira wa miguu" && (normalizedUser === "soka" || normalizedUser === "mpira")) ||
+                (normalizedCorrect === "kifutio" && normalizedUser === "rafuta") ||
+                (normalizedCorrect === "mpangio" && normalizedUser === "kifutio cha ubao") ||
+                (normalizedCorrect === "basketball" && normalizedUser === "mpira wa kikapu") ||
+                (normalizedCorrect === "slide" && normalizedUser === "telezi")) {
+                isCorrect = true;
+            }
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            scoreCorrect++;
+            updateScoreUI();
+            feedbackMsgDiv.innerHTML = `✅ Sahihi kabisa! "${currentQ.answer}" ni jibu zuri! +1 alama ✅`;
+            speakKiswahili(`Sahihi! Jibu ni ${currentQ.answer}. Umepata alama! Endelea hivyo.`);
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Si sahihi. Jibu sahihi: "${currentQ.answer}". Usikate tamaa, jaribu tena swali lijalo! ❌`;
+            speakKiswahili(`Sio sahihi. Jibu sahihi ni ${currentQ.answer}. Endelea kujaribu!`);
+        }
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        moveToNextQuestionAfterDelay();
+    }
+    
+    // Event listeners
+    submitBtn.addEventListener('click', checkAnswer);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && allowAnswer) {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    // Initial load level 1
+    loadLevel(1);
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            speakKiswahili("Karibu kwenye mchezo wa Bobo! Mada: Michezo na Darasani. Una sekunde arobaini kwa swali. Bonyeza kitufe cha sauti kusikia swali. Jibu kwa kuandika. Furahia!");
+        }, 500);
+    });
+</script>
+</body>
+</html>

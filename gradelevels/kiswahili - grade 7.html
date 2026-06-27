@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Kiswahili CBC - Darasa la 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0c29;
+  --bg2: #1a1548;
+  --surface: #231f5c;
+  --surface2: #2d2870;
+  --accent: #f7c948;
+  --accent2: #ff6b6b;
+  --accent3: #4ecdc4;
+  --accent4: #a78bfa;
+  --green: #22c55e;
+  --red: #ef4444;
+  --text: #ffffff;
+  --text2: #c4b5fd;
+  --text3: #94a3b8;
+  --gold: #fbbf24;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(167,139,250,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(78,205,196,0.1) 0%, transparent 50%);
+}
+
+/* Stars background */
+.stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+.star { position: absolute; background: white; border-radius: 50%; animation: twinkle linear infinite; }
+@keyframes twinkle { 0%,100%{opacity:0.2;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+
+/* Screens */
+.screen { position: relative; z-index: 1; display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ===== SPLASH SCREEN ===== */
+#splash {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1rem;
+  animation: fadeIn 0.5s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+.logo-ring {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent4));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 0 60px rgba(247,201,72,0.4);
+  animation: pulse 2s ease-in-out infinite;
+  font-size: 64px;
+}
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+
+.game-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), #ff9f43, var(--accent4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.game-subtitle {
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  color: var(--text2);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.game-grade {
+  display: inline-block;
+  background: var(--surface);
+  border: 2px solid var(--accent4);
+  padding: 0.4rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  color: var(--accent4);
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.stats-bar {
+  display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;
+}
+.stat-pill {
+  background: var(--surface);
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 50px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem;
+  color: var(--text2);
+  font-weight: 700;
+}
+.stat-pill span { color: var(--accent); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  border: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 800;
+  transition: all 0.2s;
+  text-decoration: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #f59e0b);
+  color: #1a1200;
+  box-shadow: 0 4px 20px rgba(247,201,72,0.4);
+}
+.btn-primary:hover { box-shadow: 0 6px 28px rgba(247,201,72,0.6); transform: translateY(-2px); }
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid rgba(167,139,250,0.3);
+}
+.btn-secondary:hover { background: var(--surface); border-color: var(--accent4); color: var(--text); }
+.btn-lg { padding: 1.1rem 2.5rem; font-size: 1.1rem; }
+.btn-block { width: 100%; }
+
+/* ===== TOPIC SELECT ===== */
+#topicSelect { padding: 1rem; }
+.screen-header {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 0.5rem 1.5rem;
+  position: sticky; top: 0; z-index: 10;
+  background: linear-gradient(var(--bg) 80%, transparent);
+}
+.screen-header h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-weight: 700;
+  flex: 1;
+  text-align: center;
+}
+.back-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; color: var(--text2);
+  flex-shrink: 0;
+  transition: all 0.2s;
+  touch-action: manipulation;
+}
+.back-btn:hover { background: var(--surface2); color: var(--text); }
+
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  padding-bottom: 2rem;
+}
+.topic-card {
+  background: var(--surface);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+.topic-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--card-color, var(--accent));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.topic-card:hover, .topic-card:active { transform: translateY(-3px); box-shadow: var(--shadow); border-color: rgba(167,139,250,0.5); }
+.topic-num {
+  font-size: 0.75rem; font-weight: 800;
+  color: var(--card-color, var(--accent));
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+.topic-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem; font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+}
+.topic-subtopics { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.subtopic-badge {
+  font-size: 0.7rem; font-weight: 700;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  color: var(--text3);
+}
+.topic-progress {
+  margin-top: 0.8rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.progress-bar-wrap {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--card-color, var(--accent));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+.progress-label { font-size: 0.7rem; color: var(--text3); font-weight: 700; white-space: nowrap; }
+
+/* ===== SUBTOPIC SELECT ===== */
+#subtopicSelect { padding: 1rem; }
+.topic-hero {
+  text-align: center;
+  padding: 1.5rem 1rem 2rem;
+}
+.topic-hero-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+.topic-hero-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(1.2rem, 5vw, 1.8rem);
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.topic-hero-sub { font-size: 0.9rem; color: var(--text3); }
+
+.subtopics-list { display: flex; flex-direction: column; gap: 0.8rem; padding-bottom: 2rem; }
+.subtopic-card {
+  background: var(--surface);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 1rem;
+  touch-action: manipulation;
+  text-decoration: none;
+}
+.subtopic-card:hover, .subtopic-card:active { border-color: var(--card-color, var(--accent)); background: var(--surface2); transform: translateX(5px); }
+.subtopic-letter {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--card-color, var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.3rem; font-weight: 800;
+  color: #fff; flex-shrink: 0;
+}
+.subtopic-info { flex: 1; }
+.subtopic-name { font-size: 0.85rem; font-weight: 700; color: var(--text2); margin-bottom: 0.2rem; }
+.subtopic-full { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.subtopic-meta { font-size: 0.75rem; color: var(--text3); margin-top: 0.3rem; }
+.subtopic-arrow { font-size: 1.2rem; color: var(--text3); transition: transform 0.2s; }
+.subtopic-card:hover .subtopic-arrow { transform: translateX(5px); color: var(--accent); }
+
+/* ===== GAME SCREEN / QUIZ CONTAINER ===== */
+#gameScreen {
+  padding: 0;
+}
+.game-topbar {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background: rgba(15,12,41,0.95);
+  backdrop-filter: blur(10px);
+  position: sticky; top: 0; z-index: 10;
+  border-bottom: 1px solid rgba(167,139,250,0.15);
+}
+.game-info { flex: 1; min-width: 0; }
+.game-topic-label {
+  font-size: 0.7rem; font-weight: 800;
+  color: var(--text3); text-transform: uppercase; letter-spacing: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.game-subtopic-label {
+  font-size: 0.85rem; font-weight: 700; color: var(--text2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.quiz-frame-container {
+  flex: 1;
+  padding: 0;
+  background: var(--bg);
+  min-height: calc(100vh - 60px);
+}
+.quiz-iframe {
+  width: 100%;
+  height: calc(100vh - 60px);
+  border: none;
+  background: var(--bg);
+}
+
+/* ===== RESULTS SCREEN ===== */
+#resultsScreen {
+  align-items: center; justify-content: center;
+  text-align: center; padding: 2rem 1rem;
+}
+.results-card {
+  background: var(--surface);
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  max-width: 500px; width: 100%;
+  animation: fadeIn 0.5s ease;
+}
+.trophy {
+  font-size: 5rem; margin-bottom: 1rem;
+  animation: bounce 1s ease 0.3s both;
+}
+@keyframes bounce { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 80%{transform:scale(0.95)} 100%{transform:scale(1)} }
+.results-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(1.5rem, 6vw, 2.2rem);
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.results-subtitle { font-size: 0.9rem; color: var(--text2); margin-bottom: 1.5rem; }
+.score-circle {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) var(--pct, 0%), rgba(255,255,255,0.1) 0);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+}
+.score-circle::before {
+  content: '';
+  position: absolute;
+  width: 96px; height: 96px;
+  background: var(--surface);
+  border-radius: 50%;
+}
+.score-inner {
+  position: relative; z-index: 1;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.8rem; font-weight: 800;
+  color: var(--accent);
+}
+.result-stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 0.8rem; margin-bottom: 1.5rem;
+}
+.result-stat {
+  background: rgba(255,255,255,0.05);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 0.5rem;
+}
+.result-stat-val {
+  font-size: 1.3rem; font-weight: 800; color: var(--text);
+  font-family: 'Baloo 2', cursive;
+}
+.result-stat-lbl { font-size: 0.7rem; color: var(--text3); margin-top: 0.2rem; font-weight: 700; }
+.results-btns { display: flex; flex-direction: column; gap: 0.8rem; }
+
+/* ===== LEADERBOARD ===== */
+#leaderboard {
+  padding: 1rem;
+}
+.leaderboard-list { display: flex; flex-direction: column; gap: 0.6rem; padding-bottom: 2rem; }
+.lb-row {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--surface);
+  border: 1px solid rgba(167,139,250,0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1rem;
+}
+.lb-rank {
+  width: 32px; text-align: center;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem; font-weight: 800;
+}
+.lb-rank.gold { color: #fbbf24; }
+.lb-rank.silver { color: #94a3b8; }
+.lb-rank.bronze { color: #b45309; }
+.lb-info { flex: 1; }
+.lb-name { font-size: 0.9rem; font-weight: 700; }
+.lb-meta { font-size: 0.75rem; color: var(--text3); }
+.lb-score { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+  background: var(--surface2); border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 50px; padding: 0.7rem 1.5rem;
+  font-size: 0.85rem; font-weight: 700; color: var(--text);
+  z-index: 9999; white-space: nowrap;
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2s forwards;
+}
+@keyframes toastIn { from{opacity:0;transform:translate(-50%,20px)} to{opacity:1;transform:translate(-50%,0)} }
+@keyframes toastOut { to{opacity:0;transform:translate(-50%,10px)} }
+
+/* Name entry */
+.name-form {
+  display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;
+}
+.name-input {
+  padding: 0.9rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(167,139,250,0.3);
+  border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 600;
+  color: var(--text); outline: none;
+  text-align: center;
+}
+.name-input::placeholder { color: var(--text3); }
+.name-input:focus { border-color: var(--accent4); }
+
+@media (max-width: 750px) {
+  .quiz-iframe { height: calc(100vh - 60px); }
+}
+</style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="stars" id="starsContainer"></div>
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div class="screen active" id="splash">
+  <div class="logo-ring">📚</div>
+  <h1 class="game-title">Kiswahili<br>CBC Quest</h1>
+  <p class="game-subtitle">Jifunze. Cheza. Shinda!</p>
+  <span class="game-grade">🎓 Darasa la 7 · CBC Kenya</span>
+
+  <div class="stats-bar" id="splashStats">
+    <div class="stat-pill">📖 Mada <span id="splashTopics">15</span></div>
+    <div class="stat-pill">📋 Vipengele <span>60+</span></div>
+    <div class="stat-pill">🏆 Rekodi: <span id="splashHigh">0</span></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:0.8rem;max-width:320px;width:100%;margin:0 auto;">
+    <button class="btn btn-primary btn-lg" onclick="showScreen('topicSelect')">🚀 Cheza Sasa</button>
+    <button class="btn btn-secondary" onclick="showScreen('leaderboard')">🏆 Orodha ya Washindi</button>
+  </div>
+
+  <p style="margin-top:2rem;font-size:0.75rem;color:var(--text3);">Chagua kipengele → Bonyeza link → Anza maswali yako mwenyewe</p>
+</div>
+
+<!-- ===== TOPIC SELECT ===== -->
+<div class="screen" id="topicSelect">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('splash')">←</button>
+    <h2>Chagua Mada</h2>
+    <div style="width:40px"></div>
+  </div>
+  <div style="padding:0 1rem;">
+    <div class="topics-grid" id="topicsGrid"></div>
+  </div>
+</div>
+
+<!-- ===== SUBTOPIC SELECT ===== -->
+<div class="screen" id="subtopicSelect">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('topicSelect')">←</button>
+    <h2 id="subtopicScreenTitle">Chagua Kipengele</h2>
+    <div style="width:40px"></div>
+  </div>
+  <div style="padding:0 1rem;">
+    <div class="topic-hero">
+      <span class="topic-hero-icon" id="heroIcon">📖</span>
+      <div class="topic-hero-title" id="heroTitle"></div>
+      <div class="topic-hero-sub" id="heroSub">Bonyeza kipengele ili kufungua maswali yako</div>
+    </div>
+    <div class="subtopics-list" id="subtopicsList"></div>
+  </div>
+</div>
+
+<!-- ===== GAME SCREEN (IFRAME CONTAINER) ===== -->
+<div class="screen" id="gameScreen">
+  <div class="game-topbar">
+    <button class="back-btn" onclick="closeQuiz()">←</button>
+    <div class="game-info">
+      <div class="game-topic-label" id="gameTopicLabel"></div>
+      <div class="game-subtopic-label" id="gameSubtopicLabel"></div>
+    </div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="quiz-frame-container">
+    <iframe class="quiz-iframe" id="quizIframe" src="about:blank"></iframe>
+  </div>
+</div>
+
+<!-- ===== RESULTS SCREEN ===== -->
+<div class="screen" id="resultsScreen">
+  <div class="results-card">
+    <div class="trophy" id="trophyEmoji">🏆</div>
+    <div class="results-title" id="resultsTitle">Hongera!</div>
+    <div class="results-subtitle" id="resultsSubtitle"></div>
+    <div class="score-circle" id="scoreCircle"><div class="score-inner" id="scorePercent">0%</div></div>
+    <div class="result-stats">
+      <div class="result-stat"><div class="result-stat-val" id="resCorrect">0</div><div class="result-stat-lbl">✅ Sahihi</div></div>
+      <div class="result-stat"><div class="result-stat-val" id="resWrong">0</div><div class="result-stat-lbl">❌ Makosa</div></div>
+      <div class="result-stat"><div class="result-stat-val" id="resXP">0</div><div class="result-stat-lbl">⭐ XP</div></div>
+    </div>
+    <div class="name-form" id="nameForm" style="display:none">
+      <p style="font-size:0.85rem;color:var(--text2);">Ingiza jina lako kuhifadhi matokeo:</p>
+      <input type="text" class="name-input" id="playerNameInput" placeholder="Jina lako..." maxlength="20">
+      <button class="btn btn-primary" onclick="saveScore()">💾 Hifadhi Matokeo</button>
+    </div>
+    <div class="results-btns" id="resultsBtns">
+      <button class="btn btn-primary" onclick="replayGame()">🔄 Jaribu Tena</button>
+      <button class="btn btn-secondary" onclick="showScreen('subtopicSelect')">📋 Vipengele Vingine</button>
+      <button class="btn btn-secondary" onclick="showScreen('topicSelect')">🏠 Mada Zote</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LEADERBOARD ===== -->
+<div class="screen" id="leaderboard">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('splash')">←</button>
+    <h2>🏆 Orodha ya Washindi</h2>
+    <div style="width:40px"></div>
+  </div>
+  <div style="padding:0 1rem;">
+    <div class="leaderboard-list" id="lbList"></div>
+  </div>
+</div>
+
+<script>
+// ========== TOPICS DATA (15 Mada) ==========
+const TOPICS = [
+  { id: 0, title: "Usafi wa Kibinafsi", icon: "🧼", color: "#4ecdc4", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kusikiliza na Kujibu", file: "usafi-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Viakifishi", file: "usafi-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Aina za Nomino (Pekee na Kawaida)", file: "usafi-sarufi.html" }
+    ] },
+  { id: 1, title: "Lishe Bora", icon: "🥗", color: "#22c55e", 
+    subtopics: [
+      { letter: "A", cat: "KUSOMA", name: "Kusoma kwa Mapana", file: "lishe-kusoma.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Barua ya Kirafiki ya Kutoa Mwaliko", file: "lishe-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Aina za Nomino (Makundi na Dhahania)", file: "lishe-sarufi.html" }
+    ] },
+  { id: 2, title: "Uhuru wa Wanyama", icon: "🦁", color: "#f59e0b", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Tanzu za Fasihi", file: "wanyama-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Insha za Kubuni", file: "wanyama-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Nomino za Wingi na Vitenzi-jina", file: "wanyama-sarufi.html" }
+    ] },
+  { id: 3, title: "Aina za Maliasili", icon: "🌿", color: "#10b981", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Nyimbo za Watoto na Bembelezi", file: "maliasili-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Insha za Kubuni – Masimulizi", file: "maliasili-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Nyakati", file: "maliasili-sarufi.html" }
+    ] },
+  { id: 4, title: "Unyanyasaji wa Kijinsia", icon: "🤝", color: "#ec4899", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Mazungumzo Mahususi", file: "unyanyasaji-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Insha ya Maelekezo", file: "unyanyasaji-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Nyakati na Hali", file: "unyanyasaji-sarufi.html" }
+    ] },
+  { id: 5, title: "Usalama Shuleni", icon: "🔒", color: "#3b82f6", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kusikiliza kwa Kufasiri – Matini", file: "usalama-kusikiliza.html" },
+      { letter: "B", cat: "KUSOMA", name: "Kusoma kwa Kina – Maudhui na Dhamira", file: "usalama-kusoma.html" },
+      { letter: "C", cat: "KUANDIKA", name: "Insha ya Masimulizi kutokana na Picha", file: "usalama-kuandika.html" },
+      { letter: "D", cat: "SARUFI", name: "Aina za Vitenzi (Vikuu na Vishirikishi)", file: "usalama-sarufi.html" }
+    ] },
+  { id: 6, title: "Kuhudumia Jamii Shuleni", icon: "🏫", color: "#8b5cf6", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kusikiliza kwa Ufahamu", file: "jamii-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Insha ya Kubuni – Maelezo", file: "jamii-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Aina za Vitenzi – Vishirikishi", file: "jamii-sarufi.html" }
+    ] },
+  { id: 7, title: "Ulanguzi wa Binadamu", icon: "⚠️", color: "#f43f5e", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kuzungumza ili Kupasha Habari", file: "ulanguzi-kusikiliza.html" },
+      { letter: "B", cat: "KUSOMA", name: "Kusoma kwa Kina (Mandhari, Ploti)", file: "ulanguzi-kusoma.html" },
+      { letter: "C", cat: "KUANDIKA", name: "Viakifishi – Kiulizi na Koma", file: "ulanguzi-kuandika.html" },
+      { letter: "D", cat: "SARUFI", name: "Ngeli na Upatanisho (A-WA, U-I)", file: "ulanguzi-sarufi.html" }
+    ] },
+  { id: 8, title: "Matumizi ya Vifaa vya Kidijitali", icon: "💻", color: "#06b6d4", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kusikiliza kwa Kina", file: "digital-kusikiliza.html" },
+      { letter: "B", cat: "KUSOMA", name: "Ufahamu wa Kifungu cha Kushawishi", file: "digital-kusoma.html" },
+      { letter: "C", cat: "KUANDIKA", name: "Insha za Kubuni – Masimulizi", file: "digital-kuandika.html" },
+      { letter: "D", cat: "SARUFI", name: "Ngeli na Upatanisho (KI-VI, LI-YA)", file: "digital-sarufi.html" }
+    ] },
+  { id: 9, title: "Kujithamini", icon: "💪", color: "#f97316", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Nyimbo za Kazi na Dini", file: "kujithamini-kusikiliza.html" },
+      { letter: "B", cat: "KUSOMA", name: "Kusoma kwa Kina – Wahusika", file: "kujithamini-kusoma.html" },
+      { letter: "C", cat: "KUANDIKA", name: "Barua ya Kuomba Msamaha", file: "kujithamini-kuandika.html" },
+      { letter: "D", cat: "SARUFI", name: "Vinyume vya Maneno (Nomino, Vivumishi)", file: "kujithamini-sarufi.html" }
+    ] },
+  { id: 10, title: "Majukumu ya Watoto", icon: "👧", color: "#a78bfa", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kuzungumza kwa Kuambatanisha Vitendo", file: "majukumu-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Insha za Kubuni – Maelezo", file: "majukumu-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Mnyambuliko wa Vitenzi (Kutenda, Kutendea, Kutendwa)", file: "majukumu-sarufi.html" }
+    ] },
+  { id: 11, title: "Magonjwa Ambukizi", icon: "🏥", color: "#ef4444", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kusikiliza kwa Makini", file: "magonjwa-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Hotuba ya Kupasha Habari", file: "magonjwa-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Aina za Sentensi (Sahili, Ambatano)", file: "magonjwa-sarufi.html" }
+    ] },
+  { id: 12, title: "Utatuzi wa Mizozo", icon: "🕊️", color: "#14b8a6", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Wahusika katika Nyimbo", file: "mizozo-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Insha za Kubuni – Maelezo", file: "mizozo-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Ukanushaji kwa Kuzingatia Nyakati", file: "mizozo-sarufi.html" }
+    ] },
+  { id: 13, title: "Matumizi ya Pesa", icon: "💰", color: "#eab308", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Lugha katika Nyimbo", file: "pesa-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Insha ya Maelekezo", file: "pesa-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Ukubwa wa Nomino", file: "pesa-sarufi.html" }
+    ] },
+  { id: 14, title: "Maadili ya Mtu Binafsi", icon: "⭐", color: "#f472b6", 
+    subtopics: [
+      { letter: "A", cat: "KUSIKILIZA NA KUZUNGUMZA", name: "Kusikiliza Habari na Kujibu", file: "maadili-kusikiliza.html" },
+      { letter: "B", cat: "KUANDIKA", name: "Kuandika Kidijitali – Baruapepe", file: "maadili-kuandika.html" },
+      { letter: "C", cat: "SARUFI", name: "Usemi Halisi na Usemi wa Taarifa", file: "maadili-sarufi.html" }
+    ] }
+];
+
+// Global variables
+let currentTopic = null;
+let currentSubtopic = null;
+let leaderboardData = JSON.parse(localStorage.getItem('kswLeaderboard') || '[]');
+let playerName = localStorage.getItem('kswName') || '';
+let currentScore = 0;
+let currentCorrect = 0;
+let currentWrong = 0;
+
+// Stars
+function createStars() {
+  const c = document.getElementById('starsContainer');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div'); s.className = 'star';
+    const sz = Math.random() * 2 + 0.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s`;
+    c.appendChild(s);
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'topicSelect') renderTopics();
+  if (id === 'leaderboard') renderLeaderboard();
+  if (id === 'splash') updateSplashStats();
+  window.scrollTo(0, 0);
+}
+
+function updateSplashStats() {
+  const high = leaderboardData.length > 0 ? Math.max(...leaderboardData.map(x => x.score)) : 0;
+  document.getElementById('splashHigh').textContent = high;
+  document.getElementById('splashTopics').textContent = TOPICS.length;
+}
+
+function renderTopics() {
+  const grid = document.getElementById('topicsGrid');
+  grid.innerHTML = TOPICS.map((t, i) => `<div class="topic-card" style="--card-color:${t.color}" onclick="selectTopic(${i})">
+    <div class="topic-num">Mada ${i+1}</div>
+    <div class="topic-title">${t.icon} ${t.title}</div>
+    <div class="topic-subtopics">${t.subtopics.map(s=>`<span class="subtopic-badge">${s.letter}. ${s.cat}</span>`).join('')}</div>
+    <div class="topic-progress"><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div><span class="progress-label">Bado</span></div>
+  </div>`).join('');
+}
+
+function selectTopic(idx) { currentTopic = TOPICS[idx]; renderSubtopics(); showScreen('subtopicSelect'); }
+
+function renderSubtopics() {
+  document.getElementById('subtopicScreenTitle').textContent = currentTopic.title;
+  document.getElementById('heroIcon').textContent = currentTopic.icon;
+  document.getElementById('heroTitle').textContent = currentTopic.title;
+  const list = document.getElementById('subtopicsList');
+  list.innerHTML = currentTopic.subtopics.map((s, i) => `<a href="#" class="subtopic-card" style="--card-color:${currentTopic.color}; text-decoration:none;" onclick="openSubtopicQuiz(${i}); return false;">
+    <div class="subtopic-letter" style="background:${currentTopic.color}">${s.letter}</div>
+    <div class="subtopic-info">
+      <div class="subtopic-name">${s.cat}</div>
+      <div class="subtopic-full">${s.name}</div>
+      <div class="subtopic-meta">📄 Bonyeza kufungua maswali yako</div>
+    </div>
+    <div class="subtopic-arrow">→</div>
+  </a>`).join('');
+}
+
+function openSubtopicQuiz(subtopicIdx) {
+  currentSubtopic = currentTopic.subtopics[subtopicIdx];
+  document.getElementById('gameTopicLabel').textContent = currentTopic.title;
+  document.getElementById('gameSubtopicLabel').textContent = `${currentSubtopic.letter}. ${currentSubtopic.name}`;
+  
+  // Load the HTML file from the file property
+  const iframe = document.getElementById('quizIframe');
+  iframe.src = currentSubtopic.file;
+  
+  showScreen('gameScreen');
+}
+
+function closeQuiz() {
+  // Stop iframe loading and return to subtopic selection
+  const iframe = document.getElementById('quizIframe');
+  iframe.src = 'about:blank';
+  showScreen('subtopicSelect');
+}
+
+// Receive score from iframe via postMessage
+window.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'quizComplete') {
+    currentScore = event.data.score || 0;
+    currentCorrect = event.data.correct || 0;
+    currentWrong = event.data.wrong || 0;
+    showResults();
+  }
+});
+
+function showResults() {
+  const total = currentCorrect + currentWrong;
+  const pct = total > 0 ? Math.round((currentCorrect / total) * 100) : 0;
+  
+  let trophy = '🥉', title = 'Jaribu Tena!';
+  if (pct >= 90) { trophy = '🏆'; title = 'Bingwa wa Darasa!'; }
+  else if (pct >= 75) { trophy = '🥇'; title = 'Hongera Sana!'; }
+  else if (pct >= 60) { trophy = '🥈'; title = 'Umefanya Vizuri!'; }
+  else if (pct >= 40) { trophy = '🥉'; title = 'Endelea Kujifunza!'; }
+  
+  document.getElementById('trophyEmoji').textContent = trophy;
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsSubtitle').textContent = `${currentTopic.title} · ${currentSubtopic.name}`;
+  document.getElementById('scorePercent').textContent = pct + '%';
+  document.getElementById('resCorrect').textContent = currentCorrect;
+  document.getElementById('resWrong').textContent = currentWrong;
+  document.getElementById('resXP').textContent = currentScore;
+  document.getElementById('scoreCircle').style.setProperty('--pct', `${pct * 3.6}deg`);
+  
+  if (playerName) {
+    saveScoreToLeaderboard();
+    document.getElementById('nameForm').style.display = 'none';
+  } else {
+    document.getElementById('playerNameInput').value = '';
+    document.getElementById('nameForm').style.display = 'flex';
+  }
+  
+  showScreen('resultsScreen');
+}
+
+function saveScoreToLeaderboard() {
+  const total = currentCorrect + currentWrong;
+  const pct = total > 0 ? Math.round((currentCorrect / total) * 100) : 0;
+  leaderboardData.push({
+    name: playerName,
+    score: currentScore,
+    pct: pct,
+    topic: currentTopic.title,
+    subtopic: currentSubtopic.name,
+    date: new Date().toLocaleDateString('sw-KE')
+  });
+  leaderboardData.sort((a,b) => b.score - a.score);
+  leaderboardData = leaderboardData.slice(0, 50);
+  localStorage.setItem('kswLeaderboard', JSON.stringify(leaderboardData));
+}
+
+function saveScore() {
+  const input = document.getElementById('playerNameInput');
+  const name = input.value.trim();
+  if (!name) { showToast('Ingiza jina lako!'); return; }
+  playerName = name;
+  localStorage.setItem('kswName', name);
+  saveScoreToLeaderboard();
+  document.getElementById('nameForm').style.display = 'none';
+  showToast('✅ Matokeo yamehifadhiwa!');
+}
+
+function replayGame() {
+  openSubtopicQuiz(currentTopic.subtopics.indexOf(currentSubtopic));
+}
+
+function renderLeaderboard() {
+  const list = document.getElementById('lbList');
+  if (!leaderboardData.length) {
+    list.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text3);">Bado hakuna rekodi. Cheza mchezo kwanza!</div>';
+    return;
+  }
+  list.innerHTML = leaderboardData.slice(0, 20).map((e, i) => {
+    const rankCls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const rankStr = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+    return `<div class="lb-row">
+      <div class="lb-rank ${rankCls}">${rankStr}</div>
+      <div class="lb-info"><div class="lb-name">${e.name}</div><div class="lb-meta">${e.topic} · ${e.pct}% · ${e.date}</div></div>
+      <div class="lb-score">${e.score} XP</div>
+    </div>`;
+  }).join('');
+}
+
+function showToast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+createStars();
+updateSplashStats();
+</script>
+</body>
+</html>

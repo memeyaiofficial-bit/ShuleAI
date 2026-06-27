@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Science Quest: Lab Safety & Apparatus | Grade 7 Integrated Science</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* better focus for kiosk style */
+        }
+
+        body {
+            background: linear-gradient(135deg, #0b3b3f 0%, #1a5f5a 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fef9e8;
+            border-radius: 56px 48px 56px 48px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 250, 210, 0.7);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #1e6f5c;
+            background: linear-gradient(120deg, #289672, #1d5a4c);
+            padding: 18px 28px;
+            color: white;
+            text-shadow: 2px 2px 0 #0f3d34;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 4px solid #f4c542;
+        }
+
+        .level-badge {
+            background: #2c2e3a;
+            padding: 6px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -1px 0 #5a6072, 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .score-board {
+            background: #1f2a36;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .timer-area {
+            background: #000000aa;
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 5px 20px;
+            font-family: monospace;
+            font-size: 1.7rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .question-panel {
+            padding: 30px 28px 20px;
+            background: #fffaf0;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #1c4e42;
+            margin-bottom: 24px;
+            background: #fef2db;
+            padding: 22px;
+            border-radius: 42px;
+            box-shadow: inset 0 0 0 2px #ffe2ae, 0 8px 14px rgba(0,0,0,0.05);
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #4f7a9e;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 3px 0 #2c5270;
+        }
+        .voice-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2c5270;}
+
+        .hint-box {
+            background: #f1e6d4;
+            border-radius: 36px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #bb6b2e;
+            border-left: 5px solid #f3a257;
+            max-width: 60%;
+        }
+
+        .answer-area {
+            margin: 15px 0 20px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.3rem;
+            font-family: 'Courier New', monospace;
+            background: #fff7ea;
+            border: 3px solid #f0bc6e;
+            border-radius: 60px;
+            outline: none;
+            transition: 0.1s;
+            text-align: center;
+            font-weight: 600;
+            color: #1f543f;
+        }
+        .answer-input:focus {
+            border-color: #d58e2c;
+            background: #fffff5;
+            box-shadow: 0 0 0 3px #ffcd94;
+        }
+
+        .submit-btn {
+            background: #2b8c5e;
+            width: 100%;
+            border: none;
+            padding: 16px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 12px;
+            box-shadow: 0 5px 0 #1a5a3e;
+        }
+        .submit-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1a5a3e;}
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.05rem;
+            text-align: center;
+            background: #e9dfcf;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .level-result {
+            background: #286b4c;
+            color: #fff7cf;
+            text-align: center;
+            padding: 18px;
+            margin: 12px 28px 28px;
+            border-radius: 48px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        button:disabled, .disabled-btn {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            .question-text { font-size: 1.2rem; padding: 16px; }
+            .action-row { flex-direction: column; align-items: stretch; }
+            .hint-box { max-width: 100%; text-align: center; }
+            .timer-area { font-size: 1.3rem; }
+            .game-header { padding: 14px; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #e2d5bc;
+            padding: 10px;
+            color: #3e5d48;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="score-board">🧪 Score: <span id="scoreSpan">0</span> / <span id="maxScoreSpan">0</span></div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span>s</div>
+    </div>
+    <div class="question-panel">
+        <div class="question-text" id="questionText">Loading Science Lab Adventure...</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-box" id="hintBox">💡 HINT: Type answers carefully (1-3 words)</div>
+        </div>
+        <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="✏️ Write your answer here ..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✓ CHECK & SUBMIT</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">🔬 Welcome, Scientist! Answer each question. 80% needed to pass level.</div>
+    </div>
+    <div id="levelMessageArea"></div>
+    <footer>🧫 Integrated Science • Lab Safety • Apparatus & Instruments • CBC Grade 7 🧴</footer>
+</div>
+
+<script>
+    // =========================== QUESTION BANK: Integrated Science Topics ===================================
+    // Topics: Introduction to Integrated Science, Laboratory Safety, Laboratory Apparatus & Instruments
+    // We'll generate 5 levels, each with 30 quality questions (mix of three topics)
+    
+    // Core question pool (varied and grade 7 friendly)
+    const introSciencePool = [
+        { text: "The study of living things and their interactions with the environment is called?", answer: "biology" },
+        { text: "The branch of science that deals with matter and energy is?", answer: "physics" },
+        { text: "What do we call the study of substances, their structure and reactions?", answer: "chemistry" },
+        { text: "What is the name for a logical approach to solve problems using experiments and observation?", answer: "scientific method" },
+        { text: "A scientist who studies plants is known as a?", answer: "botanist" },
+        { text: "What is the first step of the scientific method? (making an educated guess is hypothesis but first is ?)", answer: "observation" },
+        { text: "Integrated science combines physics, chemistry, biology and ? (earth science or ...)", answer: "earth science" },
+        { text: "The variable that is changed by the scientist in an experiment is called the ? variable", answer: "independent" },
+    ];
+    
+    const safetyPool = [
+        { text: "What safety equipment should you wear to protect your eyes in a lab?", answer: "goggles" },
+        { text: "What do you use to wash chemicals off your skin in the lab?", answer: "eyewash station" },
+        { text: "If there is a fire in the lab, what safety blanket or device can be used?", answer: "fire blanket" },
+        { text: "In case of a small fire on the bench, you should use a?", answer: "fire extinguisher" },
+        { text: "Long hair must be ______ back during experiments to avoid fire hazards.", answer: "tied" },
+        { text: "What should you never do with lab chemicals? (taste, smell directly — one word)", answer: "taste" },
+        { text: "What piece of clothing is mandatory in most labs to protect your body?", answer: "lab coat" },
+        { text: "Broken glass should be disposed in a special container called a ? bin", answer: "sharps" },
+        { text: "When heating a test tube, point it away from yourself and ?", answer: "others" },
+        { text: "What symbol indicates a corrosive substance that can burn skin?", answer: "corrosive" },
+    ];
+    
+    const apparatusPool = [
+        { text: "A cylindrical container used to hold, mix and heat liquids is called a?", answer: "beaker" },
+        { text: "Which apparatus is used to measure the volume of a liquid accurately?", answer: "measuring cylinder" },
+        { text: "A narrow glass tube used to transfer small amounts of liquid is a?", answer: "dropper" },
+        { text: "What do we call the instrument used to observe very small objects?", answer: "microscope" },
+        { text: "To hold a test tube while heating, you would use a test tube ?", answer: "holder" },
+        { text: "A triangular wire mesh used to support a beaker on a tripod is called a?", answer: "wire gauze" },
+        { text: "What apparatus is used to measure temperature?", answer: "thermometer" },
+        { text: "The instrument used to weigh solids or liquids precisely is a?", answer: "balance" },
+        { text: "A flat-bottomed flask with a conical shape used for swirling is called an?", answer: "erlenmeyer flask" },
+        { text: "What tool is used to grind solids into fine powder?", answer: "mortar and pestle" },
+        { text: "A stand with a clamp that holds apparatus during experiments is a retort ?", answer: "stand" },
+        { text: "To measure time intervals in the lab, you use a?", answer: "stopwatch" },
+    ];
+    
+    // Combine all topics and guarantee 30 questions per level, rich and varied
+    const masterPool = [...introSciencePool, ...safetyPool, ...apparatusPool];
+    
+    // Extend to have enough variety for 5 levels without repetition (use shuffle with seed)
+    const extraQuestions = [
+        { text: "What is the name of the procedure where you heat a substance to find its melting point?", answer: "melting point test" },
+        { text: "What do you call a container for disposing used chemicals safely?", answer: "waste bottle" },
+        { text: "The branch of science studying Earth's atmosphere and weather is?", answer: "meteorology" },
+        { text: "What is the curved surface of a liquid in a graduated cylinder called?", answer: "meniscus" },
+        { text: "A device used to produce a single gas flame for heating is a Bunsen ?", answer: "burner" },
+        { text: "What safety sign shows a skull and crossbones?", answer: "toxic" },
+        { text: "In a lab, never eat or ? any substance.", answer: "drink" },
+        { text: "What apparatus is used to filter mixtures?", answer: "filter funnel" },
+        { text: "The study of rocks and minerals is called?", answer: "geology" },
+        { text: "What do you call a person who works in a laboratory?", answer: "scientist" },
+        { text: "For heating a chemical that releases fumes, you should use a fume ?", answer: "hood" },
+        { text: "What instrument measures electric current?", answer: "ammeter" },
+        { text: "The part of the microscope you look through is the ?", answer: "eyepiece" },
+        { text: "What do you call the base that supports the Bunsen burner?", answer: "tripod" },
+    ];
+    
+    const fullExtendedPool = [...masterPool, ...extraQuestions];
+    
+    // Ensure we can generate unique shuffled sets for each level
+    function getLevelQuestions(level) {
+        // deep copy and shuffle using seed for variety
+        let pool = [...fullExtendedPool];
+        // Add more duplicates to fill 30 but ensure distinct per level
+        while (pool.length < 60) pool = pool.concat(extraQuestions);
+        // shuffle with deterministic seed based on level
+        const shuffleArray = (arr, seed) => {
+            let a = [...arr];
+            let s = seed * 131071;
+            for (let i = a.length - 1; i > 0; i--) {
+                s = (s * 9301 + 49297) % 233280;
+                let j = s % (i + 1);
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        };
+        let shuffled = shuffleArray(pool, level * 997);
+        // pick first 30 unique questions by answer text (avoid duplicates within level)
+        let unique = [];
+        let seen = new Set();
+        for (let q of shuffled) {
+            let key = q.answer.toLowerCase().trim();
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push({ text: q.text, answer: q.answer.toLowerCase().trim() });
+            }
+            if (unique.length === 30) break;
+        }
+        // if still less than 30, fill with generic safety questions
+        while (unique.length < 30) {
+            unique.push({ text: "What safety equipment protects your hands from chemicals?", answer: "gloves" });
+            if (unique.length < 30) unique.push({ text: "Which apparatus holds liquids for swirling without spilling? (flask type)", answer: "conical flask" });
+        }
+        return unique.slice(0,30);
+    }
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let questions = [];
+    let score = 0;
+    let totalQuestionsInLevel = 30;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let canAnswer = true;
+    let waitingForNext = false;
+    
+    // DOM elements
+    const questionTextEl = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreSpan = document.getElementById('scoreSpan');
+    const maxScoreSpan = document.getElementById('maxScoreSpan');
+    const timerSecondsSpan = document.getElementById('timerSeconds');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintBox = document.getElementById('hintBox');
+    const levelMessageArea = document.getElementById('levelMessageArea');
+    
+    // Text to speech
+    function speakText(text) {
+        if (!window.speechSynthesis) {
+            feedbackMsg.innerText = "⚠️ Voice not supported in this browser";
+            return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.05;
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    function normalizeAnswer(ans) {
+        return ans.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    
+    function updateScoreUI() {
+        scoreSpan.innerText = score;
+        maxScoreSpan.innerText = totalQuestionsInLevel;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timeLeft = 40;
+        timerSecondsSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if (!canAnswer || waitingForNext) return;
+            if (timeLeft <= 1) {
+                // time's up
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (canAnswer && !waitingForNext) {
+                    canAnswer = false;
+                    disableInputs(true);
+                    feedbackMsg.innerHTML = "⏰ TIME'S UP! ❌ No answer recorded. Moving to next question...";
+                    speakText("Time is up! Moving to next question.");
+                    setTimeout(() => {
+                        proceedToNextOrLevel();
+                    }, 1600);
+                }
+            } else {
+                timeLeft--;
+                timerSecondsSpan.innerText = timeLeft;
+                // dynamic hints as seconds decrease
+                if (timeLeft === 25) {
+                    hintBox.innerHTML = "🔎 HINT: Think about lab safety rules or common apparatus!";
+                } else if (timeLeft === 15) {
+                    hintBox.innerHTML = "⚡ 15 seconds left! Check spelling of the lab tool or safety term.";
+                } else if (timeLeft === 8) {
+                    hintBox.innerHTML = "⚠️ Almost out of time! Try a short keyword answer.";
+                } else if (timeLeft === 3) {
+                    hintBox.innerHTML = "🔥 LAST 3 SECONDS! Type any related word!";
+                }
+            }
+        }, 1000);
+    }
+    
+    function disableInputs(disabled) {
+        answerInput.disabled = disabled;
+        submitBtn.disabled = disabled;
+        if (disabled) {
+            submitBtn.style.opacity = "0.5";
+            answerInput.style.backgroundColor = "#f3efdf";
+        } else {
+            submitBtn.style.opacity = "1";
+            answerInput.style.backgroundColor = "#fff7ea";
+        }
+    }
+    
+    function loadCurrentQuestion() {
+        if (!questions.length) return;
+        const q = questions[currentQuestionIndex];
+        questionTextEl.innerText = q.text;
+        answerInput.value = '';
+        feedbackMsg.innerHTML = "🔊 Click the speaker to hear question. Type your answer and submit.";
+        hintBox.innerHTML = "💡 HINT: Answer with 1–3 words (lab term, apparatus, safety rule)";
+        canAnswer = true;
+        waitingForNext = false;
+        disableInputs(false);
+        answerInput.focus();
+        stopTimer();
+        startTimer();
+    }
+    
+    function proceedToNextOrLevel() {
+        const nextIndex = currentQuestionIndex + 1;
+        const completedAll = (nextIndex >= totalQuestionsInLevel);
+        const percentage = (score / totalQuestionsInLevel) * 100;
+        
+        if (completedAll) {
+            if (percentage >= 80) {
+                if (currentLevel === 5) {
+                    // Game finished
+                    levelMessageArea.innerHTML = `<div class="level-result">🏆✨ GRAND MASTER SCIENTIST! ✨🏆<br>You completed all 5 levels! ${score}/${totalQuestionsInLevel}<br>🏅 EXCELLENT LAB SKILLS! 🏅</div>`;
+                    feedbackMsg.innerHTML = "🎉 CONGRATULATIONS! You've mastered Integrated Science Lab safety & apparatus! Refresh to play again.";
+                    disableInputs(true);
+                    stopTimer();
+                    canAnswer = false;
+                    return;
+                } else {
+                    // Level up
+                    levelMessageArea.innerHTML = `<div class="level-result">🧬 LEVEL UP! 🧪 Passed Level ${currentLevel} with ${percentage.toFixed(0)}%! → Moving to Level ${currentLevel+1}</div>`;
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                    return;
+                }
+            } else {
+                // Failed level
+                levelMessageArea.innerHTML = `<div class="level-result">⚠️ LEVEL ${currentLevel} FAILED ⚠️ You got ${percentage.toFixed(0)}% (need 80%). Restarting Level ${currentLevel}... Try again! ⚠️</div>`;
+                resetCurrentLevel();
+                return;
+            }
+        } else {
+            // Move to next question in same level
+            currentQuestionIndex++;
+            loadCurrentQuestion();
+            waitingForNext = false;
+        }
+    }
+    
+    function resetCurrentLevel() {
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        questions = getLevelQuestions(currentLevel);
+        totalQuestionsInLevel = questions.length;
+        loadCurrentQuestion();
+        levelMessageArea.innerHTML = ""; // clear message after reset
+        setTimeout(() => {
+            if (levelMessageArea.innerHTML.includes("FAILED")) levelMessageArea.innerHTML = "";
+        }, 2800);
+    }
+    
+    function loadLevel(level) {
+        if (level > 5) {
+            levelMessageArea.innerHTML = `<div class="level-result">🏁 ULTIMATE CHAMPION! Integrated Science Master 🧫🏁</div>`;
+            disableInputs(true);
+            stopTimer();
+            return;
+        }
+        currentLevel = level;
+        levelDisplay.innerText = `Level ${level}`;
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        questions = getLevelQuestions(level);
+        totalQuestionsInLevel = questions.length;
+        loadCurrentQuestion();
+        levelMessageArea.innerHTML = "";
+        canAnswer = true;
+        waitingForNext = false;
+    }
+    
+    function checkAnswerHandler() {
+        if (!canAnswer || waitingForNext) {
+            feedbackMsg.innerHTML = "⏳ Please wait, loading next...";
+            return;
+        }
+        const userRaw = answerInput.value;
+        if (!userRaw.trim()) {
+            feedbackMsg.innerHTML = "📢 Type your answer before submitting!";
+            return;
+        }
+        const normalizedUser = normalizeAnswer(userRaw);
+        const correctAns = questions[currentQuestionIndex].answer;
+        const normalizedCorrect = normalizeAnswer(correctAns);
+        
+        let isCorrect = false;
+        if (normalizedUser === normalizedCorrect) {
+            isCorrect = true;
+        } else {
+            // smart matching: check if correct answer is contained in user answer (for multi-word)
+            if (normalizedCorrect.includes(normalizedUser) && normalizedUser.length > 2) isCorrect = true;
+            else if (normalizedUser.includes(normalizedCorrect)) isCorrect = true;
+            // common synonyms for lab
+            const synonyms = {
+                "goggles": "safety glasses", "safety glasses": "goggles", "eyewash": "eye wash station",
+                "bunsen burner": "bunsen", "measuring cylinder": "graduated cylinder", "graduated cylinder": "measuring cylinder",
+                "flask": "erlenmeyer", "erlenmeyer": "conical flask", "conical flask": "erlenmeyer flask",
+                "microscope": "light microscope", "balance": "scale", "thermometer": "temperature sensor",
+                "lab coat": "white coat", "fire extinguisher": "extinguisher", "tripod": "tripod stand"
+            };
+            if (synonyms[normalizedUser] === normalizedCorrect) isCorrect = true;
+            if (synonyms[normalizedCorrect] === normalizedUser) isCorrect = true;
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            score++;
+            updateScoreUI();
+            feedbackMsg.innerHTML = `✅ ABSOLUTELY CORRECT! +1 point (${score}/${totalQuestionsInLevel}) Excellent science knowledge!`;
+            speakText("Correct! Great job, scientist.");
+        } else {
+            feedbackMsg.innerHTML = `❌ OOPS! The correct answer is "${questions[currentQuestionIndex].answer}". You wrote: "${userRaw}". Keep practicing lab safety!`;
+            speakText(`Wrong answer. The correct answer is ${questions[currentQuestionIndex].answer}. Review your lab rules.`);
+        }
+        
+        canAnswer = false;
+        disableInputs(true);
+        waitingForNext = true;
+        
+        setTimeout(() => {
+            proceedToNextOrLevel();
+        }, 2100);
+    }
+    
+    // Voice read current question
+    function readCurrentQuestion() {
+        if (questionTextEl.innerText && !questionTextEl.innerText.includes("Loading")) {
+            speakText(questionTextEl.innerText);
+        } else {
+            speakText("No question loaded yet. Wait for next question.");
+        }
+    }
+    
+    // Event binding
+    submitBtn.addEventListener('click', checkAnswerHandler);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !submitBtn.disabled && canAnswer && !waitingForNext) {
+            e.preventDefault();
+            checkAnswerHandler();
+        }
+    });
+    
+    // Initialize game Level 1
+    function initGame() {
+        currentLevel = 1;
+        loadLevel(1);
+    }
+    
+    initGame();
+</script>
+</body>
+</html>

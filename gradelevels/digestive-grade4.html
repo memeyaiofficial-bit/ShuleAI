@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Digestive Defender | Grade 4 Science | Human Digestive System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #7b3a1a 0%, #5c2a10 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 1px 4px rgba(255, 250, 210, 0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 6px solid #a04000;
+            color: white;
+            text-shadow: 2px 2px 0 #a04000;
+        }
+
+        .level-badge {
+            background: #3e1a0a;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.7rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #e67e22, 0 6px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-area {
+            background: #2a1208;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: inset 0 0 0 3px #fad7a0, 0 6px 0 #3e1a0a;
+        }
+
+        .timer-number {
+            background: #000000;
+            padding: 6px 20px;
+            border-radius: 50px;
+            color: #f5b041;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+            min-width: 110px;
+            text-align: center;
+            transition: 0.1s;
+        }
+
+        .score-progress {
+            background: #e8ddc5;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #b89a6e;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: #d35400;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .question-card {
+            padding: 30px 28px 20px;
+            background: #fffaf0;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 700;
+            background: #fdebd0;
+            padding: 24px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 0 4px white, 0 10px 18px rgba(0,0,0,0.1);
+            color: #7b3a1a;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            padding: 16px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.07s linear;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #aa8e6c;
+            color: #2d2418;
+            font-family: inherit;
+        }
+
+        .option-prefix {
+            background: #e67e22;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 0 #a04000;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #ffefcf;
+            transform: scale(0.97);
+        }
+
+        .option-btn.correct-highlight {
+            background: #2e7d32;
+            color: white;
+            box-shadow: 0 3px 0 #1b5e1f;
+        }
+
+        .option-btn.correct-highlight .option-prefix {
+            background: #1b5e20;
+        }
+
+        .option-btn.wrong-highlight {
+            background: #c62828;
+            color: white;
+            text-decoration: line-through;
+            box-shadow: 0 3px 0 #7f2a2a;
+        }
+
+        .option-btn.wrong-highlight .option-prefix {
+            background: #8b2a2a;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+
+        .next-area {
+            text-align: center;
+            padding-bottom: 25px;
+        }
+
+        .next-btn {
+            background: #f4a261;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 45px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c45c1a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #c45c1a;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #d35400;
+            color: #fdebd0;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-top: 2px solid #f5bc70;
+        }
+
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 18px;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+
+        .restart-btn:hover {
+            background: #5e3f2a;
+            color: white;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.2rem; }
+            .timer-number { font-size: 1.5rem; min-width: 75px; letter-spacing: 2px; }
+            .level-badge { font-size: 1.2rem; }
+        }
+
+        .timer-critical {
+            background: #8b0000 !important;
+            color: #ffcc44 !important;
+            text-shadow: 0 0 4px red;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.85; transform: scale(1.03);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+        
+        .digest-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge">🍎 LEVEL <span id="levelNum">1</span> 🩺</div>
+        <div class="timer-area">⏱️ TIME LEFT <span class="timer-number" id="timerDisplay">00</span></div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 80% TO PASS → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading digestive system challenge...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">🍎 DIGESTIVE DEFENDER! Learn parts of the digestive system, how to keep it healthy, and why it matters. Timer is RUNNING!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC SCIENCE AND TECHNOLOGY: HUMAN DIGESTIVE SYSTEM
+    // Topics: Parts of the digestive system (mouth, esophagus, stomach, small intestine, large intestine, rectum, anus)
+    // Maintaining a healthy digestive system (diet, water, fiber, hygiene, exercise)
+    // Importance of a healthy digestive system (energy, growth, immunity, waste removal)
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // ---------- BANK 1: PARTS OF THE HUMAN DIGESTIVE SYSTEM ----------
+    const partsBank = [
+        { q: "Digestion begins in which part of the digestive system?", correct: "Mouth", options: ["Stomach", "Mouth", "Esophagus", "Small intestine"] },
+        { q: "What is the tube that carries food from the mouth to the stomach called?", correct: "Esophagus", options: ["Trachea", "Esophagus", "Intestine", "Rectum"] },
+        { q: "The stomach is located in which part of the body?", correct: "Upper abdomen (left side)", options: ["Chest", "Upper abdomen", "Pelvis", "Head"] },
+        { q: "Which organ produces bile to help digest fats?", correct: "Liver", options: ["Stomach", "Liver", "Pancreas", "Gallbladder"] },
+        { q: "The small intestine is where:", correct: "Most nutrients are absorbed into the blood", options: ["Water is absorbed", "Most nutrients are absorbed into the blood", "Food is stored", "Undigested food is removed"] },
+        { q: "Which part of the digestive system absorbs water and forms solid waste?", correct: "Large intestine", options: ["Small intestine", "Large intestine", "Stomach", "Esophagus"] },
+        { q: "The organ that stores bile and releases it into the small intestine is the:", correct: "Gallbladder", options: ["Liver", "Pancreas", "Gallbladder", "Appendix"] },
+        { q: "Undigested food leaves the body through the:", correct: "Anus", options: ["Rectum", "Anus", "Mouth", "Esophagus"] },
+        { q: "The pancreas produces:", correct: "Digestive juices (enzymes)", options: ["Bile", "Digestive juices (enzymes)", "Saliva", "Mucus only"] },
+        { q: "Saliva in the mouth contains an enzyme that breaks down:", correct: "Starch (carbohydrates)", options: ["Protein", "Starch (carbohydrates)", "Fat", "Vitamins"] }
+    ];
+
+    // ---------- BANK 2: MAINTAINING A HEALTHY DIGESTIVE SYSTEM (Food & Habits) ----------
+    const maintainBank = [
+        { q: "Eating foods rich in fiber helps to:", correct: "Prevent constipation and keep digestion regular", options: ["Cause diarrhea", "Prevent constipation and keep digestion regular", "Slow down digestion", "Stop all digestion"] },
+        { q: "Which of these is a good source of dietary fiber?", correct: "Vegetables and fruits", options: ["Candy", "Vegetables and fruits", "Soda", "White bread only"] },
+        { q: "Drinking enough water every day helps to:", correct: "Keep food moving through the digestive tract", options: ["Cause dehydration", "Keep food moving through the digestive tract", "Stop digestion", "Make you vomit"] },
+        { q: "How many glasses of water should a child drink daily for good digestion?", correct: "6-8 glasses", options: ["1-2 glasses", "6-8 glasses", "10-12 glasses", "None"] },
+        { q: "Chewing food thoroughly is important because:", correct: "It helps break down food and mixes it with saliva", options: ["It wastes time", "It helps break down food and mixes it with saliva", "It makes food taste bad", "It stops digestion"] },
+        { q: "Probiotics (like yogurt) are good for digestion because they:", correct: "Contain healthy bacteria that help the gut", options: ["Cause stomach pain", "Contain healthy bacteria that help the gut", "Slow digestion", "Remove all bacteria"] },
+        { q: "Eating too much fatty or fried food can lead to:", correct: "Indigestion and weight gain", options: ["Better digestion", "Indigestion and weight gain", "Faster metabolism", "More energy"] },
+        { q: "Regular exercise helps digestion by:", correct: "Stimulating intestinal muscles to move food along", options: ["Stopping blood flow", "Stimulating intestinal muscles to move food along", "Causing constipation", "Slowing down the stomach"] },
+        { q: "Washing hands before eating prevents:", correct: "Germs from entering the digestive system", options: ["Tasty food", "Germs from entering the digestive system", "Chewing", "Saliva production"] },
+        { q: "Eating meals at regular times helps the digestive system to:", correct: "Work efficiently and predictably", options: ["Stop working", "Work efficiently and predictably", "Get confused", "Store more fat"] }
+    ];
+
+    // ---------- BANK 3: IMPORTANCE OF A HEALTHY DIGESTIVE SYSTEM ----------
+    const importanceBank = [
+        { q: "A healthy digestive system provides the body with:", correct: "Energy from broken-down food", options: ["Only water", "Energy from broken-down food", "Carbon dioxide", "Waste products"] },
+        { q: "Nutrients absorbed from digested food help the body to:", correct: "Grow, repair tissues, and stay strong", options: ["Only sleep", "Grow, repair tissues, and stay strong", "Get sick", "Lose weight"] },
+        { q: "The digestive system helps remove waste products from the body. This prevents:", correct: "Toxin buildup and illness", options: ["Energy gain", "Toxin buildup and illness", "Better appetite", "Faster growth"] },
+        { q: "A healthy gut supports the immune system because:", correct: "About 70% of immune cells are in the digestive tract", options: ["Digestion has nothing to do with immunity", "About 70% of immune cells are in the digestive tract", "The gut makes red blood cells", "The gut filters air"] },
+        { q: "When the digestive system is healthy, a person feels:", correct: "Energetic, comfortable, and able to focus", options: ["Tired and sick", "Energetic, comfortable, and able to focus", "Always hungry", "Always sleepy"] },
+        { q: "Malnutrition can occur if the digestive system:", correct: "Does not absorb nutrients properly", options: ["Absorbs too much water", "Does not absorb nutrients properly", "Produces too much acid", "Is too fast"] },
+        { q: "A healthy digestive system helps maintain a healthy:", correct: "Body weight and overall well-being", options: ["Only hair color", "Body weight and overall well-being", "Shoe size", "Eye color"] },
+        { q: "Proper digestion ensures that the brain gets:", correct: "Glucose (sugar) for energy to think and learn", options: ["Only oxygen", "Glucose for energy to think and learn", "Carbon dioxide", "Waste products"] }
+    ];
+
+    // ---------- BANK 4: DIGESTIVE SYSTEM DISORDERS AND PREVENTION ----------
+    const disordersBank = [
+        { q: "Constipation is caused by:", correct: "Lack of fiber and water in the diet", options: ["Too much water", "Lack of fiber and water in the diet", "Eating too many fruits", "Exercising too much"] },
+        { q: "Diarrhea can be dangerous because it leads to:", correct: "Dehydration (loss of too much water)", options: ["Weight gain", "Dehydration (loss of too much water)", "Constipation", "Better digestion"] },
+        { q: "Heartburn (acid reflux) happens when:", correct: "Stomach acid flows back into the esophagus", options: ["Stomach acid flows back into the esophagus", "Food goes to the lungs", "The stomach stops working", "You drink too much water"] },
+        { q: "Which habit can help prevent digestive problems?", correct: "Eating slowly and chewing food well", options: ["Eating very fast", "Eating slowly and chewing food well", "Skipping meals", "Eating only candy"] },
+        { q: "Food poisoning affects the digestive system and is caused by:", correct: "Eating contaminated food with bacteria or viruses", options: ["Eating too much sugar", "Eating contaminated food with bacteria or viruses", "Drinking clean water", "Exercising"] },
+        { q: "To prevent digestive infections, you should:", correct: "Wash fruits and vegetables before eating", options: ["Eat dirty food", "Wash fruits and vegetables before eating", "Never wash hands", "Share utensils"] }
+    ];
+
+    // ---------- BANK 5: DIGESTIVE SYSTEM AND THE ENVIRONMENT (Connection) ----------
+    const environmentBank = [
+        { q: "Proper waste disposal (toilets/latrines) helps prevent:", correct: "Digestive diseases like cholera and typhoid", options: ["Better taste of food", "Digestive diseases like cholera and typhoid", "Stronger muscles", "Faster digestion"] },
+        { q: "Clean drinking water is important for digestion because:", correct: "Contaminated water can cause diarrhea and stomach infections", options: ["Dirty water tastes better", "Contaminated water can cause diarrhea and stomach infections", "Water has nothing to do with digestion", "Dirty water helps digestion"] },
+        { q: "Flies carrying germs from waste can contaminate food. This leads to:", correct: "Digestive system infections", options: ["Stronger immunity", "Digestive system infections", "Better appetite", "Faster growth"] },
+        { q: "Composting food waste is good for the environment AND:", correct: "Reduces the spread of digestive diseases from rotting garbage", options: ["Has no effect", "Reduces the spread of digestive diseases from rotting garbage", "Creates more germs", "Makes food taste worse"] },
+        { q: "Washing hands with soap after using the toilet prevents:", correct: "Spreading germs that cause diarrhea and dysentery", options: ["Good smell", "Spreading germs that cause diarrhea and dysentery", "Better digestion", "Hunger"] },
+        { q: "Keeping the kitchen and food preparation area clean helps:", correct: "Prevent food contamination and digestive illnesses", options: ["Only look nice", "Prevent food contamination and digestive illnesses", "Make food spicy", "Slow digestion"] }
+    ];
+
+    // Combine all banks into categories
+    const categories = [partsBank, maintainBank, importanceBank, disordersBank, environmentBank];
+    
+    // Build 5 levels (30 Q each, each category contributes 6 per level)
+    let levelsData = [];
+
+    function buildGame() {
+        for (let lvl = 1; lvl <= 5; lvl++) {
+            let levelQs = [];
+            for (let cat of categories) {
+                // each category gives 6 questions (total 30 per level)
+                for (let i = 0; i < 6; i++) {
+                    let source = cat[i % cat.length];
+                    let newQ = {
+                        text: source.q,
+                        options: [...source.options],
+                        correct: source.correct
+                    };
+                    // Add challenge flavor based on level
+                    if (lvl >= 3 && i % 2 === 0) newQ.text = "🍎 " + newQ.text;
+                    if (lvl >= 4) newQ.text = "⭐ " + newQ.text + " ⭐";
+                    if (lvl === 5 && i % 3 === 0) newQ.text = "🏆 GUT HEALTH MASTER: " + newQ.text;
+                    levelQs.push(newQ);
+                }
+            }
+            levelQs = shuffleArray(levelQs);
+            levelsData.push(levelQs);
+        }
+    }
+    buildGame();
+
+    // ---------- GAME ENGINE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100); // 24
+
+    let levelTimerSec = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+
+    // DOM elements
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionDiv = document.getElementById('questionText');
+    const optionsDiv = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const messageDiv = document.getElementById('gameMessage');
+
+    function updateScoreUI() {
+        scoreSpan.innerText = levelScore;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        // Challenging timer: Level1=90s, L2=80s, L3=70s, L4=60s, L5=50s
+        const timeMap = {1: 90, 2: 80, 3: 70, 4: 60, 5: 50};
+        levelTimerSec = timeMap[currentLevel];
+        timerDisplaySpan.innerText = levelTimerSec;
+        timerDisplaySpan.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelFinished) return;
+            if (levelTimerSec <= 1) {
+                // TIME'S UP - Level failure
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                messageDiv.innerHTML = `⏰💀 TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to become a digestive system expert! 💀⏰`;
+                showRestartButton();
+            } else {
+                levelTimerSec--;
+                timerDisplaySpan.innerText = levelTimerSec;
+                if (levelTimerSec <= 10) {
+                    timerDisplaySpan.classList.add('timer-critical');
+                } else {
+                    timerDisplaySpan.classList.remove('timer-critical');
+                }
+                if (levelTimerSec === 15) {
+                    messageDiv.innerHTML = `⚠️ ONLY ${levelTimerSec} SECONDS! Your digestive health matters — answer fast! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+
+    function disableAllOptions() {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => btn.disabled = true);
+    }
+
+    function showRestartButton() {
+        let existing = document.querySelector('.restart-custom');
+        if (existing) existing.remove();
+        const restartBtn = document.createElement('button');
+        restartBtn.innerText = '🍎 RESTART DIGESTIVE CHALLENGE 🍎';
+        restartBtn.className = 'restart-btn restart-custom';
+        restartBtn.onclick = () => location.reload();
+        messageDiv.appendChild(restartBtn);
+    }
+
+    function highlightCorrectAnswer(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            const rawText = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if (rawText === correctText) {
+                btn.classList.add('correct-highlight');
+            }
+        });
+    }
+
+    function handleAnswer(selected, correctAnswer, btnElement) {
+        if (answerLocked || waitingForNext || !gameActive || levelFinished) return;
+        answerLocked = true;
+        const isCorrect = (selected === correctAnswer);
+        
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            btnElement.classList.add('correct-highlight');
+            messageDiv.innerHTML = `✅ DIGESTIVE EXPERT! +1 point! (${levelScore}/${TOTAL_QS}) | Time left: ${levelTimerSec}s`;
+        } else {
+            btnElement.classList.add('wrong-highlight');
+            // Show correct answer by highlighting it among all options
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                const txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if (txt === correctAnswer) {
+                    btn.classList.add('correct-highlight');
+                }
+            });
+            messageDiv.innerHTML = `❌ NOT QUITE! Correct: "${correctAnswer}". Keep learning about your amazing digestive system! Score: ${levelScore}/${TOTAL_QS}`;
+        }
+        disableAllOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+
+    function loadCurrentQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const levelData = levelsData[currentLevel - 1];
+        const q = levelData[currentQIndex];
+        questionDiv.innerText = q.text;
+        optionsDiv.innerHTML = '';
+        
+        const shuffledOps = shuffleArray([...q.options]);
+        const prefixes = ['A', 'B', 'C', 'D'];
+        shuffledOps.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, q.correct, btn));
+            optionsDiv.appendChild(btn);
+        });
+        
+        answerLocked = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        messageDiv.innerHTML = `🩺 Level ${currentLevel} • Question ${currentQIndex+1}/30 • Digestive System! Fuel your body right! ⏱️`;
+    }
+
+    function onNextQuestion() {
+        if (!waitingForNext) return;
+        if (levelFinished) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadCurrentQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                // GRAND VICTORY
+                messageDiv.innerHTML = `🏆🍎🩺✨ FANTASTIC! You've mastered the human digestive system — its parts, how to keep it healthy, and its importance! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). You are a true Digestive Defender! ✨🩺🍎🏆`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                messageDiv.innerHTML = `🎉🎊 LEVEL ${currentLevel} COMPLETE! 🎊🎉 ${levelScore}/${TOTAL_QS} PASS (${Math.round(levelScore/TOTAL_QS*100)}%). Moving to LEVEL ${currentLevel+1}... 🍎🩺`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelFinished = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadCurrentQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableAllOptions();
+            nextBtn.disabled = true;
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect} correct). Press RESTART to become a digestive health champion! 😭`;
+            showRestartButton();
+        }
+    }
+
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelFinished = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadCurrentQuestion();
+        nextBtn.addEventListener('click', onNextQuestion);
+    }
+
+    initGame();
+</script>
+</body>
+</html>

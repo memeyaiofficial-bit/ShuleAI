@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chemistry Lab: Molecular Master</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #1a237e 0%,
+          #311b92 50%,
+          #4a148c 100%
+        );
+        min-height: 100vh;
+        padding: 20px;
+        color: white;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in;
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #ff4081, #00e5ff, #76ff03, #ff9100);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      }
+
+      .header p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        color: #bb86fc;
+      }
+
+      .game-area {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 25px;
+        margin-bottom: 20px;
+      }
+
+      .lab-area {
+        background: rgba(13, 17, 23, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 0 50px rgba(255, 64, 129, 0.3);
+        border: 2px solid #ff4081;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .control-panel {
+        background: rgba(13, 17, 23, 0.95);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 0 50px rgba(255, 64, 129, 0.3);
+        border: 2px solid #ff4081;
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #d81b60 0%, #c2185b 100%);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 25px rgba(216, 27, 96, 0.4);
+        border: 1px solid #ff4081;
+      }
+
+      .stat-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #00e5ff;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        color: #bb86fc;
+      }
+
+      .reaction-chamber {
+        width: 100%;
+        height: 400px;
+        background: radial-gradient(circle at 30% 30%, #2a1b5b 0%, #1a1a2e 70%);
+        border-radius: 15px;
+        position: relative;
+        border: 3px solid #ff4081;
+        margin-bottom: 25px;
+        overflow: hidden;
+      }
+
+      .molecule {
+        position: absolute;
+        border-radius: 50%;
+        transition: all 0.5s ease;
+        cursor: pointer;
+        filter: drop-shadow(0 0 10px currentColor);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 0.8rem;
+      }
+
+      .molecule:hover {
+        transform: scale(1.2);
+        z-index: 10;
+      }
+
+      .atom-H {
+        background: radial-gradient(circle, #ff6b6b, #ff5252);
+      } /* Hydrogen - Red */
+      .atom-O {
+        background: radial-gradient(circle, #4fc3f7, #29b6f6);
+      } /* Oxygen - Blue */
+      .atom-C {
+        background: radial-gradient(circle, #66bb6a, #4caf50);
+      } /* Carbon - Green */
+      .atom-N {
+        background: radial-gradient(circle, #ba68c8, #ab47bc);
+      } /* Nitrogen - Purple */
+      .atom-Na {
+        background: radial-gradient(circle, #ffd54f, #ffca28);
+      } /* Sodium - Yellow */
+      .atom-Cl {
+        background: radial-gradient(circle, #81c784, #66bb6a);
+      } /* Chlorine - Light Green */
+
+      .bond {
+        position: absolute;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.7);
+        transform-origin: 0 0;
+        z-index: 5;
+      }
+
+      .element-selector {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        margin-bottom: 25px;
+      }
+
+      .element {
+        background: rgba(216, 27, 96, 0.3);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid #ff4081;
+      }
+
+      .element:hover {
+        background: rgba(255, 64, 129, 0.2);
+        transform: scale(1.05);
+      }
+
+      .element.selected {
+        border-color: #00e5ff;
+        background: rgba(0, 229, 255, 0.1);
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+      }
+
+      .element-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+
+      .lab-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .btn {
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #d81b60 0%, #c2185b 100%);
+        color: white;
+        border: 1px solid #ff4081;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 64, 129, 0.4);
+        background: linear-gradient(135deg, #ff4081 0%, #d81b60 100%);
+      }
+
+      .btn-mix {
+        background: linear-gradient(135deg, #00e5ff 0%, #00bcd4 100%);
+        border-color: #00e5ff;
+      }
+
+      .btn-mix:hover {
+        background: linear-gradient(135deg, #00bcd4 0%, #00e5ff 100%);
+        box-shadow: 0 8px 25px rgba(0, 229, 255, 0.4);
+      }
+
+      .btn-heat {
+        background: linear-gradient(135deg, #ff9100 0%, #ff6d00 100%);
+        border-color: #ff9100;
+      }
+
+      .btn-heat:hover {
+        background: linear-gradient(135deg, #ff6d00 0%, #ff9100 100%);
+        box-shadow: 0 8px 25px rgba(255, 145, 0, 0.4);
+      }
+
+      .reaction-log {
+        background: rgba(13, 17, 23, 0.8);
+        border-radius: 10px;
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ff4081;
+        margin-top: 20px;
+      }
+
+      .log-entry {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background: rgba(216, 27, 96, 0.2);
+        border-radius: 8px;
+        border-left: 3px solid #00e5ff;
+        font-size: 0.9rem;
+      }
+
+      .compound-display {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .compound-card {
+        background: rgba(216, 27, 96, 0.2);
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #ff4081;
+        transition: all 0.3s ease;
+      }
+
+      .compound-card.synthesized {
+        border-color: #00e5ff;
+        background: rgba(0, 229, 255, 0.1);
+        box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+      }
+
+      .compound-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+
+      .info-section {
+        background: rgba(216, 27, 96, 0.2);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #ff4081;
+      }
+
+      .info-title {
+        color: #00e5ff;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      }
+
+      .info-content {
+        line-height: 1.7;
+        color: #e2e8f0;
+        font-size: 1rem;
+      }
+
+      .chemical-data {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .data-point {
+        background: rgba(216, 27, 96, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #ff4081;
+      }
+
+      .data-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #00e5ff;
+        margin-bottom: 5px;
+      }
+
+      .data-label {
+        font-size: 0.9rem;
+        color: #bb86fc;
+      }
+
+      .achievement {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(216, 27, 96, 0.2);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ff4081;
+      }
+
+      .achievement.locked {
+        opacity: 0.4;
+      }
+
+      .achievement-icon {
+        font-size: 1.8rem;
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+
+      .reaction-effects {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+      }
+
+      .bubble {
+        position: absolute;
+        background: radial-gradient(
+          circle,
+          rgba(0, 229, 255, 0.3),
+          transparent
+        );
+        border-radius: 50%;
+        animation: bubbleRise 2s ease-in-out infinite;
+      }
+
+      .spark {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #ff9100;
+        border-radius: 50%;
+        animation: sparkle 1s ease-out;
+      }
+
+      @keyframes bubbleRise {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.7;
+        }
+        100% {
+          transform: translateY(-100px) scale(1.2);
+          opacity: 0;
+        }
+      }
+
+      @keyframes sparkle {
+        0% {
+          transform: scale(0);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(3);
+          opacity: 0;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .energy-level {
+        width: 100%;
+        height: 20px;
+        background: rgba(216, 27, 96, 0.3);
+        border-radius: 10px;
+        margin: 20px 0;
+        overflow: hidden;
+        border: 1px solid #ff4081;
+      }
+
+      .energy-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff4081, #00e5ff, #76ff03);
+        transition: width 0.5s ease;
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+      }
+
+      .temperature-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 145, 0, 0.9);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: #1a237e;
+        box-shadow: 0 3px 15px rgba(255, 145, 0, 0.4);
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(13, 17, 23, 0.95);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 30px rgba(0, 229, 255, 0.4);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        max-width: 350px;
+        border: 1px solid #00e5ff;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-color: #00e5ff;
+      }
+
+      .notification.warning {
+        border-color: #ff9100;
+      }
+
+      .notification.error {
+        border-color: #ff4081;
+      }
+
+      @media (max-width: 768px) {
+        .game-area {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .lab-controls {
+          grid-template-columns: 1fr;
+        }
+
+        .element-selector {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>⚗️ Chemistry Lab: Molecular Master</h1>
+        <p>Mix elements, create compounds, and discover chemical reactions!</p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-value" id="researchPoints">0</div>
+          <div class="stat-label">🔬 Research Points</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="compoundsMade">0</div>
+          <div class="stat-label">🧪 Compounds Made</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="labEnergy">100%</div>
+          <div class="stat-label">⚡ Lab Energy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="reactionSuccess">0%</div>
+          <div class="stat-label">🎯 Reaction Success</div>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="lab-area">
+          <div class="temperature-indicator" id="temperatureIndicator">
+            25°C
+          </div>
+          <div class="reaction-chamber" id="reactionChamber">
+            <div class="reaction-effects"></div>
+            <!-- Molecules and bonds will be dynamically added here -->
+          </div>
+
+          <div class="energy-level">
+            <div class="energy-fill" id="energyFill" style="width: 100%"></div>
+          </div>
+
+          <div class="element-selector">
+            <div class="element selected" onclick="selectElement('H')">
+              <div class="element-icon" style="color: #ff6b6b">H</div>
+              <div>Hydrogen</div>
+            </div>
+            <div class="element" onclick="selectElement('O')">
+              <div class="element-icon" style="color: #4fc3f7">O</div>
+              <div>Oxygen</div>
+            </div>
+            <div class="element" onclick="selectElement('C')">
+              <div class="element-icon" style="color: #66bb6a">C</div>
+              <div>Carbon</div>
+            </div>
+            <div class="element" onclick="selectElement('N')">
+              <div class="element-icon" style="color: #ba68c8">N</div>
+              <div>Nitrogen</div>
+            </div>
+            <div class="element" onclick="selectElement('Na')">
+              <div class="element-icon" style="color: #ffd54f">Na</div>
+              <div>Sodium</div>
+            </div>
+            <div class="element" onclick="selectElement('Cl')">
+              <div class="element-icon" style="color: #81c784">Cl</div>
+              <div>Chlorine</div>
+            </div>
+          </div>
+
+          <div class="lab-controls">
+            <button class="btn" onclick="addElement()">➕ Add Element</button>
+            <button class="btn btn-mix" onclick="mixCompounds()">
+              🔄 Mix Compounds
+            </button>
+            <button class="btn btn-heat" onclick="applyHeat()">
+              🔥 Apply Heat
+            </button>
+          </div>
+
+          <div class="reaction-log" id="reactionLog">
+            <div class="log-entry">
+              ⚗️ Laboratory initialized. Ready for chemical experiments!
+            </div>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <div class="info-section">
+            <div class="info-title">
+              <span id="selectedElementIcon">⚗️</span>
+              <span id="selectedElementName">Chemistry Lab</span>
+            </div>
+            <div class="info-content" id="elementInfo">
+              Welcome to the Chemistry Lab! Select elements, create molecules,
+              and discover chemical reactions. Each successful reaction earns
+              research points and unlocks new compounds.
+            </div>
+            <div class="chemical-data">
+              <div class="data-point">
+                <div class="data-value" id="atomicNumber">-</div>
+                <div class="data-label">Atomic Number</div>
+              </div>
+              <div class="data-point">
+                <div class="data-value" id="atomicMass">-</div>
+                <div class="data-label">Atomic Mass</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🧪 Discovered Compounds</div>
+            <div class="compound-display" id="compoundDisplay">
+              <!-- Compound cards will be dynamically added here -->
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🏆 Lab Achievements</div>
+            <div id="achievementsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      <div id="notificationText"></div>
+    </div>
+
+    <script>
+      // Chemical elements data
+      const elements = {
+        H: {
+          name: "Hydrogen",
+          symbol: "H",
+          atomicNumber: 1,
+          atomicMass: "1.008",
+          color: "#ff6b6b",
+          info: "The lightest and most abundant element in the universe. Forms water when combined with oxygen.",
+          properties: [
+            "Flammable",
+            "Lightest element",
+            "Forms acids and bases",
+          ],
+        },
+        O: {
+          name: "Oxygen",
+          symbol: "O",
+          atomicNumber: 8,
+          atomicMass: "16.00",
+          color: "#4fc3f7",
+          info: "Essential for respiration and combustion. Makes up 21% of Earth's atmosphere.",
+          properties: [
+            "Supports combustion",
+            "Essential for life",
+            "Forms oxides",
+          ],
+        },
+        C: {
+          name: "Carbon",
+          symbol: "C",
+          atomicNumber: 6,
+          atomicMass: "12.01",
+          color: "#66bb6a",
+          info: "The basis of organic chemistry. Forms millions of compounds including all known life.",
+          properties: [
+            "Forms organic compounds",
+            "Multiple allotropes",
+            "Basis of life",
+          ],
+        },
+        N: {
+          name: "Nitrogen",
+          symbol: "N",
+          atomicNumber: 7,
+          atomicMass: "14.01",
+          color: "#ba68c8",
+          info: "Makes up 78% of Earth's atmosphere. Essential for proteins and DNA.",
+          properties: ["Inert gas", "Essential for life", "Forms ammonia"],
+        },
+        Na: {
+          name: "Sodium",
+          symbol: "Na",
+          atomicNumber: 11,
+          atomicMass: "22.99",
+          color: "#ffd54f",
+          info: "Highly reactive alkali metal. Forms table salt when combined with chlorine.",
+          properties: ["Highly reactive", "Alkali metal", "Forms salts"],
+        },
+        Cl: {
+          name: "Chlorine",
+          symbol: "Cl",
+          atomicNumber: 17,
+          atomicMass: "35.45",
+          color: "#81c784",
+          info: "Greenish-yellow gas. Used in water purification and forms hydrochloric acid.",
+          properties: ["Disinfectant", "Halogen", "Forms acids"],
+        },
+      };
+
+      // Chemical compounds and reactions
+      const compounds = {
+        H2O: {
+          name: "Water",
+          formula: "H₂O",
+          elements: ["H", "H", "O"],
+          icon: "💧",
+          discovered: false,
+          info: "Essential for all known forms of life. Universal solvent with unique properties.",
+          reaction: "2H₂ + O₂ → 2H₂O",
+          energy: 50,
+        },
+        CO2: {
+          name: "Carbon Dioxide",
+          formula: "CO₂",
+          elements: ["C", "O", "O"],
+          icon: "🌫️",
+          discovered: false,
+          info: "Greenhouse gas essential for photosynthesis. Product of respiration and combustion.",
+          reaction: "C + O₂ → CO₂",
+          energy: 40,
+        },
+        NaCl: {
+          name: "Sodium Chloride",
+          formula: "NaCl",
+          elements: ["Na", "Cl"],
+          icon: "🧂",
+          discovered: false,
+          info: "Table salt. Essential for biological functions and food preservation.",
+          reaction: "2Na + Cl₂ → 2NaCl",
+          energy: 60,
+        },
+        NH3: {
+          name: "Ammonia",
+          formula: "NH₃",
+          elements: ["N", "H", "H", "H"],
+          icon: "🏭",
+          discovered: false,
+          info: "Important fertilizer and cleaning agent. Has a distinctive pungent smell.",
+          reaction: "N₂ + 3H₂ → 2NH₃",
+          energy: 70,
+        },
+        CH4: {
+          name: "Methane",
+          formula: "CH₄",
+          elements: ["C", "H", "H", "H", "H"],
+          icon: "🔥",
+          discovered: false,
+          info: "Primary component of natural gas. Potent greenhouse gas.",
+          reaction: "C + 2H₂ → CH₄",
+          energy: 55,
+        },
+        HCl: {
+          name: "Hydrochloric Acid",
+          formula: "HCl",
+          elements: ["H", "Cl"],
+          icon: "⚠️",
+          discovered: false,
+          info: "Strong acid used in industry and found in gastric juice.",
+          reaction: "H₂ + Cl₂ → 2HCl",
+          energy: 45,
+        },
+      };
+
+      // Chemical reactions
+      const reactions = [
+        {
+          reactants: ["H", "H", "O"],
+          product: "H2O",
+          name: "Water Formation",
+          type: "combination",
+          energy: 50,
+        },
+        {
+          reactants: ["C", "O", "O"],
+          product: "CO2",
+          name: "Combustion",
+          type: "combination",
+          energy: 40,
+        },
+        {
+          reactants: ["Na", "Cl"],
+          product: "NaCl",
+          name: "Salt Formation",
+          type: "combination",
+          energy: 60,
+        },
+        {
+          reactants: ["N", "H", "H", "H"],
+          product: "NH3",
+          name: "Ammonia Synthesis",
+          type: "combination",
+          energy: 70,
+        },
+        {
+          reactants: ["C", "H", "H", "H", "H"],
+          product: "CH4",
+          name: "Methane Formation",
+          type: "combination",
+          energy: 55,
+        },
+        {
+          reactants: ["H", "Cl"],
+          product: "HCl",
+          name: "Acid Formation",
+          type: "combination",
+          energy: 45,
+        },
+      ];
+
+      // Achievements
+      const achievements = [
+        {
+          id: 1,
+          name: "First Reaction",
+          icon: "🧪",
+          description: "Create your first compound",
+          earned: false,
+        },
+        {
+          id: 2,
+          name: "Water Creator",
+          icon: "💧",
+          description: "Synthesize water",
+          earned: false,
+        },
+        {
+          id: 3,
+          name: "Salt Maker",
+          icon: "🧂",
+          description: "Create sodium chloride",
+          earned: false,
+        },
+        {
+          id: 4,
+          name: "Organic Chemist",
+          icon: "🔬",
+          description: "Create 3 organic compounds",
+          earned: false,
+        },
+        {
+          id: 5,
+          name: "Master Chemist",
+          icon: "🏆",
+          description: "Discover all compounds",
+          earned: false,
+        },
+      ];
+
+      // Game state
+      let currentElement = "H";
+      let researchPoints = 0;
+      let compoundsMade = 0;
+      let labEnergy = 100;
+      let reactionSuccess = 0;
+      let totalReactions = 0;
+      let successfulReactions = 0;
+      let temperature = 25;
+      let chamberElements = [];
+      let organicCompoundsMade = 0;
+
+      function initGame() {
+        updateStats();
+        updateAchievements();
+        updateCompoundDisplay();
+        startEnergyRecharge();
+      }
+
+      function selectElement(element) {
+        // Update UI
+        document
+          .querySelectorAll(".element")
+          .forEach((el) => el.classList.remove("selected"));
+        event.target.closest(".element").classList.add("selected");
+
+        currentElement = element;
+        const elementData = elements[element];
+
+        document.getElementById("selectedElementName").textContent =
+          elementData.name;
+        document.getElementById("selectedElementIcon").textContent =
+          elementData.symbol;
+        document.getElementById("elementInfo").textContent = elementData.info;
+        document.getElementById("atomicNumber").textContent =
+          elementData.atomicNumber;
+        document.getElementById("atomicMass").textContent =
+          elementData.atomicMass;
+      }
+
+      function addElement() {
+        if (labEnergy < 10) {
+          showNotification("warning", "⚠️ Not enough lab energy!");
+          return;
+        }
+
+        labEnergy -= 10;
+        const elementData = elements[currentElement];
+
+        // Create atom in reaction chamber
+        const chamber = document.getElementById("reactionChamber");
+        const atom = document.createElement("div");
+        atom.className = `molecule atom-${currentElement}`;
+        atom.textContent = currentElement;
+
+        const size = 40;
+        const left = 20 + Math.random() * 60;
+        const top = 20 + Math.random() * 60;
+
+        atom.style.width = `${size}px`;
+        atom.style.height = `${size}px`;
+        atom.style.left = `${left}%`;
+        atom.style.top = `${top}%`;
+        atom.style.backgroundColor = elementData.color;
+
+        atom.onclick = () => showElementInfo(elementData);
+        chamber.appendChild(atom);
+
+        // Add to chamber elements array
+        chamberElements.push({
+          element: currentElement,
+          x: left,
+          y: top,
+          node: atom,
+        });
+
+        showNotification(
+          "success",
+          `➕ Added ${elementData.name} to reaction chamber`
+        );
+        addLogEntry(`➕ Added ${elementData.name} atom to chamber`);
+
+        updateStats();
+
+        // Create bubble effect
+        createBubble(left, top);
+      }
+
+      function mixCompounds() {
+        if (labEnergy < 20) {
+          showNotification("warning", "⚠️ Not enough energy for mixing!");
+          return;
+        }
+
+        if (chamberElements.length < 2) {
+          showNotification("error", "❌ Need at least 2 elements to mix!");
+          return;
+        }
+
+        labEnergy -= 20;
+        totalReactions++;
+
+        // Get current elements in chamber
+        const currentElements = chamberElements.map((item) => item.element);
+
+        // Check for possible reactions
+        let reactionFound = false;
+
+        for (const reaction of reactions) {
+          const requiredElements = [...reaction.reactants].sort();
+          const availableElements = [...currentElements].sort();
+
+          // Simple matching (in real game, would need more complex chemistry logic)
+          if (
+            JSON.stringify(requiredElements) ===
+            JSON.stringify(availableElements)
+          ) {
+            // Successful reaction!
+            const compound = compounds[reaction.product];
+            if (!compound.discovered) {
+              compound.discovered = true;
+              compoundsMade++;
+              researchPoints += compound.energy;
+
+              if (compound.formula.includes("C")) {
+                organicCompoundsMade++;
+              }
+
+              showNotification(
+                "success",
+                `🎉 Discovered ${compound.name} (${compound.formula})! +${compound.energy} research`
+              );
+              addLogEntry(
+                `🧪 Reaction successful: ${reaction.name} → ${compound.formula}`
+              );
+
+              // Visual effects
+              createReactionEffects();
+
+              // Clear chamber and show compound
+              clearChamber();
+              showCompoundInChamber(compound);
+
+              reactionFound = true;
+              successfulReactions++;
+              break;
+            }
+          }
+        }
+
+        if (!reactionFound) {
+          showNotification(
+            "error",
+            "❌ No valid reaction occurred! Try different elements."
+          );
+          addLogEntry("🔄 Mixing: Elements did not react as expected.");
+
+          // Random chance to lose elements
+          if (Math.random() < 0.3 && chamberElements.length > 1) {
+            const lostElement = chamberElements.pop();
+            if (lostElement.node.parentNode) {
+              lostElement.node.parentNode.removeChild(lostElement.node);
+            }
+            showNotification(
+              "warning",
+              "💨 Some elements evaporated during failed reaction!"
+            );
+          }
+        }
+
+        reactionSuccess =
+          totalReactions > 0
+            ? Math.round((successfulReactions / totalReactions) * 100)
+            : 0;
+        updateStats();
+        updateCompoundDisplay();
+        checkAchievements();
+      }
+
+      function applyHeat() {
+        if (labEnergy < 15) {
+          showNotification("warning", "⚠️ Not enough energy for heating!");
+          return;
+        }
+
+        labEnergy -= 15;
+        temperature += 20 + Math.floor(Math.random() * 30);
+
+        document.getElementById(
+          "temperatureIndicator"
+        ).textContent = `${temperature}°C`;
+        showNotification(
+          "warning",
+          `🔥 Increased temperature to ${temperature}°C`
+        );
+        addLogEntry(`🔥 Applied heat: Temperature now ${temperature}°C`);
+
+        // Heating effects
+        createHeatEffects();
+
+        // Chance for spontaneous reaction at high temperature
+        if (
+          temperature > 100 &&
+          chamberElements.length >= 2 &&
+          Math.random() < 0.4
+        ) {
+          showNotification(
+            "success",
+            "🌡️ High temperature triggered spontaneous reaction!"
+          );
+          mixCompounds();
+        }
+
+        // Cool down over time
+        setTimeout(() => {
+          temperature = Math.max(25, temperature - 10);
+          document.getElementById(
+            "temperatureIndicator"
+          ).textContent = `${temperature}°C`;
+        }, 2000);
+
+        updateStats();
+      }
+
+      function clearChamber() {
+        const chamber = document.getElementById("reactionChamber");
+        chamberElements.forEach((item) => {
+          if (item.node.parentNode) {
+            item.node.parentNode.removeChild(item.node);
+          }
+        });
+        chamberElements = [];
+      }
+
+      function showCompoundInChamber(compound) {
+        const chamber = document.getElementById("reactionChamber");
+        const compoundElement = document.createElement("div");
+        compoundElement.className = "molecule";
+        compoundElement.textContent = compound.formula;
+        compoundElement.style.backgroundColor = "#bb86fc";
+        compoundElement.style.width = "60px";
+        compoundElement.style.height = "60px";
+        compoundElement.style.left = "50%";
+        compoundElement.style.top = "50%";
+        compoundElement.style.transform = "translate(-50%, -50%)";
+
+        compoundElement.onclick = () => showCompoundInfo(compound);
+        chamber.appendChild(compoundElement);
+      }
+
+      function showElementInfo(elementData) {
+        document.getElementById("selectedElementName").textContent =
+          elementData.name;
+        document.getElementById("selectedElementIcon").textContent =
+          elementData.symbol;
+        document.getElementById("elementInfo").textContent = elementData.info;
+        document.getElementById("atomicNumber").textContent =
+          elementData.atomicNumber;
+        document.getElementById("atomicMass").textContent =
+          elementData.atomicMass;
+      }
+
+      function showCompoundInfo(compound) {
+        document.getElementById("selectedElementName").textContent =
+          compound.name;
+        document.getElementById("selectedElementIcon").textContent =
+          compound.icon;
+        document.getElementById(
+          "elementInfo"
+        ).textContent = `${compound.info}\n\nFormula: ${compound.formula}\nReaction: ${compound.reaction}`;
+        document.getElementById("atomicNumber").textContent = "-";
+        document.getElementById("atomicMass").textContent = "-";
+      }
+
+      function createBubble(x, y) {
+        const effects = document.querySelector(".reaction-effects");
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.style.left = `${x}%`;
+        bubble.style.top = `${y}%`;
+        bubble.style.width = "20px";
+        bubble.style.height = "20px";
+        effects.appendChild(bubble);
+
+        setTimeout(() => {
+          if (bubble.parentNode) {
+            bubble.parentNode.removeChild(bubble);
+          }
+        }, 2000);
+      }
+
+      function createReactionEffects() {
+        const effects = document.querySelector(".reaction-effects");
+
+        // Create multiple bubbles
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+            bubble.style.left = `${40 + Math.random() * 20}%`;
+            bubble.style.top = `${40 + Math.random() * 20}%`;
+            bubble.style.width = `${15 + Math.random() * 25}px`;
+            bubble.style.height = bubble.style.width;
+            effects.appendChild(bubble);
+
+            setTimeout(() => {
+              if (bubble.parentNode) {
+                bubble.parentNode.removeChild(bubble);
+              }
+            }, 2000);
+          }, i * 100);
+        }
+
+        // Create sparks
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            const spark = document.createElement("div");
+            spark.className = "spark";
+            spark.style.left = `${45 + Math.random() * 10}%`;
+            spark.style.top = `${45 + Math.random() * 10}%`;
+            effects.appendChild(spark);
+
+            setTimeout(() => {
+              if (spark.parentNode) {
+                spark.parentNode.removeChild(spark);
+              }
+            }, 1000);
+          }, i * 150);
+        }
+      }
+
+      function createHeatEffects() {
+        const effects = document.querySelector(".reaction-effects");
+
+        for (let i = 0; i < 3; i++) {
+          const spark = document.createElement("div");
+          spark.className = "spark";
+          spark.style.background = "#ff9100";
+          spark.style.left = `${20 + Math.random() * 60}%`;
+          spark.style.top = `${20 + Math.random() * 60}%`;
+          effects.appendChild(spark);
+
+          setTimeout(() => {
+            if (spark.parentNode) {
+              spark.parentNode.removeChild(spark);
+            }
+          }, 1000);
+        }
+      }
+
+      function addLogEntry(message) {
+        const log = document.getElementById("reactionLog");
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.textContent = message;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function updateStats() {
+        document.getElementById("researchPoints").textContent = researchPoints;
+        document.getElementById("compoundsMade").textContent = compoundsMade;
+        document.getElementById("labEnergy").textContent =
+          Math.round(labEnergy) + "%";
+        document.getElementById("reactionSuccess").textContent =
+          reactionSuccess + "%";
+
+        // Update energy bar
+        document.getElementById("energyFill").style.width = labEnergy + "%";
+      }
+
+      function updateCompoundDisplay() {
+        const display = document.getElementById("compoundDisplay");
+
+        let html = "";
+        Object.values(compounds).forEach((compound) => {
+          html += `
+                    <div class="compound-card ${
+                      compound.discovered ? "synthesized" : ""
+                    }">
+                        <div class="compound-icon">${
+                          compound.discovered ? compound.icon : "❓"
+                        }</div>
+                        <div style="font-size: 0.8rem; font-weight: bold;">${
+                          compound.discovered ? compound.name : "???"
+                        }</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">${
+                          compound.discovered ? compound.formula : "?"
+                        }</div>
+                    </div>
+                `;
+        });
+
+        display.innerHTML = html;
+      }
+
+      function updateAchievements() {
+        const achievementsList = document.getElementById("achievementsList");
+        achievementsList.innerHTML = achievements
+          .map(
+            (achievement) => `
+                    <div class="achievement ${
+                      achievement.earned ? "" : "locked"
+                    }">
+                        <div class="achievement-icon" style="color: ${
+                          achievement.earned ? "#00e5ff" : "#475569"
+                        }">${achievement.icon}</div>
+                        <div>
+                            <div style="font-weight: bold; color: ${
+                              achievement.earned ? "#00e5ff" : "#94a3b8"
+                            }">${achievement.name}</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">${
+                              achievement.description
+                            }</div>
+                        </div>
+                    </div>
+                `
+          )
+          .join("");
+      }
+
+      function checkAchievements() {
+        // First Reaction
+        if (compoundsMade >= 1 && !achievements[0].earned) {
+          achievements[0].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: First Reaction!"
+          );
+        }
+
+        // Water Creator
+        if (compounds.H2O.discovered && !achievements[1].earned) {
+          achievements[1].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Water Creator!"
+          );
+        }
+
+        // Salt Maker
+        if (compounds.NaCl.discovered && !achievements[2].earned) {
+          achievements[2].earned = true;
+          showNotification("success", "🏆 Achievement Unlocked: Salt Maker!");
+        }
+
+        // Organic Chemist
+        if (organicCompoundsMade >= 3 && !achievements[3].earned) {
+          achievements[3].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Organic Chemist!"
+          );
+        }
+
+        // Master Chemist
+        const allDiscovered = Object.values(compounds).every(
+          (compound) => compound.discovered
+        );
+        if (allDiscovered && !achievements[4].earned) {
+          achievements[4].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Master Chemist!"
+          );
+        }
+
+        updateAchievements();
+      }
+
+      function startEnergyRecharge() {
+        setInterval(() => {
+          if (labEnergy < 100) {
+            labEnergy = Math.min(100, labEnergy + 0.5);
+            updateStats();
+          }
+        }, 1000);
+      }
+
+      function showNotification(type, message) {
+        const notification = document.getElementById("notification");
+        notification.className = `notification ${type} show`;
+        document.getElementById("notificationText").textContent = message;
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 4000);
+      }
+
+      // Initialize the game
+      initGame();
+    </script>
+  </body>
+</html>

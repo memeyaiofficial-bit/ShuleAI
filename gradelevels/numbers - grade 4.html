@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Math Warrior | Grade 4 CBC | Think & Type Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a2a6c, #b21f1f, #fdbb4d);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffef7;
+            border-radius: 60px;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: white;
+        }
+
+        .level-badge {
+            background: #f39c12;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .timer-area {
+            background: #000000aa;
+            backdrop-filter: blur(4px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .timer-number {
+            color: #f1c40f;
+            background: #000;
+            padding: 4px 14px;
+            border-radius: 40px;
+            margin-left: 10px;
+            font-size: 2rem;
+        }
+
+        .score-progress {
+            background: #f8f3e0;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #e0c8a0;
+            font-weight: bold;
+        }
+
+        .score-text, .required-text {
+            background: #2c3e50;
+            padding: 5px 18px;
+            border-radius: 40px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            padding: 30px 25px 25px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 2rem;
+            font-weight: 800;
+            background: #ecf0f1;
+            padding: 30px 20px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            color: #2c3e50;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.1);
+        }
+
+        .answer-area {
+            margin-bottom: 30px;
+        }
+
+        .answer-input {
+            width: 85%;
+            font-size: 2rem;
+            padding: 15px 20px;
+            text-align: center;
+            font-family: monospace;
+            font-weight: bold;
+            border: 4px solid #f39c12;
+            border-radius: 60px;
+            background: white;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #e67e22;
+            box-shadow: 0 0 0 3px #f39c1255;
+        }
+
+        .submit-btn {
+            background: #27ae60;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 35px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 6px 0 #1e8449;
+            transition: 0.05s linear;
+            width: 85%;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #1e8449;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #2c3e50;
+            color: #f1c40f;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .restart-btn {
+            background: #e67e22;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .next-area {
+            margin-top: 10px;
+        }
+
+        .next-btn {
+            background: #3498db;
+            font-size: 1.4rem;
+            font-weight: bold;
+            padding: 10px 40px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #1f618d;
+            transition: 0.05s linear;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #1f618d;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.4rem; }
+            .answer-input { font-size: 1.5rem; width: 95%; }
+            .submit-btn { width: 95%; font-size: 1.3rem; }
+        }
+
+        .timer-critical {
+            color: #ff6b6b;
+            text-shadow: 0 0 3px red;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .correct-feedback {
+            background: #27ae60;
+            color: white;
+            padding: 8px;
+            border-radius: 40px;
+            animation: fadeOut 0.5s ease;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1);}
+            to { opacity: 0; transform: scale(0.9);}
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge">🧮 LEVEL <span id="levelNum">1</span></div>
+        <div class="timer-area">⏱️ TIME <span class="timer-number" id="timerDisplay">00</span>s</div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">⭐ SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 NEED 80% → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading...</div>
+        <div class="flex-col">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here" autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✓ CHECK ANSWER ✓</button>
+            <div class="next-area">
+                <button id="nextBtn" class="next-btn" disabled>➡️ NEXT QUESTION ⬅️</button>
+            </div>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">⚡ MATH WARRIOR! ⚡ Type your answer, no choices! Solve fast, timer is running!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC MATHEMATICS: Whole Numbers, +, -, ×, ÷, Fractions, Decimals, Use of letters (simple algebra)
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // Student must type numeric answer (or simple fraction/decimal)
+    // 80% to pass each level. Timed per level (total seconds).
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Generate 150 questions programmatically (unique per level)
+    // Each question: { text: "string", answer: number|string (normalized), checkFn: (input) => boolean }
+    // We'll use a generator to keep variety high and difficulty increasing.
+
+    // Helper to generate random numbers within ranges
+    function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Question banks per level (customizable functions)
+    function generateQuestionsForLevel(level, count = 30) {
+        const questions = [];
+        const categories = [
+            "whole", "add", "sub", "mul", "div", "fraction", "decimal", "algebra"
+        ];
+        
+        for (let i = 0; i < count; i++) {
+            let q = null;
+            let difficulty = level; // 1 to 5
+            // Distribute categories evenly
+            let type = categories[i % categories.length];
+            
+            if (type === "whole") {
+                let num = rand(100 * (difficulty-1) + 10, 500 * difficulty);
+                q = { text: `What is the place value of digit 5 in ${num}? (write only the value, e.g., 500, 50, 5)`, answer: null };
+                let numStr = num.toString();
+                let pos = numStr.indexOf('5');
+                if (pos !== -1) {
+                    let placeValue = Math.pow(10, numStr.length - pos - 1);
+                    q.answer = 5 * placeValue;
+                } else {
+                    // fallback
+                    q.text = `Write ${num} in words? (just type the number as backup) Answer with the number itself.`;
+                    q.answer = num;
+                }
+            }
+            else if (type === "add") {
+                let a = rand(10 + 20*difficulty, 100 + 100*difficulty);
+                let b = rand(10, 80 + 40*difficulty);
+                q = { text: `${a} + ${b} = ?`, answer: a + b };
+            }
+            else if (type === "sub") {
+                let a = rand(50 + 30*difficulty, 300 + 150*difficulty);
+                let b = rand(10, a - 5);
+                q = { text: `${a} - ${b} = ?`, answer: a - b };
+            }
+            else if (type === "mul") {
+                let a = rand(2, difficulty === 1 ? 10 : (difficulty === 2 ? 12 : (difficulty === 3 ? 15 : 20)));
+                let b = rand(2, difficulty === 1 ? 10 : (difficulty === 2 ? 12 : (difficulty === 3 ? 15 : 25)));
+                if (difficulty >= 4) { a = rand(12, 30); b = rand(2, 15); }
+                q = { text: `${a} × ${b} = ?`, answer: a * b };
+            }
+            else if (type === "div") {
+                let divisor = rand(2, difficulty === 1 ? 10 : (difficulty === 2 ? 12 : (difficulty === 3 ? 15 : 20)));
+                let quotient = rand(2, difficulty === 1 ? 15 : (difficulty === 2 ? 20 : (difficulty === 3 ? 25 : 40)));
+                let dividend = divisor * quotient;
+                q = { text: `${dividend} ÷ ${divisor} = ?`, answer: quotient };
+            }
+            else if (type === "fraction") {
+                if (difficulty <= 2) {
+                    let num = rand(1, 8);
+                    let den = rand(2, 8);
+                    let simplified = false;
+                    q = { text: `Write ${num}/${den} as a simplified fraction? (e.g., 2/4 → 1/2) Type a/b`, answer: `${num}/${den}` };
+                    // simplify
+                    let gcd = (a,b) => b === 0 ? a : gcd(b, a % b);
+                    let g = gcd(num, den);
+                    let sn = num/g, sd = den/g;
+                    q.answer = `${sn}/${sd}`;
+                } else {
+                    let mixed = rand(1, 3);
+                    let num = rand(1, 7);
+                    let den = rand(2, 8);
+                    let improper = mixed * den + num;
+                    q = { text: `Convert ${mixed} ${num}/${den} to an improper fraction. Type numerator/denominator`, answer: `${improper}/${den}` };
+                }
+            }
+            else if (type === "decimal") {
+                if (difficulty <= 2) {
+                    let a = rand(10, 999);
+                    let b = rand(10, 99);
+                    q = { text: `Add decimals: ${a/100} + ${b/100} = ? (write as decimal)`, answer: (a/100 + b/100).toFixed(2) };
+                    let val = a/100 + b/100;
+                    q.answer = parseFloat(val.toFixed(2));
+                } else {
+                    let a = rand(100, 5000);
+                    let b = rand(10, 500);
+                    q = { text: `Multiply: ${a/100} × ${b/10} = ? (write as decimal)`, answer: ((a/100)*(b/10)).toFixed(2) };
+                    let res = (a/100)*(b/10);
+                    q.answer = parseFloat(res.toFixed(2));
+                }
+            }
+            else if (type === "algebra") {
+                let x = rand(2, difficulty === 1 ? 10 : (difficulty === 2 ? 15 : (difficulty === 3 ? 20 : 35)));
+                if (difficulty <= 2) {
+                    let a = rand(2, 8);
+                    let b = rand(5, 20);
+                    // a * x + b = ?
+                    let eq = `${a}x + ${b} = ${a*x + b}`;
+                    q = { text: `Solve for x: ${eq}. x = ?`, answer: x };
+                } else {
+                    let a = rand(2, 12);
+                    let b = rand(10, 50);
+                    let c = rand(1, 10);
+                    // a*x - b = c
+                    let eq = `${a}x - ${b} = ${c}`;
+                    let sol = (c + b) / a;
+                    if (Number.isInteger(sol)) {
+                        q = { text: `Solve for x: ${eq}. x = ?`, answer: sol };
+                    } else {
+                        // fallback simpler
+                        let x2 = rand(3, 20);
+                        let mult = rand(2, 8);
+                        q = { text: `If ${mult}x = ${mult*x2}, find x.`, answer: x2 };
+                    }
+                }
+            }
+            
+            if (q) {
+                questions.push(q);
+            } else {
+                // fallback
+                questions.push({ text: `100 + 50 = ?`, answer: 150 });
+            }
+        }
+        return shuffleArray(questions);
+    }
+
+    let levelsData = [];
+    for (let lvl = 1; lvl <= 5; lvl++) {
+        levelsData.push(generateQuestionsForLevel(lvl, 30));
+    }
+
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100); // 24
+
+    let levelTimerSec = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;     // after answering, wait for next
+    let waitingForNext = false;
+    let levelFinished = false;
+
+    // DOM elements
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const messageDiv = document.getElementById('gameMessage');
+
+    function updateScoreUI() {
+        scoreSpan.innerText = levelScore;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        const timeMap = {1: 95, 2: 85, 3: 75, 4: 65, 5: 55};
+        levelTimerSec = timeMap[currentLevel];
+        timerDisplaySpan.innerText = levelTimerSec;
+        timerDisplaySpan.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelFinished) return;
+            if (levelTimerSec <= 1) {
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableInputs();
+                messageDiv.innerHTML = `⏰💀 TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to try again! 💀⏰`;
+                showRestartButton();
+            } else {
+                levelTimerSec--;
+                timerDisplaySpan.innerText = levelTimerSec;
+                if (levelTimerSec <= 10) {
+                    timerDisplaySpan.classList.add('timer-critical');
+                } else {
+                    timerDisplaySpan.classList.remove('timer-critical');
+                }
+                if (levelTimerSec === 15) {
+                    messageDiv.innerHTML = `⚠️ ONLY ${levelTimerSec} SECONDS! Type fast, math warrior! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+
+    function disableInputs() {
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        nextBtn.disabled = true;
+    }
+
+    function enableSubmit() {
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answerInput.focus();
+    }
+
+    function showRestartButton() {
+        let existing = document.querySelector('.restart-custom');
+        if (existing) existing.remove();
+        const restartBtn = document.createElement('button');
+        restartBtn.innerText = '🔁 RESTART CHALLENGE 🔁';
+        restartBtn.className = 'restart-btn restart-custom';
+        restartBtn.onclick = () => location.reload();
+        messageDiv.appendChild(restartBtn);
+    }
+
+    function normalizeAnswer(userAns, correctAns) {
+        // trim spaces, convert fractions like "1/2" to numeric if needed? But we compare as strings.
+        userAns = userAns.trim().toLowerCase();
+        let correctStr = correctAns.toString().toLowerCase();
+        // handle fraction simplification comparison
+        if (correctStr.includes('/')) {
+            // simplify both
+            let parseFraction = (str) => {
+                let parts = str.split('/');
+                if (parts.length === 2) {
+                    let num = parseInt(parts[0]), den = parseInt(parts[1]);
+                    let gcd = (a,b) => b === 0 ? a : gcd(b, a % b);
+                    let g = gcd(num, den);
+                    return `${num/g}/${den/g}`;
+                }
+                return str;
+            };
+            let userSimp = parseFraction(userAns);
+            let correctSimp = parseFraction(correctStr);
+            return userSimp === correctSimp;
+        }
+        // numeric comparison
+        let userNum = parseFloat(userAns);
+        let correctNum = parseFloat(correctStr);
+        if (!isNaN(userNum) && !isNaN(correctNum)) {
+            return Math.abs(userNum - correctNum) < 0.001;
+        }
+        return userAns === correctStr;
+    }
+
+    function checkAnswer() {
+        if (answerLocked || waitingForNext || !gameActive || levelFinished) {
+            messageDiv.innerHTML = "⏳ Wait for next question or game over!";
+            return;
+        }
+        let userAnswer = answerInput.value;
+        if (userAnswer === "") {
+            messageDiv.innerHTML = "❓ Type your answer first! ❓";
+            return;
+        }
+        const currentQ = levelsData[currentLevel-1][currentQIndex];
+        let isCorrect = normalizeAnswer(userAnswer, currentQ.answer);
+        
+        answerLocked = true;
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            messageDiv.innerHTML = `✅ CORRECT! +1 point! (${levelScore}/${TOTAL_QS}) Time left: ${levelTimerSec}s ✅`;
+            answerInput.value = "";
+        } else {
+            messageDiv.innerHTML = `❌ WRONG! Correct answer: ${currentQ.answer}. Your answer: ${userAnswer}. No point. Keep going! ❌`;
+            answerInput.value = "";
+        }
+        // disable answer input until next
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        waitingForNext = true;
+        nextBtn.disabled = false;
+        nextBtn.focus();
+    }
+
+    function loadQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const qData = levelsData[currentLevel-1][currentQIndex];
+        questionDiv.innerText = qData.text;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        waitingForNext = false;
+        answerLocked = false;
+        nextBtn.disabled = true;
+        answerInput.focus();
+        messageDiv.innerHTML = `📝 Question ${currentQIndex+1}/${TOTAL_QS} • Type your answer! Timer: ${levelTimerSec}s left for level`;
+    }
+
+    function nextQuestion() {
+        if (!waitingForNext) return;
+        if (levelFinished) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                messageDiv.innerHTML = `🏆🎉✨ AMAZING! You conquered ALL 5 levels! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). MATH CHAMPION! ✨🎉🏆`;
+                disableInputs();
+                gameActive = false;
+                return;
+            } else {
+                messageDiv.innerHTML = `🎉 LEVEL ${currentLevel} COMPLETE! 🎉 ${levelScore}/${TOTAL_QS} PASS! Moving to LEVEL ${currentLevel+1}... 🚀`;
+                disableInputs();
+                // advance level
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelFinished = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableInputs();
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Press RESTART to try again! 😭`;
+            showRestartButton();
+        }
+    }
+
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelFinished = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadQuestion();
+        submitBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !submitBtn.disabled && !waitingForNext && gameActive && !answerLocked) {
+                checkAnswer();
+            }
+        });
+    }
+
+    initGame();
+</script>
+</body>
+</html>

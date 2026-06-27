@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBC Grade 1 Geometry Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #009688;
+            --secondary: #7E57C2;
+            --accent: #FF9800;
+            --danger: #F44336;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --dark: #1A237E;
+            --text-light: #546E7A;
+            --shadow: 0 8px 20px rgba(0,0,0,0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Nunito', 'Comic Neue', cursive, sans-serif;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        #main-container {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        #main-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--warning), var(--success));
+            border-radius: 6px 6px 0 0;
+            z-index: 10;
+        }
+
+        #home-screen { text-align: center; padding: 30px 20px 20px; animation: fadeIn 0.5s ease; display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .home-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--warning); color: var(--dark); font-weight: 800;
+            font-size: clamp(0.75rem, 2vw, 0.9rem); padding: 6px 18px;
+            border-radius: 30px; margin-bottom: 20px;
+            animation: popIn 0.6s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.5rem); margin: 15px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; line-height: 1.2;
+        }
+
+        .subtitle { font-size: clamp(1rem, 2.5vw, 1.2rem); color: #555; margin: 10px 0 25px; font-weight: 600; }
+
+        .game-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; padding: 10px; max-width: 600px; margin: 0 auto; }
+
+        .game-card {
+            background: white; border-radius: 24px; padding: 30px 20px; box-shadow: var(--shadow);
+            cursor: pointer; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); border: 3px solid transparent;
+            position: relative; overflow: hidden;
+        }
+        .game-card:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+        .game-card.card1 { border-color: var(--primary); background: linear-gradient(145deg, #e0f2f1, #b2dfdb); }
+        .game-card.card2 { border-color: var(--accent); background: linear-gradient(145deg, #fff3e0, #ffe0b2); }
+        .game-card .card-emoji { font-size: clamp(3rem, 8vw, 4rem); display: block; margin-bottom: 15px; animation: floatEmoji 3s ease-in-out infinite; }
+        @keyframes floatEmoji { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .game-card .card-title { font-family: 'Fredoka One', cursive; font-size: clamp(1.2rem, 3vw, 1.6rem); color: var(--dark); margin-bottom: 8px; }
+        .game-card .card-desc { font-size: clamp(0.85rem, 2vw, 1rem); color: #666; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
+        .card-badge { display: inline-block; font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; }
+        .card1 .card-badge { background: #B2DFDB; color: #004D40; }
+        .card2 .card-badge { background: #FFE0B2; color: #E65100; }
+        .footer-note { text-align: center; margin-top: 30px; color: #999; font-size: 0.85rem; font-weight: 600; }
+
+        /* Game Wrapper */
+        .game-wrapper { display: none; animation: fadeIn 0.4s ease; }
+        .game-wrapper.active { display: block; }
+
+        .back-btn {
+            position: absolute; top: 15px; left: 20px; z-index: 20; background: white; border: none;
+            padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: var(--transition); color: var(--dark);
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+
+        /* Game 1: Geometry Quest Styles (Straight Lines) */
+        .g1-container { background: #ffffff; border-radius: 25px; box-shadow: var(--shadow); padding: 15px; position: relative; }
+        .g1-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 5px 5px 0 0; }
+        .g1-hud { display: flex; justify-content: space-between; padding: 10px 0; font-weight: bold; font-size: 0.95rem; flex-wrap: wrap; gap: 8px; }
+        .g1-hud span { color: var(--primary); }
+        .g1-progress { width: 100%; height: 8px; background: #eee; border-radius: 10px; margin: 8px 0; overflow: hidden; }
+        .g1-progress-fill { height: 100%; background: linear-gradient(90deg, #FFC107, #FF9800); transition: width 0.4s; border-radius: 10px; }
+        .g1-qbox { background: linear-gradient(145deg, #F5F5F5, #FAFAFA); border-radius: 16px; padding: 20px; text-align: center; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border: 2px solid #E0E0E0; margin: 10px 0; }
+        .g1-timer { position: absolute; top: -10px; right: -10px; width: 52px; height: 52px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.12); border: 3px solid #eee; }
+        .g1-timer.warn { border-color: #FF9800; color: #E65100; background: #FFF3E0; }
+        .g1-timer.danger { border-color: #F44336; color: #B71C1C; background: #FFEBEE; animation: pulse 0.5s infinite alternate; }
+        @keyframes pulse { to { transform: scale(1.05); } }
+        .g1-qtext { font-size: clamp(1.1rem, 2.5vw, 1.3rem); font-weight: 700; line-height: 1.4; margin-bottom: 10px; }
+        .line-visual { width: 80%; height: 100px; margin: 10px 0; display: flex; align-items: center; justify-content: center; }
+        .line-visual svg { width: 100%; height: 100%; }
+        .shape-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; margin: 10px 0; }
+        .shape-card { background: white; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid #E0E0E0; }
+        .shape-card svg { width: 60px; height: 60px; }
+        .shape-card p { margin-top: 8px; font-weight: 700; color: var(--text-light); font-size: 0.9rem; }
+        .g1-input { width: 100%; padding: 14px; font-size: 1.3rem; text-align: center; border: 3px solid #CFD8DC; border-radius: 12px; margin: 10px 0; outline: none; font-family: inherit; background: #FAFAFA; font-weight: 600; }
+        .g1-input:focus { border-color: var(--primary); background: #fff; }
+        .g1-hint { background: #FFF8E1; color: #7A5A00; padding: 10px; border-radius: 10px; margin: 8px 0; font-size: 0.95rem; display: none; border: 1px solid #FFE082; font-weight: 600; text-align: center; }
+        .g1-btn { background: var(--primary); color: white; border: none; padding: 12px 24px; font-size: 1rem; font-weight: 700; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,150,136,0.3); transition: all 0.2s; margin: 5px; font-family: inherit; }
+        .g1-btn:hover { transform: translateY(-2px); }
+        .g1-btn:active { transform: scale(0.96); }
+        .g1-fb { text-align: center; font-weight: bold; font-size: 1.1rem; margin: 8px 0; padding: 8px; border-radius: 10px; }
+
+        /* Game 2: Curved Lines Styles */
+        .g2-container { background: #fffef7; border-radius: 25px; box-shadow: var(--shadow); padding: 15px; position: relative; }
+        .g2-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #f5af19, #f12711); border-radius: 5px 5px 0 0; }
+        .g2-header { display: flex; justify-content: space-between; padding: 10px 0; font-weight: bold; font-size: 0.95rem; flex-wrap: wrap; gap: 8px; background: #fffef7; }
+        .g2-qbox { background: #fff2df; border-radius: 50px; padding: 20px; text-align: center; font-weight: bold; font-size: clamp(1.2rem, 3vw, 1.5rem); margin: 15px 0; border: 3px solid #ffcf9a; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .g2-input { width: 100%; padding: 14px; font-size: 1.3rem; text-align: center; border: 3px solid #ffb465; border-radius: 60px; margin: 10px 0; outline: none; font-family: inherit; background: white; }
+        .g2-input:focus { border-color: #f12711; }
+        .g2-hint { background: #ffcd94; padding: 10px 20px; border-radius: 60px; font-weight: bold; font-size: 1rem; color: #3b2a1f; margin: 8px 0; min-height: 50px; text-align: center; }
+        .g2-btn { border: none; font-size: 1rem; font-weight: bold; padding: 10px 22px; border-radius: 60px; cursor: pointer; transition: 0.05s linear; margin: 5px; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; }
+        .g2-btn.voice { background: #ffe0b5; box-shadow: 0 4px 0 #b97f3a; color: #3b2a1f; }
+        .g2-btn.next { background: #66bb6a; box-shadow: 0 4px 0 #2e6b2f; color: white; }
+        .g2-btn.check { background: #4caf50; color: white; box-shadow: 0 5px 0 #2e6b2f; font-size: 1.1rem; padding: 12px 28px; }
+        .g2-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
+        .g2-fb { text-align: center; font-weight: bold; font-size: 1.1rem; margin: 8px 0; padding: 10px; border-radius: 50px; }
+        .g2-prog { text-align: center; margin-top: 8px; font-size: 0.9rem; color: #7b5a3b; }
+
+        @media (max-width: 600px) {
+            #main-container { border-radius: 20px; }
+            .game-cards { grid-template-columns: 1fr; gap: 15px; }
+            .game-card { padding: 20px 15px; }
+            .g1-hud, .g2-header { flex-direction: column; align-items: center; }
+            .back-btn { top: 10px; left: 10px; font-size: 0.8rem; padding: 6px 12px; }
+            .line-visual { height: 80px; }
+            .shape-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 1.5rem; }
+            .game-card .card-emoji { font-size: 2.5rem; }
+            .game-card .card-title { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-container">
+        <!-- HOME SCREEN -->
+        <div id="home-screen">
+            <div class="home-badge">📐 Grade 1 CBC Geometry Games</div>
+            <h1>Choose Your<br>Geometry Adventure!</h1>
+            <p class="subtitle">Two exciting games to master lines and shapes</p>
+            <div class="game-cards">
+                <div class="game-card card1" onclick="startGame1()">
+                    <span class="card-emoji">📏✨</span>
+                    <div class="card-title">Straight Lines<br>Quest</div>
+                    <p class="card-desc">Identify & model straight lines, shapes, and explore geometry with SVG visuals!</p>
+                    <span class="card-badge">🌟 Grade 1</span>
+                </div>
+                <div class="game-card card2" onclick="startGame2()">
+                    <span class="card-emoji">〰️🎨</span>
+                    <div class="card-title">Curved Lines<br>Adventure</div>
+                    <p class="card-desc">Identify curved lines, model with objects, and discover shapes with curves!</p>
+                    <span class="card-badge">🌟 Grade 1</span>
+                </div>
+            </div>
+            <div class="footer-note">📱 Works on all devices · CBC Aligned · Fun Learning!</div>
+        </div>
+
+        <!-- GAME 1 WRAPPER -->
+        <div id="game1-wrapper" class="game-wrapper">
+            <button class="back-btn" onclick="goHome()">← Home</button>
+            <div class="g1-container" id="g1App">
+                <div class="g1-hud">
+                    <div>Lvl: <span id="g1lvl">1</span>/5</div>
+                    <div>Score: <span id="g1score">0</span>/24</div>
+                    <div>Q: <span id="g1qnum">1</span>/30</div>
+                </div>
+                <div class="g1-progress"><div class="g1-progress-fill" id="g1pbar" style="width:0%"></div></div>
+                <div class="g1-qbox" id="g1qbox">
+                    <div class="g1-timer" id="g1tmr-box"><span id="g1tmr">40</span></div>
+                    <div id="g1qvisual"></div>
+                    <div class="g1-qtext" id="g1qtxt"></div>
+                    <button class="g1-btn" id="g1replay" style="background:var(--secondary); margin-top:10px;">🔊 Replay</button>
+                </div>
+                <div class="g1-hint" id="g1hint"></div>
+                <input type="text" class="g1-input" id="g1ans" placeholder="Type your answer..." autocomplete="off" inputmode="text">
+                <button class="g1-btn" id="g1check" style="width:100%; margin-top:5px;">Check Answer</button>
+                <div class="g1-fb" id="g1fb"></div>
+            </div>
+        </div>
+
+        <!-- GAME 2 WRAPPER -->
+        <div id="game2-wrapper" class="game-wrapper">
+            <button class="back-btn" onclick="goHome()">← Home</button>
+            <div class="g2-container" id="g2App">
+                <div class="g2-header">
+                    <div>〰️ LEVEL <span id="g2lvl">1</span></div>
+                    <div>✅ SCORE: <span id="g2score">0</span> / <span id="g2answered">0</span></div>
+                    <div>⏱️ <span id="g2tmr">40</span>s</div>
+                </div>
+                <div class="g2-qbox" id="g2qtxt">Loading fun challenge...</div>
+                <div class="g2-hint" id="g2hint">💡 Hint will appear here as time goes</div>
+                <input type="text" class="g2-input" id="g2ans" placeholder="Type your answer..." autocomplete="off">
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    <button class="g2-btn voice" id="g2read">🔊 READ</button>
+                    <button class="g2-btn next" id="g2next">⏩ NEXT</button>
+                    <button class="g2-btn check" id="g2check">✔️ CHECK</button>
+                </div>
+                <div class="g2-fb" id="g2fb">〰️ Answer each question! 80% needed to level up.</div>
+                <div class="g2-prog" id="g2prog">Question 1 / 30</div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="confetti" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;"></canvas>
+
+    <script>
+        // ====================== NAVIGATION ======================
+        function goHome() {
+            document.getElementById('game1-wrapper').classList.remove('active');
+            document.getElementById('game2-wrapper').classList.remove('active');
+            document.getElementById('home-screen').style.display = 'block';
+            if (g1timer) clearInterval(g1timer);
+            if (g2timer) clearInterval(g2timer);
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+        function startGame1() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('game1-wrapper').classList.add('active');
+            document.getElementById('game2-wrapper').classList.remove('active');
+            if (!g1init) { initG1(); g1init = true; }
+            startG1Level();
+        }
+        function startGame2() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('game1-wrapper').classList.remove('active');
+            document.getElementById('game2-wrapper').classList.add('active');
+            if (!g2init) { initG2(); g2init = true; }
+            loadG2Level(0);
+        }
+
+        // ====================== SPEECH ======================
+        function speak(txt, rate=0.85, pitch=1.15) {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(txt);
+            u.lang = 'en-US'; u.rate = rate; u.pitch = pitch;
+            window.speechSynthesis.speak(u);
+        }
+
+        // ====================== UTILS ======================
+        function rand(a,b) { return Math.floor(Math.random()*(b-a+1))+a; }
+        function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+        function norm(v) { return String(v).trim().toLowerCase().replace(/[.,!?]/g,''); }
+
+        // ====================== GAME 1: STRAIGHT LINES QUEST ======================
+        let g1init = false, g1timer = null, g1timeLeft = 40, g1active = true;
+        let g1level = 1, g1qIdx = 0, g1score = 0, g1hintsShown = 0;
+        let g1qs = [], g1current = null;
+        const g1Used = new Set();
+
+        const LINES = [
+            {t:'straight', svg:'<line x1="15" y1="50" x2="85" y2="50" stroke="#009688" stroke-width="5" stroke-linecap="round"/>', desc:'a straight line'},
+            {t:'curved', svg:'<path d="M 15 50 Q 50 15 85 50" stroke="#FF9800" stroke-width="5" fill="none" stroke-linecap="round"/>', desc:'a curved line'},
+            {t:'zigzag', svg:'<path d="M 15 65 L 30 20 L 45 65 L 60 20 L 75 65 L 85 50" stroke="#9C27B0" stroke-width="5" fill="none" stroke-linecap="round"/>', desc:'a zigzag line'}
+        ];
+        const SHAPES = [
+            {n:'triangle', e:3, svg:'<polygon points="50,10 10,80 90,80" fill="none" stroke="#2196F3" stroke-width="3"/>'},
+            {n:'square', e:4, svg:'<rect x="20" y="20" width="60" height="60" fill="none" stroke="#4CAF50" stroke-width="3"/>'},
+            {n:'rectangle', e:4, svg:'<rect x="10" y="25" width="80" height="50" fill="none" stroke="#795548" stroke-width="3"/>'},
+            {n:'pentagon', e:5, svg:'<polygon points="50,5 95,35 80,85 20,85 5,35" fill="none" stroke="#FF5722" stroke-width="3"/>'},
+            {n:'hexagon', e:6, svg:'<polygon points="30,10 70,10 90,40 70,70 30,70 10,40" fill="none" stroke="#00BCD4" stroke-width="3"/>'}
+        ];
+        const OBJECTS = [
+            {n:'ruler', s:true, e:'📏'},{n:'book', s:true, e:'📚'},{n:'pencil', s:true, e:'✏️'},{n:'desk', s:true, e:'🪑'},
+            {n:'paper', s:true, e:'📄'},{n:'door', s:true, e:'🚪'},{n:'ball', s:false, e:'⚽'},{n:'plate', s:false, e:'🍽️'},
+            {n:'banana', s:false, e:'🍌'},{n:'clock', s:false, e:'🕰️'},{n:'cup', s:false, e:'☕'},{n:'moon', s:false, e:'🌙'}
+        ];
+        const TOOLS = [{n:'ruler', e:'📏'},{n:'string', e:'🪢'},{n:'stick', e:'🥢'},{n:'straight edge', e:'📐'}];
+
+        function genG1Line() {
+            const line = pick(LINES);
+            const id = `ID_${line.t}_${g1level}`;
+            if(g1Used.has(id)) return null; g1Used.add(id);
+            return { id, topic:'IDENTIFY', visual:`<div class="line-visual"><svg viewBox="0 0 100 100">${line.svg}</svg></div>`, txt:`Is this ${line.desc}? Type "straight" if it is, or name the type.`, spk:`Look at this line. Is it straight, curved, or zigzag?`, ans:line.t, hints:[`Look at the path of the line`,`Does it go straight or bend?`,`Answer: ${line.t}`] };
+        }
+        function genG1Shape() {
+            const shape = pick(SHAPES);
+            const id = `SH_${shape.n}_${g1level}`;
+            if(g1Used.has(id)) return null; g1Used.add(id);
+            return { id, topic:'IDENTIFY', visual:`<div class="shape-grid"><div class="shape-card"><svg viewBox="0 0 100 100">${shape.svg}</svg><p>${shape.n}</p></div></div>`, txt:`How many straight lines does a ${shape.n} have? Type the number.`, spk:`How many straight lines does a ${shape.n} have?`, ans:String(shape.e), hints:[`Count each side carefully`,`Shapes have straight edges`,`Answer: ${shape.e}`] };
+        }
+        function genG1Object() {
+            const obj = pick(OBJECTS);
+            const id = `OB_${obj.n}_${g1level}`;
+            if(g1Used.has(id)) return null; g1Used.add(id);
+            return { id, topic:'IDENTIFY', visual:`<div style="font-size:3.5rem; margin:10px 0;">${obj.e}</div>`, txt:`Does a ${obj.n} have straight lines? Type "yes" or "no".`, spk:`Does a ${obj.n} have straight lines?`, ans:obj.s?'yes':'no', hints:[`Look at its edges`,`Are any edges flat and straight?`,`Answer: ${obj.s?'yes':'no'}`] };
+        }
+        function genG1Tool() {
+            const tool = pick(TOOLS);
+            const id = `MT_${tool.n}_${g1level}`;
+            if(g1Used.has(id)) return null; g1Used.add(id);
+            return { id, topic:'MODELLING', visual:`<div style="font-size:3.5rem; margin:10px 0;">${tool.e}</div>`, txt:`Which ${tool.n} is best to draw or model a straight line? Type its name.`, spk:`Name a tool used to model or draw a straight line.`, ans:norm(tool.n), hints:[`Think of a measuring tool`,`It has a straight edge`,`Answer: ${tool.n}`] };
+        }
+        function genG1String() {
+            const id = `MS_STRING_${g1level}`;
+            if(g1Used.has(id)) return null; g1Used.add(id);
+            return { id, topic:'MODELLING', visual:`<div style="font-size:3.5rem; margin:10px 0;">🪢➡️〰️➡️📏</div>`, txt:`To make a string show a straight line, you must pull it ___.`, spk:`To make a string show a straight line, you must pull it what?`, ans:'tight', hints:[`Not loose or wavy`,`Pull it firm`,`Answer: tight`] };
+        }
+        function genG1Edge() {
+            const id = `ME_EDGE_${g1level}`;
+            if(g1Used.has(id)) return null; g1Used.add(id);
+            return { id, topic:'MODELLING', visual:`<div style="font-size:3.5rem; margin:10px 0;">📖📏📐</div>`, txt:`What part of a book or paper can you trace to make a straight line? Type: edge, corner, or curve.`, spk:`What part of a book can you trace to make a straight line?`, ans:'edge', hints:[`The flat side of the shape`,`Not the corner`,`Answer: edge`] };
+        }
+
+        function buildG1Level() {
+            let pool = [];
+            const idGens = [genG1Line, genG1Shape, genG1Object];
+            const modGens = [genG1Tool, genG1String, genG1Edge];
+            let idCount=0, modCount=0, attempts=0;
+            while((idCount<15||modCount<15)&&attempts<200){attempts++;let q;if(idCount<15){q=pick(idGens)();if(q){pool.push(q);idCount++;}}if(modCount<15&&idCount>=15){q=pick(modGens)();if(q){pool.push(q);modCount++;}}}
+            return pool.sort(()=>Math.random()-0.5);
+        }
+
+        function initG1() {
+            document.getElementById('g1check').addEventListener('click', g1check);
+            document.getElementById('g1replay').addEventListener('click', ()=>speak(g1current.spk));
+            document.getElementById('g1ans').addEventListener('keydown', e=>{ if(e.key==='Enter') g1check(); });
+        }
+
+        function startG1Level() {
+            g1level=1;g1qIdx=0;g1score=0;g1Used.clear();g1qs=buildG1Level();
+            document.getElementById('g1lvl').textContent=g1level;loadG1Q();
+        }
+
+        function loadG1Q() {
+            if(g1qIdx>=30){g1finishLevel();return;}
+            g1current=g1qs[g1qIdx];g1timeLeft=40;g1hintsShown=0;g1active=true;
+            document.getElementById('g1qnum').textContent=g1qIdx+1;
+            document.getElementById('g1score').textContent=g1score;
+            document.getElementById('g1pbar').style.width=`${(g1qIdx/30)*100}%`;
+            document.getElementById('g1qvisual').innerHTML=g1current.visual||'';
+            document.getElementById('g1qtxt').textContent=g1current.txt;
+            document.getElementById('g1ans').value='';document.getElementById('g1hint').style.display='none';
+            document.getElementById('g1tmr').textContent=g1timeLeft;
+            document.getElementById('g1tmr-box').className='g1-timer';
+            document.getElementById('g1fb').textContent='';document.getElementById('g1ans').focus();
+            speak(g1current.spk);
+            if(g1timer)clearInterval(g1timer);
+            g1timer=setInterval(()=>{if(!g1active)return;g1timeLeft--;document.getElementById('g1tmr').textContent=g1timeLeft;if(g1timeLeft<=20&&g1timeLeft>10)document.getElementById('g1tmr-box').classList.add('warn');if(g1timeLeft<=10){document.getElementById('g1tmr-box').classList.remove('warn');document.getElementById('g1tmr-box').classList.add('danger');}if([25,15,5].includes(g1timeLeft))showG1Hint();if(g1timeLeft<=0){g1active=false;clearInterval(g1timer);speak("Time is up!",1.1,1);document.getElementById('g1fb').textContent='⏰ Time is up!';document.getElementById('g1fb').style.color='var(--danger)';setTimeout(nextG1Q,1600);}},1000);
+        }
+
+        function showG1Hint() {if(g1hintsShown<3&&g1current.hints?.[g1hintsShown]){document.getElementById('g1hint').textContent=`💡 ${g1current.hints[g1hintsShown]}`;document.getElementById('g1hint').style.display='block';g1hintsShown++;}}
+        function g1check() {if(!g1active)return;let raw=norm(document.getElementById('g1ans').value);if(!raw)return;g1active=false;clearInterval(g1timer);let expected=norm(g1current.ans);let correct=raw===expected||raw.includes(expected)||expected.includes(raw)||(raw.length>=2&&expected.startsWith(raw));if(correct){g1score++;document.getElementById('g1score').textContent=g1score;document.getElementById('g1fb').textContent='✅ Correct!';document.getElementById('g1fb').style.color='var(--success)';speak("Correct!");fireConfetti(20);}else{document.getElementById('g1fb').textContent=`❌ Answer: ${g1current.ans}`;document.getElementById('g1fb').style.color='var(--danger)';speak(`The answer is ${g1current.ans}`);}setTimeout(nextG1Q,1200);}
+        function nextG1Q(){g1qIdx++;loadG1Q();}
+        function g1finishLevel(){clearInterval(g1timer);const pct=(g1score/30)*100;document.getElementById('g1fb').textContent=pct>=80?`🎉 Level Complete! ${Math.round(pct)}%`:`💪 ${Math.round(pct)}% - Need 80%. Restarting...`;document.getElementById('g1fb').style.color=pct>=80?'var(--success)':'var(--danger)';if(pct>=80&&g1level<5){g1level++;document.getElementById('g1lvl').textContent=g1level;setTimeout(()=>{g1qIdx=0;g1score=0;g1Used.clear();g1qs=buildG1Level();loadG1Q();},2000);}else if(pct>=80&&g1level>=5){document.getElementById('g1fb').textContent='🏆 All 5 Levels Complete!';speak("Congratulations! You finished all levels!");fireConfetti(80);}else{setTimeout(()=>{g1qIdx=0;g1score=0;g1Used.clear();g1qs=buildG1Level();loadG1Q();},2000);}}
+
+        // ====================== GAME 2: CURVED LINES ADVENTURE ======================
+        let g2init=false,g2timer=null,g2timeLeft=40,g2waiting=true,g2submitted=false;
+        let g2level=0,g2qIdx=0,g2correct=0,g2answered=0,g2locked=false,g2active=true;
+        let g2questions=[],g2current=null;
+
+        const g2bank = [
+            { text: "Is a circle made of straight lines or curved lines?", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "Is a rainbow a straight line or a curved line?", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "Is the letter 'O' made of curved lines or straight lines?", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "Is the edge of a book straight or curved?", correct: "straight", alt: "straight", topic: "Identify Curved Lines" },
+            { text: "A wavy line is an example of a ___ line.", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "Does a curved line bend or stay straight?", correct: "bend", alt: "bends", topic: "Identify Curved Lines" },
+            { text: "Is a snake's body straight or curved when it moves?", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "Is a straight line the same as a curved line?", correct: "no", alt: "false", topic: "Identify Curved Lines" },
+            { text: "A hill has a ___ shape.", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "A circle has how many curved lines?", correct: "1", alt: "one", topic: "Identify Curved Lines" },
+            { text: "Which shape has only curved lines: square or circle?", correct: "circle", alt: "circle", topic: "Identify Curved Lines" },
+            { text: "The letter 'S' is made of ___ lines.", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "The letter 'C' is made of a ___ line.", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "A speed bump on the road is ___", correct: "curved", alt: "curved", topic: "Identify Curved Lines" },
+            { text: "A zigzag line is made of ___ lines.", correct: "straight", alt: "straight", topic: "Identify Curved Lines" },
+            { text: "What tool can you use to draw a curved line?", correct: "compass", alt: "circle template", topic: "Model Curved Lines" },
+            { text: "You can draw a curved line without a ruler - true or false?", correct: "true", alt: "yes", topic: "Model Curved Lines" },
+            { text: "A ball has a ___ surface.", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "A banana has a ___ shape.", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "Which letter has a curved line: T or C?", correct: "C", alt: "c", topic: "Model Curved Lines" },
+            { text: "Which letter has a curved line: O or L?", correct: "O", alt: "o", topic: "Model Curved Lines" },
+            { text: "Which number has a curved line: 1 or 8?", correct: "8", alt: "eight", topic: "Model Curved Lines" },
+            { text: "Which number has a curved line: 0 or 7?", correct: "0", alt: "zero", topic: "Model Curved Lines" },
+            { text: "A caterpillar moving makes a ___ motion.", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "A wave in the ocean is a ___ line.", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "A piece of string can be made into a ___ line.", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "The handle of a cup is ___", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "The letter 'U' has a ___ bottom.", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "A pizza slice has one ___ edge (the crust).", correct: "curved", alt: "curved", topic: "Model Curved Lines" },
+            { text: "The outline of a balloon is ___", correct: "curved", alt: "curved", topic: "Model Curved Lines" }
+        ];
+
+        function genG2Level() {
+            const s=[...g2bank].sort(()=>Math.random()-0.5);
+            const id=s.filter(q=>q.topic==="Identify Curved Lines").slice(0,15);
+            const md=s.filter(q=>q.topic==="Model Curved Lines").slice(0,15);
+            return [...id,...md].sort(()=>Math.random()-0.5);
+        }
+
+        function initG2() {
+            document.getElementById('g2check').addEventListener('click',g2check);
+            document.getElementById('g2read').addEventListener('click',()=>{if(g2current)speak(g2current.text);});
+            document.getElementById('g2next').addEventListener('click',g2nextManual);
+            document.getElementById('g2ans').addEventListener('keypress',e=>{if(e.key==='Enter'&&!g2submitted&&g2waiting)g2check();});
+        }
+
+        function loadG2Level(lvl){g2locked=false;g2active=true;g2level=lvl;g2qIdx=0;g2correct=0;g2answered=0;g2questions=genG2Level();document.getElementById('g2lvl').textContent=g2level+1;loadG2Q(0);}
+
+        function loadG2Q(idx){if(idx>=g2questions.length){finishG2Level();return;}g2current=g2questions[idx];g2waiting=true;g2submitted=false;document.getElementById('g2qtxt').textContent=g2current.text;document.getElementById('g2ans').value='';document.getElementById('g2ans').disabled=false;document.getElementById('g2ans').focus();document.getElementById('g2check').disabled=false;document.getElementById('g2fb').textContent='〰️ Type your answer and click CHECK!';document.getElementById('g2fb').style.background='#fff3e0';document.getElementById('g2prog').textContent=`Question ${g2answered+1} / ${g2questions.length}`;document.getElementById('g2score').textContent=g2correct;document.getElementById('g2answered').textContent=g2answered;document.getElementById('g2hint').textContent='💡 Hint will appear here as time goes';if(g2timer)clearInterval(g2timer);g2timeLeft=40;document.getElementById('g2tmr').textContent=g2timeLeft;g2timer=setInterval(()=>{if(!g2waiting||g2locked||!g2active||g2submitted)return;if(g2timeLeft<=1){clearInterval(g2timer);g2timeUp();}else{g2timeLeft--;document.getElementById('g2tmr').textContent=g2timeLeft;updateG2Hint();}},1000);}
+
+        function updateG2Hint(){const hb=document.getElementById('g2hint');if(!g2current)return;if(g2timeLeft>28)hb.textContent=`💡 Topic: ${g2current.topic}. Think about lines that bend!`;else if(g2timeLeft>18)hb.textContent=`🔎 Hint: A curved line bends. A straight line does not!`;else if(g2timeLeft>8)hb.textContent=`✨ Hint: The answer is "${g2current.correct}".`;else hb.textContent=`🚀 Last chance! Answer: "${g2current.correct}". Hurry!`;}
+
+        function g2timeUp(){speak("Time is up!",1.1,1);g2waiting=false;g2submitted=true;document.getElementById('g2fb').textContent='⏰ TIME IS UP! Moving to next question.';document.getElementById('g2fb').style.background='#ffccbb';document.getElementById('g2ans').disabled=true;document.getElementById('g2check').disabled=true;setTimeout(()=>{if(!g2locked)g2moveNext();},1500);}
+
+        function g2check(){if(!g2waiting||g2locked||!g2active||g2submitted)return;const ua=document.getElementById('g2ans').value.trim().toLowerCase();if(!ua){speak("Please type an answer.");return;}const nmap={"curved":"curved","curve":"curved","straight":"straight","circle":"circle","yes":"yes","true":"yes","no":"no","false":"no","bend":"bend","bends":"bend","1":"1","one":"1","8":"8","eight":"8","0":"0","zero":"0","c":"c","o":"o","t":"t","l":"l","compass":"compass","curved line":"curved","straight line":"straight"};let uaNorm=nmap[ua]||ua;const c=g2current.correct.toLowerCase(),a=g2current.alt?g2current.alt.toLowerCase():"";const ok=(uaNorm===c)||(a&&uaNorm===a);g2submitted=true;g2waiting=false;clearInterval(g2timer);if(ok){g2correct++;speak("Correct!");document.getElementById('g2fb').textContent='🎉 CORRECT! +1 point 🎉';document.getElementById('g2fb').style.background='#c8e6c9';}else{speak(`The answer is ${g2current.correct}.`);document.getElementById('g2fb').textContent=`❌ INCORRECT! Answer: "${g2current.correct}"`;document.getElementById('g2fb').style.background='#ffcdd2';}g2answered++;document.getElementById('g2score').textContent=g2correct;document.getElementById('g2answered').textContent=g2answered;document.getElementById('g2ans').disabled=true;document.getElementById('g2check').disabled=true;}
+
+        function g2nextManual(){if(g2locked)return;if(g2waiting&&!g2submitted){document.getElementById('g2fb').textContent='⚠️ Please answer first!';speak("Please check your answer first.");return;}if(g2submitted&&!g2waiting){clearInterval(g2timer);g2moveNext();}}
+
+        function g2moveNext(){if(g2locked)return;if(g2answered>=g2questions.length){finishG2Level();return;}g2qIdx++;loadG2Q(g2qIdx);}
+
+        function finishG2Level(){const pct=(g2correct/g2questions.length)*100;if(pct>=80&&g2level+1<5){speak(`Excellent! Moving to level ${g2level+2}.`);document.getElementById('g2fb').textContent=`🎊 LEVEL UP! ${g2correct}/${g2questions.length} (${Math.round(pct)}%) → Next Level!`;document.getElementById('g2fb').style.background='#ffecb3';g2level++;setTimeout(()=>loadG2Level(g2level),2000);}else if(pct>=80&&g2level+1>=5){g2locked=true;clearInterval(g2timer);document.getElementById('g2fb').textContent='🏆 CHAMPION! All 5 levels complete! 🏆';document.getElementById('g2fb').style.background='#ffecb3';speak("Congratulations! You finished all levels!");}else{document.getElementById('g2fb').textContent=`⚠️ ${Math.round(pct)}% - Need 80%. Restarting...`;document.getElementById('g2fb').style.background='#ffb3ba';speak(`Need 80 percent. Restarting level ${g2level+1}.`);setTimeout(()=>loadG2Level(g2level),2000);}}
+
+        // ====================== CONFETTI ======================
+        const cvs=document.getElementById('confetti'),ctx2=cvs?.getContext('2d');
+        let particles=[],raf=0;
+        const colors=['#009688','#7E57C2','#FF9800','#00BCD4','#E91E63','#4CAF50'];
+        function resizeCvs(){if(cvs){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}}
+        window.addEventListener('resize',resizeCvs);resizeCvs();
+        function fireConfetti(n){if(!ctx2)return;for(let i=0;i<n;i++)particles.push({x:cvs.width/2+(Math.random()-0.5)*250,y:cvs.height/2,vx:(Math.random()-0.5)*14,vy:(Math.random()-1)*14-5,c:pick(colors),sz:rand(5,9),r:0,life:1});if(!raf)animConfetti();}
+        function animConfetti(){ctx2.clearRect(0,0,cvs.width,cvs.height);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.45;p.r+=0.12;p.life-=0.018;ctx2.save();ctx2.translate(p.x,p.y);ctx2.rotate(p.r);ctx2.fillStyle=p.c;ctx2.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz);ctx2.restore();});particles=particles.filter(p=>p.life>0);if(particles.length>0)raf=requestAnimationFrame(animConfetti);else raf=0;}
+
+        // ====================== INITIALIZATION ======================
+        window.addEventListener('load',()=>{document.getElementById('home-screen').style.display='block';});
+    </script>
+</body>
+</html>

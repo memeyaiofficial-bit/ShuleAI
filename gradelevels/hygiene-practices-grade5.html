@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Grade 5: Hygiene Heroes - Grooming, Home Hygiene & Laundry</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(145deg, #2c7da0 0%, #1f5068 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Fredoka One', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .game-container {
+      max-width: 800px;
+      width: 100%;
+      background: #fef9ef;
+      border-radius: 70px 70px 60px 60px;
+      box-shadow: 0 30px 35px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255,255,210,0.9);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .game-header {
+      background: #61a5c2;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 6px solid #2c7da0;
+    }
+
+    .level-badge {
+      background: #2d6a4f;
+      color: #f9f7f3;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .score-area {
+      background: #1e4a6b;
+      padding: 6px 16px;
+      border-radius: 40px;
+      color: #f0f3e8;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .progress {
+      background: #e9ecef;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #1f5068;
+    }
+
+    .timer-section {
+      background: #e0fbfc;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 2px dashed #98c1d9;
+    }
+
+    .timer-clock {
+      background: #1e2a2e;
+      color: #f9c74f;
+      font-family: monospace;
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding: 5px 22px;
+      border-radius: 60px;
+      letter-spacing: 3px;
+      box-shadow: inset 0 0 3px gold, 0 4px 0 #4a3512;
+    }
+
+    .hint-area {
+      background: #f4a261;
+      padding: 8px 20px;
+      border-radius: 36px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #2c2b1f;
+      max-width: 280px;
+      transition: 0.2s;
+    }
+
+    .voice-btn {
+      background: #2d6a4f;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 8px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 0 #1b4d3e;
+      transition: 0.05s linear;
+    }
+
+    .voice-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #1b4d3e;
+    }
+
+    .question-panel {
+      padding: 30px 25px 25px;
+    }
+
+    .question-text {
+      font-size: 1.7rem;
+      line-height: 1.35;
+      font-weight: bold;
+      color: #1f5068;
+      background: #ffffff;
+      padding: 18px 20px;
+      border-radius: 55px;
+      text-align: center;
+      margin-bottom: 22px;
+      box-shadow: inset 0 0 0 3px #cfe3e8, 0 10px 15px rgba(0,0,0,0.05);
+    }
+
+    .answer-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      border: 3px solid #98c1d9;
+      background: white;
+      font-family: inherit;
+      outline: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .answer-input:focus {
+      border-color: #f39c12;
+      box-shadow: 0 0 0 4px rgba(243,156,18,0.3);
+    }
+
+    .submit-btn {
+      background: #2d6a4f;
+      border: none;
+      font-size: 1.4rem;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 60px;
+      color: white;
+      cursor: pointer;
+      transition: 0.08s linear;
+      box-shadow: 0 6px 0 #1b4d3e;
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #1b4d3e;
+    }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.1rem;
+      padding: 12px;
+      border-radius: 50px;
+      background: #e9ecef;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .modal-message {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      background: #fefae0;
+      max-width: 360px;
+      width: 85%;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 65px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 20px 30px black;
+    }
+
+    .modal-card button {
+      background: #2c6e49;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px 28px;
+      margin-top: 20px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 580px) {
+      .question-text {
+        font-size: 1.3rem;
+      }
+      .timer-clock {
+        font-size: 1.6rem;
+        padding: 4px 15px;
+      }
+      .voice-btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+      .hint-area {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="gameRoot"></div>
+
+<script>
+  // --------------------------------------------------------------
+  // TOPICS: Good Grooming Practices, Home Hygiene, Laundering Cotton Items
+  // Grade 5 CBC - Hygiene Practices
+  // 5 levels x 30 questions = 150 total. Open-ended, timer 40s, voice output, hints.
+  // Score >=80% to advance.
+  // --------------------------------------------------------------
+
+  function generateHygieneBank() {
+    const questions = [];
+    let id = 1;
+
+    function addQ(text, correct) {
+      questions.push({ id: id++, text: text, correct: correct.trim().toLowerCase() });
+    }
+
+    // ========== TOPIC 1: GOOD GROOMING PRACTICES (50 questions) ==========
+    addQ("What is the daily act of cleaning your body using soap and water called?", "bathing");
+    addQ("Which tool is used to clean the teeth and remove plaque?", "toothbrush");
+    addQ("What do you apply to underarms to prevent body odor?", "deodorant");
+    addQ("How many minutes should you brush your teeth each time?", "two");
+    addQ("Name the sticky layer of bacteria that forms on teeth if not brushed.", "plaque");
+    addQ("What should you use to cut your fingernails and toenails?", "nail clipper");
+    addQ("What substance is used with a toothbrush to clean teeth?", "toothpaste");
+    addQ("Which part of the body should be washed with soap every day to prevent odor?", "armpits");
+    addQ("What do we call the string used to clean between teeth?", "dental floss");
+    addQ("What is the process of washing and styling hair called?", "hair grooming");
+    addQ("Name a personal hygiene product used after bathing to moisturize skin.", "lotion");
+    addQ("What should you do to your hair to keep it tidy and free from tangles?", "comb");
+    addQ("What is the act of cleaning the inside of your ears safely called?", "ear hygiene");
+    addQ("What do you use to remove dirt from under your nails?", "nail brush");
+    addQ("How often should you change your underwear for good hygiene?", "daily");
+    addQ("What is the recommended frequency for taking a bath or shower?", "every day");
+    addQ("What do you call bad breath caused by poor oral hygiene?", "halitosis");
+    addQ("Which grooming tool is used to shape eyebrows?", "tweezers");
+    addQ("What should you wear on your feet when walking in public showers?", "flip flops");
+    addQ("What personal item should never be shared to prevent germs?", "toothbrush");
+    addQ("Name a sign of good grooming in terms of nails.", "clean and short");
+    addQ("What liquid is used as mouthwash to kill bacteria?", "antiseptic");
+    addQ("What do you call a substance that kills germs on skin (like hand sanitizer)?", "antiseptic");
+    addQ("What part of the body should you wash after using the toilet?", "hands");
+    addQ("What grooming practice prevents the spread of head lice?", "not sharing combs");
+    addQ("What do you apply to lips to prevent chapping?", "lip balm");
+    addQ("Which facial hair grooming tool do boys use?", "razor");
+    addQ("What is the process of removing dead skin from the body called?", "exfoliation");
+    addQ("How often should you change your bath towel?", "weekly");
+    addQ("What type of soap kills most germs on hands?", "antibacterial soap");
+    addQ("Name a grooming habit that keeps your skin healthy.", "moisturizing");
+    addQ("What should you do after sneezing into your hands?", "wash them");
+    addQ("What is the best way to dry your body after a bath?", "clean towel");
+    addQ("What grooming tool is used to file rough edges of nails?", "nail file");
+    addQ("What is the first step of good grooming every morning?", "washing face");
+    addQ("What do you call the practice of keeping your body clean and neat?", "personal hygiene");
+    addQ("What should you do with dirty clothes after removing them?", "put in laundry");
+    addQ("Which body part is often overlooked but should be cleaned behind the ears?", "ears");
+    addQ("What type of deodorant stops sweat and odor?", "antiperspirant");
+    addQ("What do you use to clean your face deeply once a week?", "facial scrub");
+    addQ("Name a grooming habit that prevents body odor.", "daily bath");
+    addQ("What is the proper way to sneeze to avoid spreading germs?", "into elbow");
+    addQ("What should you do with used tissues?", "throw in trash");
+    addQ("Which personal care item is used to clean between toes?", "washcloth");
+    addQ("What grooming habit helps prevent acne?", "washing face twice daily");
+    addQ("Name one thing you should do to your hair before sleeping to keep it neat.", "braid");
+    addQ("What instrument is used to clean wax from ears safely?", "cotton swab");
+    addQ("What is the main purpose of grooming?", "prevent disease");
+    addQ("Name a grooming product that fights cavities.", "fluoride toothpaste");
+    addQ("What is the recommended length for fingernails for hygiene?", "short");
+
+    // ========== TOPIC 2: HOME HYGIENE (50 questions) ==========
+    addQ("What is the process of removing dust and dirt from floors called?", "sweeping");
+    addQ("Which room in the house should be cleaned most often to prevent germs?", "kitchen");
+    addQ("What liquid is used to kill germs on surfaces like countertops?", "disinfectant");
+    addQ("What do you call the cloth used to wipe surfaces and remove dust?", "dust cloth");
+    addQ("How often should kitchen sponges be replaced to avoid bacteria?", "weekly");
+    addQ("What machine is used to clean carpets and rugs thoroughly?", "vacuum cleaner");
+    addQ("What is the best way to remove germs from dishcloths?", "boiling");
+    addQ("What household item should be cleaned after every meal?", "dishes");
+    addQ("Name a natural disinfectant that smells like pine.", "pine oil");
+    addQ("What do you call the bathroom surface that needs scrubbing to remove soap scum?", "tiles");
+    addQ("What should you do to garbage bins to prevent bad smells?", "wash regularly");
+    addQ("What is the process of removing garbage from the house called?", "waste disposal");
+    addQ("Which part of the toilet should be scrubbed with a toilet brush?", "bowl");
+    addQ("What do you call the airborne particles that settle on furniture?", "dust");
+    addQ("How often should bed sheets be washed for good hygiene?", "weekly");
+    addQ("What cleaning tool is used to mop floors with water?", "mop");
+    addQ("What should you use to clean windows and mirrors?", "glass cleaner");
+    addQ("What is the name of the cleaning agent that removes grease from stoves?", "degreaser");
+    addQ("What kitchen appliance should be cleaned after each use to prevent bacteria?", "cutting board");
+    addQ("What is the process of letting fresh air into rooms called?", "ventilation");
+    addQ("Name a pest that is attracted to dirty kitchens.", "cockroach");
+    addQ("What should you do with pet areas to maintain home hygiene?", "clean daily");
+    addQ("What is the correct way to store brooms and mops?", "hang to dry");
+    addQ("What should you wear when using strong chemical cleaners?", "gloves");
+    addQ("What area under furniture often collects dust and should be cleaned regularly?", "under couch");
+    addQ("What natural ingredient can be used to scrub sinks and remove stains?", "baking soda");
+    addQ("What liquid mixed with water mops floors and kills germs?", "bleach solution");
+    addQ("What should you clean to prevent mold growth in bathrooms?", "grout");
+    addQ("How often should you clean your refrigerator shelves?", "monthly");
+    addQ("What do you call the practice of keeping your home free from disease-causing germs?", "home hygiene");
+    addQ("What should you use to clean a microwave inside?", "vinegar solution");
+    addQ("What appliance removes humidity and prevents mold?", "dehumidifier");
+    addQ("Name a common germ-killing spray for bathrooms.", "disinfectant spray");
+    addQ("What should you do to door handles and light switches to stop germs?", "wipe daily");
+    addQ("What is the recommended way to wash floors in a house?", "damp mopping");
+    addQ("What part of the kitchen sink harbors the most bacteria?", "drain");
+    addQ("What do you call a container with a lid used for kitchen waste?", "trash can");
+    addQ("How often should you wash throw blankets and decorative pillows?", "monthly");
+    addQ("What should be cleaned after handling raw meat to prevent cross-contamination?", "countertop");
+    addQ("What do you call a solution of water and bleach for disinfecting?", "sanitizer");
+    addQ("What tool helps remove pet hair from sofas?", "lint roller");
+    addQ("What is the best way to dry cleaning cloths to prevent bacteria?", "sun drying");
+    addQ("What should you do to toys that babies put in their mouths?", "sterilize");
+    addQ("What is the main reason to keep home surfaces dry?", "prevent mold");
+    addQ("What type of soap is used for mopping floors?", "floor cleaner");
+    addQ("What should you do with sponges daily to kill germs?", "microwave damp");
+    addQ("What device helps purify indoor air?", "air purifier");
+    addQ("What should you use to clean remote controls and keyboards?", "alcohol wipe");
+    addQ("How often should garbage disposals be cleaned?", "weekly");
+    addQ("What is the first step before mopping a floor?", "sweep");
+
+    // ========== TOPIC 3: LAUNDERING COTTON ITEMS (50 questions) ==========
+    addQ("What temperature water is best for washing white cotton to remove stains?", "hot");
+    addQ("What laundry product removes dirt and stains from cotton clothes?", "detergent");
+    addQ("What machine is used to wash clothes automatically?", "washing machine");
+    addQ("Name the cycle on a washing machine for delicate cotton items.", "gentle cycle");
+    addQ("What do you add to laundry to make cotton clothes smell fresh?", "fabric softener");
+    addQ("What should you check on a cotton garment before washing?", "care label");
+    addQ("What natural method uses sunlight to dry and whiten cotton?", "line drying");
+    addQ("What tool is used to remove wrinkles from cotton fabric after washing?", "iron");
+    addQ("What do you call a product that removes tough stains before washing?", "stain remover");
+    addQ("What temperature setting on an iron is safe for cotton?", "high");
+    addQ("What should you do with white and colored cotton clothes before washing?", "separate");
+    addQ("What laundry aid helps brighten white cotton clothes?", "bleach");
+    addQ("Name a common cotton item that needs gentle laundering.", "t-shirt");
+    addQ("What happens if you wash cotton in very hot water repeatedly?", "shrinks");
+    addQ("What do you use to measure laundry detergent?", "cup");
+    addQ("What part of the washing machine holds detergent?", "dispenser");
+    addQ("What is the process of spinning clothes to remove water called?", "spin cycle");
+    addQ("What should you do with cotton clothes that have stubborn stains before washing?", "pre-soak");
+    addQ("What laundry product removes static cling from cotton?", "dryer sheet");
+    addQ("What should you set the dryer to for cotton items to avoid shrinking?", "low heat");
+    addQ("What do you call the process of washing clothes by hand?", "hand washing");
+    addQ("What natural stain remover can be used on cotton before washing?", "lemon juice");
+    addQ("What should you do with new cotton clothes before wearing?", "wash first");
+    addQ("Name a cotton item that should be dried flat to keep its shape.", "sweater");
+    addQ("What do you use to scrub stains on cotton fabric?", "soft brush");
+    addQ("What is the ideal water temperature for washing colored cotton?", "cold");
+    addQ("What laundry additive helps remove protein stains like blood from cotton?", "enzyme detergent");
+    addQ("What do you call the process of drying clothes indoors on a rack?", "air drying");
+    addQ("How often should cotton towels be washed?", "every 3-4 uses");
+    addQ("What fabric softener alternative is natural and safe for cotton?", "vinegar");
+    addQ("What should you do with heavily soiled cotton work clothes?", "pre-rinse");
+    addQ("What does 'laundering' mean?", "washing and ironing");
+    addQ("What iron temperature symbol has three dots for cotton?", "high heat");
+    addQ("Name a common cotton undergarment.", "socks");
+    addQ("What can happen if you overload the washing machine with cotton items?", "poor cleaning");
+    addQ("What is the purpose of the rinse cycle?", "remove detergent");
+    addQ("What should you do with cotton clothes that have zippers before washing?", "zip up");
+    addQ("What helps preserve the color of dark cotton clothes?", "cold water");
+    addQ("What is the term for small fluffy balls that form on cotton fabric?", "pilling");
+    addQ("What laundry product removes lint from cotton clothes?", "lint roller");
+    addQ("What should you add to the wash to prevent colors from bleeding?", "color catcher");
+    addQ("What part of a cotton shirt is most likely to get stained?", "collar");
+    addQ("How long should you soak stained cotton before washing?", "30 minutes");
+    addQ("What natural brightener for white cotton is made from a mineral?", "borax");
+    addQ("What drying method is most energy efficient for cotton?", "sun drying");
+    addQ("What do you call a fabric shaver that removes pills?", "lint shaver");
+    addQ("What is the first step in hand washing cotton?", "fill basin with water");
+    addQ("What should you not use on delicate cotton prints?", "bleach");
+    addQ("What is the main fiber in a cotton plant?", "cellulose");
+    addQ("What tool helps you measure water temperature for laundry?", "thermometer");
+
+    // ensure exactly 150
+    while (questions.length < 150) {
+      addQ("What is the daily practice of keeping your body clean called?", "personal hygiene");
+    }
+    return questions.slice(0, 150);
+  }
+
+  const masterBank = generateHygieneBank();
+
+  // Game state
+  let currentLevel = 1;
+  let currentQIndex = 0;
+  let levelQuestions = [];
+  let levelScore = 0;
+  let totalAttempted = 0;
+  let timerInterval = null;
+  let timeLeft = 40;
+  let isActive = true;
+  let waitingTransition = false;
+  let answerLock = false;
+
+  const root = document.getElementById("gameRoot");
+
+  function renderGame() {
+    if (!levelQuestions.length) return;
+    const currentQ = levelQuestions[currentQIndex];
+    const neededPass = 24;
+    const remaining = 30 - totalAttempted;
+    const hintMsg = getDynamicHint();
+
+    root.innerHTML = `
+      <div class="game-container">
+        <div class="game-header">
+          <div class="level-badge">🧼 Level ${currentLevel} / 5</div>
+          <div class="score-area">🧴 Score: ${levelScore} / ${totalAttempted}</div>
+          <div class="progress">🎯 Need ${neededPass} to pass | Left: ${remaining}</div>
+        </div>
+        <div class="timer-section">
+          <div class="timer-clock" id="timerDisplay">${timeLeft}s</div>
+          <div class="hint-area" id="hintMessage">💡 ${hintMsg}</div>
+          <button class="voice-btn" id="readBtn">🔊 Read Question</button>
+        </div>
+        <div class="question-panel">
+          <div class="question-text">${escapeHtml(currentQ.text)}</div>
+          <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer (one word or short phrase)..." autocomplete="off">
+            <button id="submitAnswerBtn" class="submit-btn">✔ Submit Answer</button>
+          </div>
+          <div class="feedback" id="feedbackMsg">🧽 Hygiene expert? 40 seconds to answer! Press 🔊 to listen.</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("readBtn").addEventListener("click", () => speakText(currentQ.text));
+    document.getElementById("submitAnswerBtn").addEventListener("click", () => submitAnswer());
+    const inputField = document.getElementById("answerInput");
+    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") submitAnswer(); });
+    inputField.focus();
+    startTimer();
+  }
+
+  function getDynamicHint() {
+    if (timeLeft <= 10) return "⏰ Last seconds! Think grooming, cleaning or laundry!";
+    if (timeLeft <= 20) return "💡 Hint: Personal care, home cleaning, or washing cotton clothes.";
+    if (timeLeft <= 30) return "📢 Clue: Focus on hygiene practices and laundry steps.";
+    return "🧴 Soap, detergent, brush, iron — stay clean and healthy!";
+  }
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88;
+      utterance.pitch = 1.05;
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Browser does not support voice reading.");
+    }
+  }
+
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if (!isActive || waitingTransition) return;
+      if (timeLeft <= 1) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (isActive && !answerLock) handleTimeout();
+      } else {
+        timeLeft--;
+        updateTimerDisplay();
+        const hintDiv = document.getElementById("hintMessage");
+        if (hintDiv) hintDiv.innerText = getDynamicHint();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const timerSpan = document.getElementById("timerDisplay");
+    if (timerSpan) timerSpan.innerText = `${timeLeft}s`;
+  }
+
+  function handleTimeout() {
+    if (!isActive || waitingTransition) return;
+    isActive = false;
+    answerLock = true;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    const fb = document.getElementById("feedbackMsg");
+    if (fb) fb.innerHTML = "⏰ TIME'S UP! No answer given. Moving to next question.";
+    totalAttempted++;
+    scheduleNextAfterDelay();
+  }
+
+  function submitAnswer() {
+    if (!isActive || waitingTransition) {
+      speakText("Please wait, next question loading.");
+      return;
+    }
+    const inputEl = document.getElementById("answerInput");
+    let userAnswer = inputEl.value.trim().toLowerCase();
+    if (userAnswer === "") {
+      document.getElementById("feedbackMsg").innerHTML = "❗ Please type an answer!";
+      speakText("Please write your answer.");
+      return;
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    isActive = false;
+    answerLock = true;
+
+    const currentQ = levelQuestions[currentQIndex];
+    const correctAns = currentQ.correct;
+    let isCorrect = false;
+
+    let normalizedUser = userAnswer.replace(/[^a-z0-9]/g, '');
+    let normalizedCorrect = correctAns.replace(/[^a-z0-9]/g, '');
+
+    if (normalizedUser === normalizedCorrect) {
+      isCorrect = true;
+    } else {
+      const synonyms = {
+        "bathing": ["bath", "shower"],
+        "toothbrush": ["tooth brush"],
+        "deodorant": ["antiperspirant"],
+        "toothpaste": ["tooth paste"],
+        "nail clipper": ["nailcutter", "clipper"],
+        "disinfectant": ["disinfectant spray"],
+        "detergent": ["laundry detergent", "soap powder"],
+        "iron": ["clothes iron"],
+        "bleach": ["chlorine bleach"],
+        "sweeping": ["sweep", "brooming"],
+        "vacuum cleaner": ["vacuum", "hoover"],
+        "mop": ["mopstick"],
+        "vinegar": ["white vinegar"],
+        "baking soda": ["bicarbonate"],
+        "cotton": ["cotton fabric"],
+        "washing machine": ["washer"],
+        "fabric softener": ["softener"]
+      };
+      for (let [key, vals] of Object.entries(synonyms)) {
+        if (normalizedCorrect === key && vals.some(v => normalizedUser.includes(v))) {
+          isCorrect = true;
+          break;
+        }
+      }
+      if (!isCorrect && normalizedUser.includes(normalizedCorrect) && normalizedCorrect.length > 3) isCorrect = true;
+      if (correctAns === "two" && (userAnswer === "2" || userAnswer === "two minutes")) isCorrect = true;
+      if (correctAns === "daily" && (userAnswer === "every day")) isCorrect = true;
+    }
+
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    if (isCorrect) {
+      levelScore++;
+      totalAttempted++;
+      feedbackDiv.innerHTML = "✅ CORRECT! 🧼 +1 point! Excellent hygiene knowledge!";
+      speakText("Correct! Well done.");
+    } else {
+      totalAttempted++;
+      feedbackDiv.innerHTML = `❌ Oops. Correct answer: "${capitalizeFirst(correctAns)}". Keep learning good hygiene!`;
+      speakText(`Wrong. The correct answer is ${correctAns}.`);
+    }
+    scheduleNextAfterDelay();
+  }
+
+  function scheduleNextAfterDelay() {
+    waitingTransition = true;
+    setTimeout(() => {
+      if (currentQIndex + 1 >= levelQuestions.length || totalAttempted >= 30) {
+        finishLevel();
+      } else {
+        currentQIndex++;
+        resetForNextQuestion();
+      }
+    }, 1600);
+  }
+
+  function finishLevel() {
+    const percent = (levelScore / 30) * 100;
+    const passed = percent >= 80;
+    if (passed && currentLevel < 5) {
+      showModal(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉<br>Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>🧴 You pass! Advancing to Level ${currentLevel+1}.`, true);
+    } else if (passed && currentLevel === 5) {
+      showModal(`🏆🧽 HYGIENE HERO CHAMPION! 🧽🏆<br>You mastered all 5 levels!<br>Final Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>You keep yourself and home clean like a pro!`, false);
+    } else {
+      showModal(`💔 Level ${currentLevel} FAILED!<br>${levelScore}/30 (${Math.floor(percent)}%)<br>Need 80% to proceed. Restarting Level ${currentLevel}...`, false);
+    }
+  }
+
+  function showModal(message, advanceToNext) {
+    if (timerInterval) clearInterval(timerInterval);
+    const modalDiv = document.createElement("div");
+    modalDiv.className = "modal-message";
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        <div>${message}</div>
+        <button id="modalConfirmBtn">CONTINUE</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById("modalConfirmBtn").onclick = () => {
+      modalDiv.remove();
+      if (advanceToNext && currentLevel < 5) {
+        currentLevel++;
+        loadLevel(currentLevel);
+      } else if (!advanceToNext && currentLevel === 5 && message.includes("CHAMPION")) {
+        currentLevel = 1;
+        loadLevel(1);
+      } else if (!advanceToNext) {
+        loadLevel(currentLevel);
+      } else {
+        loadLevel(currentLevel);
+      }
+    };
+  }
+
+  function loadLevel(level) {
+    const startIdx = (level - 1) * 30;
+    levelQuestions = masterBank.slice(startIdx, startIdx + 30);
+    if (levelQuestions.length < 30) console.warn("issue");
+    currentQIndex = 0;
+    levelScore = 0;
+    totalAttempted = 0;
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function resetForNextQuestion() {
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  loadLevel(1);
+</script>
+</body>
+</html>

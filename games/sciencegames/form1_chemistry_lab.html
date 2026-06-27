@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChezaAI Chemistry Lab - Form 1</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #2c3e50 0%,
+          #34495e 50%,
+          #1b2631 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: #f8f9fa;
+        border-radius: 25px;
+        padding: 40px;
+        max-width: 1000px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        border: 4px solid #17a2b8;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 25px;
+        background: linear-gradient(45deg, #17a2b8, #007bff);
+        border-radius: 20px;
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 36px;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 18px;
+        opacity: 0.9;
+      }
+
+      .lab-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #e8f6f8;
+        border-radius: 15px;
+        border: 2px solid #17a2b8;
+      }
+
+      .score,
+      .experiment-progress {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .experiment-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .element-info {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 15px;
+        border: 3px solid #17a2b8;
+        text-align: center;
+      }
+
+      .element-symbol {
+        font-size: 72px;
+        font-weight: bold;
+        color: #17a2b8;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .element-details {
+        font-size: 18px;
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
+
+      .element-properties {
+        text-align: left;
+        background: #f1f8ff;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #495057;
+      }
+
+      .question-lab {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 15px;
+        border: 3px solid #28a745;
+      }
+
+      .question {
+        font-size: 20px;
+        color: #2c3e50;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+        background: #e8f5e8;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .answers {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .answer-btn {
+        padding: 15px 20px;
+        font-size: 16px;
+        background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+        border: 2px solid #17a2b8;
+        border-radius: 10px;
+        color: #2c3e50;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .answer-btn:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: all 0.6s ease;
+      }
+
+      .answer-btn:hover {
+        background: linear-gradient(45deg, #bbdefb, #90caf9);
+        transform: translateX(5px);
+      }
+
+      .answer-btn:hover:before {
+        left: 100%;
+      }
+
+      .answer-btn.correct {
+        background: #c8e6c9;
+        border-color: #4caf50;
+        animation: glow 0.8s ease;
+      }
+
+      .answer-btn.wrong {
+        background: #ffcdd2;
+        border-color: #f44336;
+        animation: shake 0.6s ease;
+      }
+
+      @keyframes glow {
+        0% {
+          box-shadow: 0 0 0 rgba(76, 175, 80, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
+        }
+        100% {
+          box-shadow: 0 0 0 rgba(76, 175, 80, 0.4);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-8px);
+        }
+        75% {
+          transform: translateX(8px);
+        }
+      }
+
+      .feedback {
+        margin-top: 20px;
+        padding: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px;
+        text-align: center;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .feedback.correct {
+        background: #c8e6c9;
+        color: #2e7d32;
+        border: 2px solid #4caf50;
+      }
+
+      .feedback.wrong {
+        background: #ffcdd2;
+        color: #c62828;
+        border: 2px solid #f44336;
+      }
+
+      .next-btn {
+        display: none;
+        margin: 30px auto;
+        padding: 15px 40px;
+        font-size: 20px;
+        background: linear-gradient(45deg, #17a2b8, #007bff);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .next-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .completion-screen {
+        display: none;
+        text-align: center;
+        padding: 40px;
+      }
+
+      .completion-screen h2 {
+        color: #17a2b8;
+        font-size: 42px;
+        margin-bottom: 20px;
+      }
+
+      .final-score {
+        font-size: 28px;
+        color: #2c3e50;
+        margin-bottom: 30px;
+      }
+
+      .chemistry-level {
+        font-size: 20px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #e8f6f8;
+        border-radius: 15px;
+        border: 2px solid #17a2b8;
+      }
+
+      .periodic-table-preview {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+
+      .element-mini {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(45deg, #17a2b8, #007bff);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border-radius: 8px;
+        font-size: 16px;
+        animation: float 2s ease-in-out infinite;
+      }
+
+      .element-mini:nth-child(odd) {
+        animation-delay: 0.5s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .play-again-btn {
+        padding: 20px 40px;
+        font-size: 20px;
+        background: linear-gradient(45deg, #17a2b8, #007bff);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .experiment-area {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        .container {
+          padding: 20px;
+        }
+        .header h1 {
+          font-size: 28px;
+        }
+        .element-symbol {
+          font-size: 48px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🧪 Chemistry Discovery Lab 🧪</h1>
+        <p>Explore the fascinating world of elements and compounds!</p>
+      </div>
+
+      <div class="lab-controls">
+        <div class="score">Lab Points: <span id="score">0</span></div>
+        <div class="experiment-progress">
+          Experiment: <span id="current">1</span>/8
+        </div>
+      </div>
+
+      <div id="gameArea">
+        <div class="experiment-area">
+          <div class="element-info">
+            <div class="element-symbol" id="elementSymbol">H</div>
+            <div class="element-details" id="elementDetails">
+              <strong id="elementName">Hydrogen</strong><br />
+              Atomic Number: <span id="atomicNumber">1</span><br />
+              Atomic Mass: <span id="atomicMass">1.008</span>
+            </div>
+            <div class="element-properties" id="properties">
+              • Lightest element in the universe<br />
+              • Colorless and odorless gas<br />
+              • Highly flammable<br />
+              • Makes up about 75% of the universe
+            </div>
+          </div>
+
+          <div class="question-lab">
+            <div class="question" id="question">
+              What is the atomic number of this element?
+            </div>
+            <div class="answers" id="answersContainer">
+              <!-- Answer buttons will be inserted here -->
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="nextBtn" onclick="nextExperiment()">
+              Next Experiment →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="completion-screen" id="completionScreen">
+        <h2>🎉 Lab Work Complete! 🎉</h2>
+        <div class="final-score" id="finalScore"></div>
+        <div class="chemistry-level" id="chemistryLevel"></div>
+        <div class="periodic-table-preview">
+          <div class="element-mini">H</div>
+          <div class="element-mini">He</div>
+          <div class="element-mini">Li</div>
+          <div class="element-mini">C</div>
+          <div class="element-mini">N</div>
+          <div class="element-mini">O</div>
+          <div class="element-mini">Na</div>
+          <div class="element-mini">Mg</div>
+        </div>
+        <button class="play-again-btn" onclick="startGame()">
+          New Lab Session
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let currentExperiment = 1;
+      let score = 0;
+      let answered = false;
+
+      const elements = [
+        {
+          symbol: "H",
+          name: "Hydrogen",
+          atomicNumber: 1,
+          atomicMass: 1.008,
+          properties: [
+            "• Lightest element in the universe",
+            "• Colorless and odorless gas",
+            "• Highly flammable",
+            "• Makes up about 75% of the universe",
+          ],
+          question: "What is the atomic number of Hydrogen?",
+          answers: ["1", "2", "3", "4"],
+          correct: 0,
+        },
+        {
+          symbol: "He",
+          name: "Helium",
+          atomicNumber: 2,
+          atomicMass: 4.003,
+          properties: [
+            "• Noble gas (inert)",
+            "• Second lightest element",
+            "• Used in balloons and airships",
+            "• Does not react with other elements",
+          ],
+          question: "What type of gas is Helium?",
+          answers: ["Active gas", "Noble gas", "Toxic gas", "Compound gas"],
+          correct: 1,
+        },
+        {
+          symbol: "C",
+          name: "Carbon",
+          atomicNumber: 6,
+          atomicMass: 12.011,
+          properties: [
+            "• Basis of all organic compounds",
+            "• Can form four bonds",
+            "• Found in diamonds and graphite",
+            "• Essential for life on Earth",
+          ],
+          question: "How many bonds can Carbon form?",
+          answers: ["2", "3", "4", "5"],
+          correct: 2,
+        },
+        {
+          symbol: "O",
+          name: "Oxygen",
+          atomicNumber: 8,
+          atomicMass: 15.999,
+          properties: [
+            "• Essential for breathing",
+            "• Makes up about 21% of Earth's atmosphere",
+            "• Supports combustion",
+            "• Forms water when combined with hydrogen",
+          ],
+          question: "What percentage of Earth's atmosphere is Oxygen?",
+          answers: ["15%", "18%", "21%", "25%"],
+          correct: 2,
+        },
+        {
+          symbol: "Na",
+          name: "Sodium",
+          atomicNumber: 11,
+          atomicMass: 22.99,
+          properties: [
+            "• Soft, silvery metal",
+            "• Reacts violently with water",
+            "• Essential for human nutrition",
+            "• Found in table salt (NaCl)",
+          ],
+          question: "What happens when Sodium reacts with water?",
+          answers: [
+            "Nothing happens",
+            "It dissolves slowly",
+            "It reacts violently",
+            "It turns blue",
+          ],
+          correct: 2,
+        },
+        {
+          symbol: "Cl",
+          name: "Chlorine",
+          atomicNumber: 17,
+          atomicMass: 35.45,
+          properties: [
+            "• Greenish-yellow poisonous gas",
+            "• Used to purify water",
+            "• Forms table salt with sodium",
+            "• Strong disinfectant",
+          ],
+          question: "What color is Chlorine gas?",
+          answers: ["Blue", "Red", "Greenish-yellow", "Colorless"],
+          correct: 2,
+        },
+        {
+          symbol: "Fe",
+          name: "Iron",
+          atomicNumber: 26,
+          atomicMass: 55.845,
+          properties: [
+            "• Most common element on Earth by mass",
+            "• Essential for making steel",
+            "• Found in blood (hemoglobin)",
+            "• Magnetic properties",
+          ],
+          question: "What is Iron essential for making?",
+          answers: ["Glass", "Plastic", "Steel", "Rubber"],
+          correct: 2,
+        },
+        {
+          symbol: "Au",
+          name: "Gold",
+          atomicNumber: 79,
+          atomicMass: 196.967,
+          properties: [
+            "• Precious metal",
+            "• Does not rust or tarnish",
+            "• Excellent conductor of electricity",
+            "• Used in jewelry and electronics",
+          ],
+          question:
+            "What is special about Gold's reaction to air and moisture?",
+          answers: [
+            "It rusts quickly",
+            "It turns green",
+            "It does not rust or tarnish",
+            "It dissolves",
+          ],
+          correct: 2,
+        },
+      ];
+
+      const encouragements = [
+        "Excellent chemistry knowledge! 🧪",
+        "You're a natural scientist! 🔬",
+        "Outstanding lab work! ⚗️",
+        "Great chemical thinking! 🧬",
+        "You're mastering the elements! ⚛️",
+      ];
+
+      const corrections = [
+        "Check the element properties again! 🔍",
+        "Review your chemistry notes! 📚",
+        "Think about what you learned in class! 💭",
+        "Don't worry, chemistry takes practice! 💪",
+      ];
+
+      function loadExperiment() {
+        answered = false;
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+
+        const element = elements[currentExperiment - 1];
+
+        document.getElementById("elementSymbol").textContent = element.symbol;
+        document.getElementById("elementName").textContent = element.name;
+        document.getElementById("atomicNumber").textContent =
+          element.atomicNumber;
+        document.getElementById("atomicMass").textContent = element.atomicMass;
+        document.getElementById("properties").innerHTML =
+          element.properties.join("<br>");
+        document.getElementById("question").textContent = element.question;
+
+        const answersContainer = document.getElementById("answersContainer");
+        answersContainer.innerHTML = "";
+
+        element.answers.forEach((answer, index) => {
+          const button = document.createElement("button");
+          button.className = "answer-btn";
+          button.textContent = `${String.fromCharCode(65 + index)}. ${answer}`;
+          button.onclick = () => checkAnswer(index, button);
+          answersContainer.appendChild(button);
+        });
+      }
+
+      function checkAnswer(selected, button) {
+        if (answered) return;
+        answered = true;
+
+        const element = elements[currentExperiment - 1];
+        const feedback = document.getElementById("feedback");
+        const allButtons = document.querySelectorAll(".answer-btn");
+
+        allButtons.forEach((btn) => (btn.style.pointerEvents = "none"));
+
+        if (selected === element.correct) {
+          score += 12.5; // 100/8 = 12.5 points per question
+          button.classList.add("correct");
+          feedback.textContent =
+            encouragements[Math.floor(Math.random() * encouragements.length)];
+          feedback.className = "feedback correct";
+        } else {
+          button.classList.add("wrong");
+          feedback.textContent =
+            corrections[Math.floor(Math.random() * corrections.length)];
+          feedback.className = "feedback wrong";
+
+          allButtons.forEach((btn, index) => {
+            if (index === element.correct) {
+              btn.classList.add("correct");
+            }
+          });
+        }
+
+        document.getElementById("score").textContent = Math.round(score);
+        document.getElementById("nextBtn").style.display = "block";
+      }
+
+      function nextExperiment() {
+        if (currentExperiment >= 8) {
+          showCompletion();
+        } else {
+          currentExperiment++;
+          document.getElementById("current").textContent = currentExperiment;
+
+          const allButtons = document.querySelectorAll(".answer-btn");
+          allButtons.forEach((btn) => {
+            btn.classList.remove("correct", "wrong");
+            btn.style.pointerEvents = "auto";
+          });
+
+          loadExperiment();
+        }
+      }
+
+      function showCompletion() {
+        document.getElementById("gameArea").style.display = "none";
+        document.getElementById("completionScreen").style.display = "block";
+
+        let message = "";
+        let level = "";
+
+        if (score >= 90) {
+          message = "Outstanding! You're a chemistry genius! 🏆";
+          level =
+            "Chemistry Level: Expert - You have mastered the fundamentals!";
+        } else if (score >= 75) {
+          message = "Excellent work! You understand chemistry well! 🌟";
+          level =
+            "Chemistry Level: Advanced - You're ready for more complex topics!";
+        } else if (score >= 60) {
+          message = "Good job! Keep studying chemistry! 👏";
+          level =
+            "Chemistry Level: Intermediate - You're building solid knowledge!";
+        } else {
+          message = "Great effort! Continue learning about elements! 💪";
+          level = "Chemistry Level: Beginner - Keep practicing to improve!";
+        }
+
+        document.getElementById("finalScore").innerHTML = `
+                <div style="margin-bottom: 20px;">${message}</div>
+                <div>Final Score: ${Math.round(score)}/100</div>
+                <div style="margin-top: 10px; font-size: 20px;">You mastered ${Math.round(
+                  score / 12.5
+                )} out of 8 elements!</div>
+            `;
+
+        document.getElementById("chemistryLevel").textContent = level;
+      }
+
+      function startGame() {
+        currentExperiment = 1;
+        score = 0;
+
+        document.getElementById("gameArea").style.display = "block";
+        document.getElementById("completionScreen").style.display = "none";
+        document.getElementById("score").textContent = "0";
+        document.getElementById("current").textContent = "1";
+
+        loadExperiment();
+      }
+
+      // Initialize game
+      startGame();
+    </script>
+  </body>
+</html>

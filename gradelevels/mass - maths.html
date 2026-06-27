@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grade 1 Maths | Measuring Mass Using Fixed Units | Voice Output</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #2E7D32 0%, #1B5E20 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1100px;
+            width: 100%;
+            background: #FEF9E6;
+            border-radius: 60px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #FF8F00;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 6px solid #E65100;
+        }
+
+        .level-badge, .score-badge, .progress-badge {
+            background: #2c2b28;
+            color: #FFD966;
+            font-weight: bold;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+
+        .timer-area {
+            background: #1f2c0e;
+            padding: 5px 15px;
+            border-radius: 50px;
+            color: #FFD966;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .story-card {
+            background: #FFFDE7;
+            margin: 20px 25px;
+            padding: 20px 25px;
+            border-radius: 55px;
+            text-align: center;
+        }
+
+        .voice-btn {
+            background: #4CAF50;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 0 #2E7D32;
+        }
+        .voice-btn:active { transform: translateY(2px); }
+
+        .narrative-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #BF360C;
+            background: #FFF3E0;
+            padding: 15px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: #FFE0B2;
+            padding: 25px;
+            border-radius: 60px;
+            color: #BF360C;
+            margin: 15px 0;
+        }
+
+        .answer-area {
+            margin: 20px 0;
+        }
+        .answer-input {
+            font-size: 2rem;
+            padding: 15px 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+            border: 4px solid #FF8F00;
+            border-radius: 60px;
+            font-weight: bold;
+            font-family: monospace;
+            background: white;
+        }
+        .submit-btn {
+            background: #FF8F00;
+            border: none;
+            font-size: 1.3rem;
+            padding: 12px 30px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin-left: 15px;
+            box-shadow: 0 4px 0 #E65100;
+        }
+        .submit-btn:active { transform: translateY(2px); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .hint-box {
+            background: #E8F5E9;
+            padding: 10px;
+            border-radius: 40px;
+            margin: 15px 0;
+            font-size: 1rem;
+            color: #1B5E20;
+        }
+
+        .next-area { margin: 15px 0; }
+        .next-btn {
+            background: #4CAF50;
+            border: none;
+            font-size: 1.3rem;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #2E7D32;
+        }
+        .next-btn:active { transform: translateY(2px); }
+        .next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .info-message {
+            font-size: 1rem;
+            background: #FFE0B2;
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 30px;
+            margin-top: 10px;
+        }
+        footer {
+            background: #FFCC80;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #BF360C;
+        }
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.3rem; }
+            .answer-input { font-size: 1.3rem; width: 70%; }
+            .submit-btn { font-size: 1rem; padding: 10px 20px; }
+            .next-btn { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="score-badge" id="scoreDisplay">Score: 0 / 0</div>
+        <div class="progress-badge" id="progressDisplay">Q: 1 / 30</div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span> s</div>
+    </div>
+    <div class="story-card">
+        <button id="readQuestionBtn" class="voice-btn">🔊 Read Question</button>
+        <div class="narrative-text" id="storyNarrative">⚖️ Measuring Mass Using Fixed Units | Compare weight | Heavier / Lighter | Type your answer!</div>
+        <div class="question-text" id="questionText">Loading...</div>
+        <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type answer here..." inputmode="text">
+            <button id="submitAnswerBtn" class="submit-btn">✅ Submit</button>
+        </div>
+        <div class="hint-box" id="hintBox">💡 Hint will appear when time is low...</div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton" disabled>➡️ Next Question (Answer First)</button>
+        </div>
+        <div><span id="feedbackMsg" class="info-message">🎤 Click "Read Question" to hear it. Type your answer in the box.</span></div>
+    </div>
+    <footer>🎵 Measure mass using cubes, paperclips, marbles! Compare heavier and lighter. You need 80% to pass each level.</footer>
+</div>
+
+<script>
+    // ------------------- VOICE OUTPUT -------------------
+    function speakText(text) {
+        if (!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) { console.warn(e); }
+    }
+
+    function speakWithPause(part1, part2) {
+        if (!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance1 = new SpeechSynthesisUtterance(part1);
+            utterance1.lang = "en-US";
+            utterance1.rate = 0.9;
+            utterance1.onend = () => {
+                setTimeout(() => {
+                    let utterance2 = new SpeechSynthesisUtterance(part2);
+                    utterance2.lang = "en-US";
+                    utterance2.rate = 0.9;
+                    window.speechSynthesis.speak(utterance2);
+                }, 800);
+            };
+            window.speechSynthesis.speak(utterance1);
+        } catch(e) { console.warn(e); }
+    }
+
+    function speakTimerMessage() {
+        speakWithPause("Time is up", "moving to the next question");
+    }
+
+    // ------------------- QUESTION BANK (5 levels x 30 questions = 150 unique) -------------------
+    const objects = ["apple", "orange", "banana", "book", "pencil case", "toy car", "cup", "water bottle", "shoe", "ball", 
+                     "feather", "rock", "pencil", "eraser", "ruler", "scissors", "glue stick", "notebook", "crayon", "marker"];
+    const units = ["cubes", "marbles", "paperclips", "blocks", "counters", "beads", "buttons", "coins"];
+
+    function generateUniqueQuestions() {
+        const bank = [];
+        const usedKeys = new Set();
+        
+        for (let level = 1; level <= 5; level++) {
+            let levelQuestions = [];
+            
+            // Generate 30 unique questions for this level
+            for (let qNum = 0; qNum < 30; qNum++) {
+                let attempts = 0;
+                let questionGenerated = false;
+                
+                while (!questionGenerated && attempts < 100) {
+                    let topicType = (level * 7 + qNum * 11) % 4;
+                    let questionText = "";
+                    let correctAnswer = "";
+                    let narrative = "";
+                    
+                    if (topicType === 0) {
+                        // Which is heavier?
+                        let idx1 = (level * 13 + qNum * 17) % objects.length;
+                        let idx2 = (level * 19 + qNum * 23 + 5) % objects.length;
+                        let obj1 = objects[idx1];
+                        let obj2 = objects[idx2];
+                        // Predefined heavier/lighter based on typical real-world knowledge
+                        const heavyObjects = ["book", "water bottle", "rock", "shoe", "apple", "orange", "banana"];
+                        const lightObjects = ["feather", "pencil", "eraser", "paperclip", "crayon", "marker", "ruler"];
+                        let isObj1Heavy = heavyObjects.includes(obj1) || (!lightObjects.includes(obj1) && heavyObjects.includes(obj2) === false);
+                        let isObj2Heavy = heavyObjects.includes(obj2);
+                        let heavier = (isObj1Heavy && !isObj2Heavy) ? obj1 : (isObj2Heavy && !isObj1Heavy) ? obj2 : (Math.random() > 0.5 ? obj1 : obj2);
+                        questionText = `Which is heavier, a ${obj1} or a ${obj2}? (Type the object name)`;
+                        correctAnswer = heavier;
+                        narrative = `⚖️ A ${heavier} is heavier than a ${heavier === obj1 ? obj2 : obj1}. Think about which one feels heavier.`;
+                    }
+                    else if (topicType === 1) {
+                        // Which is lighter?
+                        let idx1 = (level * 13 + qNum * 17 + 3) % objects.length;
+                        let idx2 = (level * 19 + qNum * 23 + 7) % objects.length;
+                        let obj1 = objects[idx1];
+                        let obj2 = objects[idx2];
+                        const heavyObjects = ["book", "water bottle", "rock", "shoe", "apple", "orange", "banana"];
+                        const lightObjects = ["feather", "pencil", "eraser", "paperclip", "crayon", "marker", "ruler"];
+                        let isObj1Light = lightObjects.includes(obj1);
+                        let isObj2Light = lightObjects.includes(obj2);
+                        let lighter = (isObj1Light && !isObj2Light) ? obj1 : (isObj2Light && !isObj1Light) ? obj2 : (Math.random() > 0.5 ? obj1 : obj2);
+                        questionText = `Which is lighter, a ${obj1} or a ${obj2}? (Type the object name)`;
+                        correctAnswer = lighter;
+                        narrative = `⚖️ A ${lighter} is lighter than a ${lighter === obj1 ? obj2 : obj1}. The lighter object weighs less.`;
+                    }
+                    else if (topicType === 2) {
+                        // How many fixed units balance multiple objects?
+                        let object = objects[(level * 11 + qNum * 13) % objects.length];
+                        let unit = units[(level * 7 + qNum * 5) % units.length];
+                        let singleCount = Math.floor(Math.random() * 8) + 2; // 2 to 9 units
+                        let multiplier = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4 objects
+                        let totalCount = singleCount * multiplier;
+                        questionText = `It takes ${singleCount} ${unit} to balance one ${object}. How many ${unit} are needed to balance ${multiplier} ${object}s?`;
+                        correctAnswer = totalCount.toString();
+                        narrative = `📦 If 1 ${object} balances ${singleCount} ${unit}, then ${multiplier} ${object}s balance ${singleCount} × ${multiplier} = ${totalCount} ${unit}.`;
+                    }
+                    else {
+                        // Comparing two objects using unit measurements
+                        let objA = objects[(level * 17 + qNum * 19) % objects.length];
+                        let objB = objects[(level * 23 + qNum * 29 + 11) % objects.length];
+                        while (objA === objB) objB = objects[(objB.length + 7) % objects.length];
+                        let unit = units[(level * 13 + qNum * 7) % units.length];
+                        let weightA = Math.floor(Math.random() * 8) + 2;
+                        let weightB = Math.floor(Math.random() * 8) + 2;
+                        while (weightA === weightB) weightB = Math.floor(Math.random() * 8) + 2;
+                        let heavierObj = weightA > weightB ? objA : objB;
+                        questionText = `A ${objA} balances ${weightA} ${unit}. A ${objB} balances ${weightB} ${unit}. Which is heavier, the ${objA} or the ${objB}? (Type the object name)`;
+                        correctAnswer = heavierObj;
+                        narrative = `⚖️ ${weightA} ${unit} is ${weightA > weightB ? "more" : "less"} than ${weightB} ${unit}. So the ${heavierObj} is heavier.`;
+                    }
+                    
+                    const key = `${questionText}|${correctAnswer}`;
+                    if (!usedKeys.has(key)) {
+                        usedKeys.add(key);
+                        levelQuestions.push({ narrative, question: questionText, correctAnswer });
+                        questionGenerated = true;
+                    }
+                    attempts++;
+                }
+                
+                // Fallback if generation fails
+                if (!questionGenerated) {
+                    levelQuestions.push({ 
+                        narrative: `⚖️ Mass comparison practice`, 
+                        question: `Which is heavier, a book or a feather? (Type the object name)`, 
+                        correctAnswer: "book" 
+                    });
+                }
+            }
+            bank.push(levelQuestions);
+        }
+        return bank;
+    }
+    
+    const questionBank = generateUniqueQuestions();
+    
+    // Game state
+    let currentLevel = 1, currentQIndex = 0, scoreInLevel = 0;
+    const totalPerLevel = 30, requiredPass = 24;
+    let answered = false, timerInterval = null, timeLeft = 40, waitingForNext = false, gameActive = true;
+    let currentQuestionObj = null;
+    
+    // DOM elements
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const progressDisplay = document.getElementById('progressDisplay');
+    const timerSpan = document.getElementById('timerSeconds');
+    const storyDiv = document.getElementById('storyNarrative');
+    const questionDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitAnswerBtn');
+    const nextBtn = document.getElementById('nextButton');
+    const feedbackSpan = document.getElementById('feedbackMsg');
+    const hintBox = document.getElementById('hintBox');
+    const readBtn = document.getElementById('readQuestionBtn');
+    
+    function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+    
+    function startTimer() {
+        stopTimer();
+        if (!gameActive || waitingForNext || answered) return;
+        timeLeft = 40;
+        timerSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if (!gameActive || waitingForNext || answered) return;
+            if (timeLeft <= 1) {
+                if (!answered) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    handleTimeout();
+                } else { stopTimer(); }
+            } else {
+                timeLeft--;
+                timerSpan.innerText = timeLeft;
+                if (timeLeft === 15) {
+                    hintBox.innerHTML = "💡 Hint: " + getHint();
+                    speakText("Hint: " + getHint());
+                } else if (timeLeft === 8) {
+                    hintBox.innerHTML = "⚠️ Hurry! " + getHint();
+                } else if (timeLeft === 3) {
+                    hintBox.innerHTML = "⏰ Last chance! " + getHint();
+                }
+            }
+        }, 1000);
+    }
+    
+    function getHint() {
+        if (!currentQuestionObj) return "Think carefully!";
+        const q = currentQuestionObj.question.toLowerCase();
+        if (q.includes("heavier")) {
+            return "Think about which object feels heavier in real life. A book is heavier than a pencil.";
+        }
+        if (q.includes("lighter")) {
+            return "Think about which object feels lighter. A feather is lighter than a rock.";
+        }
+        if (q.includes("balance") && q.includes("how many")) {
+            const numbers = q.match(/\d+/g);
+            if (numbers && numbers.length >= 2) {
+                return `Multiply: ${numbers[0]} × ${numbers[1]} = ?`;
+            }
+            return "Multiply the number of units by the number of objects.";
+        }
+        return "Compare the numbers of units. The object with more units is heavier.";
+    }
+    
+    function normalizeAnswer(answer) {
+        return answer.toLowerCase().trim().replace(/\s+/g, ' ');
+    }
+    
+    function handleTimeout() {
+        if (answered) return;
+        answered = true; gameActive = false;
+        speakTimerMessage();
+        feedbackSpan.innerHTML = `⏰ Time is up! The correct answer was: ${currentQuestionObj.correctAnswer}`;
+        feedbackSpan.style.color = "#C62828";
+        disableInputs(true);
+        waitingForNext = true;
+        // Automatically move to next question after timeout
+        setTimeout(() => { if (waitingForNext) moveToNextQuestion(); }, 3000);
+    }
+    
+    function disableInputs(disabled) {
+        answerInput.disabled = disabled;
+        submitBtn.disabled = disabled;
+        if (disabled) {
+            nextBtn.disabled = false;
+            nextBtn.innerText = "➡️ Next Question";
+        } else {
+            nextBtn.disabled = true;
+            nextBtn.innerText = "➡️ Next Question (Answer First)";
+        }
+    }
+    
+    function enableNewQuestion() {
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        nextBtn.disabled = true;
+        nextBtn.innerText = "➡️ Next Question (Answer First)";
+        answered = false;
+        gameActive = true;
+        waitingForNext = false;
+        answerInput.value = "";
+        answerInput.focus();
+    }
+    
+    function checkAnswer() {
+        if (!gameActive || answered || waitingForNext) {
+            speakText("Please wait for the next question.");
+            return;
+        }
+        const userAnswer = answerInput.value.trim();
+        if (userAnswer === "") {
+            speakText("Please type your answer.");
+            feedbackSpan.innerHTML = "✏️ Type your answer in the box!";
+            return;
+        }
+        stopTimer();
+        answered = true;
+        gameActive = false;
+        
+        const normalizedUser = normalizeAnswer(userAnswer);
+        const normalizedCorrect = normalizeAnswer(currentQuestionObj.correctAnswer);
+        const isCorrect = (normalizedUser === normalizedCorrect);
+        
+        if (isCorrect) {
+            scoreInLevel++;
+            speakText(`Correct! ${currentQuestionObj.correctAnswer} is right! Good job!`);
+            feedbackSpan.innerHTML = `✅ Correct! The answer is ${currentQuestionObj.correctAnswer}. +1 point!`;
+            feedbackSpan.style.color = "#2E7D32";
+        } else {
+            speakText(`Wrong! The correct answer is ${currentQuestionObj.correctAnswer}.`);
+            feedbackSpan.innerHTML = `❌ Wrong! Correct answer: ${currentQuestionObj.correctAnswer}`;
+            feedbackSpan.style.color = "#C62828";
+        }
+        disableInputs(true);
+        updateUI();
+        waitingForNext = true;
+        // Auto move after 2 seconds or user can click Next
+        setTimeout(() => { if (waitingForNext && !nextBtn.disabled) { moveToNextQuestion(); } }, 2500);
+    }
+    
+    function moveToNextQuestion() {
+        if (!waitingForNext && !answered) {
+            // User clicked Next without answering
+            speakText("Please answer the current question first.");
+            feedbackSpan.innerHTML = "⚠️ Answer the question before moving on!";
+            return;
+        }
+        
+        waitingForNext = false;
+        
+        if (currentQIndex + 1 >= totalPerLevel) {
+            // End of level
+            let percent = (scoreInLevel / totalPerLevel) * 100;
+            if (percent >= 80) {
+                if (currentLevel === 5) {
+                    // Game completed
+                    feedbackSpan.innerHTML = "🏆🏆 YOU COMPLETED ALL LEVELS! MASS MEASUREMENT CHAMPION! 🏆🏆";
+                    speakText("Congratulations! You are a Mass Measurement champion! You mastered comparing weight!");
+                    gameActive = false;
+                    disableInputs(true);
+                    nextBtn.disabled = true;
+                    stopTimer();
+                    return;
+                } else {
+                    // Move to next level
+                    currentLevel++;
+                    currentQIndex = 0;
+                    scoreInLevel = 0;
+                    resetForNewLevel();
+                    loadQuestion();
+                    speakText(`Congratulations! You passed Level ${currentLevel-1}. You are now on Level ${currentLevel}!`);
+                    feedbackSpan.innerHTML = `🎉 You passed! Now Level ${currentLevel} 🎉`;
+                    return;
+                }
+            } else {
+                // Restart current level
+                feedbackSpan.innerHTML = `😭 You got ${Math.round(percent)}%. Need 80%. Restarting Level ${currentLevel}. Try again!`;
+                speakText(`Sorry, you got only ${Math.round(percent)} percent. You need 80 percent to pass. Restarting this level.`);
+                scoreInLevel = 0;
+                currentQIndex = 0;
+                resetForNewLevel();
+                loadQuestion();
+                return;
+            }
+        } else {
+            // Move to next question in same level
+            currentQIndex++;
+            loadQuestion();
+        }
+    }
+    
+    function resetForNewLevel() {
+        stopTimer();
+        answered = false;
+        waitingForNext = false;
+        gameActive = true;
+        enableNewQuestion();
+        updateUI();
+    }
+    
+    function updateUI() {
+        levelDisplay.innerText = `Level ${currentLevel}`;
+        scoreDisplay.innerText = `Score: ${scoreInLevel} / ${totalPerLevel}`;
+        progressDisplay.innerText = `Q: ${currentQIndex+1} / ${totalPerLevel}`;
+    }
+    
+    function loadQuestion() {
+        currentQuestionObj = questionBank[currentLevel-1][currentQIndex];
+        storyDiv.innerHTML = `📘 ${currentQuestionObj.narrative}`;
+        questionDiv.innerHTML = `❓ ${currentQuestionObj.question}`;
+        
+        // Reset input and buttons
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        nextBtn.disabled = true;
+        nextBtn.innerText = "➡️ Next Question (Answer First)";
+        
+        answered = false;
+        gameActive = true;
+        waitingForNext = false;
+        
+        updateUI();
+        stopTimer();
+        startTimer();
+        
+        feedbackSpan.innerHTML = "🎤 Click 'Read Question' to hear it. Type your answer.";
+        feedbackSpan.style.color = "#BF360C";
+        hintBox.innerHTML = "💡 Hint will appear when time is low (15 seconds left).";
+        answerInput.focus();
+    }
+    
+    // Event listeners
+    readBtn.addEventListener('click', () => {
+        if (currentQuestionObj) {
+            speakText(currentQuestionObj.question);
+        }
+    });
+    
+    submitBtn.addEventListener('click', checkAnswer);
+    
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        if (!answered && gameActive && !waitingForNext) {
+            speakText("Please answer the current question first.");
+            feedbackSpan.innerHTML = "⚠️ Answer the question before moving on!";
+            return;
+        }
+        if (waitingForNext || answered) {
+            if (timerInterval) stopTimer();
+            moveToNextQuestion();
+        }
+    });
+    
+    function init() { loadQuestion(); }
+    init();
+</script>
+</body>
+</html>

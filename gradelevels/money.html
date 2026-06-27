@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>💰 Grade 1 Money Explorer | Kenyan Coins + Buying Things</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI Emoji', cursive, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .game-container {
+            max-width: 600px;
+            width: 100%;
+            background: #fffef7;
+            border-radius: 60px 60px 70px 70px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #ffaa4a;
+            padding: 16px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 5px solid #e07c2c;
+        }
+
+        .level-badge {
+            background: #2e7d64;
+            padding: 6px 18px;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #1e5a48, 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .score-box {
+            background: #f9a825;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c2c2c;
+        }
+
+        .timer-area {
+            background: #1f2f3a;
+            padding: 5px 16px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .timer-clock {
+            font-size: 1.7rem;
+            font-family: monospace;
+            background: black;
+            padding: 3px 12px;
+            border-radius: 40px;
+            letter-spacing: 2px;
+        }
+
+        .progress-section {
+            padding: 14px 22px 6px;
+        }
+        .progress-bg {
+            background: #E0E0E0;
+            border-radius: 25px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #FFA726, #FF9800);
+            width: 0%;
+            height: 100%;
+            border-radius: 25px;
+            transition: width 0.3s ease;
+        }
+        .q-counter {
+            text-align: center;
+            font-weight: bold;
+            color: #7b5a3b;
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+
+        .question-card {
+            padding: 20px 22px 16px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            background: #fff2df;
+            padding: 22px 18px;
+            border-radius: 60px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.02), 0 12px 20px rgba(0,0,0,0.1);
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 3px solid #ffcf9a;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .voice-btn, .next-btn {
+            background: #ffe0b5;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 4px 0 #b97f3a;
+            color: #3b2a1f;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .next-btn {
+            background: #66bb6a;
+            box-shadow: 0 4px 0 #2e6b2f;
+            color: white;
+        }
+
+        .voice-btn:active, .next-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #b97f3a;
+        }
+
+        .next-btn:active {
+            box-shadow: 0 1px 0 #2e6b2f;
+        }
+
+        .hint-area {
+            background: #ffcd94;
+            padding: 12px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #3b2a1f;
+            min-height: 65px;
+        }
+
+        .answer-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+        }
+
+        #studentAnswer {
+            flex: 2;
+            min-width: 180px;
+            font-size: 1.3rem;
+            padding: 14px 20px;
+            border-radius: 60px;
+            border: 3px solid #ffb465;
+            font-family: inherit;
+            text-align: center;
+            background: white;
+            outline: none;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            background: #4caf50;
+            border: none;
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 10px 28px;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #2e6b2f;
+            transition: 0.05s linear;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #2e6b2f;
+        }
+
+        .feedback {
+            margin: 12px 0 18px;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .coin-emoji, .money-icon {
+            display: inline-block;
+            font-size: 1.3rem;
+        }
+
+        @media (max-width: 550px) {
+            .game-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .question-text {
+                font-size: 1.2rem;
+                padding: 18px 12px;
+            }
+            #studentAnswer {
+                font-size: 1.1rem;
+                padding: 12px 16px;
+            }
+            .submit-btn {
+                font-size: 1.1rem;
+                padding: 10px 22px;
+            }
+            .voice-btn, .next-btn {
+                padding: 8px 18px;
+                font-size: 1rem;
+            }
+            .timer-clock {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">💰 LEVEL 1</div>
+        <div class="score-box" id="scoreDisplay">✅ SCORE: 0 / 0</div>
+        <div class="timer-area">
+            ⏱️ TIME LEFT
+            <span class="timer-clock" id="timerCountdown">40</span>
+        </div>
+    </div>
+
+    <div class="progress-section">
+        <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="q-counter" id="progressInfo">Question 1 / 30</div>
+    </div>
+
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading fun challenge...</div>
+        <div class="action-buttons">
+            <button class="voice-btn" id="readAloudBtn">🔊 READ QUESTION</button>
+            <button class="next-btn" id="nextQuestionBtn">⏩ NEXT QUESTION</button>
+        </div>
+        <div class="hint-area" id="hintBox">💡 Hint will appear here as time goes</div>
+        <div class="answer-area">
+            <input type="text" id="studentAnswer" placeholder="Type your answer..." autocomplete="off">
+            <button class="submit-btn" id="submitAnswer">✔️ CHECK ANSWER</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">💰 Answer each question! 80% needed to level up.</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ==================== SPEECH HELPERS ====================
+        function speakText(text, isTimeUp = false) {
+            try {
+                if (!window.speechSynthesis) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                if (isTimeUp) utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } catch(e) { console.log("Speech error:", e); }
+        }
+        
+        // ==================== MERGED QUESTION BANK ====================
+        // Combining both money games: 
+        // Game 1: Kenyan coins identification & counting (identify coins, count totals)
+        // Game 2: Using money in buying (add money, calculate change, enough money, make purchase)
+        
+        const allQuestions = [];
+        
+        function addQuestions(arr) {
+            for (let i = 0; i < arr.length; i++) {
+                allQuestions.push(arr[i]);
+            }
+        }
+        
+        // ----- TOPIC 1: Identify Coins (from first game) -----
+        const identifyCoinsBank = [
+            { text: "What coin has a value of 1 shilling in Kenya?", correct: "1 shilling", alt: "1 shilling coin", topic: "Identify Coins", numValue: 1 },
+            { text: "Which Kenyan coin is worth 5 shillings?", correct: "5 shillings", alt: "5 shilling coin", topic: "Identify Coins", numValue: 5 },
+            { text: "Name the Kenyan coin that is worth 10 shillings.", correct: "10 shillings", alt: "10 shilling coin", topic: "Identify Coins", numValue: 10 },
+            { text: "Which Kenyan coin has a value of 20 shillings?", correct: "20 shillings", alt: "20 shilling coin", topic: "Identify Coins", numValue: 20 },
+            { text: "What is the name of the 50 shilling Kenyan coin?", correct: "50 shillings", alt: "50 shilling coin", topic: "Identify Coins", numValue: 50 },
+            { text: "Which coin is worth the least in Kenya? (1,5,10,20,50)", correct: "1 shilling", alt: "1", topic: "Identify Coins", numValue: 1 },
+            { text: "Which coin is worth the most among Kenyan coins?", correct: "50 shillings", alt: "50", topic: "Identify Coins", numValue: 50 },
+            { text: "What does 'KSh' stand for?", correct: "Kenya shillings", alt: "Kenyan shillings", topic: "Identify Coins" }
+        ];
+        
+        // ----- TOPIC 2: Counting Coins (from first game) -----
+        const countingCoinsBank = [
+            { text: "If you have 2 coins of 1 shilling each, how much money do you have?", correct: "2 shillings", alt: "2", topic: "Count Coins", numValue: 2 },
+            { text: "3 coins of 5 shillings each is how much?", correct: "15 shillings", alt: "15", topic: "Count Coins", numValue: 15 },
+            { text: "2 coins of 10 shillings = ?", correct: "20 shillings", alt: "20", topic: "Count Coins", numValue: 20 },
+            { text: "4 coins of 20 shillings = ?", correct: "80 shillings", alt: "80", topic: "Count Coins", numValue: 80 },
+            { text: "2 coins of 50 shillings = ?", correct: "100 shillings", alt: "100", topic: "Count Coins", numValue: 100 },
+            { text: "1 shilling + 5 shillings = ?", correct: "6 shillings", alt: "6", topic: "Count Coins", numValue: 6 },
+            { text: "5 shillings + 10 shillings = ?", correct: "15 shillings", alt: "15", topic: "Count Coins", numValue: 15 },
+            { text: "10 shillings + 20 shillings = ?", correct: "30 shillings", alt: "30", topic: "Count Coins", numValue: 30 },
+            { text: "20 shillings + 50 shillings = ?", correct: "70 shillings", alt: "70", topic: "Count Coins", numValue: 70 },
+            { text: "5 shillings + 5 shillings + 10 shillings = ?", correct: "20 shillings", alt: "20", topic: "Count Coins", numValue: 20 },
+            { text: "50 shillings + 20 shillings = ?", correct: "70 shillings", alt: "70", topic: "Count Coins", numValue: 70 }
+        ];
+        
+        // ----- TOPIC 3: Add Money (from second game) -----
+        const addMoneyBank = [
+            { text: "If you have a 5 shilling coin and a 10 shilling coin, how much money do you have?", correct: "15 shillings", alt: "15", topic: "Add Money", numValue: 15 },
+            { text: "You have a 20 shilling coin and a 1 shilling coin. Total money?", correct: "21 shillings", alt: "21", topic: "Add Money", numValue: 21 },
+            { text: "Two 10 shilling coins make how many shillings?", correct: "20 shillings", alt: "20", topic: "Add Money", numValue: 20 },
+            { text: "A 50 shilling coin plus a 20 shilling coin equals?", correct: "70 shillings", alt: "70", topic: "Add Money", numValue: 70 },
+            { text: "Three 5 shilling coins total what amount?", correct: "15 shillings", alt: "15", topic: "Add Money", numValue: 15 },
+            { text: "One 1 shilling + one 5 shilling + one 10 shilling = ?", correct: "16 shillings", alt: "16", topic: "Add Money", numValue: 16 },
+            { text: "Four 10 shilling coins = ?", correct: "40 shillings", alt: "40", topic: "Add Money", numValue: 40 },
+            { text: "Two 50 shilling coins = ?", correct: "100 shillings", alt: "100", topic: "Add Money", numValue: 100 }
+        ];
+        
+        // ----- TOPIC 4: Calculate Change (from second game) -----
+        const changeBank = [
+            { text: "A pencil costs 10 shillings. You pay with a 20 shilling coin. How much change?", correct: "10 shillings", alt: "10", topic: "Calculate Change", numValue: 10 },
+            { text: "A sweet costs 5 shillings. You pay with a 10 shilling coin. Change?", correct: "5 shillings", alt: "5", topic: "Calculate Change", numValue: 5 },
+            { text: "A book costs 30 shillings. You pay with a 50 shilling coin. Change?", correct: "20 shillings", alt: "20", topic: "Calculate Change", numValue: 20 },
+            { text: "An apple costs 8 shillings. You pay with a 10 shilling coin. Change?", correct: "2 shillings", alt: "2", topic: "Calculate Change", numValue: 2 },
+            { text: "A toy costs 25 shillings. You pay with a 50 shilling coin. Change?", correct: "25 shillings", alt: "25", topic: "Calculate Change", numValue: 25 },
+            { text: "A drink costs 12 shillings. You pay with a 20 shilling coin. Change?", correct: "8 shillings", alt: "8", topic: "Calculate Change", numValue: 8 },
+            { text: "A cake costs 40 shillings. You pay with a 50 shilling coin. Change?", correct: "10 shillings", alt: "10", topic: "Calculate Change", numValue: 10 },
+            { text: "A banana costs 7 shillings. You pay with a 10 shilling coin. Change?", correct: "3 shillings", alt: "3", topic: "Calculate Change", numValue: 3 }
+        ];
+        
+        // ----- TOPIC 5: Enough Money (from second game) -----
+        const enoughBank = [
+            { text: "A pen costs 10 shillings. Do you have enough if you have 5 shillings? (yes/no)", correct: "no", alt: "no", topic: "Enough Money" },
+            { text: "A ball costs 30 shillings. Do you have enough if you have 50 shillings? (yes/no)", correct: "yes", alt: "yes", topic: "Enough Money" },
+            { text: "A bread costs 20 shillings. You have 15 shillings. Enough?", correct: "no", alt: "no", topic: "Enough Money" },
+            { text: "A juice costs 12 shillings. You have 20 shillings. Enough?", correct: "yes", alt: "yes", topic: "Enough Money" },
+            { text: "A notebook costs 25 shillings. You have 25 shillings. Enough?", correct: "yes", alt: "yes", topic: "Enough Money" },
+            { text: "A chocolate costs 45 shillings. You have 40 shillings. Enough?", correct: "no", alt: "no", topic: "Enough Money" },
+            { text: "A kite costs 50 shillings. You have a 50 shilling coin. Enough?", correct: "yes", alt: "yes", topic: "Enough Money" },
+            { text: "A lollipop costs 3 shillings. You have 2 shillings. Enough?", correct: "no", alt: "no", topic: "Enough Money" }
+        ];
+        
+        // ----- TOPIC 6: Make Purchase (from second game) -----
+        const purchaseBank = [
+            { text: "What coin can you use to pay exactly 10 shillings?", correct: "10 shilling coin", alt: "10", topic: "Make Purchase" },
+            { text: "What coin can you use to pay exactly 5 shillings?", correct: "5 shilling coin", alt: "5", topic: "Make Purchase" },
+            { text: "What coin can you use to pay exactly 20 shillings?", correct: "20 shilling coin", alt: "20", topic: "Make Purchase" },
+            { text: "You have a 5 and a 10 shilling coin. Can you buy something that costs 15 shillings? (yes/no)", correct: "yes", alt: "yes", topic: "Make Purchase" },
+            { text: "You have a 20 and a 1 shilling coin. Can you buy something that costs 21 shillings? (yes/no)", correct: "yes", alt: "yes", topic: "Make Purchase" },
+            { text: "You have two 10 shilling coins. Can you buy a 25 shilling item? (yes/no)", correct: "no", alt: "no", topic: "Make Purchase" }
+        ];
+        
+        // Merge all banks
+        addQuestions(identifyCoinsBank);
+        addQuestions(countingCoinsBank);
+        addQuestions(addMoneyBank);
+        addQuestions(changeBank);
+        addQuestions(enoughBank);
+        addQuestions(purchaseBank);
+        
+        console.log("Total merged questions:", allQuestions.length);
+        
+        // Shuffle function
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        
+        // Generate 30 balanced questions per level
+        function generateLevelQuestions() {
+            let shuffled = shuffleArray([...allQuestions]);
+            
+            // Group by topic for balanced distribution
+            const topics = {
+                "Identify Coins": shuffled.filter(q => q.topic === "Identify Coins"),
+                "Count Coins": shuffled.filter(q => q.topic === "Count Coins"),
+                "Add Money": shuffled.filter(q => q.topic === "Add Money"),
+                "Calculate Change": shuffled.filter(q => q.topic === "Calculate Change"),
+                "Enough Money": shuffled.filter(q => q.topic === "Enough Money"),
+                "Make Purchase": shuffled.filter(q => q.topic === "Make Purchase")
+            };
+            
+            let selected = [];
+            // Take 5 from each topic (6 topics = 30)
+            for (let topic in topics) {
+                selected = selected.concat(topics[topic].slice(0, 5));
+            }
+            
+            while (selected.length < 30) {
+                selected.push(allQuestions[selected.length % allQuestions.length]);
+            }
+            if (selected.length > 30) selected = selected.slice(0, 30);
+            
+            selected = shuffleArray(selected);
+            const unique = [];
+            const seen = new Set();
+            for (let i = 0; i < selected.length; i++) {
+                if (!seen.has(selected[i].text)) {
+                    seen.add(selected[i].text);
+                    unique.push(selected[i]);
+                }
+            }
+            while (unique.length < 30) {
+                unique.push(allQuestions[unique.length % allQuestions.length]);
+            }
+            return unique.slice(0, 30);
+        }
+        
+        // ==================== GAME STATE ====================
+        let currentLevel = 0;
+        let currentQIndex = 0;
+        let currentQuestions = [];
+        let correctCount = 0;
+        let answeredCount = 0;
+        let timerInterval = null;
+        let timeLeft = 40;
+        let waitingForAnswer = true;
+        let answerSubmitted = false;
+        let currentQuestion = null;
+        let gameActive = true;
+        let levelLocked = false;
+        
+        // DOM elements
+        const levelDisplay = document.getElementById('levelDisplay');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timerSpan = document.getElementById('timerCountdown');
+        const progressFill = document.getElementById('progressFill');
+        const progressInfo = document.getElementById('progressInfo');
+        const questionDiv = document.getElementById('questionText');
+        const answerInput = document.getElementById('studentAnswer');
+        const submitBtn = document.getElementById('submitAnswer');
+        const readBtn = document.getElementById('readAloudBtn');
+        const nextBtn = document.getElementById('nextQuestionBtn');
+        const hintBoxDiv = document.getElementById('hintBox');
+        const feedbackDiv = document.getElementById('feedbackMsg');
+        
+        function updateUI() {
+            scoreDisplay.innerText = "✅ SCORE: " + correctCount + " / " + answeredCount;
+            progressInfo.innerText = "Question " + (answeredCount + 1) + " / " + currentQuestions.length;
+            let percent = (answeredCount / currentQuestions.length) * 100;
+            progressFill.style.width = `${percent}%`;
+        }
+        
+        function getTopicEmoji(topic) {
+            const emojis = {
+                "Identify Coins": "🪙", "Count Coins": "💰", "Add Money": "💰➕",
+                "Calculate Change": "🔄", "Enough Money": "🤔", "Make Purchase": "🛒"
+            };
+            return emojis[topic] || "💵";
+        }
+        
+        function updateHint(seconds, q) {
+            if (!q) return;
+            if (seconds > 28) {
+                hintBoxDiv.innerHTML = `${getTopicEmoji(q.topic)} Topic: ${q.topic}. Think about Kenyan money!`;
+            } else if (seconds > 18) {
+                hintBoxDiv.innerHTML = "🔎 Hint: Use addition for totals, subtraction for change!";
+            } else if (seconds > 8) {
+                hintBoxDiv.innerHTML = `✨ Strong hint: The answer is "${q.correct}". Type it now!`;
+            } else if (seconds > 2) {
+                hintBoxDiv.innerHTML = `🚀 Last ${seconds} seconds! Answer: ${q.correct} . Quickly!`;
+            } else {
+                hintBoxDiv.innerHTML = "⏰ Almost out of time! Type the number or 'yes'/'no'!";
+            }
+        }
+        
+        function stopTimer() {
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        }
+        
+        function startTimer() {
+            if (timerInterval) stopTimer();
+            timeLeft = 40;
+            timerSpan.innerText = timeLeft;
+            updateHint(timeLeft, currentQuestion);
+            timerInterval = setInterval(function() {
+                if (!waitingForAnswer || levelLocked || !gameActive || answerSubmitted) return;
+                if (timeLeft <= 1) {
+                    stopTimer();
+                    if (waitingForAnswer && !answerSubmitted) {
+                        speakText("Time is up!", true);
+                        waitingForAnswer = false;
+                        answerSubmitted = true;
+                        feedbackDiv.innerHTML = "⏰ TIME IS UP! Moving to next question.";
+                        feedbackDiv.style.background = "#ffccbb";
+                        setTimeout(function() { if (!levelLocked) moveToNext(); }, 1500);
+                    }
+                } else {
+                    timeLeft--;
+                    timerSpan.innerText = timeLeft;
+                    updateHint(timeLeft, currentQuestion);
+                }
+            }, 1000);
+        }
+        
+        function checkAnswer() {
+            if (!waitingForAnswer || levelLocked || !gameActive || answerSubmitted) {
+                feedbackDiv.innerHTML = "⚠️ Wait! Already answered or question finished.";
+                return;
+            }
+            let userAnswer = answerInput.value.trim().toLowerCase();
+            if (userAnswer === "") {
+                speakText("Please type an answer.");
+                feedbackDiv.innerHTML = "✏️ Type your answer before checking!";
+                return;
+            }
+            
+            // Normalize common variations
+            const numMap = {
+                "1": "1", "one": "1", "2": "2", "two": "2", "3": "3", "three": "3",
+                "4": "4", "four": "4", "5": "5", "five": "5", "6": "6", "six": "6",
+                "7": "7", "seven": "7", "8": "8", "eight": "8", "10": "10", "ten": "10",
+                "15": "15", "sixteen": "16", "20": "20", "twenty": "20", "21": "21", "25": "25",
+                "30": "30", "thirty": "30", "40": "40", "forty": "40", "50": "50", "fifty": "50",
+                "70": "70", "seventy": "70", "80": "80", "100": "100", "yes": "yes", "no": "no"
+            };
+            
+            let normalizedAnswer = numMap[userAnswer] || userAnswer;
+            const correctAns = currentQuestion.correct.toLowerCase();
+            const altAns = currentQuestion.alt ? currentQuestion.alt.toLowerCase() : "";
+            
+            let isCorrect = false;
+            if (normalizedAnswer === correctAns) isCorrect = true;
+            else if (altAns !== "" && normalizedAnswer === altAns) isCorrect = true;
+            else if (!isNaN(parseFloat(normalizedAnswer)) && !isNaN(parseFloat(correctAns))) {
+                if (parseFloat(normalizedAnswer) === parseFloat(correctAns)) isCorrect = true;
+                else if (altAns !== "" && parseFloat(normalizedAnswer) === parseFloat(altAns)) isCorrect = true;
+            } else if (userAnswer.includes(correctAns) || correctAns.includes(userAnswer)) {
+                isCorrect = true;
+            }
+            
+            answerSubmitted = true;
+            waitingForAnswer = false;
+            stopTimer();
+            
+            if (isCorrect) {
+                correctCount++;
+                speakText("Correct! Great job!");
+                feedbackDiv.innerHTML = "🎉 CORRECT! +1 point 🎉";
+                feedbackDiv.style.background = "#c8e6c9";
+            } else {
+                speakText("Incorrect. The correct answer is " + currentQuestion.correct + ".");
+                feedbackDiv.innerHTML = `❌ INCORRECT! Right answer: "${currentQuestion.correct}". Keep trying!`;
+                feedbackDiv.style.background = "#ffcdd2";
+            }
+            answeredCount++;
+            updateUI();
+            submitBtn.disabled = true;
+            answerInput.disabled = true;
+        }
+        
+        function moveToNext() {
+            if (levelLocked) return;
+            if (answeredCount >= currentQuestions.length) { finishLevel(); return; }
+            currentQIndex++;
+            loadQuestion(currentQIndex);
+        }
+        
+        function finishLevel() {
+            const percent = (correctCount / currentQuestions.length) * 100;
+            if (percent >= 80) {
+                if (currentLevel + 1 < 5) {
+                    speakText(`Excellent! You passed level ${currentLevel+1} with ${Math.floor(percent)} percent. Get ready for level ${currentLevel+2}.`);
+                    feedbackDiv.innerHTML = `🎊 LEVEL UP! 🎊 You scored ${correctCount}/${currentQuestions.length} (${Math.floor(percent)}%) → Next Level!`;
+                    feedbackDiv.style.background = "#ffecb3";
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                } else {
+                    gameActive = false;
+                    stopTimer();
+                    levelLocked = true;
+                    feedbackDiv.innerHTML = `🏆🏆🏆 GRAND CHAMPION! You completed all 5 levels! Final score: ${correctCount}/${currentQuestions.length} 🏆🏆🏆`;
+                    speakText("Congratulations! You finished the CBC Grade 1 Money challenge! You are a maths superstar!");
+                    submitBtn.disabled = true;
+                    readBtn.disabled = true;
+                    nextBtn.disabled = true;
+                    answerInput.disabled = true;
+                    timerSpan.innerText = "🎉";
+                    return;
+                }
+            } else {
+                speakText(`Oh no! You got ${correctCount} out of ${currentQuestions.length}. Need 80 percent to pass. Restarting level ${currentLevel+1} with new questions.`);
+                feedbackDiv.innerHTML = `⚠️ ${Math.floor(percent)}% only. Need 80% to pass. Same level restarts with fresh questions! ⚠️`;
+                feedbackDiv.style.background = "#ffb3ba";
+                loadLevel(currentLevel);
+            }
+        }
+        
+        function loadQuestion(index) {
+            if (index >= currentQuestions.length) { finishLevel(); return; }
+            currentQuestion = currentQuestions[index];
+            questionDiv.innerText = currentQuestion.text;
+            waitingForAnswer = true;
+            answerSubmitted = false;
+            submitBtn.disabled = false;
+            answerInput.disabled = false;
+            answerInput.value = "";
+            answerInput.focus();
+            feedbackDiv.style.background = "#fff3e0";
+            feedbackDiv.innerHTML = "💰 Type your answer and click CHECK!";
+            updateUI();
+            if (timerInterval) stopTimer();
+            startTimer();
+        }
+        
+        function loadLevel(levelIdx) {
+            levelLocked = false;
+            gameActive = true;
+            currentLevel = levelIdx;
+            currentQIndex = 0;
+            correctCount = 0;
+            answeredCount = 0;
+            currentQuestions = generateLevelQuestions();
+            levelDisplay.innerText = `💰 LEVEL ${currentLevel+1} 💰`;
+            updateUI();
+            loadQuestion(0);
+        }
+        
+        function readQuestion() {
+            if (currentQuestion && gameActive && !levelLocked) {
+                speakText(currentQuestion.text);
+            } else if (!currentQuestion) { speakText("No question loaded"); }
+        }
+        
+        function manualNext() {
+            if (levelLocked || !gameActive) {
+                feedbackDiv.innerHTML = "⚠️ Level transition or game finished!";
+                return;
+            }
+            if (waitingForAnswer && !answerSubmitted) {
+                feedbackDiv.innerHTML = "⚠️ You haven't answered yet! Please check your answer first.";
+                speakText("Please check your answer before moving.");
+                return;
+            }
+            if (answerSubmitted && !waitingForAnswer) {
+                stopTimer();
+                moveToNext();
+            }
+        }
+        
+        // Event listeners
+        submitBtn.addEventListener('click', checkAnswer);
+        readBtn.addEventListener('click', readQuestion);
+        nextBtn.addEventListener('click', manualNext);
+        answerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !answerSubmitted && waitingForAnswer) { checkAnswer(); }
+        });
+        
+        // Start the game
+        loadLevel(0);
+    })();
+</script>
+</body>
+</html>

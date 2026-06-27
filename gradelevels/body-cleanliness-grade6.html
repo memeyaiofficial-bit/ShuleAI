@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Fresh & Clean | Body Hygiene | Grade 6 CBC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #eef2ff 0%, #ffffff 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 3rem 2rem 3rem 2rem;
+            box-shadow: 0 30px 45px -12px rgba(2, 62, 138, 0.3);
+            overflow: hidden;
+            border: 2px solid #60a5fa;
+        }
+
+        .game-header {
+            background: #1e3a8a;
+            padding: 1.2rem 1.8rem;
+            color: white;
+            text-align: center;
+            border-bottom: 6px solid #fcd34d;
+        }
+
+        .game-header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .kenyan-flag-badge {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kenyan-fact {
+            background: #dbeafe;
+            margin: 14px 20px 0;
+            padding: 10px 18px;
+            border-radius: 48px;
+            color: #0c4a6e;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-left: 10px solid #fbbf24;
+        }
+
+        .levels-row {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f9ff;
+            padding: 14px 22px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 2px dashed #93c5fd;
+        }
+
+        .level-btn {
+            background: white;
+            border: none;
+            padding: 10px 0;
+            flex: 1;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .level-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 8px 18px rgba(37,99,235,0.4);
+            border-color: #2563eb;
+            transform: scale(0.97);
+        }
+
+        .level-btn:hover:not(.active) {
+            background: #bfdbfe;
+            transform: translateY(-3px);
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 10px 28px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .score-box, .q-counter {
+            background: #e0e7ff;
+            padding: 5px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .score-box span, .q-counter span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-left: 8px;
+            color: #0f3b5c;
+        }
+
+        .quiz-area {
+            padding: 1.5rem 1.5rem 0.8rem;
+            text-align: center;
+        }
+
+        .question-card {
+            background: linear-gradient(105deg, #fefefe, #eff6ff);
+            padding: 20px 18px;
+            border-radius: 48px;
+            margin-bottom: 20px;
+            border: 2px solid #93c5fd;
+            box-shadow: 0 12px 18px -12px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #93c5fd;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1e40af;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .option-btn:hover:not(.disabled-opt) {
+            background: #dbeafe;
+            transform: translateX(5px);
+            border-color: #2563eb;
+        }
+
+        .option-btn.selected-correct {
+            background: #22c55e;
+            color: white;
+            border-color: #16a34a;
+        }
+
+        .option-btn.selected-wrong {
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .disabled-opt {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .voice-zone {
+            background: #ffffff;
+            border-radius: 56px;
+            padding: 15px;
+            margin: 10px 0 5px;
+            border: 2px dashed #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mic-button {
+            background: #2563eb;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: 0.08s linear;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-button:active {
+            transform: scale(0.92);
+            background: #1e40af;
+        }
+
+        .voice-status {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f4c5f;
+            flex: 1;
+            text-align: left;
+        }
+
+        .answer-status {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 8px;
+            min-height: 55px;
+            color: #0f4c5f;
+            text-align: center;
+        }
+
+        .hint-box {
+            background: #fef9e3;
+            border-left: 12px solid #fbbf24;
+            padding: 12px 20px;
+            margin: 8px 20px 20px;
+            border-radius: 36px;
+            font-size: 0.95rem;
+            color: #0a537c;
+            font-weight: 500;
+        }
+
+        .next-level-msg {
+            background: #0d9488;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 60px;
+            margin: 10px 24px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 14px;
+            color: #22668d;
+        }
+
+        @keyframes pulseMic {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 #3b82f6; }
+            50% { transform: scale(1.03); background: #0d9488; box-shadow: 0 0 0 8px rgba(59,130,246,0.3);}
+            100% { transform: scale(1); }
+        }
+        .mic-button.listening-active {
+            animation: pulseMic 1s infinite;
+            background: #0d9488;
+        }
+
+        .mic-button.mic-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.1rem; }
+            .option-btn { font-size: 0.85rem; padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <h1>🧼 FRESH & CLEAN 🧴
+            <span class="kenyan-flag-badge">🇰🇪 GRADE 6 • BODY HYGIENE & ROUTINE PRACTICES</span>
+        </h1>
+        <div class="kenyan-fact">
+            🌍 <strong>Kenyan Fact:</strong> In Kenya, the "Nyasi" movement has taught over 1 million school children proper handwashing techniques, reducing absenteeism by 40% in participating schools!
+        </div>
+    </div>
+
+    <div class="levels-row" id="levelButtonsContainer"></div>
+
+    <div class="info-panel">
+        <div class="score-box">⭐ SCORE: <span id="scoreValue">0</span></div>
+        <div class="q-counter">📖 QUESTION: <span id="currentQNumber">1</span> / <span id="totalQperLevel">15</span></div>
+    </div>
+
+    <div class="quiz-area">
+        <div class="question-card">
+            <div class="question-text" id="questionText">What is body cleanliness?</div>
+            <div class="option-buttons" id="optionsContainer"></div>
+        </div>
+        <div class="voice-zone">
+            <button class="mic-button" id="micBtn">🎤</button>
+            <div class="voice-status" id="voiceStatusMsg">🎙️ Ready • Click mic and say A, B, C, or D</div>
+            <div class="answer-status" id="answerFeedback"></div>
+        </div>
+        <div class="hint-box" id="hintDisplay">
+            💡 Hint: The practice of keeping your body free from dirt, germs, and unpleasant odors.
+        </div>
+    </div>
+
+    <div id="levelCompleteMsg"></div>
+    <div class="footer-note">🎤 Speak A, B, C, or D • +10 points • Learn healthy hygiene habits for life!</div>
+</div>
+
+<script>
+    // ==============================================================
+    // BODY CLEANLINESS, HABITS THAT ENHANCE BODY CLEANLINESS, ROUTINE HYGIENE PRACTICES
+    // Grade 6 CBC - Health & Hygiene Education
+    // 4 Levels, 15 challenging questions each
+    // ==============================================================
+    const QUESTIONS_DB = {
+        1: [
+            { q: "What is body cleanliness?", options: ["A) Wearing expensive clothes", "B) Keeping the body free from dirt, germs, and bad odor through regular washing", "C) Applying perfume only", "D) Brushing hair only"], correct: "B", hint: "Hygiene removes harmful germs." },
+            { q: "How often should you bathe or shower?", options: ["A) Once a week", "B) At least once daily (or twice in hot weather)", "C) Once a month", "D) Only when you look dirty"], correct: "B", hint: "Daily washing removes sweat and bacteria." },
+            { q: "Which body part should be washed at least twice daily to prevent bad breath?", options: ["A) Ears", "B) Teeth and tongue", "C) Elbows", "D) Knees"], correct: "B", hint: "Brush morning and night." },
+            { q: "What is the main purpose of using soap when bathing?", options: ["A) To make the skin dry", "B) To remove oils, dirt, and kill germs", "C) To add fragrance only", "D) To color the skin"], correct: "B", hint: "Soap breaks down oils and lifts germs." },
+            { q: "Which of these is a habit that enhances body cleanliness?", options: ["A) Wearing same underwear for a week", "B) Washing hands before eating", "C) Sharing towels with a sick friend", "D) Not brushing hair"], correct: "B", hint: "Handwashing prevents disease spread." },
+            { q: "What is the correct way to wash hands effectively?", options: ["A) Just rinse with water", "B) Use soap, scrub for 20 seconds, rinse, and dry", "C) Only use sanitizer", "D) Wipe on clothes"], correct: "B", hint: "20 seconds = singing 'Happy Birthday' twice." },
+            { q: "Why should you trim your fingernails regularly?", options: ["A) To make them look long", "B) To prevent dirt and germs from collecting underneath", "C) To paint them easily", "D) To scratch better"], correct: "B", hint: "Dirt hides under long nails." },
+            { q: "What happens if you don't brush your teeth regularly?", options: ["A) Teeth become stronger", "B) Cavities, gum disease, and bad breath", "C) Teeth grow faster", "D) No effect"], correct: "B", hint: "Plaque buildup causes decay." },
+            { q: "How often should you change your underwear?", options: ["A) Once a week", "B) Daily", "C) Monthly", "D) Only when it smells"], correct: "B", hint: "Fresh underwear prevents infections." },
+            { q: "What is the best time to wash your face to prevent acne?", options: ["A) Once a week", "B) Morning and night", "C) Never", "D) Only before parties"], correct: "B", hint: "Removes oil and dirt buildup." },
+            { q: "Which of these follows routine body cleanliness for hair?", options: ["A) Oiling hair daily", "B) Washing hair 1-2 times per week with shampoo", "C) Never washing hair", "D) Using only water"], correct: "B", hint: "Shampoo removes scalp oils and dandruff." },
+            { q: "Why should you use a clean towel after bathing?", options: ["A) To smell nice", "B) To avoid transferring bacteria and fungi from a dirty towel", "C) To dry faster", "D) To look fashionable"], correct: "B", hint: "Damp towels grow germs." },
+            { q: "What is the purpose of deodorant or antiperspirant?", options: ["A) To produce more sweat", "B) To reduce body odor by controlling bacteria or sweat", "C) To attract insects", "D) To stain clothes"], correct: "B", hint: "Sweat itself has no smell; bacteria cause odor." },
+            { q: "Which of these is a sign of good body cleanliness?", options: ["A) Body odor", "B) Clean, fresh-smelling skin with no visible dirt", "C) Greasy hair", "D) Dirty fingernails"], correct: "B", hint: "Feeling fresh and looking clean." },
+            { q: "How often should you wash your feet, especially between toes?", options: ["A) Once a month", "B) Daily, and dry thoroughly to prevent fungal infections", "C) Never", "D) Only after sports"], correct: "B", hint: "Moist between toes causes athlete's foot." }
+        ],
+        2: [
+            { q: "Which of these habits enhances body cleanliness during puberty (increased sweating)?", options: ["A) Showering twice daily and using mild soap", "B) Wearing the same clothes for days", "C) Avoiding water", "D) Using strong perfumes only"], correct: "A", hint: "Puberty causes more sweat glands activity." },
+            { q: "What is the correct way to clean your ears safely?", options: ["A) Insert cotton swab deep inside ear canal", "B) Wash outer ear with cloth; never insert objects", "C) Use a pen cap", "D) Use a hairpin"], correct: "B", hint: "Ear canals are self-cleaning." },
+            { q: "Why should you avoid sharing personal hygiene items like razors or toothbrushes?", options: ["A) They are expensive", "B) To prevent spreading blood-borne diseases and infections", "C) They look different", "D) To save time"], correct: "B", hint: "Blood and saliva can carry germs." },
+            { q: "What is the recommended duration for brushing teeth?", options: ["A) 30 seconds", "B) 2 minutes", "C) 5 seconds", "D) 10 minutes"], correct: "B", hint: "Two minutes ensures all surfaces cleaned." },
+            { q: "Which of these is a routine practice for oral hygiene besides brushing?", options: ["A) Flossing daily to remove food between teeth", "B) Eating sugar before bed", "C) Skipping toothpaste", "D) Using a toothbrush once a year"], correct: "A", hint: "Floss reaches where brush can't." },
+            { q: "How does regular exercise contribute to body cleanliness?", options: ["A) It makes you dirty so you don't need to bathe", "B) It increases sweat, so you must shower after, promoting hygiene routine", "C) It replaces showering", "D) It has no effect"], correct: "B", hint: "Exercise then shower = clean habit." },
+            { q: "What is the main cause of body odor?", options: ["A) Sweat itself", "B) Bacteria breaking down sweat on skin", "C) Dirty clothes only", "D) Perfume"], correct: "B", hint: "Bacteria produce smelly compounds." },
+            { q: "After using the toilet, what is the proper hygiene step?", options: ["A) Wipe and leave", "B) Wipe, then wash hands with soap and water", "C) Shake hands dry", "D) Use phone"], correct: "B", hint: "Handwashing prevents fecal-oral diseases." },
+            { q: "Which type of soap is recommended for sensitive skin?", options: ["A) Harsh antibacterial soap", "B) Mild, fragrance-free, pH-balanced soap", "C) Laundry detergent", "D) Dish soap"], correct: "B", hint: "Harsh soaps strip natural oils." },
+            { q: "Why should you wear clean clothes daily?", options: ["A) To impress friends", "B) Dirty clothes trap bacteria and cause skin infections", "C) To save water", "D) To look old"], correct: "B", hint: "Germs multiply in dirty fabric." },
+            { q: "What is the proper way to dry yourself after bathing to prevent skin irritation?", options: ["A) Rub vigorously with a rough towel", "B) Pat dry gently, especially in skin folds", "C) Air dry only", "D) Shake like a dog"], correct: "B", hint: "Gentle drying prevents rashes." },
+            { q: "Which of these is a healthy habit for body cleanliness regarding hair?", options: ["A) Sharing combs with others", "B) Using a clean comb/brush and washing hair tools regularly", "C) Never combing hair", "D) Using same hair oil for months"], correct: "B", hint: "Dirty combs spread lice and dandruff." },
+            { q: "What is athlete's foot and how can you prevent it?", options: ["A) A fungal infection between toes; prevent by drying feet thoroughly and wearing clean socks", "B) A muscle injury", "C) A bone disease", "D) A skin allergy"], correct: "A", hint: "Fungus loves warm, moist feet." },
+            { q: "How often should you wash your bath towel?", options: ["A) Once a year", "B) After 3-4 uses (twice weekly)", "C) Never", "D) After every shower"], correct: "B", hint: "Damp towels breed bacteria." },
+            { q: "What is the proper sequence for showering?", options: ["A) Soap then water only", "B) Wet body, apply soap, scrub all areas, rinse thoroughly, dry", "C) Dry first", "D) Soap then dry without rinse"], correct: "B", hint: "Top to bottom is efficient." }
+        ],
+        3: [
+            { q: "Which vitamin is produced by the skin when exposed to sunlight, enhancing health? (But don't overdo!)", options: ["A) Vitamin C", "B) Vitamin D", "C) Vitamin B12", "D) Vitamin A"], correct: "B", hint: "Sunlight triggers vitamin D production." },
+            { q: "What is the 'two-step' method for washing hands in areas with limited water?", options: ["A) Use alcohol hand sanitizer after wiping with wet cloth", "B) Tippy tap (foot-operated water dispenser) with soap", "C) No washing", "D) Sand only"], correct: "B", hint: "Low-cost, effective handwashing station." },
+            { q: "How does regular exfoliation (removing dead skin cells) contribute to cleanliness?", options: ["A) It removes accumulated dead skin where bacteria hide", "B) It makes skin darker", "C) It causes infections", "D) It removes hair"], correct: "A", hint: "Dead skin traps dirt." },
+            { q: "Why should you avoid popping pimples?", options: ["A) It can push bacteria deeper, causing scarring and infection", "B) It makes them disappear faster", "C) It's fun", "D) It heals skin"], correct: "A", hint: "Hands introduce more germs." },
+            { q: "What is the correct way to use a bidet or water for anal cleansing after defecation?", options: ["A) Use fingers then wash with soap immediately after", "B) Use tissue only", "C) Use leaves", "D) Ignore cleaning"], correct: "A", hint: "Always wash hands after." },
+            { q: "How often should you replace your toothbrush?", options: ["A) Every 3-4 months or after illness", "B) Once a year", "C) When bristles fall out", "D) Never"], correct: "A", hint: "Worn bristles don't clean well." },
+            { q: "What is the relationship between body cleanliness and self-esteem?", options: ["A) Poor hygiene leads to social rejection and low confidence", "B) No relationship", "C) Hygiene only affects health", "D) Dirty people are happier"], correct: "A", hint: "Feeling clean boosts confidence." },
+            { q: "Which of these is a sign you need to increase your hygiene routine?", options: ["A) Visible dirt on skin", "B) Persistent body odor despite daily washing", "C) Itchy scalp with flakes", "D) All of the above"], correct: "D", hint: "Multiple warning signs." },
+            { q: "What is the proper way to clean under fingernails?", options: ["A) Use a nail brush with soap during handwashing", "B) Bite them off", "C) Use a knife", "D) Ignore them"], correct: "A", hint: "Nail brush reaches under tips." },
+            { q: "Why should you wash your belly button?", options: ["A) It collects lint, sweat, and bacteria that can cause infection", "B) It doesn't need washing", "C) Only for fashion", "D) It never gets dirty"], correct: "A", hint: "Navel is a hidden dirt trap." },
+            { q: "What is the best fabric to wear in hot humid climates to stay clean and dry?", options: ["A) Synthetic (polyester)", "B) Cotton or bamboo (breathable, absorbs sweat)", "C) Wool", "D) Leather"], correct: "B", hint: "Natural fibers allow skin to breathe." },
+            { q: "How does mouthwash complement brushing and flossing?", options: ["A) It kills additional bacteria in hard-to-reach areas and freshens breath", "B) It replaces brushing", "C) It whitens teeth instantly", "D) It has no benefit"], correct: "A", hint: "Antiseptic mouthwash reduces plaque." },
+            { q: "What is the correct way to wash reusable cloth pads for menstrual hygiene?", options: ["A) Rinse in cold water, soak, wash with soap, sun dry", "B) Burn them", "C) Throw in river", "D) Use without washing"], correct: "A", hint: "Sunlight disinfects naturally." },
+            { q: "Why should you not share nail clippers?", options: ["A) They cause nail fungus and blood-borne infections", "B) They are too expensive", "C) They are personal only for style", "D) No reason"], correct: "A", hint: "Clippers can nick skin." },
+            { q: "What is the 'bare below the elbows' policy in healthcare settings for hygiene?", options: ["A) No watches or jewelry to prevent germ transfer", "B) Always wear gloves", "C) Wear long sleeves", "D) No uniform"], correct: "A", hint: "Jewelry harbors bacteria." }
+        ],
+        4: [
+            { q: "What is the scientific reason for using warm water (not hot) for bathing?", options: ["A) Hot water strips natural oils too much; warm water cleans effectively without damage", "B) Hot water is cheaper", "C) Cold water freezes germs", "D) Warm water adds nutrients"], correct: "A", hint: "Skin barrier protection." },
+            { q: "How does stress affect body cleanliness habits?", options: ["A) Stressed people may neglect hygiene, leading to health issues", "B) Stress improves hygiene", "C) No effect", "D) Stress only affects mood"], correct: "A", hint: "Mental health and hygiene are linked." },
+            { q: "What is the 'hygiene hypothesis' linking cleanliness and immune system?", options: ["A) Excessive cleanliness may reduce exposure to beneficial microbes, affecting immunity", "B) Dirtier is always better", "C) No link exists", "D) Cleanliness causes allergies"], correct: "A", hint: "Balance is key." },
+            { q: "Which of these is a routine practice for genital hygiene (for both sexes)?", options: ["A) Wash external genital area daily with mild soap and water, front to back", "B) Use strong perfumed soaps internally", "C) Never wash", "D) Use bleach"], correct: "A", hint: "Avoid internal douching." },
+            { q: "How does proper body cleanliness help prevent the spread of trachoma (eye infection)?", options: ["A) Washing face daily with clean water reduces fly-borne transmission", "B) It has no effect", "C) It makes eyes red", "D) It only affects hands"], correct: "A", hint: "Faces clean = less infection." },
+            { q: "What is the correct order for cleaning your body in the shower (from cleanest to dirtiest areas)?", options: ["A) Face, upper body, then feet/genital area last", "B) Feet first", "C) Genital area first", "D) Random order"], correct: "A", hint: "Prevents spreading bacteria." },
+            { q: "Why should you use separate towels for face and body?", options: ["A) Face towel prevents transferring bacteria from body to face (acne risk)", "B) It's a myth", "C) To save water", "D) To use more towels"], correct: "A", hint: "Different zones, different germs." },
+            { q: "What is the role of emollients (moisturizers) in skin hygiene?", options: ["A) They only smell good", "B) They restore skin barrier after washing, preventing dryness and cracks where germs enter", "C) They attract dirt", "D) They replace washing"], correct: "B", hint: "Cracked skin is infection risk." },
+            { q: "How often should you wash reusable water bottles to prevent bacterial buildup?", options: ["A) Daily with soap and hot water", "B) Once a month", "C) Never", "D) Only when mold visible"], correct: "A", hint: "Mouth bacteria grow quickly." },
+            { q: "What is the correct way to clean eyeglasses or sunglasses to maintain hygiene around eyes?", options: ["A) Use lens cleaner and microfiber cloth daily", "B) Spit and shirt", "C) Ignore", "D) Use sandpaper"], correct: "A", hint: "Clean lenses prevent eye irritation." },
+            { q: "Which of these is a sign of poor scalp hygiene that needs attention?", options: ["A) Persistent itching, dandruff, or sores", "B) Shiny hair", "C) Clean scalp", "D) No smell"], correct: "A", hint: "Itching indicates fungal or bacterial issue." },
+            { q: "Why is it important to wash your pillowcase weekly?", options: ["A) It accumulates sweat, oil, dead skin, and dust mites causing acne and allergies", "B) It changes color", "C) It becomes heavier", "D) No reason"], correct: "A", hint: "You spend hours with face on pillow." },
+            { q: "What is the 'F-diagram' in hygiene education (pathways for fecal-oral disease transmission)?", options: ["A) Fluids, fingers, flies, fields, food, floods", "B) Fruits only", "C) Five steps", "D) Four seasons"], correct: "A", hint: "Interrupt pathways with hygiene." },
+            { q: "How does routine cleanliness of personal electronic devices (phone, tablet) benefit body health?", options: ["A) Devices carry more bacteria than toilet seats; cleaning reduces transfer to face/hands", "B) No benefit", "C) Only for appearance", "D) It breaks devices"], correct: "A", hint: "Phone touches face and hands constantly." },
+            { q: "What is the ultimate benefit of lifelong body cleanliness practices?", options: ["A) Reduced disease burden, better social interactions, and improved mental well-being", "B) Wasting time", "C) Using more soap", "D) Only for looks"], correct: "A", hint: "Hygiene is health." }
+        ]
+    };
+
+    // Ensure each level has exactly 15 questions
+    for(let lvl=1; lvl<=4; lvl++){
+        while(QUESTIONS_DB[lvl].length < 15){
+            QUESTIONS_DB[lvl].push({ q: "What is a good daily hygiene habit?", options: ["A) Bathing daily", "B) Not washing hands", "C) Sharing toothbrush", "D) Wearing dirty clothes"], correct: "A", hint: "Daily bath removes germs." });
+        }
+    }
+
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let scores = {1:0,2:0,3:0,4:0};
+    let levelCompleteFlag = false;
+    const totalPerLevel = 15;
+    let recognition = null;
+    let listening = false;
+    let speechSupported = true;
+    let answeringLock = false;
+
+    const questionTextEl = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const scoreValueSpan = document.getElementById('scoreValue');
+    const currentQNumberSpan = document.getElementById('currentQNumber');
+    const totalQperLevelSpan = document.getElementById('totalQperLevel');
+    const micBtn = document.getElementById('micBtn');
+    const voiceStatusMsg = document.getElementById('voiceStatusMsg');
+    const answerFeedback = document.getElementById('answerFeedback');
+    const hintDisplay = document.getElementById('hintDisplay');
+    const levelCompleteDiv = document.getElementById('levelCompleteMsg');
+    
+    totalQperLevelSpan.innerText = totalPerLevel;
+
+    function speakEnglish(text, isSuccess=true){
+        if(!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = isSuccess ? 1.1 : 0.9;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+    }
+
+    function loadQuestion(){
+        const item = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(item){
+            questionTextEl.innerText = item.q;
+            hintDisplay.innerText = `💡 Hint: ${item.hint}`;
+            optionsContainer.innerHTML = '';
+            item.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.setAttribute('data-value', opt.charAt(0));
+                btn.addEventListener('click', () => handleOptionClick(opt.charAt(0)));
+                optionsContainer.appendChild(btn);
+            });
+        }
+        answeringLock = false;
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('selected-correct', 'selected-wrong', 'disabled-opt');
+            btn.style.pointerEvents = 'auto';
+        });
+    }
+
+    function handleOptionClick(selectedLetter){
+        if(answeringLock) return;
+        const currentItem = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(!currentItem) return;
+        const isCorrect = (selectedLetter === currentItem.correct);
+        
+        answeringLock = true;
+        
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+            btn.classList.add('disabled-opt');
+        });
+        
+        const clickedBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === selectedLetter);
+        if(clickedBtn){
+            if(isCorrect){
+                clickedBtn.classList.add('selected-correct');
+                answerFeedback.innerHTML = `✅ Correct! ${currentItem.correct}) ${currentItem.options.find(o => o.startsWith(currentItem.correct)).substring(3)} +10 points! 🎉`;
+                speakEnglish("Excellent! That's correct! Good hygiene keeps you healthy and confident!", true);
+                scores[currentLevel] += 10;
+                scoreValueSpan.innerText = scores[currentLevel];
+                
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 AMAZING! You completed Level ${currentLevel} with ${scores[currentLevel]} points! Click Next Level to continue!`;
+                        speakEnglish(`Congratulations! You finished level ${currentLevel}. You are becoming a hygiene expert!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE TO NEXT LEVEL ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! More advanced hygiene questions ahead!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("INCREDIBLE! You've mastered all four levels! You are a true Hygiene Champion!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏅 CERTIFIED HYGIENE MASTER! STAY FRESH & CLEAN! 🏅</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1000);
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+                const correctLetter = currentItem.correct;
+                const correctOptionText = currentItem.options.find(o => o.startsWith(correctLetter));
+                answerFeedback.innerHTML = `❌ Sorry! "${selectedLetter}" is incorrect. The correct answer is ${correctLetter}) ${correctOptionText.substring(3)}. Hint: ${currentItem.hint}`;
+                speakEnglish(`That is not correct. The right answer is ${correctLetter}. ${correctOptionText.substring(3)}. Keep learning about body cleanliness!`, false);
+                
+                const correctBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === correctLetter);
+                if(correctBtn) correctBtn.classList.add('selected-correct');
+                
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        updateUI();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 Level ${currentLevel} completed! Score: ${scores[currentLevel]}. Click Next Level!`;
+                        speakEnglish(`You finished level ${currentLevel}. Great effort!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! Stay focused!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("FANTASTIC! You completed all levels! You are a Body Cleanliness Expert!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏆 MASTER OF HYGIENE & CLEANLINESS! 🏆</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1500);
+            }
+        }
+    }
+
+    function processVoiceAnswer(spoken){
+        if(levelCompleteFlag){
+            answerFeedback.innerHTML = "⚠️ Level complete! Click Next Level to continue.";
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock) return;
+        
+        let letter = spoken.trim().toUpperCase();
+        if(letter.includes("CHOICE") || letter.includes("OPTION") || letter.includes("LETTER")){
+            if(letter.includes("A")) letter = "A";
+            else if(letter.includes("B")) letter = "B";
+            else if(letter.includes("C")) letter = "C";
+            else if(letter.includes("D")) letter = "D";
+        } else if(letter.length > 1){
+            letter = letter.charAt(0);
+        }
+        
+        if(!['A','B','C','D'].includes(letter)){
+            answerFeedback.innerHTML = "⚠️ Please say A, B, C, or D only!";
+            speakEnglish("Please say A, B, C, or D only.", false);
+            return;
+        }
+        
+        handleOptionClick(letter);
+    }
+
+    function updateCounter(){
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function updateUI(){
+        scoreValueSpan.innerText = scores[currentLevel];
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function initSpeech(){
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SpeechRec){
+            voiceStatusMsg.innerHTML = "❌ Your browser doesn't support voice input. Use Chrome, Edge, or Safari.";
+            micBtn.disabled = true;
+            micBtn.classList.add('mic-disabled');
+            speechSupported = false;
+            return false;
+        }
+        recognition = new SpeechRec();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onstart = () => { listening=true; voiceStatusMsg.innerHTML="🎤 Listening... Say A, B, C, or D 🎤"; micBtn.classList.add('listening-active'); };
+        recognition.onend = () => { listening=false; voiceStatusMsg.innerHTML="✅ Ready • Click mic and say A, B, C, or D"; micBtn.classList.remove('listening-active'); };
+        recognition.onresult = (ev) => { let spoken = ev.results[0][0].transcript; voiceStatusMsg.innerHTML=`🗣️ You said: "${spoken}"`; processVoiceAnswer(spoken); };
+        recognition.onerror = (e) => { 
+            let msg = e.error === 'not-allowed' ? "❌ Microphone permission denied. Please allow access." : "❌ Speech error. Click mic again.";
+            voiceStatusMsg.innerHTML = msg; 
+            micBtn.classList.remove('listening-active'); 
+            listening=false; 
+        };
+        return true;
+    }
+
+    micBtn.addEventListener('click', ()=>{
+        if(!speechSupported && !recognition && !window.SpeechRecognition && !window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "Sorry, your browser doesn't support voice input.";
+            return;
+        }
+        if(levelCompleteFlag){
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock){
+            speakEnglish("Please wait, processing your previous answer.", false);
+            return;
+        }
+        if(!recognition){
+            if(!initSpeech()) return;
+        }
+        if(listening){
+            recognition.stop();
+            return;
+        }
+        try{ recognition.start(); } catch(e){ recognition = null; initSpeech(); }
+    });
+
+    function highlightActiveLevel(){
+        document.querySelectorAll('.level-btn').forEach(btn=>{
+            if(parseInt(btn.getAttribute('data-level'))===currentLevel) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+
+    function buildLevels(){
+        const container = document.getElementById('levelButtonsContainer');
+        container.innerHTML = '';
+        for(let l=1; l<=4; l++){
+            const btn = document.createElement('button');
+            btn.className = 'level-btn';
+            if(l===currentLevel) btn.classList.add('active');
+            btn.innerText = `LEVEL ${l}`;
+            btn.setAttribute('data-level', l);
+            btn.addEventListener('click', ()=>{
+                if(levelCompleteFlag && currentLevel !== l) levelCompleteFlag = false;
+                currentLevel = l;
+                currentQIndex = 0;
+                levelCompleteFlag = false;
+                levelCompleteDiv.innerHTML = "";
+                loadQuestion();
+                updateUI();
+                highlightActiveLevel();
+                answerFeedback.innerHTML = "";
+                speakEnglish(`Level ${l} selected. Answer questions about body cleanliness and hygiene habits!`, true);
+                setTimeout(() => { answeringLock = false; }, 100);
+            });
+            container.appendChild(btn);
+        }
+    }
+
+    function startGame(){ 
+        buildLevels(); 
+        loadQuestion(); 
+        updateUI(); 
+        highlightActiveLevel();
+        if(window.SpeechRecognition || window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "🎙️ Ready! Click the microphone and say A, B, C, or D";
+        }
+        answeringLock = false;
+    }
+    startGame();
+</script>
+</body>
+</html>

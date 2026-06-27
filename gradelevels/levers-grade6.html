@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚖️ Lever Master - CBC Grade 4</title>
+<style>
+  :root {
+    --bg-dark: #0f172a; --card: rgba(255,255,255,0.06); --border: rgba(255,255,255,0.1);
+    --accent: #38bdf8; --primary: #8b5cf6; --success: #22c55e; --danger: #ef4444;
+    --warning: #f59e0b; --gold: #fbbf24; --text: #ffffff; --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-dark); color: var(--text); min-height: 100vh; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #164e63 100%);
+    z-index: -2; animation: hue 25s ease-in-out infinite alternate;
+  }
+  @keyframes hue { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(30deg); } }
+  
+  .particles { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; overflow:hidden; }
+  .particle {
+    position: absolute; background: rgba(255,255,255,0.12); border-radius: 50%;
+    animation: rise linear infinite;
+  }
+  @keyframes rise { 0% { transform: translateY(105vh) scale(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform: translateY(-10vh) scale(1); opacity:0; } }
+  
+  .container { max-width: 900px; margin: 0 auto; padding: 15px; min-height: 100vh; }
+  
+  .screen { display: none; animation: fadeIn 0.5s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes popIn { 0% { transform:scale(0); opacity:0; } 60% { transform:scale(1.1); } 100% { transform:scale(1); opacity:1; } }
+  @keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.05); } }
+  @keyframes shake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-10px); } 40% { transform:translateX(10px); } 60% { transform:translateX(-6px); } 80% { transform:translateX(6px); } }
+  @keyframes glowPulse { 0%,100% { box-shadow:0 0 5px var(--gold); } 50% { box-shadow:0 0 25px var(--gold), 0 0 50px rgba(251,191,36,0.3); } }
+  @keyframes confettiFall { 0% { transform:translateY(-10vh) rotate(0); opacity:1; } 100% { transform:translateY(110vh) rotate(720deg); opacity:0; } }
+  @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+  @keyframes timerWarn { 0%,100% { transform:scale(1); } 50% { transform:scale(1.1); } }
+  
+  .header { text-align: center; padding: 20px 10px; }
+  .title {
+    font-size: clamp(30px, 5vw, 50px); font-weight: 900;
+    background: linear-gradient(135deg, #38bdf8, #8b5cf6, #f472b6, #fbbf24);
+    background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; animation: grad 6s ease infinite; line-height: 1.15;
+  }
+  @keyframes grad { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+  .subtitle { font-size: clamp(14px, 2.5vw, 18px); color: rgba(255,255,255,0.65); margin-top: 8px; }
+  .hero-icon { font-size: clamp(45px, 8vw, 75px); animation: pulse 2.5s ease infinite; display: block; margin: 8px auto; }
+  
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    padding: 22px; margin: 14px 0; backdrop-filter: blur(12px); box-shadow: var(--shadow);
+  }
+  
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 26px; border: none; border-radius: 50px; font-size: clamp(14px, 2vw, 17px);
+    font-weight: 700; cursor: pointer; transition: all 0.25s; text-transform: uppercase;
+    letter-spacing: 0.8px; position: relative; overflow: hidden;
+  }
+  .btn-primary { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; box-shadow: 0 4px 15px rgba(139,92,246,0.4); }
+  .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; box-shadow: 0 4px 15px rgba(34,197,94,0.4); }
+  .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; box-shadow: 0 4px 15px rgba(245,158,11,0.4); }
+  .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+  .btn-gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #0f172a; box-shadow: 0 4px 15px rgba(251,191,36,0.4); }
+  .btn-sm { padding: 10px 20px; font-size: 14px; }
+  .btn-block { width: 100%; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+  
+  .levels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; padding: 10px 0; }
+  .level-card {
+    background: var(--card); border: 2px solid var(--border); border-radius: 18px; padding: 22px;
+    text-align: center; cursor: pointer; transition: all 0.3s; position: relative;
+  }
+  .level-card.locked { opacity: 0.35; cursor: not-allowed; filter: grayscale(0.7); }
+  .level-card:not(.locked):hover { transform: translateY(-5px); border-color: var(--gold); }
+  .level-card.completed { border-color: var(--success); }
+  .level-card.current { animation: glowPulse 2s ease-in-out infinite; border-color: var(--gold); }
+  .l-icon { font-size: 48px; margin-bottom: 8px; }
+  .l-name { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+  .l-desc { font-size: 13px; color: rgba(255,255,255,0.55); }
+  .badge { position: absolute; top: 14px; right: 14px; background: var(--success); color: #0f172a; padding: 3px 10px; border-radius: 16px; font-size: 12px; font-weight: 700; }
+  .badge.locked-badge { background: #555; color: white; }
+  
+  .quiz-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .quiz-info { display: flex; gap: 10px; flex-wrap: wrap; }
+  .info-badge { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.08); padding: 7px 14px; border-radius: 25px; font-size: 13px; font-weight: 600; }
+  .ib-score { color: var(--gold); } .ib-qnum { color: var(--success); } .ib-lname { color: #e2e8f0; }
+  
+  .timer-box { width: 64px; height: 64px; }
+  .timer-circle { width:100%; height:100%; border-radius:50%; border:4px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); position:relative; }
+  .timer-svg { position:absolute; top:0; left:0; width:100%; height:100%; transform:rotate(-90deg); }
+  .timer-svg circle { fill:none; stroke-width:4; stroke-linecap:round; }
+  .t-bg { stroke: rgba(255,255,255,0.1); } .t-prog { stroke: var(--accent); transition: stroke-dashoffset 1s linear, stroke 0.4s; }
+  .timer-text { font-size: 20px; font-weight: 800; position:relative; z-index:2; color: var(--text); }
+  .timer-text.warn { color: var(--warning); } .timer-text.danger { animation: timerWarn 0.5s ease-in-out infinite; color: var(--danger); }
+  
+  .prog-bar-bg { width:100%; height:7px; background:rgba(255,255,255,0.1); border-radius:10px; overflow:hidden; margin:14px 0; }
+  .prog-bar { height:100%; background:linear-gradient(90deg, #8b5cf6, #38bdf8); border-radius:10px; transition:width 0.4s; }
+  
+  .q-card { animation: popIn 0.4s ease; }
+  .q-num { font-size: 14px; color: var(--gold); font-weight: 700; margin-bottom: 10px; }
+  .q-text { font-size: clamp(16px, 2.5vw, 22px); font-weight: 600; line-height:1.5; margin-bottom:24px; }
+  
+  .opts { display: grid; gap: 11px; }
+  .opt-btn {
+    display: flex; align-items: center; gap: 12px; width:100%; padding: 15px 18px;
+    background: rgba(255,255,255,0.05); border:2px solid var(--border); border-radius:14px;
+    color: var(--text); font-size: clamp(14px, 2vw, 16px); font-weight: 500; cursor:pointer;
+    transition: all 0.25s; text-align: left;
+  }
+  .opt-btn:hover:not(.disabled) { background:rgba(255,255,255,0.12); border-color:var(--gold); transform:translateX(4px); }
+  .opt-letter { width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
+  .opt-btn.correct { background:rgba(34,197,94,0.2); border-color:var(--success); animation:pulse 0.4s; }
+  .opt-btn.wrong { background:rgba(239,68,68,0.2); border-color:var(--danger); animation:shake 0.5s; }
+  .opt-btn.disabled { pointer-events:none; opacity:0.55; }
+  
+  .feedback { padding:14px; border-radius:14px; margin-top:14px; text-align:center; font-weight:600; animation:slideUp 0.3s ease; display:none; }
+  .fb-correct { background:rgba(34,197,94,0.15); border:1px solid var(--success); color:var(--success); }
+  .fb-wrong { background:rgba(239,68,68,0.15); border:1px solid var(--danger); color:var(--danger); }
+  .fb-timeout { background:rgba(245,158,11,0.15); border:1px solid var(--warning); color:var(--warning); }
+  .next-wrap { margin-top:14px; display:none; }
+  
+  .res-card { text-align:center; padding:28px 20px; }
+  .res-emoji { font-size:75px; margin-bottom:14px; animation:popIn 0.7s; }
+  .res-title { font-size:clamp(24px, 4vw, 35px); font-weight:900; margin-bottom:8px; }
+  .res-score { font-size:18px; color:rgba(255,255,255,0.75); margin-bottom:24px; }
+  .score-big { font-size:clamp(45px, 8vw, 78px); font-weight:900; background:linear-gradient(135deg,var(--gold),var(--warning)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:18px 0; }
+  .stars { display:flex; justify-content:center; gap:10px; margin:18px 0; }
+  .star { font-size:38px; opacity:0.2; transition:0.5s; }
+  .star.earned { opacity:1; animation:popIn 0.5s ease; filter:drop-shadow(0 0 10px rgba(251,191,36,0.5)); }
+  .ring-box { width:140px; height:140px; margin:18px auto; position:relative; }
+  .ring-box svg { transform:rotate(-90deg); }
+  .ring-box circle { fill:none; stroke-width:8; stroke-linecap:round; }
+  .ring-bg { stroke:rgba(255,255,255,0.1); } .ring-prog { stroke:var(--success); transition:stroke-dashoffset 1.5s; }
+  .ring-txt { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:28px; font-weight:900; }
+  
+  .streak-box { display:flex; align-items:center; justify-content:center; gap:8px; padding:9px 18px; background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.25); border-radius:20px; margin:10px 0; font-weight:700; color:var(--gold); display:none; }
+  .confetti { position:fixed; width:9px; height:9px; top:-10px; z-index:9999; animation:confettiFall 3s ease-in forwards; }
+  
+  .ach-popup { position:fixed; top:16px; right:16px; background:linear-gradient(135deg,rgba(139,92,246,0.9),rgba(109,40,217,0.9)); padding:14px 22px; border-radius:14px; border:2px solid var(--gold); z-index:9999; animation:slideUp 0.4s ease, fadeOut 0.5s ease 2.5s forwards; display:none; }
+  @keyframes fadeOut { to { opacity:0; visibility:hidden; } }
+  .ach-title { font-weight:700; color:var(--gold); font-size:13px; } .ach-text { font-size:12px; margin-top:3px; }
+  
+  .xp-wrap { width:100%; height:10px; background:rgba(255,255,255,0.1); border-radius:8px; overflow:hidden; margin:8px 0; }
+  .xp-bar { height:100%; background:linear-gradient(90deg,#8b5cf6,#d946ef); border-radius:8px; transition:width 0.5s; }
+  .lv-info { display:flex; justify-content:space-between; font-size:12px; color:rgba(255,255,255,0.5); }
+  
+  .pow-wrap { display:flex; gap:9px; flex-wrap:wrap; margin:14px 0; }
+  .pow-btn { padding:8px 15px; border-radius:20px; border:2px solid var(--border); background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-size:13px; font-weight:600; transition:0.3s; display:flex; align-items:center; gap:5px; }
+  .pow-btn:hover:not(:disabled) { background:rgba(255,255,255,0.12); border-color:var(--gold); }
+  .pow-btn:disabled { opacity:0.3; cursor:not-allowed; }
+  
+  .flash-ok, .flash-bad { position:fixed; inset:0; z-index:100; pointer-events:none; animation:fadeOut 0.5s forwards; }
+  .flash-ok { background:rgba(34,197,94,0.12); } .flash-bad { background:rgba(239,68,68,0.12); }
+  
+  @media(max-width:600px) {
+    .container { padding:10px; }
+    .card { padding:16px; border-radius:14px; }
+    .levels-grid { grid-template-columns:1fr; }
+    .quiz-header { flex-direction:column; align-items:stretch; }
+    .quiz-info { justify-content:center; }
+    .timer-box { width:56px; height:56px; margin:0 auto; }
+    .btn { padding:11px 18px; }
+    .res-card { padding:18px 14px; }
+  }
+  @media(min-width:601px) and (max-width:1024px) { .levels-grid { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<div class="ach-popup" id="ach"><div class="ach-title">🏆 Achievement!</div><div class="ach-text" id="achText"></div></div>
+
+<div class="container">
+  <!-- HOME -->
+  <div class="screen active" id="home">
+    <div class="header"><span class="hero-icon">⚖️</span><h1 class="title">Lever Master</h1><p class="subtitle">CBC Grade 4 • Force &amp; Energy</p></div>
+    <div class="card" style="text-align:center;">
+      <p style="font-size:16px; margin-bottom:20px; line-height:1.6;">🎯 Master levers &amp; force!<br>⏱️ Beat the clock for bonus points<br>🔥 Build streaks for extra XP<br>⭐ Score 80% to unlock next level</p>
+      <div class="xp-wrap"><div class="xp-bar" id="totalXPBar" style="width:0%"></div></div>
+      <div class="lv-info"><span>Total XP: <strong id="totalXP">0</strong></span><span>Level: <strong id="playerLv">1</strong></span></div><br>
+      <button class="btn btn-primary btn-block" onclick="goLevels()">🚀 Start Game</button>
+    </div>
+  </div>
+  
+  <!-- LEVELS -->
+  <div class="screen" id="levelScreen">
+    <div class="header"><span class="hero-icon">🗺️</span><h1 class="title" style="font-size:clamp(22px,4vw,34px)">Select Level</h1></div>
+    <div class="levels-grid" id="lGrid"></div>
+    <div class="card" style="text-align:center; margin-top:10px;"><button class="btn btn-warning btn-sm" onclick="show('home')">← Back</button></div>
+  </div>
+  
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="quiz-header">
+      <div class="quiz-info">
+        <span class="info-badge ib-lname" id="badgeLvl">📚 L1</span>
+        <span class="info-badge ib-score">⭐ <span id="dScore">0</span></span>
+        <span class="info-badge ib-qnum">📝 <span id="dQnum">1/40</span></span>
+      </div>
+      <div class="timer-box"><div class="timer-circle">
+        <svg class="timer-svg" viewBox="0 0 100 100"><circle class="t-bg" cx="50" cy="50" r="44"></circle><circle class="t-prog" id="tCircle" cx="50" cy="50" r="44" stroke-dasharray="276.5" stroke-dashoffset="0"></circle></svg>
+        <span class="timer-text" id="tText">20</span>
+      </div></div>
+    </div>
+    <div class="prog-bar-bg"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+    <div class="streak-box" id="streakBox">🔥 <span id="sCount">0</span> Streak! +<span id="sBonus">0</span> XP</div>
+    <div class="q-card card" id="qCard">
+      <div class="q-num" id="qNum">Question 1/40</div>
+      <div class="q-text" id="qText"></div>
+      <div class="opts" id="opts"></div>
+      <div class="feedback" id="fb"></div>
+      <div class="next-wrap" id="nextW"><button class="btn btn-primary btn-block" onclick="nextQ()">Next →</button></div>
+    </div>
+    <div class="pow-wrap" id="powW">
+      <button class="pow-btn" id="pSkip" onclick="useSkip()">⏭️ Skip (0)</button>
+      <button class="pow-btn" id="pTime" onclick="addTime()">⏰ +10s (0)</button>
+    </div>
+    <div class="card" style="text-align:center; margin-top:10px;"><button class="btn btn-danger btn-sm" onclick="quit()">🚪 Quit</button></div>
+  </div>
+  
+  <!-- RESULTS -->
+  <div class="screen" id="res">
+    <div class="res-card card">
+      <div class="res-emoji" id="rEmoji">🏆</div><h2 class="res-title" id="rTitle">Done!</h2>
+      <div class="score-big" id="rPct">85%</div>
+      <p class="res-score" id="rDetail">34/40 correct</p>
+      <div class="stars" id="stars"><span class="star" id="s1">⭐</span><span class="star" id="s2">⭐</span><span class="star" id="s3">⭐</span></div>
+      <div class="ring-box"><svg width="140" height="140"><circle class="ring-bg" cx="70" cy="70" r="60"></circle><circle class="ring-prog" id="rRing" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="377"></circle></svg><div class="ring-txt" id="rTxt">0%</div></div>
+      <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:18px;">
+        <button class="btn btn-gold" onclick="retry()">🔄 Retry</button>
+        <button class="btn btn-primary" id="nxtBtn" onclick="nextLv()">🚀 Next</button>
+        <button class="btn btn-warning" onclick="goLevels()">🗺️ Levels</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const Q = {
+1: [
+  {q:"Which playground equipment is a classic example of a lever?",o:["Swing","Slide","Seesaw","Merry-go-round"],a:2},
+  {q:"A pair of garden scissors operates as which simple machine?",o:["Pulley","Lever","Screw","Wheel"],a:1},
+  {q:"Which metal tool is used by mechanics to pry open heavy lids?",o:["Wrench","Crowbar","Hammer","Saw"],a:1},
+  {q:"Farmers use a single-wheel cart to transport heavy crops. What is it?",o:["Tractor","Wheelbarrow","Cart","Trolley"],a:1},
+  {q:"Which sporting equipment uses a flexible lever to cast a line?",o:["Fishing rod","Cricket bat","Tennis racket","Golf club"],a:0},
+  {q:"Which household cleaning tool works as a lever when you push it?",o:["Mop","Broom","Vacuum","Duster"],a:1},
+  {q:"Which small tool has two joined arms to grip tiny objects?",o:["Tweezers","Pliers","Wrench","Screwdriver"],a:0},
+  {q:"Which office supply fastens papers together using a downward press?",o:["Stapler","Paperclip","Glue stick","Rubber band"],a:0},
+  {q:"Which kitchen gadget removes bottle caps by pivoting on the rim?",o:["Can opener","Bottle opener","Corkscrew","Peeler"],a:1},
+  {q:"Which hand tool grips and bends wires using crossed levers?",o:["Hammer","Pliers","Spanner","Drill"],a:1},
+  {q:"Which dining utensil lifts food without direct hand contact?",o:["Fork","Spoon","Tongs","Knife"],a:2},
+  {q:"Which garden tool lifts soil by pivoting near the blade?",o:["Shovel","Rake","Hoe","Pitchfork"],a:0},
+  {q:"Which long-handled farm tool breaks hard soil by leveraging weight?",o:["Hoe","Rake","Spade","Sickle"],a:0},
+  {q:"Which house fixture uses a rotating lever mechanism?",o:["Window","Door handle","Light switch","Thermostat"],a:1},
+  {q:"Which carpenter tool pulls nails out by pivoting on the wood?",o:["Chisel","Claw hammer","Hand saw","Mallet"],a:1},
+  {q:"Which yard tool gathers dry leaves by sweeping with a long handle?",o:["Broom","Rake","Brush","Shovel"],a:1},
+  {q:"Which gardening tool trims thick branches with crossed blades?",o:["Pruning shears","Gloves","Watering can","Trowel"],a:0},
+  {q:"Which personal grooming tool cuts fingernails using a press mechanism?",o:["Nail clippers","Nail file","Nail brush","Nail polish"],a:0},
+  {q:"Which kitchen device pierces and lifts tin lids?",o:["Can opener","Jar opener","Bottle opener","Peeler"],a:0},
+  {q:"Which tool cracks hard nutshells with a squeezing action?",o:["Cracker","Nutcracker","Opener","Grinder"],a:1},
+  {q:"Which metal tool safely lifts burning charcoal from a stove?",o:["Tongs","Spatula","Ladle","Fork"],a:0},
+  {q:"Which serving tool picks up sugar cubes without hands?",o:["Sugar tongs","Teaspoon","Fork","Knife"],a:0},
+  {q:"Which Asian eating utensils work as paired third-class levers?",o:["Chopsticks","Spoon","Fork","Knife"],a:0},
+  {q:"Which beauty tool removes unwanted facial hair precisely?",o:["Tweezers","Razor","Comb","Brush"],a:0},
+  {q:"Which medical instrument safely removes splinters or stitches?",o:["Forceps","Scalpel","Bandage","Syringe"],a:0},
+  {q:"Which farm tool cuts tree branches cleanly?",o:["Pruning shears","Axe","Saw","Knife"],a:0},
+  {q:"Which electrician tool cuts thick cables instantly?",o:["Wire cutters","Screwdriver","Pliers","Tester"],a:0},
+  {q:"Which restaurant tool serves salad without touching it?",o:["Salad tongs","Spoon","Fork","Knife"],a:0},
+  {q:"Which watercraft equipment pushes against water to move forward?",o:["Oars","Anchor","Sail","Helm"],a:0},
+  {q:"Which workshop tool holds objects tightly while gluing?",o:["Vice grips","Clamp","Wrench","Screwdriver"],a:0},
+  {q:"Which ice-handling tool prevents cold burns?",o:["Ice tongs","Gloves","Bucket","Bag"],a:0},
+  {q:"Which tool pulls out stubborn nails using leverage?",o:["Claw hammer","Mallet","Chisel","Saw"],a:0},
+  {q:"Which utensil lifts liquid by pivoting on the bowl rim?",o:["Soup spoon","Fork","Knife","Chopsticks"],a:0},
+  {q:"Which heavy-duty tool cuts sheet metal?",o:["Tin snips","Scissors","Knife","Blade"],a:0},
+  {q:"Which manual pump lifts water using a pivoting handle?",o:["Lever pump","Electric pump","Syringe","Bucket"],a:0},
+  {q:"Which bicycle part stops motion when pressed down?",o:["Brake lever","Pedal","Chain","Gear"],a:0},
+  {q:"Which musical instrument key presses down to strike a string?",o:["Piano key","Guitar string","Drum stick","Flute"],a:0},
+  {q:"Which heavy machinery part lifts buckets of soil?",o:["Excavator arm","Tractor wheel","Plough blade","Harvester"],a:0},
+  {q:"Which carpenter tool measures and lifts small objects simultaneously?",o:["Ruler","Tape measure","Square","Level"],a:0},
+  {q:"Which of these is NOT a lever?",o:["Seesaw","Broom","Rubber ball","Crowbar"],a:2}
+],
+2: [
+  {q:"What is the fixed pivot point of a lever called?",o:["Load","Effort","Fulcrum","Bar"],a:2},
+  {q:"What do we call the force applied to move an object on a lever?",o:["Fulcrum","Load","Effort","Weight"],a:2},
+  {q:"What is the object or weight being moved called?",o:["Effort","Fulcrum","Load","Pivot"],a:2},
+  {q:"In a seesaw, where is the turning point located?",o:["Under one seat","Exactly in the centre","At the handle","On the ground"],a:1},
+  {q:"In a wheelbarrow, what part acts as the pivot?",o:["The handles","The tray","The wheel","The load"],a:2},
+  {q:"When prying a box lid, where does the crowbar rest?",o:["On your hands","On the box edge (pivot)","On the lid","On the floor"],a:1},
+  {q:"What is the long stiff piece of a lever called?",o:["Rope","Lever arm","Pivot","Spring"],a:1},
+  {q:"What is the distance from the pivot to where you push called?",o:["Load arm","Effort arm","Fulcrum arm","Total length"],a:1},
+  {q:"What is the distance from the pivot to the object being lifted?",o:["Effort arm","Load arm","Long arm","Short arm"],a:1},
+  {q:"In a nutcracker, where is the object being cracked placed?",o:["At the pivot","At the handles","In the middle (load)","Outside the tool"],a:2},
+  {q:"When opening a door, what part acts as the fixed pivot?",o:["Door knob","Door hinges","Door frame","Door panel"],a:1},
+  {q:"In a bottle opener, the bottle cap represents which part?",o:["Fulcrum","Effort","Load","Handle"],a:2},
+  {q:"On a seesaw, the person sitting down provides what?",o:["Only weight","Either effort or load","Only balance","Nothing"],a:1},
+  {q:"How does the length of the effort arm affect lifting?",o:["Longer arm = less effort needed","Longer arm = more effort needed","Length doesn't matter","Shorter arm = no effort"],a:0},
+  {q:"If the pivot is moved closer to the heavy object, lifting becomes:",o:["Harder","Easier","Impossible","Slower"],a:1},
+  {q:"If the pivot is moved closer to where you push, lifting becomes:",o:["Easier","Harder","Unchanged","Faster"],a:1},
+  {q:"What allows a lever to turn smoothly?",o:["A rope","A fixed pivot point","A magnet","Gravity only"],a:1},
+  {q:"What material can be used to make a lever arm?",o:["Only rubber","Any rigid material (wood, metal, plastic)","Only glass","Only fabric"],a:1},
+  {q:"In a fishing rod, the hand holding the base acts as the:",o:["Load","Fulcrum","Effort","Reel"],a:1},
+  {q:"In a fishing rod, the fish pulling the line acts as the:",o:["Effort","Fulcrum","Load","Hook"],a:2},
+  {q:"In scissors, the central screw acts as the:",o:["Effort","Load","Fulcrum","Blade"],a:2},
+  {q:"When cutting paper, the paper represents the:",o:["Fulcrum","Effort","Load","Handle"],a:2},
+  {q:"When using scissors, your fingers supply the:",o:["Fulcrum","Load","Effort","Pivot"],a:2},
+  {q:"In a wheelbarrow, where do you place heavy materials?",o:["Near the wheel","In the tray (load position)","On the handles","Under the bar"],a:1},
+  {q:"In a wheelbarrow, your hands on the long handles supply:",o:["The fulcrum","The load","The effort","The wheel"],a:2},
+  {q:"How do levers reduce the difficulty of a task?",o:["By changing direction or multiplying force","By adding weight","By removing gravity","By creating heat"],a:0},
+  {q:"What happens when the effort arm is twice as long as the load arm?",o:["You need half the force","You need double the force","No change","The lever breaks"],a:0},
+  {q:"In a broom, the top hand that stays steady acts as the:",o:["Load","Fulcrum","Effort","Bristles"],a:1},
+  {q:"In a broom, the lower moving hand applies the:",o:["Load","Effort","Fulcrum","Dust"],a:1},
+  {q:"In a broom, the dirt being swept is the:",o:["Fulcrum","Effort","Load","Handle"],a:2},
+  {q:"When using a screwdriver to open a paint can, the can's rim is the:",o:["Effort","Load","Fulcrum","Lid"],a:2},
+  {q:"What two things must every lever have to function?",o:["A rope and pulley","A rigid bar and pivot","A motor and battery","Water and wind"],a:1},
+  {q:"Where exactly does the load rest on a lever system?",o:["At the effort point","At the pivot","At the load point","In the air"],a:2},
+  {q:"Where do you apply your push or pull on a lever?",o:["At the pivot","At the load","At the effort point","Nowhere"],a:2},
+  {q:"In tweezers, the joined tip where the arms meet is the:",o:["Effort","Load","Fulcrum","Grip"],a:2},
+  {q:"In a stapler, the metal hinge at the back acts as the:",o:["Fulcrum","Effort","Load","Spring"],a:0},
+  {q:"In nail clippers, the small lever you press down is the:",o:["Fulcrum","Load","Effort point","Blade"],a:2},
+  {q:"Why is a lever considered a simple machine?",o:["It makes work easier with few parts","It has many gears","It uses electricity","It runs on fuel"],a:0},
+  {q:"What connects the effort and load on a lever?",o:["The lever arm","A rope","A pulley","A spring"],a:0},
+  {q:"If a lever has no pivot point, it will:",o:["Still work perfectly","Not function as a lever","Work faster","Break immediately"],a:1}
+],
+3: [
+  {q:"How many different classes of levers exist?",o:["One","Two","Three","Four"],a:2},
+  {q:"In which class is the pivot located between the push and the weight?",o:["First-class","Second-class","Third-class","None"],a:0},
+  {q:"A playground seesaw belongs to which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"A gardener's wheelbarrow is which type of lever?",o:["First-class","Second-class","Third-class","Not a lever"],a:1},
+  {q:"Beauty tweezers are classified as which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"In a second-class lever, where is the heavy object positioned?",o:["At one end","Between the pivot and push","At the push end","Nowhere"],a:1},
+  {q:"In a third-class lever, where is the applied force located?",o:["At one end","Between the pivot and load","After the load","At the pivot"],a:1},
+  {q:"Paper-cutting scissors are which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"A flexible fishing rod operates as which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"A kitchen nutcracker is which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:1},
+  {q:"A standard bottle opener works as which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:1},
+  {q:"A long-handled broom sweeping floors is which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"Which lever class always keeps the pivot in the middle?",o:["First-class","Second-class","Third-class","All classes"],a:0},
+  {q:"Which lever class places the weight in the middle?",o:["First-class","Second-class","Third-class","None"],a:1},
+  {q:"Which lever class places your push in the middle?",o:["First-class","Second-class","Third-class","None"],a:2},
+  {q:"Gripping pliers are which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"A soil-lifting shovel acts as which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"A crowbar lifting a heavy crate is which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"Your forearm lifting a book acts as which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"An office stapler pressing down is which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"What is the correct order for a first-class lever?",o:["Push-Pivot-Weight","Pivot-Push-Weight","Weight-Pivot-Push","Push-Weight-Pivot"],a:0},
+  {q:"What is the correct order for a second-class lever?",o:["Pivot-Weight-Push","Weight-Push-Pivot","Push-Pivot-Weight","Pivot-Push-Weight"],a:0},
+  {q:"What is the correct order for a third-class lever?",o:["Pivot-Push-Weight","Push-Pivot-Weight","Pivot-Weight-Push","Weight-Push-Pivot"],a:0},
+  {q:"Which class gives the greatest force advantage?",o:["First-class","Second-class","Third-class","Equal"],a:1},
+  {q:"Third-class levers are mainly used to increase:",o:["Force","Speed and distance","Weight","Friction"],a:1},
+  {q:"Dining tongs are which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"Hedge-cutting shears are which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"A swinging door acts as which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:1},
+  {q:"Why is a wheelbarrow second-class?",o:["Wheel at end, load in middle, push at handles","Push in middle","Weight at end","Pivot in middle"],a:0},
+  {q:"Nodding your head uses which lever class at the neck?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"Which class is best for lifting very heavy objects?",o:["First-class","Second-class","Third-class","Equal"],a:1},
+  {q:"Which class is best for throwing or swinging fast?",o:["First-class","Second-class","Third-class","Equal"],a:2},
+  {q:"Rowboat oars are which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"Fingernail clippers are which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:1},
+  {q:"Fireplace tongs are which lever class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"A leaf-gathering rake is which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:2},
+  {q:"A claw hammer removing nails is which class?",o:["First-class","Second-class","Third-class","Not a lever"],a:0},
+  {q:"Which two classes keep push and weight on the same side?",o:["First and second","Second and third","First and third","None"],a:1},
+  {q:"Which class can reverse the direction of your push?",o:["First-class only","Second-class only","Third-class only","None"],a:0},
+  {q:"Which of these is NOT a real lever class?",o:["First-class","Second-class","Fourth-class","Third-class"],a:2}
+],
+4: [
+  {q:"Why do we use levers in everyday tasks?",o:["To make work easier and safer","To make things heavier","To stop movement","To create heat"],a:0},
+  {q:"At home, pushing a door handle uses a lever to:",o:["Unlock or open the door","Paint the door","Break the door","Clean the door"],a:0},
+  {q:"In the kitchen, scissors are mainly used to:",o:["Cut vegetables or packaging","Stir soup","Wash plates","Boil water"],a:0},
+  {q:"On a farm, a wheelbarrow helps workers:",o:["Carry heavy harvest with less strain","Water crops automatically","Plant seeds","Harvest automatically"],a:0},
+  {q:"A broom helps cleaners by:",o:["Sweeping dust efficiently","Cutting grass","Polishing floors","Washing walls"],a:0},
+  {q:"A fishing rod helps anglers to:",o:["Cast lines far with little force","Cook fish","Clean nets","Row boats"],a:0},
+  {q:"In offices, staplers are used to:",o:["Fasten papers quickly","Cut paper","Erase ink","Draw lines"],a:0},
+  {q:"Tweezers help people:",o:["Remove tiny splinters safely","Cut nails","Lift heavy boxes","Sweep floors"],a:0},
+  {q:"Construction workers use crowbars to:",o:["Pry heavy materials apart","Sew fabric","Paint walls","Cook meals"],a:0},
+  {q:"Nutcrackers are designed to:",o:["Break hard shells safely","Cut paper","Wash dishes","Sweep yards"],a:0},
+  {q:"Bottle openers make it easy to:",o:["Remove metal caps quickly","Drink directly from cans","Boil water","Clean bottles"],a:0},
+  {q:"Electricians use pliers to:",o:["Grip and bend wires securely","Paint sockets","Measure voltage","Solder metal"],a:0},
+  {q:"At dining tables, tongs allow guests to:",o:["Serve food hygienically","Cut meat","Cook dishes","Wash hands"],a:0},
+  {q:"Seesaws in parks teach children about:",o:["Balance and shared weight","Eating snacks","Reading books","Sleeping"],a:0},
+  {q:"Gardeners use shovels to:",o:["Dig and move soil efficiently","Water flowers","Cut branches","Paint fences"],a:0},
+  {q:"Rakes help yard workers:",o:["Collect leaves into piles","Water grass","Mow lawns","Plant trees"],a:0},
+  {q:"Hedge shears allow gardeners to:",o:["Trim bushes neatly","Dig soil","Water plants","Harvest fruit"],a:0},
+  {q:"Nail clippers provide:",o:["Quick, clean nail trimming","Hair cutting","Skin filing","Toe painting"],a:0},
+  {q:"Can openers are used to:",o:["Access food in metal tins safely","Cook food","Wash tins","Store tins"],a:0},
+  {q:"Pruning shears help farmers:",o:["Remove dead branches cleanly","Harvest crops","Water trees","Fertilize soil"],a:0},
+  {q:"In building sites, levers help workers:",o:["Lift heavy bricks with reduced effort","Mix cement only","Paint walls only","Measure height"],a:0},
+  {q:"Car jacks in garages use levers to:",o:["Raise vehicles for tyre changes","Wash cars","Refuel engines","Paint bodies"],a:0},
+  {q:"Clinics use forceps to:",o:["Hold medical supplies precisely","Measure temperature","Inject medicine","Check blood pressure"],a:0},
+  {q:"Eyebrow tweezers are used for:",o:["Shaping eyebrows safely","Cutting hair","Applying makeup","Washing face"],a:0},
+  {q:"Fire tongs help cooks:",o:["Handle hot wood safely","Boil water","Cut vegetables","Serve soup"],a:0},
+  {q:"Chopsticks enable diners to:",o:["Pick up food delicately","Cut meat","Stir drinks","Peel fruit"],a:0},
+  {q:"Hoes are used in fields to:",o:["Break hard soil for planting","Water crops","Harvest grain","Build fences"],a:0},
+  {q:"Wire cutters help technicians:",o:["Sever cables cleanly","Connect wires","Measure current","Insulate cables"],a:0},
+  {q:"Salad tongs are used in restaurants to:",o:["Mix and serve greens hygienically","Cut vegetables","Cook pasta","Wash bowls"],a:0},
+  {q:"In science class, a ruler balancing an eraser demonstrates:",o:["Lever principles in action","Magnetism","Electricity","Sound waves"],a:0},
+  {q:"Tailors use scissors to:",o:["Cut fabric accurately","Sew threads","Iron clothes","Measure bodies"],a:0},
+  {q:"Farm wheelbarrows transport:",o:["Manure and crops efficiently","Water only","Animals only","Tools only"],a:0},
+  {q:"Fishing rods are levers, but fishing nets are:",o:["Not levers; they trap fish","Also levers","Pulleys","Screws"],a:0},
+  {q:"Rowboat oars help boaters:",o:["Propel boats forward efficiently","Steer only","Anchor only","Fish only"],a:0},
+  {q:"Twist-off bottle caps use a:",o:["Lever and grip principle","Only magnetism","Only gravity","Only wind"],a:0},
+  {q:"Workshop vice grips hold objects by:",o:["Applying strong lever pressure","Using magnets","Using glue","Using heat"],a:0},
+  {q:"Sugar tongs at tea time allow:",o:["Hygienic sugar picking","Sugar cutting","Sugar cooking","Sugar sweeping"],a:0},
+  {q:"A doorstop prevents closing using:",o:["Friction and wedge, not leverage","Pulleys","Magnets","Springs only"],a:0},
+  {q:"Using levers in daily life makes tasks:",o:["Faster, safer, and less tiring","Slower and harder","More dangerous","More expensive"],a:0},
+  {q:"Which item does NOT rely on lever mechanics?",o:["Scissors","Door handle","Rubber band","Bottle opener"],a:2}
+],
+5: [
+  {q:"What is the scientific definition of force?",o:["A push or pull that changes motion","A type of energy","A measuring tool","A simple machine"],a:0},
+  {q:"What does energy mean in science?",o:["The ability to do work or cause movement","A lever part","A measuring unit","A colour"],a:0},
+  {q:"Levers help us work by:",o:["Using force and transferring energy efficiently","Only using magnets","Only using heat","Only using light"],a:0},
+  {q:"When you open a door, your hand applies:",o:["Force","Magnetism","Light","Sound"],a:0},
+  {q:"The energy to lift a textbook comes from:",o:["Your muscles (chemical energy)","The air","The desk","Gravity alone"],a:0},
+  {q:"A lever moves force from:",o:["Your hands to the object","The floor to the sky","The air to the load","Nowhere"],a:0},
+  {q:"A longer effort arm means you need:",o:["Less force to lift","More force to lift","The same force","No force"],a:0},
+  {q:"When using a lever, energy is:",o:["Transferred, not created","Created from nothing","Destroyed completely","Turned into sound"],a:0},
+  {q:"A balanced seesaw demonstrates:",o:["Equal turning forces on both sides","Only gravity","Only magnetism","Only friction"],a:0},
+  {q:"Without a pivot, a bar cannot function as a:",o:["Lever","Rope","String","Chain"],a:0},
+  {q:"What is the standard unit for measuring force?",o:["Newton","Metre","Litre","Second"],a:0},
+  {q:"Levers mainly help overcome which natural pull?",o:["Gravity pulling objects down","Wind pushing sideways","Heat rising","Light reflecting"],a:0},
+  {q:"When lifting a book, your forearm acts as a:",o:["Third-class lever","Pulley","Screw","Wheel"],a:0},
+  {q:"In your arm, the elbow joint acts as the:",o:["Fulcrum","Effort","Load","Rope"],a:0},
+  {q:"In your arm, the held book represents the:",o:["Load","Fulcrum","Effort","Spring"],a:0},
+  {q:"In your arm, the muscle contraction provides the:",o:["Effort","Fulcrum","Load","Friction"],a:0},
+  {q:"Levers multiply your push using:",o:["A stiff bar and pivot point","Only wheels","Only ropes","Only water"],a:0},
+  {q:"Doubling the distance where you push halves the:",o:["Force required","Weight of object","Gravity","Time taken"],a:0},
+  {q:"Energy can never be:",o:["Created or destroyed, only changed","Moved","Stored","Used"],a:0},
+  {q:"A lever changes your energy into:",o:["Movement of the load","Heat only","Light only","Sound only"],a:0},
+  {q:"Heavier loads require:",o:["More pushing force","Less pushing force","No force","The same force"],a:0},
+  {q:"Rubbing at the pivot increases friction. We reduce it by:",o:["Oiling the joint","Adding weight","Using rubber bands","Removing the bar"],a:0},
+  {q:"A perfectly balanced lever has:",o:["Equal force × distance on both sides","More weight on one side","No pivot","No effort"],a:0},
+  {q:"When using a crowbar, you push far from the pivot to:",o:["Multiply your lifting force","Reduce the bar length","Break the load","Stop movement"],a:0},
+  {q:"Levers are useful because they:",o:["Reduce effort, change direction, or increase speed","Only make things heavier","Only stop motion","Create new energy"],a:0},
+  {q:"A lever's pivot can be:",o:["Fixed in place or movable","Only fixed","Only moving","Non-existent"],a:0},
+  {q:"When a lever balances, the clockwise force equals:",o:["The anticlockwise force","Zero","Double the load","The effort only"],a:0},
+  {q:"On a seesaw, a heavier child must sit ______ to balance:",o:["Closer to the centre","Further from the centre","On the ground","On the handles"],a:0},
+  {q:"If both arms of a lever are equal length, it needs:",o:["Equal force on both sides to balance","Always falls","Never moves","No pivot"],a:0},
+  {q:"Which simple machine works most like a lever?",o:["Wheel and axle","Pulley only","Screw only","Inclined plane only"],a:0},
+  {q:"Applying force can change an object's:",o:["Shape, speed, or direction","Colour only","Temperature only","Smell only"],a:0},
+  {q:"Energy in a lever flows from:",o:["Your push → bar → object","Object → bar → air","Pivot → load only","Effort → air only"],a:0},
+  {q:"Levers do NOT:",o:["Create new energy","Transfer force","Multiply effort","Change direction"],a:0},
+  {q:"A lever stores potential energy when:",o:["The load is held stationary in the air","The lever is broken","The pivot is removed","No force is applied"],a:0},
+  {q:"A lever shows kinetic energy when:",o:["It is actively moving the load","It sits completely still","No force is applied","The pivot breaks"],a:0},
+  {q:"Levers work best when:",o:["Friction is low and the bar stays rigid","Friction is very high","The bar bends easily","The pivot is loose"],a:0},
+  {q:"Which statement about levers and energy is correct?",o:["Levers transfer energy but never create it","Levers create energy from nothing","Levers destroy energy","Levers store energy forever"],a:0},
+  {q:"Pushing one side of a lever down makes the other side:",o:["Move up if the pivot is central","Stay still always","Fall down too","Disappear"],a:0},
+  {q:"A lever's mechanical advantage depends on:",o:["The ratio of effort arm to load arm","The colour of the bar","The weight of the pivot","The time of day"],a:0},
+  {q:"Levers are used worldwide because they:",o:["Make hard tasks manageable using force efficiently","Are expensive","Are decorative","Make loud noises"],a:0}
+]
+};
+
+const levelInfo = [
+  {id:1, name:"Examples of Levers", icon:"🔧", desc:"Identify common levers around you"},
+  {id:2, name:"Parts of Levers", icon:"⚙️", desc:"Fulcrum, Load & Effort"},
+  {id:3, name:"Classification of Levers", icon:"📊", desc:"1st, 2nd & 3rd Class Levers"},
+  {id:4, name:"Uses of Levers in Daily Life", icon:"🏠", desc:"How levers help us everyday"},
+  {id:5, name:"Force & Energy", icon:"💪", desc:"How levers use force & energy"}
+];
+
+let G = {
+  lvl: 1, qIdx: 0, score: 0, streak: 0, maxStreak: 0,
+  xp: 0, totalXP: 0, timer: null, timeLeft: 20, maxTime: 20,
+  completed: {}, power: { skip: 2, time: 2 }, questions: [], answered: false
+};
+
+function init() {
+  const c = document.getElementById('particles');
+  for(let i=0; i<35; i++){
+    const p = document.createElement('div'); p.className='particle';
+    p.style.left = Math.random()*100+'%';
+    p.style.animationDuration = (Math.random()*18+12)+'s';
+    p.style.animationDelay = (Math.random()*10)+'s';
+    p.style.width = p.style.height = (Math.random()*6+3)+'px';
+    c.appendChild(p);
+  }
+  load();
+  updateHome();
+}
+
+function save(){
+  localStorage.setItem('leverMaster', JSON.stringify({completed:G.completed, totalXP:G.totalXP}));
+}
+function load(){
+  try {
+    const d = JSON.parse(localStorage.getItem('leverMaster'));
+    if(d){ G.completed = d.completed || {}; G.totalXP = d.totalXP || 0; }
+  } catch(e){}
+}
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function updateHome(){
+  document.getElementById('totalXP').textContent = G.totalXP;
+  document.getElementById('playerLv').textContent = Math.floor(G.totalXP/500)+1;
+  document.getElementById('totalXPBar').style.width = (G.totalXP%500)/5+'%';
+}
+function goLevels(){ renderLevels(); show('levelScreen'); }
+
+function renderLevels(){
+  const grid = document.getElementById('lGrid'); grid.innerHTML='';
+  levelInfo.forEach((l,i)=>{
+    const done = G.completed[l.id];
+    const open = i===0 || G.completed[l.id-1] >= 80;
+    const curr = open && !done;
+    const card = document.createElement('div');
+    card.className = `level-card ${!open?'locked':''} ${done?'completed':''} ${curr?'current':''}`;
+    card.innerHTML = `
+      <span class="badge ${!open?'locked-badge':''}">${open?(done?`✓ ${done}%`:'Ready'):'🔒 Locked'}</span>
+      <div class="l-icon">${l.icon}</div>
+      <div class="l-name">Level ${l.id}</div>
+      <div class="l-name" style="font-size:15px;margin:5px 0;">${l.name}</div>
+      <div class="l-desc">${l.desc}</div>
+      ${done?`<div style="margin-top:10px;color:var(--success);font-weight:700;">Score: ${done}%</div>`:''}
+      ${open&&!done?`<div style="margin-top:10px;color:var(--gold);font-weight:700;">⭐ 80% to pass</div>`:''}`;
+    if(open) card.onclick = ()=>start(l.id);
+    grid.appendChild(card);
+  });
+}
+
+function start(id){
+  G.lvl=id; G.qIdx=0; G.score=0; G.streak=0; G.maxStreak=0; G.xp=0; G.answered=false;
+  G.questions = [...Q[id]].sort(()=>Math.random()-0.5);
+  G.maxTime=20; G.power={skip:2,time:2};
+  document.getElementById('badgeLvl').textContent = `📚 L${id}: ${levelInfo[id-1].name}`;
+  updatePower(); show('quiz'); loadQ();
+}
+
+function loadQ(){
+  if(G.timer) clearInterval(G.timer);
+  const q = G.questions[G.qIdx]; G.answered=false;
+  document.getElementById('qNum').textContent = `Question ${G.qIdx+1} of ${G.questions.length}`;
+  document.getElementById('dQnum').textContent = `${G.qIdx+1}/${G.questions.length}`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('dScore').textContent = G.score;
+  document.getElementById('progBar').style.width = (G.qIdx/G.questions.length*100)+'%';
+  
+  const grid = document.getElementById('opts'); grid.innerHTML='';
+  q.o.forEach((t,i)=>{
+    const btn = document.createElement('button'); btn.className='opt-btn';
+    btn.innerHTML = `<span class="opt-letter">${'ABCD'[i]}</span><span>${t}</span>`;
+    btn.onclick = ()=>pick(i); grid.appendChild(btn);
+  });
+  
+  document.getElementById('fb').style.display='none'; document.getElementById('fb').className='feedback';
+  document.getElementById('nextW').style.display='none';
+  updateStreak(); startTimer();
+}
+
+function pick(idx){
+  if(G.answered) return;
+  G.answered=true; clearInterval(G.timer);
+  const q=G.questions[G.qIdx]; const ok=idx===q.a;
+  document.querySelectorAll('.opt-btn').forEach((b,i)=>{
+    b.classList.add('disabled');
+    if(i===q.a) b.classList.add('correct');
+    if(i===idx&&!ok) b.classList.add('wrong');
+  });
+  process(ok);
+}
+
+function process(ok){
+  const fb = document.getElementById('fb');
+  if(ok){
+    const tb=Math.floor(G.timeLeft*5); const sb=G.streak*10; const pts=100+tb+sb;
+    G.score++; G.streak++; G.xp+=20+sb;
+    if(G.streak>G.maxStreak) G.maxStreak=G.streak;
+    fb.className='feedback fb-correct';
+    fb.innerHTML=`✅ Correct! +${pts} pts (Time: +${tb}, Streak: +${sb})`;
+    flash('ok');
+  } else {
+    G.streak=0;
+    fb.className='feedback fb-wrong';
+    fb.innerHTML=`❌ Wrong! Answer: <strong>${G.questions[G.qIdx].o[G.questions[G.qIdx].a]}</strong>`;
+    flash('bad');
+  }
+  fb.style.display='block'; document.getElementById('nextW').style.display='block';
+  document.getElementById('dScore').textContent=G.score; updateStreak(); checkAch();
+}
+
+function flash(type){ const d=document.createElement('div'); d.className='flash-'+type; document.body.appendChild(d); setTimeout(()=>d.remove(),500); }
+function nextQ(){ G.qIdx++; G.qIdx>=G.questions.length ? end() : loadQ(); }
+
+function startTimer(){
+  G.timeLeft=G.maxTime; updateTimer();
+  G.timer=setInterval(()=>{
+    G.timeLeft--; updateTimer();
+    if(G.timeLeft<=0){ clearInterval(G.timer); handleTimeout(); }
+  },1000);
+}
+
+function handleTimeout(){
+  if(G.answered) return; G.answered=true; G.streak=0; updateStreak();
+  const q=G.questions[G.qIdx];
+  document.querySelectorAll('.opt-btn').forEach((b,i)=>{
+    b.classList.add('disabled'); if(i===q.a) b.classList.add('correct');
+  });
+  const fb=document.getElementById('fb'); fb.className='feedback fb-timeout';
+  fb.innerHTML=`⏰ Time's up! ⛔ 0 points.<br>Answer: <strong>${q.o[q.a]}</strong>`;
+  fb.style.display='block'; document.getElementById('nextW').style.display='block';
+}
+
+function updateTimer(){
+  const tt=document.getElementById('tText'); const tc=document.getElementById('tCircle');
+  tt.textContent=G.timeLeft; tc.style.strokeDashoffset=276.5*(1-G.timeLeft/G.maxTime);
+  tt.className='timer-text'; tc.className='t-prog';
+  if(G.timeLeft<=5){ tt.classList.add('danger'); tc.style.stroke='var(--danger)'; }
+  else if(G.timeLeft<=10){ tt.classList.add('warn'); tc.style.stroke='var(--warning)'; }
+  else tc.style.stroke='var(--accent)';
+}
+
+function updatePower(){
+  document.getElementById('pSkip').textContent=`⏭️ Skip (${G.power.skip})`;
+  document.getElementById('pTime').textContent=`⏰ +10s (${G.power.time})`;
+  document.getElementById('pSkip').disabled=G.power.skip<=0||G.answered;
+  document.getElementById('pTime').disabled=G.power.time<=0||G.answered;
+}
+function useSkip(){ if(G.power.skip<=0||G.answered)return; G.power.skip--; handleTimeout(); }
+function addTime(){ if(G.power.time<=0||G.answered)return; G.power.time--; G.timeLeft+=10; G.maxTime+=10; updateTimer(); updatePower(); }
+function updateStreak(){
+  const b=document.getElementById('streakBox');
+  if(G.streak>=3){ b.style.display='flex'; document.getElementById('sCount').textContent=G.streak; document.getElementById('sBonus').textContent=G.streak*10; }
+  else b.style.display='none';
+}
+
+function end(){
+  if(G.timer) clearInterval(G.timer);
+  const tot=G.questions.length, pct=Math.round(G.score/tot*100);
+  if(pct>=80) G.completed[G.lvl]=Math.max(G.completed[G.lvl]||0, pct);
+  G.totalXP+=G.xp; save();
+  
+  document.getElementById('rPct').textContent=pct+'%';
+  document.getElementById('rDetail').textContent=`${G.score}/${tot} correct • +${G.xp} XP • 🔥 Max Streak: ${G.maxStreak}`;
+  
+  if(pct>=80){
+    document.getElementById('rEmoji').textContent='🏆';
+    document.getElementById('rTitle').textContent='🎉 Level Passed!';
+    document.getElementById('nxtBtn').style.display='inline-flex';
+    document.getElementById('nxtBtn').disabled=G.lvl>=5;
+    document.getElementById('nxtBtn').textContent=G.lvl>=5?'🎊 All Complete!':'🚀 Next Level';
+  } else {
+    document.getElementById('rEmoji').textContent='😔';
+    document.getElementById('rTitle').textContent='💪 Keep Trying!';
+    document.getElementById('rPct').style.background='linear-gradient(135deg,var(--warning),var(--danger))';
+    document.getElementById('rPct').style.webkitBackgroundClip='text';
+    document.getElementById('rPct').style.webkitTextFillColor='transparent';
+    document.getElementById('nxtBtn').style.display='none';
+  }
+  
+  document.getElementById('s1').className=pct>=40?'star earned':'star';
+  document.getElementById('s2').className=pct>=60?'star earned':'star';
+  document.getElementById('s3').className=pct>=80?'star earned':'star';
+  
+  const ring=document.getElementById('rRing'); ring.style.stroke=pct>=80?'var(--success)':pct>=50?'var(--warning)':'var(--danger)';
+  const off=377*(1-pct/100); setTimeout(()=>ring.style.strokeDashoffset=off,100);
+  document.getElementById('rTxt').textContent=pct+'%';
+  
+  show('res');
+  if(pct>=80){ confetti(); ach(`Level ${G.lvl} Done! ${pct}%`); }
+}
+
+function confetti(){
+  const colors=['#f59e0b','#8b5cf6','#38bdf8','#fbbf24','#22c55e','#ef4444'];
+  for(let i=0;i<60;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div'); c.className='confetti';
+      c.style.left=Math.random()*100+'vw'; c.style.background=colors[Math.floor(Math.random()*6)];
+      c.style.borderRadius=Math.random()>.5?'50%':'0';
+      c.style.width=(Math.random()*10+5)+'px'; c.style.height=(Math.random()*10+5)+'px';
+      c.style.animationDuration=(Math.random()*2+2)+'s';
+      document.body.appendChild(c); setTimeout(()=>c.remove(),4500);
+    },i*40);
+  }
+}
+
+function checkAch(){ if(G.streak===5) ach('🔥 5 Streak! Amazing!'); if(G.streak===10) ach('⚡ 10 Streak! Unstoppable!'); if(G.streak===15) ach('🌟 15 Streak! Legendary!'); }
+function ach(t){ const p=document.getElementById('ach'); document.getElementById('achText').textContent=t; p.style.display='block'; setTimeout(()=>p.style.display='none',3000); }
+
+function retry(){ start(G.lvl); }
+function nextLv(){ if(G.lvl<5) start(G.lvl+1); }
+function quit(){ if(confirm('Quit level? Progress lost.')){ if(G.timer) clearInterval(G.timer); goLevels(); } }
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

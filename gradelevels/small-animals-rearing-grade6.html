@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Livestock Pro | Small Animal Rearing | Grade 6 CBC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #eef2ff 0%, #ffffff 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 3rem 2rem 3rem 2rem;
+            box-shadow: 0 30px 45px -12px rgba(2, 62, 138, 0.3);
+            overflow: hidden;
+            border: 2px solid #60a5fa;
+        }
+
+        .game-header {
+            background: #1e3a8a;
+            padding: 1.2rem 1.8rem;
+            color: white;
+            text-align: center;
+            border-bottom: 6px solid #fcd34d;
+        }
+
+        .game-header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .kenyan-flag-badge {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kenyan-fact {
+            background: #dbeafe;
+            margin: 14px 20px 0;
+            padding: 10px 18px;
+            border-radius: 48px;
+            color: #0c4a6e;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-left: 10px solid #fbbf24;
+        }
+
+        .levels-row {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f9ff;
+            padding: 14px 22px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 2px dashed #93c5fd;
+        }
+
+        .level-btn {
+            background: white;
+            border: none;
+            padding: 10px 0;
+            flex: 1;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .level-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 8px 18px rgba(37,99,235,0.4);
+            border-color: #2563eb;
+            transform: scale(0.97);
+        }
+
+        .level-btn:hover:not(.active) {
+            background: #bfdbfe;
+            transform: translateY(-3px);
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 10px 28px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .score-box, .q-counter {
+            background: #e0e7ff;
+            padding: 5px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .score-box span, .q-counter span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-left: 8px;
+            color: #0f3b5c;
+        }
+
+        .quiz-area {
+            padding: 1.5rem 1.5rem 0.8rem;
+            text-align: center;
+        }
+
+        .question-card {
+            background: linear-gradient(105deg, #fefefe, #eff6ff);
+            padding: 20px 18px;
+            border-radius: 48px;
+            margin-bottom: 20px;
+            border: 2px solid #93c5fd;
+            box-shadow: 0 12px 18px -12px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #93c5fd;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1e40af;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .option-btn:hover:not(.disabled-opt) {
+            background: #dbeafe;
+            transform: translateX(5px);
+            border-color: #2563eb;
+        }
+
+        .option-btn.selected-correct {
+            background: #22c55e;
+            color: white;
+            border-color: #16a34a;
+        }
+
+        .option-btn.selected-wrong {
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .disabled-opt {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .voice-zone {
+            background: #ffffff;
+            border-radius: 56px;
+            padding: 15px;
+            margin: 10px 0 5px;
+            border: 2px dashed #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mic-button {
+            background: #2563eb;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: 0.08s linear;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-button:active {
+            transform: scale(0.92);
+            background: #1e40af;
+        }
+
+        .voice-status {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f4c5f;
+            flex: 1;
+            text-align: left;
+        }
+
+        .answer-status {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 8px;
+            min-height: 55px;
+            color: #0f4c5f;
+            text-align: center;
+        }
+
+        .hint-box {
+            background: #fef9e3;
+            border-left: 12px solid #fbbf24;
+            padding: 12px 20px;
+            margin: 8px 20px 20px;
+            border-radius: 36px;
+            font-size: 0.95rem;
+            color: #0a537c;
+            font-weight: 500;
+        }
+
+        .next-level-msg {
+            background: #0d9488;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 60px;
+            margin: 10px 24px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 14px;
+            color: #22668d;
+        }
+
+        @keyframes pulseMic {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 #3b82f6; }
+            50% { transform: scale(1.03); background: #0d9488; box-shadow: 0 0 0 8px rgba(59,130,246,0.3);}
+            100% { transform: scale(1); }
+        }
+        .mic-button.listening-active {
+            animation: pulseMic 1s infinite;
+            background: #0d9488;
+        }
+
+        .mic-button.mic-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.1rem; }
+            .option-btn { font-size: 0.85rem; padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <h1>🐔 LIVESTOCK PRO 🐐
+            <span class="kenyan-flag-badge">🇰🇪 GRADE 6 • SMALL ANIMAL REARING & FOOD PRODUCTION</span>
+        </h1>
+        <div class="kenyan-fact">
+            🌍 <strong>Kenyan Fact:</strong> Kenya has over 30 million chickens! Free-range indigenous chickens (kienyeji) are raised in most rural homes, providing eggs and meat while controlling pests naturally.
+        </div>
+    </div>
+
+    <div class="levels-row" id="levelButtonsContainer"></div>
+
+    <div class="info-panel">
+        <div class="score-box">⭐ SCORE: <span id="scoreValue">0</span></div>
+        <div class="q-counter">📖 QUESTION: <span id="currentQNumber">1</span> / <span id="totalQperLevel">15</span></div>
+    </div>
+
+    <div class="quiz-area">
+        <div class="question-card">
+            <div class="question-text" id="questionText">What is the first routine practice when keeping small domestic animals?</div>
+            <div class="option-buttons" id="optionsContainer"></div>
+        </div>
+        <div class="voice-zone">
+            <button class="mic-button" id="micBtn">🎤</button>
+            <div class="voice-status" id="voiceStatusMsg">🎙️ Ready • Click mic and say A, B, C, or D</div>
+            <div class="answer-status" id="answerFeedback"></div>
+        </div>
+        <div class="hint-box" id="hintDisplay">
+            💡 Hint: Before getting animals, you need to prepare where they will live and what they will eat.
+        </div>
+    </div>
+
+    <div id="levelCompleteMsg"></div>
+    <div class="footer-note">🎤 Speak A, B, C, or D • +10 points • Learn proper animal care & food production!</div>
+</div>
+
+<script>
+    // ==============================================================
+    // REARING SMALL DOMESTIC ANIMALS: ROUTINE PRACTICES & FOOD PRODUCTION
+    // Grade 6 CBC - Agriculture & Nutrition
+    // Animals: chickens, rabbits, goats, sheep, ducks, turkeys, guinea pigs
+    // 4 Levels, 15 questions each
+    // ==============================================================
+    const QUESTIONS_DB = {
+        1: [
+            { q: "What is the first thing a farmer must provide before getting small animals?", options: ["A) A clean, secure shelter (hutch/coop)", "B) Expensive medicine", "C) A radio for music", "D) A swimming pool"], correct: "A", hint: "Animals need a safe home." },
+            { q: "Which of these is a small domestic animal raised for both eggs and meat?", options: ["A) Cow", "B) Chicken", "C) Camel", "D) Horse"], correct: "B", hint: "Common in almost every Kenyan home." },
+            { q: "What is a rabbit's home called?", options: ["A) Coop", "B) Hutch", "C) Pen", "D) Stable"], correct: "B", hint: "Starts with 'H'." },
+            { q: "How often should you provide fresh water to small animals?", options: ["A) Once a week", "B) Once a month", "C) Daily", "D) Only when they look thirsty"], correct: "C", hint: "Water is essential every single day." },
+            { q: "What is the main source of protein in chicken feed?", options: ["A) Maize", "B) Omena (silver cyprinid) or soybean meal", "C) Grass", "D) Sand"], correct: "B", hint: "Fish meal is a common protein source in Kenya." },
+            { q: "What is the routine practice of cleaning animal housing called?", options: ["A) Sanitation", "B) Vaccination", "C) Breeding", "D) Grazing"], correct: "A", hint: "Removing waste and keeping dry." },
+            { q: "Which small animal is known for its high reproduction rate (litters of 6-12)?", options: ["A) Turkey", "B) Rabbit", "C) Duck", "D) Guinea fowl"], correct: "B", hint: "They breed very quickly." },
+            { q: "What is the proper way to feed goats to prevent bloat?", options: ["A) Unlimited access to wet legume pasture", "B) Gradual introduction to new feeds and avoid sudden changes", "C) Only dry hay", "D) No water"], correct: "B", hint: "Sudden diet changes cause stomach problems." },
+            { q: "What is colostrum?", options: ["A) The first milk from a mother animal rich in antibodies", "B) A type of feed", "C) A disease", "D) A shelter"], correct: "A", hint: "Newborns need this within hours of birth." },
+            { q: "What is the process of removing male animals' testicles called?", options: ["A) Castration", "B) Vaccination", "C) Dehorning", "D) Deworming"], correct: "A", hint: "Makes males calmer and meat better." },
+            { q: "Which disease is prevented by vaccinating chickens against Newcastle?", options: ["A) Fowl pox", "B) Newcastle disease", "C) Coccidiosis", "D) Gumboro"], correct: "B", hint: "A very deadly viral disease." },
+            { q: "What is a common sign that a goat is healthy?", options: ["A) Dull eyes and rough coat", "B) Bright eyes, smooth coat, and active", "C) Lying down always", "D) Refusing to eat"], correct: "B", hint: "Healthy animals look alert." },
+            { q: "How often should you deworm small animals in tropical climates like Kenya?", options: ["A) Every 3-4 months", "B) Once a year", "C) Never", "D) Every week"], correct: "A", hint: "Worms are common in warm, wet conditions." },
+            { q: "What is the best bedding material for chickens (deep litter system)?", options: ["A) Wood shavings or rice hulls", "B) Plastic sheets", "C) Glass pieces", "D) Metal wires"], correct: "A", hint: "Absorbs moisture and is soft." },
+            { q: "What is the primary purpose of routine hoof trimming for goats and sheep?", options: ["A) To prevent foot rot and lameness", "B) To make them look pretty", "C) To increase milk", "D) To stop them from running"], correct: "A", hint: "Overgrown hooves cause pain." }
+        ],
+        2: [
+            { q: "What is the incubation period for chicken eggs?", options: ["A) 7 days", "B) 14 days", "C) 21 days", "D) 30 days"], correct: "C", hint: "Three weeks." },
+            { q: "Which small animal produces rich milk used to make delicious cheese (e.g., feta)?", options: ["A) Rabbit", "B) Goat", "C) Turkey", "D) Duck"], correct: "B", hint: "Goat milk is easier to digest than cow milk." },
+            { q: "What is the term for a young female chicken before she lays eggs?", options: ["A) Pullet", "B) Cockerel", "C) Hen", "D) Rooster"], correct: "A", hint: "Starts with 'P'." },
+            { q: "What is the recommended floor space per adult rabbit in a hutch?", options: ["A) 0.1 sq meter", "B) 0.5 - 0.7 sq meters", "C) 2 sq meters", "D) 5 sq meters"], correct: "B", hint: "Enough to stretch and move." },
+            { q: "What is the main purpose of providing mineral licks (salt blocks) to goats?", options: ["A) To supply essential minerals like copper and zinc", "B) To make them thirsty", "C) To color their fur", "D) To reduce appetite"], correct: "A", hint: "Soil in some areas lacks minerals." },
+            { q: "Which routine practice helps prevent coccidiosis in chickens and rabbits?", options: ["A) Keeping litter dry and clean", "B) Overcrowding", "C) Feeding only grains", "D) No water"], correct: "A", hint: "Coccidia thrives in wet, dirty conditions." },
+            { q: "What is the gestation period (pregnancy) of a goat?", options: ["A) 5 months (150 days)", "B) 9 months", "C) 2 months", "D) 12 months"], correct: "A", hint: "About 5 months." },
+            { q: "What is the ideal age to wean rabbits (separate from mother)?", options: ["A) 2 weeks", "B) 4 weeks", "C) 8 weeks (2 months)", "D) 12 weeks"], correct: "C", hint: "They need mother's milk for first month." },
+            { q: "What is the term for the hard-shelled egg-laying ability of chickens?", options: ["A) Oviposition", "B) Gestation", "C) Lactation", "D) Molting"], correct: "A", hint: "Laying eggs." },
+            { q: "Which feed is best for growing rabbits (pellets) composition?", options: ["A) High fiber (18-22%) and moderate protein (16%)", "B) High fat only", "C) Only corn", "D) Only grass"], correct: "A", hint: "Rabbits need fiber to digest." },
+            { q: "What routine practice involves trimming beaks of chickens to prevent pecking?", options: ["A) Debeaking", "B) Declawing", "C) Deworming", "D) Branding"], correct: "A", hint: "Prevents cannibalism in crowded coops." },
+            { q: "What is the main food product from ducks (besides meat)?", options: ["A) Eggs (larger and richer than chicken eggs)", "B) Wool", "C) Milk", "D) Honey"], correct: "A", hint: "Duck eggs are great for baking." },
+            { q: "How can you tell if a chicken egg is fertile?", options: ["A) Candling (shining light through the egg after 7 days)", "B) Shaking it", "C) Weighing it", "D) Looking at color"], correct: "A", hint: "You can see blood vessels." },
+            { q: "What is the purpose of providing oyster shell grit to laying hens?", options: ["A) To provide calcium for strong eggshells", "B) To make them grow feathers", "C) To treat diseases", "D) To color eggs"], correct: "A", hint: "Eggshells are made of calcium carbonate." },
+            { q: "Which small animal is known as a 'dual-purpose' breed for meat and eggs?", options: ["A) Rhode Island Red chicken", "B) Angora rabbit", "C) Boer goat", "D) Merino sheep"], correct: "A", hint: "Good for both." }
+        ],
+        3: [
+            { q: "What is the process of introducing male to female for reproduction called?", options: ["A) Mating or servicing", "B) Insemination only", "C) Castration", "D) Weaning"], correct: "A", hint: "Natural reproduction." },
+            { q: "What is the advantage of raising indigenous (kienyeji) chickens over improved breeds?", options: ["A) Better disease resistance and scavenging ability", "B) They grow faster", "C) They lay more eggs", "D) They need more medicine"], correct: "A", hint: "Local breeds are hardy." },
+            { q: "What routine practice involves recording birth weights, feeding amounts, and health issues?", options: ["A) Record keeping", "B) Breeding", "C) Vaccination", "D) Marketing"], correct: "A", hint: "Helps track performance." },
+            { q: "What is the ideal temperature for a brooder (baby chick enclosure)?", options: ["A) 35°C for first week, decreasing weekly", "B) Room temperature always", "C) Freezing cold", "D) 50°C"], correct: "A", hint: "Chicks need extra warmth." },
+            { q: "Which disease in rabbits is controlled by vaccination (RHD - Rabbit Hemorrhagic Disease)?", options: ["A) Ear mites", "B) RHD", "C) Coccidiosis", "D) Snuffles"], correct: "B", hint: "Deadly virus for rabbits." },
+            { q: "What is the main purpose of rotational grazing for goats?", options: ["A) To prevent overgrazing and control parasites", "B) To make them walk more", "C) To reduce milk", "D) To make them fight"], correct: "A", hint: "Moving pastures helps land recover." },
+            { q: "What is 'creep feeding' in small animal rearing?", options: ["A) Special feed given to young animals while keeping it away from adults", "B) Feeding at night", "C) Liquid feed", "D) Medicinal feed"], correct: "A", hint: "Through a creep gate." },
+            { q: "What is the first sign of a sick chicken?", options: ["A) Lethargy, ruffled feathers, and isolation", "B) Singing loudly", "C) Eating more", "D) Running fast"], correct: "A", hint: "Sick chickens look miserable." },
+            { q: "What is the recommended male to female ratio for goats (natural mating)?", options: ["A) 1 buck to 20-30 does", "B) 1 buck to 5 does", "C) 10 bucks to 1 doe", "D) 1 buck to 100 does"], correct: "A", hint: "One male can serve many females." },
+            { q: "What is the shelf life of fresh eggs at room temperature in tropical climate?", options: ["A) 1-2 days", "B) 2-3 weeks if unwashed (bloom intact)", "C) 6 months", "D) 1 year"], correct: "B", hint: "Natural protective layer keeps them fresh." },
+            { q: "Which parasite causes 'scaly leg' in chickens?", options: ["A) Knemidocoptes mite", "B) Tapeworm", "C) Roundworm", "D) Fleas"], correct: "A", hint: "Lifts scales on legs." },
+            { q: "What is the primary protein source for rabbits if commercial pellets are unavailable?", options: ["A) Lucerne (alfalfa) hay", "B) Only grass", "C) Only maize", "D) Only sand"], correct: "A", hint: "High protein legume hay." },
+            { q: "What is the process of removing horns from goats called?", options: ["A) Disbudding or dehorning", "B) Castration", "C) Branding", "D) Shearing"], correct: "A", hint: "Done when young to prevent injuries." },
+            { q: "What is a 'broiler' chicken?", options: ["A) A chicken raised specifically for meat (harvested at 5-7 weeks)", "B) A chicken raised for eggs", "C) A breeding rooster", "D) A sick chicken"], correct: "A", hint: "Fast-growing meat bird." },
+            { q: "What is the ideal humidity for incubating chicken eggs?", options: ["A) 40-50% for first 18 days, then 65-75% for last 3 days", "B) 0%", "C) 90% always", "D) 100%"], correct: "A", hint: "Needed for proper hatching." }
+        ],
+        4: [
+            { q: "What is the process of converting rabbit manure into fertilizer called?", options: ["A) Composting", "B) Burning", "C) Dumping", "D) Selling"], correct: "A", hint: "Manure is valuable for crops." },
+            { q: "Which vaccine is routinely given to goats for 'Contagious Caprine Pleuropneumonia' (CCPP)?", options: ["A) CCPP vaccine", "B) Rabies vaccine", "C) Anthrax vaccine", "D) FMD vaccine"], correct: "A", hint: "A deadly respiratory disease." },
+            { q: "What is the primary reason for providing shade and plenty of water to rabbits in hot climates?", options: ["A) To prevent heat stress (rabbits don't sweat)", "B) To make them drink less", "C) To increase fur growth", "D) To stop them from eating"], correct: "A", hint: "Heat kills rabbits quickly." },
+            { q: "What is the process of collecting semen from a male animal for artificial insemination?", options: ["A) Semen collection", "B) Castration", "C) Mating", "D) Weaning"], correct: "A", hint: "Used to improve genetics." },
+            { q: "Which small animal produces 'mohair' (a luxurious fiber)?", options: ["A) Angora goat", "B) Merino sheep", "C) Cashmere goat", "D) Angora rabbit"], correct: "A", hint: "Not rabbit (Angora rabbit produces wool)." },
+            { q: "What is the recommended stocking density for chickens in a deep litter system (per square meter)?", options: ["A) 10 birds per m²", "B) 4-5 birds per m²", "C) 1 bird per 10 m²", "D) 20 birds per m²"], correct: "B", hint: "Avoid overcrowding." },
+            { q: "What is the main purpose of using a 'poultry drinker' (nipple or bell type)?", options: ["A) Provide clean water without spillage", "B) Feed them", "C) give medicine", "D) collect eggs"], correct: "A", hint: "Keeps water clean." },
+            { q: "What is the gestation period of a rabbit (kindling)?", options: ["A) 31 days", "B) 21 days", "C) 60 days", "D) 90 days"], correct: "A", hint: "About one month." },
+            { q: "Which small animal is best suited for a small backyard because they don't make noise and eat kitchen waste?", options: ["A) Guinea pigs (cuy)", "B) Roosters", "C) Geese", "D) Peacocks"], correct: "A", hint: "Quiet and efficient converters." },
+            { q: "What is the term for a group of goats?", options: ["A) Herd", "B) Flock", "C) Pack", "D) School"], correct: "A", hint: "Like cattle." },
+            { q: "What is the purpose of 'dust bathing' for chickens?", options: ["A) To control external parasites like mites and lice", "B) To clean their feathers with water", "C) To find food", "D) To exercise"], correct: "A", hint: "Natural grooming behavior." },
+            { q: "What is the primary nutrient lacking in maize when fed alone to animals?", options: ["A) Protein", "B) Carbohydrates", "C) Fat", "D) Water"], correct: "A", hint: "Maize needs supplements." },
+            { q: "Which disease is transmitted by mosquitoes and affects chickens causing swollen heads?", options: ["A) Fowl pox", "B) Coccidiosis", "C) Newcastle", "D) Gumboro"], correct: "A", hint: "Mosquito-borne." },
+            { q: "What is the best way to store surplus eggs for long periods without refrigeration?", options: ["A) Coat with vegetable oil and store in cool, dark place", "B) Freeze them", "C) Boil them", "D) Smash them"], correct: "A", hint: "Oil seals pores." },
+            { q: "What is the profit margin indicator for a small-scale poultry farmer calculated as?", options: ["A) Income from sales minus cost of feed, medicine, and chicks", "B) Total eggs multiplied by 10", "C) Number of chickens only", "D) Size of coop"], correct: "A", hint: "Revenue minus expenses." }
+        ]
+    };
+
+    // Ensure each level has exactly 15 questions
+    for(let lvl=1; lvl<=4; lvl++){
+        while(QUESTIONS_DB[lvl].length < 15){
+            QUESTIONS_DB[lvl].push({ q: "What is important for small animal health?", options: ["A) Clean water", "B) Dirty cages", "C) No food", "D) Loud noise"], correct: "A", hint: "Water is life." });
+        }
+    }
+
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let scores = {1:0,2:0,3:0,4:0};
+    let levelCompleteFlag = false;
+    const totalPerLevel = 15;
+    let recognition = null;
+    let listening = false;
+    let speechSupported = true;
+    let answeringLock = false;
+
+    const questionTextEl = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const scoreValueSpan = document.getElementById('scoreValue');
+    const currentQNumberSpan = document.getElementById('currentQNumber');
+    const totalQperLevelSpan = document.getElementById('totalQperLevel');
+    const micBtn = document.getElementById('micBtn');
+    const voiceStatusMsg = document.getElementById('voiceStatusMsg');
+    const answerFeedback = document.getElementById('answerFeedback');
+    const hintDisplay = document.getElementById('hintDisplay');
+    const levelCompleteDiv = document.getElementById('levelCompleteMsg');
+    
+    totalQperLevelSpan.innerText = totalPerLevel;
+
+    function speakEnglish(text, isSuccess=true){
+        if(!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = isSuccess ? 1.1 : 0.9;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+    }
+
+    function loadQuestion(){
+        const item = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(item){
+            questionTextEl.innerText = item.q;
+            hintDisplay.innerText = `💡 Hint: ${item.hint}`;
+            optionsContainer.innerHTML = '';
+            item.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.setAttribute('data-value', opt.charAt(0));
+                btn.addEventListener('click', () => handleOptionClick(opt.charAt(0)));
+                optionsContainer.appendChild(btn);
+            });
+        }
+        answeringLock = false;
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('selected-correct', 'selected-wrong', 'disabled-opt');
+            btn.style.pointerEvents = 'auto';
+        });
+    }
+
+    function handleOptionClick(selectedLetter){
+        if(answeringLock) return;
+        const currentItem = QUESTIONS_DB[currentLevel][currentQIndex];
+        if(!currentItem) return;
+        const isCorrect = (selectedLetter === currentItem.correct);
+        
+        answeringLock = true;
+        
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+            btn.classList.add('disabled-opt');
+        });
+        
+        const clickedBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === selectedLetter);
+        if(clickedBtn){
+            if(isCorrect){
+                clickedBtn.classList.add('selected-correct');
+                answerFeedback.innerHTML = `✅ Correct! ${currentItem.correct}) ${currentItem.options.find(o => o.startsWith(currentItem.correct)).substring(3)} +10 points! 🎉`;
+                speakEnglish("Excellent! That's correct! You're learning how to care for small animals properly!", true);
+                scores[currentLevel] += 10;
+                scoreValueSpan.innerText = scores[currentLevel];
+                
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 AMAZING! You completed Level ${currentLevel} with ${scores[currentLevel]} points! Click Next Level to continue!`;
+                        speakEnglish(`Congratulations! You finished level ${currentLevel}. You are becoming a livestock expert!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE TO NEXT LEVEL ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! More advanced animal care questions ahead!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("INCREDIBLE! You've mastered all four levels! You are a true Small Animal Rearing Champion!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏅 LIVESTOCK MANAGEMENT CERTIFICATE! MASTER REARER! 🏅</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1000);
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+                const correctLetter = currentItem.correct;
+                const correctOptionText = currentItem.options.find(o => o.startsWith(correctLetter));
+                answerFeedback.innerHTML = `❌ Sorry! "${selectedLetter}" is incorrect. The correct answer is ${correctLetter}) ${correctOptionText.substring(3)}. Hint: ${currentItem.hint}`;
+                speakEnglish(`That is not correct. The right answer is ${correctLetter}. ${correctOptionText.substring(3)}. Keep learning about small animal care!`, false);
+                
+                const correctBtn = Array.from(document.querySelectorAll('.option-btn')).find(btn => btn.getAttribute('data-value') === correctLetter);
+                if(correctBtn) correctBtn.classList.add('selected-correct');
+                
+                setTimeout(() => {
+                    if(currentQIndex + 1 < totalPerLevel){
+                        currentQIndex++;
+                        loadQuestion();
+                        updateCounter();
+                        updateUI();
+                        answeringLock = false;
+                    } else {
+                        levelCompleteFlag = true;
+                        answerFeedback.innerHTML = `🏆 Level ${currentLevel} completed! Score: ${scores[currentLevel]}. Click Next Level!`;
+                        speakEnglish(`You finished level ${currentLevel}. Great effort!`, true);
+                        levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">✨ CLICK HERE TO ADVANCE ✨</div>`;
+                        const nextTrigger = document.getElementById('nextLevelTrigger');
+                        if(nextTrigger){
+                            nextTrigger.addEventListener('click', ()=>{
+                                if(currentLevel < 4){
+                                    currentLevel++;
+                                    currentQIndex = 0;
+                                    levelCompleteFlag = false;
+                                    levelCompleteDiv.innerHTML = "";
+                                    loadQuestion();
+                                    updateCounter();
+                                    highlightActiveLevel();
+                                    speakEnglish(`Level ${currentLevel} started! Stay focused!`, true);
+                                    answerFeedback.innerHTML = "";
+                                } else {
+                                    speakEnglish("FANTASTIC! You completed all levels! You are a Small Animal Rearing Expert!", true);
+                                    levelCompleteDiv.innerHTML = `<div style="background:#fcd34d; padding:18px; border-radius:40px; text-align:center;">🏆 MASTER OF SMALL ANIMAL REARING & FOOD PRODUCTION! 🏆</div>`;
+                                }
+                            });
+                        }
+                        answeringLock = true;
+                    }
+                    updateUI();
+                }, 1500);
+            }
+        }
+    }
+
+    function processVoiceAnswer(spoken){
+        if(levelCompleteFlag){
+            answerFeedback.innerHTML = "⚠️ Level complete! Click Next Level to continue.";
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock) return;
+        
+        let letter = spoken.trim().toUpperCase();
+        if(letter.includes("CHOICE") || letter.includes("OPTION") || letter.includes("LETTER")){
+            if(letter.includes("A")) letter = "A";
+            else if(letter.includes("B")) letter = "B";
+            else if(letter.includes("C")) letter = "C";
+            else if(letter.includes("D")) letter = "D";
+        } else if(letter.length > 1){
+            letter = letter.charAt(0);
+        }
+        
+        if(!['A','B','C','D'].includes(letter)){
+            answerFeedback.innerHTML = "⚠️ Please say A, B, C, or D only!";
+            speakEnglish("Please say A, B, C, or D only.", false);
+            return;
+        }
+        
+        handleOptionClick(letter);
+    }
+
+    function updateCounter(){
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function updateUI(){
+        scoreValueSpan.innerText = scores[currentLevel];
+        currentQNumberSpan.innerText = currentQIndex+1;
+    }
+
+    function initSpeech(){
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SpeechRec){
+            voiceStatusMsg.innerHTML = "❌ Your browser doesn't support voice input. Use Chrome, Edge, or Safari.";
+            micBtn.disabled = true;
+            micBtn.classList.add('mic-disabled');
+            speechSupported = false;
+            return false;
+        }
+        recognition = new SpeechRec();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onstart = () => { listening=true; voiceStatusMsg.innerHTML="🎤 Listening... Say A, B, C, or D 🎤"; micBtn.classList.add('listening-active'); };
+        recognition.onend = () => { listening=false; voiceStatusMsg.innerHTML="✅ Ready • Click mic and say A, B, C, or D"; micBtn.classList.remove('listening-active'); };
+        recognition.onresult = (ev) => { let spoken = ev.results[0][0].transcript; voiceStatusMsg.innerHTML=`🗣️ You said: "${spoken}"`; processVoiceAnswer(spoken); };
+        recognition.onerror = (e) => { 
+            let msg = e.error === 'not-allowed' ? "❌ Microphone permission denied. Please allow access." : "❌ Speech error. Click mic again.";
+            voiceStatusMsg.innerHTML = msg; 
+            micBtn.classList.remove('listening-active'); 
+            listening=false; 
+        };
+        return true;
+    }
+
+    micBtn.addEventListener('click', ()=>{
+        if(!speechSupported && !recognition && !window.SpeechRecognition && !window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "Sorry, your browser doesn't support voice input.";
+            return;
+        }
+        if(levelCompleteFlag){
+            speakEnglish("Please click Next Level to continue.", false);
+            return;
+        }
+        if(answeringLock){
+            speakEnglish("Please wait, processing your previous answer.", false);
+            return;
+        }
+        if(!recognition){
+            if(!initSpeech()) return;
+        }
+        if(listening){
+            recognition.stop();
+            return;
+        }
+        try{ recognition.start(); } catch(e){ recognition = null; initSpeech(); }
+    });
+
+    function highlightActiveLevel(){
+        document.querySelectorAll('.level-btn').forEach(btn=>{
+            if(parseInt(btn.getAttribute('data-level'))===currentLevel) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+
+    function buildLevels(){
+        const container = document.getElementById('levelButtonsContainer');
+        container.innerHTML = '';
+        for(let l=1; l<=4; l++){
+            const btn = document.createElement('button');
+            btn.className = 'level-btn';
+            if(l===currentLevel) btn.classList.add('active');
+            btn.innerText = `LEVEL ${l}`;
+            btn.setAttribute('data-level', l);
+            btn.addEventListener('click', ()=>{
+                if(levelCompleteFlag && currentLevel !== l) levelCompleteFlag = false;
+                currentLevel = l;
+                currentQIndex = 0;
+                levelCompleteFlag = false;
+                levelCompleteDiv.innerHTML = "";
+                loadQuestion();
+                updateUI();
+                highlightActiveLevel();
+                answerFeedback.innerHTML = "";
+                speakEnglish(`Level ${l} selected. Answer questions about small animal rearing and food production!`, true);
+                setTimeout(() => { answeringLock = false; }, 100);
+            });
+            container.appendChild(btn);
+        }
+    }
+
+    function startGame(){ 
+        buildLevels(); 
+        loadQuestion(); 
+        updateUI(); 
+        highlightActiveLevel();
+        if(window.SpeechRecognition || window.webkitSpeechRecognition){
+            voiceStatusMsg.innerHTML = "🎙️ Ready! Click the microphone and say A, B, C, or D";
+        }
+        answeringLock = false;
+    }
+    startGame();
+</script>
+</body>
+</html>

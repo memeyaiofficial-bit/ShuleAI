@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Science Quest: Electrical Energy & Magnetism | Grade 7 Integrated Science</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* clean focus for kiosk/game style */
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d2b45 0%, #1a4a6f 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fef9ef;
+            border-radius: 56px 48px 56px 48px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 250, 220, 0.7);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #f39c12;
+            background: linear-gradient(120deg, #e67e22, #d35400);
+            padding: 18px 28px;
+            color: white;
+            text-shadow: 2px 2px 0 #a04000;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 4px solid #f1c40f;
+        }
+
+        .level-badge {
+            background: #1f2a36;
+            padding: 6px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -1px 0 #5a6072, 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .score-board {
+            background: #1f2a36;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .timer-area {
+            background: #000000aa;
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 5px 20px;
+            font-family: monospace;
+            font-size: 1.7rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .question-panel {
+            padding: 30px 28px 20px;
+            background: #fffbf0;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #1e4663;
+            margin-bottom: 24px;
+            background: #fef0db;
+            padding: 22px;
+            border-radius: 42px;
+            box-shadow: inset 0 0 0 2px #ffe2ae, 0 8px 14px rgba(0,0,0,0.05);
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #2980b9;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 3px 0 #1a5276;
+        }
+        .voice-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1a5276;}
+
+        .hint-box {
+            background: #f1e6d4;
+            border-radius: 36px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #bb6b2e;
+            border-left: 5px solid #ff914d;
+            max-width: 60%;
+        }
+
+        .answer-area {
+            margin: 15px 0 20px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.3rem;
+            font-family: 'Courier New', monospace;
+            background: #fff7ea;
+            border: 3px solid #f0bc6e;
+            border-radius: 60px;
+            outline: none;
+            transition: 0.1s;
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e66;
+        }
+        .answer-input:focus {
+            border-color: #d58e2c;
+            background: #fffff5;
+            box-shadow: 0 0 0 3px #ffcd94;
+        }
+
+        .submit-btn {
+            background: #e67e22;
+            width: 100%;
+            border: none;
+            padding: 16px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 12px;
+            box-shadow: 0 5px 0 #b45f1b;
+        }
+        .submit-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #b45f1b;}
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.05rem;
+            text-align: center;
+            background: #e9dfcf;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .level-result {
+            background: #2c5f7a;
+            color: #fff7cf;
+            text-align: center;
+            padding: 18px;
+            margin: 12px 28px 28px;
+            border-radius: 48px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        button:disabled, .disabled-btn {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            .question-text { font-size: 1.2rem; padding: 16px; }
+            .action-row { flex-direction: column; align-items: stretch; }
+            .hint-box { max-width: 100%; text-align: center; }
+            .timer-area { font-size: 1.3rem; }
+            .game-header { padding: 14px; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #e2d5bc;
+            padding: 10px;
+            color: #3e5d48;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="score-board">⚡ Score: <span id="scoreSpan">0</span> / <span id="maxScoreSpan">0</span></div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span>s</div>
+    </div>
+    <div class="question-panel">
+        <div class="question-text" id="questionText">🔌 Loading Electrifying Adventure...</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-box" id="hintBox">💡 HINT: Type answers (1-3 words: circuits, magnets, current)</div>
+        </div>
+        <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="✏️ Write your answer here ..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✓ CHECK & SUBMIT</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">🧲 Welcome, Scientist! Answer questions on Electrical Energy & Magnetism. 80% to level up!</div>
+    </div>
+    <div id="levelMessageArea"></div>
+    <footer>🧪 Integrated Science • Electrical Energy • Magnetism • Circuits • CBC Grade 7 ⚡</footer>
+</div>
+
+<script>
+    // =========== QUESTION BANK: Electrical Energy & Magnetism ===========
+    // Topics: Circuits, Current, Voltage, Resistance, Magnets, Magnetic Fields, Electromagnetism
+    
+    const electricityPool = [
+        { text: "What is the flow of electric charge called?", answer: "electric current" },
+        { text: "The unit of electric current is the ?", answer: "ampere" },
+        { text: "What device is used to measure electric current?", answer: "ammeter" },
+        { text: "The unit of electrical resistance is the ?", answer: "ohm" },
+        { text: "What component is used to open or close a circuit?", answer: "switch" },
+        { text: "A complete path that allows electricity to flow is called a ?", answer: "circuit" },
+        { text: "What type of circuit has only one path for current?", answer: "series circuit" },
+        { text: "A circuit with multiple paths for current is called a ? circuit", answer: "parallel" },
+        { text: "What is the energy per unit charge provided by a battery called?", answer: "voltage" },
+        { text: "The device used to measure voltage is a ?", answer: "voltmeter" },
+        { text: "A material that allows electricity to flow easily is a ?", answer: "conductor" },
+        { text: "A material that does NOT allow electricity to flow easily is an ?", answer: "insulator" },
+        { text: "What is the name of the safety device that melts to break a circuit when too much current flows?", answer: "fuse" },
+        { text: "What type of current flows in one direction only, like from a battery?", answer: "direct current" },
+        { text: "What type of current reverses direction periodically (used in homes)?", answer: "alternating current" },
+        { text: "What is the SI unit of power?", answer: "watt" },
+        { text: "The relationship V = IR is known as ? law", answer: "ohm's law" },
+        { text: "What do we call a cell that cannot be recharged?", answer: "primary cell" },
+        { text: "A rechargeable cell is called a ? cell", answer: "secondary" },
+    ];
+    
+    const magnetismPool = [
+        { text: "A material that attracts iron, nickel, or cobalt is called a ?", answer: "magnet" },
+        { text: "The ends of a magnet are called magnetic ?", answer: "poles" },
+        { text: "What are the two poles of a magnet called?", answer: "north and south" },
+        { text: "Like magnetic poles ? each other.", answer: "repel" },
+        { text: "Unlike magnetic poles ? each other.", answer: "attract" },
+        { text: "The region around a magnet where magnetic force acts is the ? field", answer: "magnetic" },
+        { text: "A temporary magnet made by passing current through a coil around an iron core is an ?", answer: "electromagnet" },
+        { text: "What natural material is a naturally occurring magnet?", answer: "lodestone" },
+        { text: "What device uses a magnet to detect electric current?", answer: "galvanometer" },
+        { text: "A compass needle always points toward the Earth's ? pole.", answer: "north" },
+        { text: "Who discovered the relationship between electricity and magnetism?", answer: "oersted" },
+        { text: "A coil of wire that acts as a magnet when current flows is a ?", answer: "solenoid" },
+        { text: "What type of magnet is made by stroking a steel bar with another magnet?", answer: "permanent magnet" },
+        { text: "What metal is commonly used as the core of an electromagnet?", answer: "iron" },
+        { text: "The strength of an electromagnet can be increased by increasing the number of ? or current.", answer: "coils" },
+    ];
+    
+    const combinedPool = [...electricityPool, ...magnetismPool];
+    
+    const extraQuestions = [
+        { text: "What is the protective device that trips when a circuit overloads, used in modern homes?", answer: "circuit breaker" },
+        { text: "What do we call a closed loop through which electrons can flow?", answer: "circuit" },
+        { text: "What is the symbol for resistance in Ohm's law?", answer: "r" },
+        { text: "What happens to current in a series circuit if one bulb burns out?", answer: "stops" },
+        { text: "In a parallel circuit, if one bulb burns out, others ?", answer: "remain on" },
+        { text: "The part of a motor that rotates is called the ?", answer: "rotor" },
+        { text: "What device converts electrical energy into mechanical energy?", answer: "motor" },
+        { text: "What device converts mechanical energy into electrical energy?", answer: "generator" },
+        { text: "What color is the live wire in a plug (UK/Kenya standard)?", answer: "brown" },
+        { text: "What color is the neutral wire?", answer: "blue" },
+        { text: "The earth wire is colored ? or green/yellow.", answer: "green" },
+        { text: "Magnetic field lines travel from ? pole to south pole outside the magnet.", answer: "north" },
+        { text: "Which scientist discovered that a current-carrying wire produces a magnetic field?", answer: "hans christian oersted" },
+        { text: "What is the name of the rule to find the direction of magnetic field around a current-carrying wire?", answer: "right hand rule" },
+        { text: "A device that uses an electromagnet to produce sound is a ?", answer: "speaker" },
+        { text: "The ability of a material to become magnetized is called ?", answer: "magnetic permeability" },
+    ];
+    
+    const masterPool = [...combinedPool, ...extraQuestions];
+    
+    // Generate 30 unique questions per level with deterministic shuffle
+    function getLevelQuestions(level) {
+        const shuffleArray = (arr, seed) => {
+            let a = [...arr];
+            let s = seed * 131071 + level * 911;
+            for (let i = a.length - 1; i > 0; i--) {
+                s = (s * 9301 + 49297) % 233280;
+                let j = s % (i + 1);
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        };
+        
+        let shuffled = shuffleArray(masterPool, level * 557);
+        let unique = [];
+        let seen = new Set();
+        for (let q of shuffled) {
+            let key = (q.answer.toLowerCase().trim() + "|" + q.text.substring(0,45)).toLowerCase();
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push({ text: q.text, answer: q.answer.toLowerCase().trim() });
+            }
+            if (unique.length === 30) break;
+        }
+        // Fallback in case less than 30
+        const fallback = [
+            { text: "What is the unit of electric current?", answer: "ampere" },
+            { text: "What do magnets attract?", answer: "iron" },
+            { text: "Name a good conductor of electricity.", answer: "copper" },
+            { text: "What is the effect of increasing voltage in a circuit?", answer: "more current" },
+        ];
+        while (unique.length < 30) {
+            unique.push(fallback[unique.length % fallback.length]);
+        }
+        return unique.slice(0, 30);
+    }
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let questions = [];
+    let score = 0;
+    let totalQuestionsInLevel = 30;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let canAnswer = true;
+    let waitingForNext = false;
+    
+    // DOM elements
+    const questionTextEl = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreSpan = document.getElementById('scoreSpan');
+    const maxScoreSpan = document.getElementById('maxScoreSpan');
+    const timerSecondsSpan = document.getElementById('timerSeconds');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintBox = document.getElementById('hintBox');
+    const levelMessageArea = document.getElementById('levelMessageArea');
+    
+    // Text-to-speech
+    function speakText(text) {
+        if (!window.speechSynthesis) {
+            feedbackMsg.innerText = "⚠️ Voice not supported.";
+            return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.05;
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    function normalizeAnswer(ans) {
+        return ans.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    
+    function updateScoreUI() {
+        scoreSpan.innerText = score;
+        maxScoreSpan.innerText = totalQuestionsInLevel;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timeLeft = 40;
+        timerSecondsSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if (!canAnswer || waitingForNext) return;
+            if (timeLeft <= 1) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (canAnswer && !waitingForNext) {
+                    canAnswer = false;
+                    disableInputs(true);
+                    feedbackMsg.innerHTML = "⏰ TIME'S UP! ❌ No answer recorded. Moving to next question...";
+                    speakText("Time is up! Moving to next question.");
+                    setTimeout(() => {
+                        proceedToNextOrLevel();
+                    }, 1600);
+                }
+            } else {
+                timeLeft--;
+                timerSecondsSpan.innerText = timeLeft;
+                // Dynamic hints based on time left
+                if (timeLeft === 30) {
+                    hintBox.innerHTML = "⚡ HINT: Think about circuits, current, or magnetic poles!";
+                } else if (timeLeft === 22) {
+                    hintBox.innerHTML = "🧲 HINT: Is this about electricity (voltage, current) or magnetism (poles, attraction)?";
+                } else if (timeLeft === 14) {
+                    hintBox.innerHTML = "🔋 14 seconds! Focus on a key term: conductor, insulator, repel, attract, ampere.";
+                } else if (timeLeft === 6) {
+                    hintBox.innerHTML = "🔥 LAST 6 SECONDS! Quick: unit, law, component or pole!";
+                }
+            }
+        }, 1000);
+    }
+    
+    function disableInputs(disabled) {
+        answerInput.disabled = disabled;
+        submitBtn.disabled = disabled;
+        if (disabled) {
+            submitBtn.style.opacity = "0.5";
+            answerInput.style.backgroundColor = "#f3efdf";
+        } else {
+            submitBtn.style.opacity = "1";
+            answerInput.style.backgroundColor = "#fff7ea";
+        }
+    }
+    
+    function loadCurrentQuestion() {
+        if (!questions.length) return;
+        const q = questions[currentQuestionIndex];
+        questionTextEl.innerText = q.text;
+        answerInput.value = '';
+        feedbackMsg.innerHTML = "🔊 Click speaker to hear question. Type answer (1-3 words).";
+        hintBox.innerHTML = "💡 HINT: Electrical energy? Magnetism? Circuit component?";
+        canAnswer = true;
+        waitingForNext = false;
+        disableInputs(false);
+        answerInput.focus();
+        stopTimer();
+        startTimer();
+    }
+    
+    function proceedToNextOrLevel() {
+        const nextIndex = currentQuestionIndex + 1;
+        const completedAll = (nextIndex >= totalQuestionsInLevel);
+        const percentage = (score / totalQuestionsInLevel) * 100;
+        
+        if (completedAll) {
+            if (percentage >= 80) {
+                if (currentLevel === 5) {
+                    levelMessageArea.innerHTML = `<div class="level-result">🏆✨ ELECTRICITY & MAGNETISM MASTER! ✨🏆<br>You completed all 5 levels! Score: ${score}/${totalQuestionsInLevel}<br>⚡ AMAZING SCIENCE SKILLS! 🧲</div>`;
+                    feedbackMsg.innerHTML = "🎉 CONGRATULATIONS! You've mastered Electrical Energy & Magnetism! Refresh to play again.";
+                    disableInputs(true);
+                    stopTimer();
+                    canAnswer = false;
+                    return;
+                } else {
+                    levelMessageArea.innerHTML = `<div class="level-result">⚡ LEVEL UP! 🧲 Passed Level ${currentLevel} with ${percentage.toFixed(0)}%! → Advancing to Level ${currentLevel+1}</div>`;
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                    return;
+                }
+            } else {
+                levelMessageArea.innerHTML = `<div class="level-result">⚠️ LEVEL ${currentLevel} FAILED ⚠️ You scored ${percentage.toFixed(0)}% (need 80%). Restarting Level ${currentLevel}... Review circuits and magnets! ⚠️</div>`;
+                resetCurrentLevel();
+                return;
+            }
+        } else {
+            currentQuestionIndex++;
+            loadCurrentQuestion();
+            waitingForNext = false;
+        }
+    }
+    
+    function resetCurrentLevel() {
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        questions = getLevelQuestions(currentLevel);
+        totalQuestionsInLevel = questions.length;
+        loadCurrentQuestion();
+        setTimeout(() => {
+            if (levelMessageArea.innerHTML.includes("FAILED")) {
+                levelMessageArea.innerHTML = "";
+            }
+        }, 2800);
+    }
+    
+    function loadLevel(level) {
+        if (level > 5) {
+            levelMessageArea.innerHTML = `<div class="level-result">🏁 GRAND CHAMPION! Ultimate Electricity & Magnetism Expert ⚡🧲🏁</div>`;
+            disableInputs(true);
+            stopTimer();
+            return;
+        }
+        currentLevel = level;
+        levelDisplay.innerText = `Level ${level}`;
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        questions = getLevelQuestions(level);
+        totalQuestionsInLevel = questions.length;
+        loadCurrentQuestion();
+        levelMessageArea.innerHTML = "";
+        canAnswer = true;
+        waitingForNext = false;
+    }
+    
+    function checkAnswerHandler() {
+        if (!canAnswer || waitingForNext) {
+            feedbackMsg.innerHTML = "⏳ Please wait, loading next question...";
+            return;
+        }
+        const userRaw = answerInput.value;
+        if (!userRaw.trim()) {
+            feedbackMsg.innerHTML = "📢 Type your answer before submitting!";
+            return;
+        }
+        const normalizedUser = normalizeAnswer(userRaw);
+        const correctAns = questions[currentQuestionIndex].answer;
+        const normalizedCorrect = normalizeAnswer(correctAns);
+        
+        let isCorrect = false;
+        if (normalizedUser === normalizedCorrect) {
+            isCorrect = true;
+        } else {
+            // Flexible matching for synonyms and common alternate forms
+            if (normalizedCorrect.includes(normalizedUser) && normalizedUser.length > 3) isCorrect = true;
+            else if (normalizedUser.includes(normalizedCorrect)) isCorrect = true;
+            
+            const synonyms = {
+                "current": "electric current", "electricity": "electric current", "amp": "ampere",
+                "voltage": "potential difference", "volt": "voltage", "resistance": "ohm",
+                "magnet": "permanent magnet", "electromagnet": "temporary magnet",
+                "solenoid": "coil", "circuit": "closed circuit", "series": "series circuit",
+                "parallel": "parallel circuit", "conductor": "conducting material", "insulator": "insulating material",
+                "repulsion": "repel", "attraction": "attract", "lodestone": "magnetite",
+                "north": "north pole", "south": "south pole", "ac": "alternating current", "dc": "direct current",
+                "ohms": "ohm", "voltmeter": "voltage meter", "ammeter": "current meter", "fuse": "circuit breaker"
+            };
+            for (let [key, val] of Object.entries(synonyms)) {
+                if ((normalizedUser === key && normalizedCorrect === val) || (normalizedUser === val && normalizedCorrect === key)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            score++;
+            updateScoreUI();
+            feedbackMsg.innerHTML = `✅ SHOCKINGLY CORRECT! +1 point (${score}/${totalQuestionsInLevel}) Great electricity/magnetism knowledge!`;
+            speakText("Correct! Excellent answer, scientist.");
+        } else {
+            feedbackMsg.innerHTML = `❌ NOT QUITE. The correct answer is: "${questions[currentQuestionIndex].answer}". You wrote: "${userRaw}". Keep studying electrical energy and magnetism!`;
+            speakText(`Wrong. The correct answer is ${questions[currentQuestionIndex].answer}. Review your notes.`);
+        }
+        
+        canAnswer = false;
+        disableInputs(true);
+        waitingForNext = true;
+        
+        setTimeout(() => {
+            proceedToNextOrLevel();
+        }, 2100);
+    }
+    
+    // Voice read current question
+    function readCurrentQuestion() {
+        if (questionTextEl.innerText && !questionTextEl.innerText.includes("Loading")) {
+            speakText(questionTextEl.innerText);
+        } else {
+            speakText("No question loaded yet. Please wait.");
+        }
+    }
+    
+    // Event listeners
+    submitBtn.addEventListener('click', checkAnswerHandler);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !submitBtn.disabled && canAnswer && !waitingForNext) {
+            e.preventDefault();
+            checkAnswerHandler();
+        }
+    });
+    
+    // Initialize Game
+    function initGame() {
+        currentLevel = 1;
+        loadLevel(1);
+    }
+    
+    initGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBC Science Quest - Grade 5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2c7be5;
+            --secondary: #00d97e;
+            --danger: #e63757;
+            --warning: #f5803e;
+            --dark: #1a2b4c;
+            --light: #f8f9fa;
+            --gradient: linear-gradient(135deg, #1a6dcc 0%, #00d97e 100%);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0fff4 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 10px;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 20px 15px;
+            background: var(--gradient);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            position: relative;
+        }
+        
+        .grade-badge {
+            background: rgba(255,255,255,0.25);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 8px;
+            position: relative;
+        }
+        
+        /* Game Container */
+        #game-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient);
+        }
+        
+        /* Level & Progress */
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .level-indicator {
+            background: var(--primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(44, 123, 229, 0.3);
+        }
+        
+        .progress-container {
+            flex: 1;
+            min-width: 200px;
+            background: #e9ecef;
+            border-radius: 12px;
+            height: 12px;
+            overflow: hidden;
+            margin-left: 15px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 12px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-weight: 500;
+            margin-top: 5px;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        /* Timer */
+        .timer-container {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .timer {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: rgba(44, 123, 229, 0.1);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            border: 4px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(44, 123, 229, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timer.warning {
+            color: var(--warning);
+            border-color: var(--warning);
+            background: rgba(245, 128, 62, 0.15);
+            animation: pulse 1s infinite;
+        }
+        
+        .timer.danger {
+            color: var(--danger);
+            border-color: var(--danger);
+            background: rgba(230, 55, 87, 0.15);
+            animation: pulse 0.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .timer-label {
+            font-size: 0.95rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        /* Question Area */
+        .question-box {
+            background: #f8fafc;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 16px 16px 0;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        .question-box::before {
+            content: "❓";
+            position: absolute;
+            left: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            color: var(--dark);
+        }
+        
+        .voice-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.4);
+            transition: all 0.2s;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .voice-btn:hover { transform: scale(1.08); background: #1a6dcc; }
+        .voice-btn:active { transform: scale(0.95); }
+        .voice-btn.speaking { animation: pulse 0.8s infinite; background: #0d5cb6; }
+        
+        /* Answer Input */
+        .answer-container { margin: 25px 0; }
+        
+        .answer-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid #d1d9e6;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(44, 123, 229, 0.2);
+        }
+        
+        .answer-input.correct {
+            border-color: var(--secondary);
+            background: rgba(0, 217, 126, 0.08);
+        }
+        
+        .answer-input.incorrect {
+            border-color: var(--danger);
+            background: rgba(230, 55, 87, 0.08);
+        }
+        
+        /* Hint System */
+        .hint-container { margin: 15px 0; min-height: 30px; }
+        .hint {
+            background: rgba(245, 128, 62, 0.15);
+            border-left: 4px solid var(--warning);
+            padding: 12px 18px;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.05rem;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        .hint.visible { display: block; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Submit Button */
+        .submit-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 15px 0;
+            box-shadow: 0 6px 20px rgba(0, 217, 126, 0.35);
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 126, 0.45);
+        }
+        .submit-btn:active { transform: translateY(1px); }
+        .submit-btn:disabled { background: #adb5bd; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        /* Feedback */
+        .feedback {
+            text-align: center; padding: 15px; border-radius: 16px; margin: 15px 0; font-weight: 500; min-height: 24px; display: none;
+        }
+        .feedback.correct { background: rgba(0, 217, 126, 0.15); color: #099268; display: block; animation: bounce 0.4s ease; }
+        .feedback.incorrect { background: rgba(230, 55, 87, 0.15); color: #c92a4a; display: block; animation: shake 0.4s ease; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 20%, 60% {transform: translateX(-5px);} 40%, 80% {transform: translateX(5px);} }
+        
+        /* Score Display */
+        .score-display { display: flex; justify-content: space-around; margin: 20px 0; text-align: center; flex-wrap: wrap; gap: 15px; }
+        .score-item { background: #f1f5f9; padding: 12px 20px; border-radius: 16px; min-width: 100px; }
+        .score-value { font-size: 1.8rem; font-weight: bold; color: var(--primary); display: block; }
+        .score-label { font-size: 0.95rem; color: #64748b; font-weight: 500; }
+        
+        /* Screens */
+        #level-complete, #game-complete, #start-screen { text-align: center; padding: 30px 20px; display: none; }
+        #level-complete.active, #game-complete.active, #start-screen.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .completion-title { font-size: 2.2rem; margin: 15px 0; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; }
+        .completion-message { font-size: 1.3rem; margin: 15px 0 25px; color: var(--dark); line-height: 1.5; }
+        .stars { font-size: 3.5rem; margin: 15px 0; height: 50px; display: flex; justify-content: center; gap: 8px; }
+        .star { color: #e9ecef; transition: all 0.3s ease; }
+        .star.earned { color: #ffc107; animation: starPop 0.4s ease forwards; transform: scale(1.2); }
+        @keyframes starPop { 0% { transform: scale(0.8); opacity: 0.7; } 50% { transform: scale(1.3); } 100% { transform: scale(1.2); opacity: 1; } }
+        
+        .next-btn, .restart-btn {
+            background: var(--gradient); color: white; border: none; padding: 16px 45px; border-radius: 50px; font-size: 1.3rem; font-weight: 600; margin: 15px 10px; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 217, 126, 0.4); transition: all 0.25s; min-width: 200px;
+        }
+        .next-btn:hover, .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 217, 126, 0.55); }
+        .next-btn:active, .restart-btn:active { transform: translateY(1px); }
+        .restart-btn { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); box-shadow: 0 6px 20px rgba(108, 117, 125, 0.35); }
+        .restart-btn:hover { box-shadow: 0 8px 25px rgba(108, 117, 125, 0.5); }
+        
+        .start-title { font-size: 2.4rem; margin: 20px 0; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; line-height: 1.3; }
+        .start-description { font-size: 1.25rem; margin: 20px 0 30px; color: #495057; line-height: 1.6; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 25px 0; text-align: left; }
+        .feature { background: #f8fafc; padding: 15px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 10px; }
+        .feature-icon { font-size: 1.5rem; min-width: 30px; }
+        .feature-text { font-weight: 500; font-size: 1.05rem; }
+        .start-btn { background: var(--gradient); color: white; border: none; padding: 18px 60px; border-radius: 50px; font-size: 1.5rem; font-weight: 700; margin: 25px 0 15px; cursor: pointer; box-shadow: 0 8px 30px rgba(0, 217, 126, 0.45); transition: all 0.3s; min-width: 280px; display: block; margin-left: auto; margin-right: auto; }
+        .start-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 12px 35px rgba(0, 217, 126, 0.6); }
+        .start-btn:active { transform: translateY(2px) scale(0.98); }
+        .start-footer { margin-top: 25px; color: #6c757d; font-size: 0.95rem; font-style: italic; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.6rem; } .subtitle { font-size: 1rem; } #game-container { padding: 20px 15px; } .question-text { font-size: 1.3rem; } .timer { width: 70px; height: 70px; font-size: 2.2rem; } .answer-input { padding: 16px 18px; font-size: 1.2rem; } .submit-btn, .next-btn, .restart-btn, .start-btn { padding: 16px; font-size: 1.25rem; } .score-value { font-size: 1.6rem; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 5px; } header { padding: 15px 10px; border-radius: 16px; } h1 { font-size: 1.5rem; } #game-container { padding: 18px 12px; border-radius: 20px; } .level-header { flex-direction: column; align-items: flex-start; gap: 12px; } .progress-container { margin-left: 0; width: 100%; } .question-text { font-size: 1.25rem; } .timer { width: 65px; height: 65px; font-size: 2rem; } .answer-input { padding: 14px 16px; font-size: 1.15rem; } .submit-btn, .next-btn, .restart-btn, .start-btn { padding: 15px; font-size: 1.2rem; min-width: auto; width: 100%; margin: 12px 0; } .completion-title { font-size: 1.9rem; } .completion-message { font-size: 1.15rem; } .stars { font-size: 3rem; } .feature { padding: 12px; font-size: 0.95rem; }
+        }
+        
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        .floating { animation: float 3s ease-in-out infinite; }
+        .confetti { position: fixed; width: 15px; height: 15px; background: #ffc107; border-radius: 2px; animation: confetti-fall 5s ease-in-out forwards; z-index: 1000; pointer-events: none; }
+        @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌊 CBC Science Quest <span style="font-size:1.4rem">✨</span></h1>
+            <div class="subtitle">Mixtures & Water Pollution • Grade 5</div>
+            <div class="grade-badge">Competency-Based Curriculum</div>
+        </header>
+        
+        <div id="start-screen" class="active">
+            <div class="floating" style="font-size: 4rem; margin: 10px 0;">🔬💧</div>
+            <h2 class="start-title">Welcome, Young Scientist!</h2>
+            <p class="start-description">Embark on an exciting adventure to master Mixtures and Water Pollution! Answer questions, earn stars, and become a water conservation hero.</p>
+            <div class="features">
+                <div class="feature"><div class="feature-icon">🎤</div><div class="feature-text">Voice Questions & Alerts</div></div>
+                <div class="feature"><div class="feature-icon">⏱️</div><div class="feature-text">40-Second Timer</div></div>
+                <div class="feature"><div class="feature-icon">💡</div><div class="feature-text">Smart Hints</div></div>
+                <div class="feature"><div class="feature-icon">📱</div><div class="feature-text">Play Anywhere</div></div>
+            </div>
+            <button id="start-btn" class="start-btn">START QUEST 🚀</button>
+            <p class="start-footer">✨ 5 Levels • 30 Questions Each • 80% to Advance ✨</p>
+        </div>
+        
+        <div id="game-container" style="display:none;">
+            <div class="level-header">
+                <div class="level-indicator">Level <span id="current-level">1</span>/5</div>
+                <div style="flex:1; min-width:200px;">
+                    <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+                    <div class="progress-text"><span id="question-counter">1</span>/30 Questions</div>
+                </div>
+            </div>
+            <div class="score-display">
+                <div class="score-item"><span class="score-value" id="score">0</span><span class="score-label">Score</span></div>
+                <div class="score-item"><span class="score-value" id="correct-count">0</span><span class="score-label">Correct</span></div>
+                <div class="score-item"><span class="score-value" id="accuracy">0%</span><span class="score-label">Accuracy</span></div>
+            </div>
+            <div class="timer-container">
+                <div class="timer" id="timer">40</div>
+                <div class="timer-label">Seconds Remaining</div>
+            </div>
+            <button class="voice-btn" id="voice-btn" aria-label="Read question aloud">🔊</button>
+            <div class="question-box">
+                <div class="question-text" id="question-text">Loading question...</div>
+            </div>
+            <div class="hint-container">
+                <div class="hint" id="hint">💡 Hint: Think about how mixtures can be separated!</div>
+            </div>
+            <div class="answer-container">
+                <input type="text" class="answer-input" id="answer-input" placeholder="Type your answer here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button class="submit-btn" id="submit-btn">Submit Answer ✨</button>
+        </div>
+        
+        <div id="level-complete">
+            <div class="floating" style="font-size: 4rem; margin: 10px 0;">🎉</div>
+            <h2 class="completion-title">Level Complete!</h2>
+            <p class="completion-message" id="level-message">Amazing work! You've mastered this level.</p>
+            <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+            <div class="score-display" style="margin: 25px 0;">
+                <div class="score-item"><span class="score-value" id="level-score">0</span><span class="score-label">Level Score</span></div>
+                <div class="score-item"><span class="score-value" id="level-accuracy">0%</span><span class="score-label">Accuracy</span></div>
+            </div>
+            <button id="next-level-btn" class="next-btn">Next Level →</button>
+            <button id="retry-level-btn" class="restart-btn" style="display:none;">Retry Level ↻</button>
+        </div>
+        
+        <div id="game-complete">
+            <div class="floating" style="font-size: 5rem; margin: 10px 0;">🏆</div>
+            <h2 class="completion-title">Science Champion!</h2>
+            <p class="completion-message">Congratulations! You've mastered Mixtures and Water Pollution. You're now a certified Water Conservation Hero!</p>
+            <div class="stars"><span class="star earned">★</span><span class="star earned">★</span><span class="star earned">★</span><span class="star earned">★</span><span class="star earned">★</span></div>
+            <div class="score-display" style="margin: 25px 0;">
+                <div class="score-item"><span class="score-value" id="final-score">0</span><span class="score-label">Total Score</span></div>
+                <div class="score-item"><span class="score-value" id="final-accuracy">0%</span><span class="score-label">Final Accuracy</span></div>
+            </div>
+            <button id="play-again-btn" class="restart-btn">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const questionsDB = {
+            1: [ // Level 1: Basic Mixtures
+                {q: "What is a mixture?", a: ["a combination of two or more substances that are not chemically joined", "when two or more substances are combined but keep their own properties"], hint: "Think about mixing sand and salt - do they become a new substance?"},
+                {q: "Name one example of a mixture you see at home.", a: ["cereal and milk", "fruit salad", "trail mix", "salad", "sand and water"], hint: "Think about your breakfast or lunch!"},
+                {q: "Can mixtures be separated?", a: ["yes", "yes they can"], hint: "Think about using a sieve or filter..."},
+                {q: "What do we call a mixture where you can see the different parts?", a: ["heterogeneous mixture", "heterogeneous"], hint: "Hetero means 'different' - you can see the different parts!"},
+                {q: "What do we call a mixture where you cannot see the different parts?", a: ["homogeneous mixture", "solution", "homogeneous"], hint: "Homo means 'same' - it looks the same throughout!"},
+                {q: "Is salt water a mixture?", a: ["yes"], hint: "Salt dissolves in water but they don't chemically combine..."},
+                {q: "What method can separate sand from water?", a: ["filtration", "filtering", "using a filter"], hint: "Think about what you use to make coffee or tea..."},
+                {q: "What is the process of a solid dissolving in a liquid called?", a: ["dissolving", "dissolution"], hint: "What happens when you stir sugar into your tea?"},
+                {q: "Name a tool used to separate mixtures by size.", a: ["sieve", "strainer", "mesh", "colander"], hint: "You might use this in the kitchen for pasta!"},
+                {q: "Is air a mixture?", a: ["yes"], hint: "Air contains nitrogen, oxygen, carbon dioxide and other gases..."},
+                {q: "What is the liquid called that does the dissolving in a solution?", a: ["solvent"], hint: "In salt water, water is the _____"},
+                {q: "What is the substance that gets dissolved called?", a: ["solute"], hint: "In salt water, salt is the _____"},
+                {q: "Can you separate iron filings from sand using a magnet?", a: ["yes"], hint: "What property does iron have that sand doesn't?"},
+                {q: "What separation method uses heat to turn liquid into vapor?", a: ["evaporation"], hint: "What happens to puddles after rain when the sun comes out?"},
+                {q: "Is orange juice with pulp a homogeneous or heterogeneous mixture?", a: ["heterogeneous", "heterogeneous mixture"], hint: "Can you see the different parts?"},
+                {q: "What do we call a mixture of a solid dissolved in a liquid?", a: ["solution"], hint: "Salt water is an example of this..."},
+                {q: "Name one way to separate salt from salt water.", a: ["evaporation", "boiling", "heating"], hint: "What happens if you leave salt water in the sun?"},
+                {q: "Is milk a mixture?", a: ["yes"], hint: "Milk contains water, fats, proteins and sugars..."},
+                {q: "What separation method uses a paper to separate solids from liquids?", a: ["filtration", "filtering"], hint: "Coffee makers use this method..."},
+                {q: "Can you separate a mixture of sugar and sand using water?", a: ["yes"], hint: "Sugar dissolves in water but sand does not..."},
+                {q: "What is the name for a mixture where particles are suspended but not dissolved?", a: ["suspension"], hint: "Think about muddy water that settles over time..."},
+                {q: "Is soil a mixture?", a: ["yes"], hint: "Soil contains sand, clay, organic matter, water and air..."},
+                {q: "What method separates mixtures based on boiling points?", a: ["distillation"], hint: "This method can purify water..."},
+                {q: "Name a mixture used in cooking.", a: ["cake batter", "soup", "sauce", "dressing", "marinade"], hint: "Think about what you mix when baking..."},
+                {q: "What happens to the properties of substances in a mixture?", a: ["they keep their own properties", "they remain the same"], hint: "Salt still tastes salty in salt water..."},
+                {q: "Is vinegar a mixture?", a: ["yes"], hint: "Vinegar is acetic acid dissolved in water..."},
+                {q: "What do we call the clear liquid that passes through a filter?", a: ["filtrate"], hint: "This is the result of filtration..."},
+                {q: "Can mixtures be in any state of matter?", a: ["yes"], hint: "Think about air (gas), salt water (liquid), and trail mix (solid)..."},
+                {q: "What separation method uses spinning to separate components by density?", a: ["centrifugation", "centrifuge"], hint: "Used in labs and washing machines..."},
+                {q: "Is brass (copper and zinc) a mixture?", a: ["yes", "it is an alloy which is a mixture"], hint: "Alloys are mixtures of metals..."}
+            ],
+            2: [ // Level 2: Water Properties & Simple Pollution
+                {q: "Why is water called the 'universal solvent'?", a: ["because it can dissolve many substances", "it dissolves more substances than any other liquid"], hint: "Water can dissolve salt, sugar, acids, and many other things..."},
+                {q: "What is water pollution?", a: ["when harmful substances get into water bodies", "contamination of water with harmful materials"], hint: "Think about what makes water unsafe for plants, animals and people..."},
+                {q: "Name one source of water pollution.", a: ["factory waste", "sewage", "oil spills", "plastic trash", "fertilizers", "pesticides"], hint: "Think about what humans put into rivers, lakes or oceans..."},
+                {q: "How does plastic pollution affect water animals?", a: ["animals can eat plastic and get sick", "animals can get trapped in plastic", "plastic breaks into tiny pieces that enter the food chain"], hint: "Turtles sometimes mistake plastic bags for jellyfish..."},
+                {q: "What is sewage?", a: ["waste water from homes and businesses", "used water containing human waste and soap"], hint: "This comes from toilets, sinks, and showers..."},
+                {q: "Why is clean water important for humans?", a: ["we need it for drinking", "to stay healthy", "for cooking and cleaning", "to prevent diseases"], hint: "Our bodies are mostly water and we need clean water to survive..."},
+                {q: "What happens when fertilizers enter water bodies?", a: ["they cause algae to grow too fast", "they cause eutrophication", "they deplete oxygen in water"], hint: "Too much plant growth can use up all the oxygen..."},
+                {q: "Name one way to prevent water pollution.", a: ["proper waste disposal", "not littering", "using less plastic", "treating sewage", "using eco-friendly products"], hint: "Think about what you can do at home or school..."},
+                {q: "What is an oil spill?", a: ["when oil is accidentally released into water", "leakage of petroleum into oceans or rivers"], hint: "This often happens from ships or pipelines..."},
+                {q: "How do oil spills affect birds?", a: ["oil coats their feathers and they cannot fly or stay warm", "birds ingest oil when trying to clean themselves"], hint: "Birds need clean feathers to fly and stay waterproof..."},
+                {q: "What is eutrophication?", a: ["when too many nutrients cause excessive plant growth in water", "overgrowth of algae due to nutrients"], hint: "This process depletes oxygen and harms aquatic life..."},
+                {q: "Why should we not pour chemicals down the drain?", a: ["they can pollute water sources", "they are hard to remove in treatment plants", "they harm aquatic life"], hint: "Drains often lead to rivers, lakes or oceans..."},
+                {q: "What is a water treatment plant?", a: ["a facility that cleans dirty water to make it safe", "where polluted water is purified"], hint: "This is where sewage and wastewater get cleaned..."},
+                {q: "Name one disease caused by drinking polluted water.", a: ["cholera", "typhoid", "dysentery", "diarrhea"], hint: "These are often called waterborne diseases..."},
+                {q: "How does deforestation contribute to water pollution?", a: ["soil erosion carries sediment into water", "trees no longer filter pollutants"], hint: "Tree roots hold soil in place..."},
+                {q: "What is sediment pollution?", a: ["when soil and sand wash into water bodies", "excess soil particles in water"], hint: "This makes water cloudy and harms fish habitats..."},
+                {q: "Why is groundwater pollution serious?", a: ["it is hard to clean", "many people drink groundwater from wells", "it can spread over large areas"], hint: "Groundwater is water stored underground in aquifers..."},
+                {q: "What role do wetlands play in water quality?", a: ["they filter pollutants", "they act as natural water filters", "they trap sediments and absorb nutrients"], hint: "Wetlands are like nature's kidneys..."},
+                {q: "How can agricultural runoff pollute water?", a: ["it carries fertilizers and pesticides into water", "it brings soil and animal waste to rivers"], hint: "Rain washes farm chemicals into nearby streams..."},
+                {q: "What is thermal pollution?", a: ["when heated water is released into natural water bodies", "change in water temperature that harms ecosystems"], hint: "Power plants sometimes use water for cooling..."},
+                {q: "Why is thermal pollution harmful to fish?", a: ["warm water holds less oxygen", "it disrupts breeding cycles", "it can kill temperature-sensitive species"], hint: "Fish need specific temperatures to survive..."},
+                {q: "What is a non-point source of pollution?", a: ["pollution that comes from many diffuse sources", "runoff from streets, farms, or lawns"], hint: "Unlike a pipe, you can't point to one exact source..."},
+                {q: "Name one point source of water pollution.", a: ["factory discharge pipe", "sewage treatment plant outlet", "oil rig leak"], hint: "This is pollution from a single, identifiable source..."},
+                {q: "How does plastic break down in water?", a: ["it breaks into smaller pieces called microplastics", "it does not fully biodegrade"], hint: "Plastic can take hundreds of years to decompose..."},
+                {q: "Why are microplastics dangerous?", a: ["small animals eat them and they move up the food chain", "they can carry toxic chemicals"], hint: "Even tiny plastic pieces can harm ecosystems..."},
+                {q: "What is the 3R principle for reducing pollution?", a: ["Reduce, Reuse, Recycle"], hint: "These three words help protect our environment..."},
+                {q: "How can students help reduce water pollution?", a: ["participate in clean-ups", "use less plastic", "dispose of waste properly", "educate others"], hint: "Even small actions make a big difference..."},
+                {q: "What is biodegradable waste?", a: ["waste that can be broken down by natural processes", "organic material that decomposes"], hint: "Food scraps and paper are examples..."},
+                {q: "Why should we conserve water?", a: ["clean water is limited", "to ensure enough for everyone", "to protect ecosystems"], hint: "Only a small percentage of Earth's water is fresh and usable..."},
+                {q: "What is a watershed?", a: ["an area of land that drains into a common water body", "the land area that supplies water to a river system"], hint: "Everything that happens on this land affects the water..."}
+            ],
+            3: [ // Level 3: Advanced Mixtures & Separation
+                {q: "What is chromatography used for?", a: ["separating mixtures based on how components move through a medium", "separating colored substances like ink"], hint: "This method can separate the colors in marker ink..."},
+                {q: "How does a centrifuge separate mixtures?", a: ["by spinning very fast to separate by density", "using centrifugal force to separate components"], hint: "Heavier particles move to the bottom when spun..."},
+                {q: "What is decantation?", a: ["pouring off liquid to separate it from a solid", "carefully pouring liquid away from settled solid"], hint: "After sand settles in water, you can pour the water off..."},
+                {q: "When would you use magnetic separation?", a: ["to separate magnetic materials from non-magnetic ones", "when one component is attracted to a magnet"], hint: "Iron filings can be separated from sand this way..."},
+                {q: "What is the difference between a mixture and a compound?", a: ["mixtures can be separated physically, compounds cannot", "in mixtures substances keep properties, in compounds they form new substances"], hint: "Salt water is a mixture; water (H₂O) is a compound..."},
+                {q: "Why can't you separate a compound by physical means?", a: ["because the elements are chemically bonded", "chemical bonds must be broken to separate compounds"], hint: "You need a chemical reaction to break water into hydrogen and oxygen..."},
+                {q: "What is solubility?", a: ["the ability of a substance to dissolve in a solvent", "how much solute can dissolve in a solvent"], hint: "Sugar has high solubility in water..."},
+                {q: "How does temperature affect solubility of solids in liquids?", a: ["higher temperature usually increases solubility", "most solids dissolve better in warm water"], hint: "You can dissolve more sugar in hot tea than cold tea..."},
+                {q: "What is a saturated solution?", a: ["a solution that cannot dissolve any more solute", "when the maximum amount of solute is dissolved"], hint: "If you keep adding sugar to tea and it stops dissolving..."},
+                {q: "Name a mixture that is also a colloid.", a: ["milk", "fog", "jelly", "mayonnaise"], hint: "Colloids have particles larger than solutions but smaller than suspensions..."},
+                {q: "What is the Tyndall effect?", a: ["scattering of light by colloidal particles", "when a beam of light is visible in a colloid"], hint: "This is why you can see a laser beam in fog..."},
+                {q: "How is distillation different from evaporation?", a: ["distillation collects the vapor, evaporation does not", "distillation separates and collects components"], hint: "Distillation can purify water by collecting the condensed vapor..."},
+                {q: "What mixture can be separated using a separating funnel?", a: ["immiscible liquids like oil and water", "liquids that do not mix"], hint: "These liquids form separate layers..."},
+                {q: "Why do oil and water not mix?", a: ["water is polar and oil is non-polar", "they have different molecular properties"], hint: "Like dissolves like - water molecules attract each other strongly..."},
+                {q: "What is an emulsion?", a: ["a mixture of two immiscible liquids where one is dispersed in the other", "like oil droplets in water"], hint: "Mayonnaise and milk are examples..."},
+                {q: "What role does an emulsifier play?", a: ["it helps mix immiscible liquids", "it stabilizes emulsions"], hint: "Egg yolk helps keep oil and vinegar mixed in mayonnaise..."},
+                {q: "How can you separate a mixture of salt, sand and iron filings?", a: ["use magnet for iron, then water to dissolve salt, filter sand, evaporate water for salt", "magnetic separation, then dissolution and filtration"], hint: "Think step by step: first remove the magnetic part..."},
+                {q: "What is fractional distillation used for?", a: ["separating mixtures of liquids with different boiling points", "separating crude oil into components"], hint: "This is how we get gasoline, diesel, etc. from petroleum..."},
+                {q: "Why is air considered a homogeneous mixture?", a: ["its components are evenly distributed and not visible separately", "gases mix completely at molecular level"], hint: "You can't see nitrogen separate from oxygen in air..."},
+                {q: "What happens to the mass when you make a mixture?", a: ["the total mass equals the sum of the parts", "mass is conserved"], hint: "If you mix 10g salt and 90g water, you get 100g salt water..."},
+                {q: "Can the components of a mixture be in any proportion?", a: ["yes", "mixtures can have variable composition"], hint: "You can make salt water with a little salt or a lot..."},
+                {q: "What is adsorption in separation techniques?", a: ["when substances stick to the surface of a solid", "used in chromatography and filters"], hint: "Activated charcoal adsorbs impurities..."},
+                {q: "How does reverse osmosis purify water?", a: ["by forcing water through a semi-permeable membrane", "removing salts and impurities using pressure"], hint: "This method is used in desalination plants..."},
+                {q: "What is a semi-permeable membrane?", a: ["a barrier that allows some substances to pass but not others", "selectively permeable barrier"], hint: "Cell membranes are natural examples..."},
+                {q: "Why is separation of mixtures important in real life?", a: ["to purify water", "to extract useful materials", "to recycle waste", "to prepare medicines"], hint: "Think about drinking water, recycling, or making fuels..."},
+                {q: "What mixture separation method is used in making coffee?", a: ["filtration"], hint: "The coffee grounds are separated from the liquid coffee..."},
+                {q: "How can you separate colored dyes in ink?", a: ["paper chromatography"], hint: "Different colors travel at different rates on paper..."},
+                {q: "What property is used in winnowing to separate mixtures?", a: ["difference in weight or density", "wind blows away lighter chaff"], hint: "Farmers use this to separate grain from husk..."},
+                {q: "What is sublimation and how can it separate mixtures?", a: ["when a solid turns directly to gas; can separate substances that sublime", "like separating iodine from sand"], hint: "Dry ice (solid CO₂) sublimes at room temperature..."},
+                {q: "Why is understanding mixtures important for environmental science?", a: ["to understand pollution", "to develop cleanup methods", "to monitor water quality"], hint: "Pollution often involves mixtures of harmful substances..."}
+            ],
+            4: [ // Level 4: Water Pollution Solutions & Conservation
+                {q: "What is bioremediation?", a: ["using living organisms to clean up pollution", "using bacteria or plants to break down pollutants"], hint: "Some bacteria can eat oil spills..."},
+                {q: "How do constructed wetlands help with water pollution?", a: ["they naturally filter pollutants", "plants and microbes clean the water"], hint: "These are human-made systems that mimic natural wetlands..."},
+                {q: "What is the purpose of a sedimentation tank in water treatment?", a: ["to allow solids to settle out of water", "to remove suspended particles by gravity"], hint: "Heavy particles sink to the bottom over time..."},
+                {q: "Why is chlorination used in water treatment?", a: ["to kill harmful microorganisms", "to disinfect water and prevent disease"], hint: "This makes water safe to drink..."},
+                {q: "What is the problem with using too much chlorine?", a: ["it can form harmful byproducts", "it may affect taste and smell", "it can harm aquatic life if released"], hint: "Balance is important in water treatment..."},
+                {q: "How can individuals reduce their water footprint?", a: ["fix leaks", "take shorter showers", "use water-efficient appliances", "collect rainwater"], hint: "Small changes in daily habits add up..."},
+                {q: "What is greywater?", a: ["gently used water from sinks, showers, and laundry", "wastewater that can be reused for irrigation"], hint: "This is different from blackwater which contains sewage..."},
+                {q: "Why is reusing greywater beneficial?", a: ["it conserves fresh water", "reduces strain on treatment plants", "lowers water bills"], hint: "This water doesn't need to be as clean as drinking water..."},
+                {q: "What is rainwater harvesting?", a: ["collecting and storing rainwater for later use", "capturing rain from roofs for irrigation or other uses"], hint: "This reduces dependence on municipal water..."},
+                {q: "How does urban runoff pollute water?", a: ["it picks up oil, trash, and chemicals from streets", "it flows directly into water bodies without treatment"], hint: "Storm drains often lead straight to rivers..."},
+                {q: "What are permeable pavements and how do they help?", a: ["they allow water to soak into the ground", "they reduce runoff and filter pollutants"], hint: "These special surfaces let rainwater recharge groundwater..."},
+                {q: "Why is protecting wetlands important for water quality?", a: ["they filter pollutants naturally", "they reduce flooding", "they provide habitat for wildlife"], hint: "Wetlands act as natural water treatment systems..."},
+                {q: "What is the role of riparian buffers?", a: ["vegetated areas along waterways that filter runoff", "they trap sediments and absorb nutrients"], hint: "These are like protective borders along rivers and lakes..."},
+                {q: "How can agriculture be made more water-friendly?", a: ["use drip irrigation", "plant cover crops", "reduce chemical use", "practice crop rotation"], hint: "Smart farming protects both crops and water..."},
+                {q: "What is integrated water resource management?", a: ["coordinating development and management of water resources", "holistic approach to water sustainability"], hint: "This considers social, economic and environmental needs..."},
+                {q: "Why is public education important for water conservation?", a: ["informed people make better choices", "awareness leads to behavior change", "communities can work together"], hint: "Knowledge empowers action..."},
+                {q: "What is water stewardship?", a: ["responsible use and protection of water resources", "caring for water for current and future generations"], hint: "It's about being a guardian of water..."},
+                {q: "How do laws and regulations help reduce water pollution?", a: ["they set limits on pollutants", "they require treatment of wastewater", "they penalize violators"], hint: "Rules help ensure everyone does their part..."},
+                {q: "What is the Clean Water Act (or similar law in your country) designed to do?", a: ["restore and maintain the chemical, physical, and biological integrity of water", "regulate pollutant discharges into water bodies"], hint: "This landmark law protects rivers, lakes and coastal waters..."},
+                {q: "Why monitor water quality regularly?", a: ["to detect pollution early", "to ensure safety for humans and ecosystems", "to evaluate effectiveness of protection measures"], hint: "Testing helps us know if water is healthy..."},
+                {q: "What parameters are commonly tested in water quality monitoring?", a: ["pH, dissolved oxygen, turbidity, nutrients, bacteria", "temperature, conductivity, contaminants"], hint: "These indicators tell us about water health..."},
+                {q: "How can technology help combat water pollution?", a: ["sensors for real-time monitoring", "advanced treatment methods", "apps for reporting pollution"], hint: "Innovation provides new solutions..."},
+                {q: "What is the circular economy approach to water?", a: ["reuse and recycle water within systems", "minimize waste and maximize resource efficiency"], hint: "Water is used, treated, and used again..."},
+                {q: "Why is transboundary water cooperation important?", a: ["rivers and aquifers cross political borders", "pollution in one country affects others", "shared resources need shared management"], hint: "Water doesn't stop at country lines..."},
+                {q: "How does climate change affect water pollution?", a: ["more intense storms increase runoff", "higher temperatures affect water chemistry", "sea level rise causes saltwater intrusion"], hint: "Climate and water quality are closely linked..."},
+                {q: "What is water scarcity and how is it related to pollution?", a: ["lack of sufficient available water resources; pollution reduces usable water", "when clean water becomes limited due to contamination"], hint: "Polluted water cannot be used without treatment..."},
+                {q: "Why is protecting groundwater especially challenging?", a: ["it is hidden and hard to monitor", "pollution can spread silently", "cleanup is difficult and expensive"], hint: "Out of sight shouldn't mean out of mind..."},
+                {q: "What role do citizens play in water protection?", a: ["report pollution", "conserve water", "support policies", "participate in clean-ups"], hint: "Everyone has a part to play..."},
+                {q: "How can schools contribute to water conservation?", a: ["install water-saving fixtures", "educate students", "start garden projects with greywater", "monitor school water use"], hint: "Schools can be models of sustainability..."},
+                {q: "What is the ultimate goal of water pollution control?", a: ["to ensure safe, clean water for all living things now and in the future", "sustainable water resources for ecosystems and human needs"], hint: "It's about health, equity, and planetary well-being..."}
+            ],
+            5: [ // Level 5: Critical Thinking & Application
+                {q: "Design a simple experiment to test how different materials filter polluted water.", a: ["use containers with sand, gravel, charcoal; pour dirty water through; compare clarity", "set up filtration columns with different media and measure turbidity"], hint: "Think about variables: what stays the same, what changes?"},
+                {q: "If a factory is polluting a river, what steps would you take to address it?", a: ["report to authorities", "gather evidence", "raise community awareness", "propose treatment solutions"], hint: "Consider scientific, social, and legal approaches..."},
+                {q: "How would you explain the importance of mixtures knowledge to a younger student?", a: ["use everyday examples like cooking or cleaning", "show simple separation activities", "connect to environmental protection"], hint: "Make it relatable and hands-on..."},
+                {q: "A mixture of salt, sand, and iron filings is spilled. Describe the step-by-step separation process.", a: ["1. Use magnet to remove iron. 2. Add water to dissolve salt. 3. Filter to separate sand. 4. Evaporate water to recover salt."], hint: "Think about properties: magnetism, solubility, particle size..."},
+                {q: "Why might a community choose constructed wetlands over a traditional treatment plant?", a: ["lower cost", "natural aesthetics", "habitat creation", "energy efficiency", "community involvement"], hint: "Consider economic, ecological, and social factors..."},
+                {q: "How does understanding solubility help in cleaning an oil spill?", a: ["oil doesn't dissolve in water so mechanical removal is needed", "knowledge guides use of dispersants or absorbents"], hint: "Like dissolves like - water won't dissolve oil..."},
+                {q: "If you found plastic waste in a local stream, what actions could your class take?", a: ["organize a clean-up", "educate the school", "create awareness posters", "contact local authorities", "start a reduction campaign"], hint: "Combine direct action with education and advocacy..."},
+                {q: "Explain how the water cycle can both spread and help clean pollution.", a: ["evaporation leaves pollutants behind but precipitation can carry airborne pollutants; runoff transports pollution but wetlands filter it"], hint: "Water moves pollutants but natural processes can mitigate..."},
+                {q: "Design a public service announcement about reducing water pollution. What key message would you include?", a: ["every action counts", "proper disposal of waste", "conserve water", "protect our shared resource"], hint: "Make it clear, memorable, and actionable..."},
+                {q: "How might climate change affect separation techniques used in water treatment?", a: ["extreme weather may overwhelm systems", "changing water chemistry may require process adjustments", "increased pollutants may need advanced methods"], hint: "Treatment systems must adapt to changing conditions..."},
+                {q: "A new industrial area is planned near a river. What water protection measures would you recommend?", a: ["mandatory wastewater treatment", "buffer zones", "regular monitoring", "spill prevention plans", "community oversight"], hint: "Prevention is better than cure..."},
+                {q: "Why is it important to consider both scientific and social factors in solving water pollution?", a: ["solutions must be technically feasible and socially acceptable", "community buy-in ensures long-term success", "equity matters in resource access"], hint: "Science provides tools; people implement solutions..."},
+                {q: "How can traditional knowledge contribute to modern water management?", a: ["indigenous practices often include sustainable water use", "local observations complement scientific data", "cultural values promote conservation"], hint: "Wisdom from generations can inform today's solutions..."},
+                {q: "If you had limited resources to address water pollution in your area, what would you prioritize and why?", a: ["prevention over cleanup", "education for long-term change", "protecting drinking water sources first", "community-based monitoring"], hint: "Think about impact, feasibility, and sustainability..."},
+                {q: "Explain how a single action (like using less plastic) connects to larger water conservation goals.", a: ["less plastic waste means less pollution in waterways", "reduces harm to aquatic life", "lowers demand for plastic production which uses water"], hint: "Small actions create ripple effects..."},
+                {q: "How would you convince a business to invest in water-saving technologies?", a: ["show cost savings long-term", "highlight regulatory compliance", "emphasize brand reputation", "present environmental benefits"], hint: "Appeal to both ethics and economics..."},
+                {q: "What ethical considerations are involved in water resource management?", a: ["equitable access for all communities", "rights of future generations", "balancing human needs with ecosystem health", "polluter responsibility"], hint: "Water is a human right and a shared heritage..."},
+                {q: "How can citizen science projects help monitor water quality?", a: ["expand data collection coverage", "increase public awareness", "engage communities in stewardship", "provide early warning of problems"], hint: "Many eyes and hands make monitoring more effective..."},
+                {q: "If a new pollutant is discovered in water, what steps should scientists take?", a: ["identify the source", "assess health and environmental risks", "develop detection methods", "propose mitigation strategies", "communicate findings clearly"], hint: "Systematic investigation leads to effective action..."},
+                {q: "How does understanding mixtures help in developing new water purification technologies?", a: ["knowledge of separation principles guides innovation", "understanding pollutant behavior informs removal methods", "material science relies on mixture concepts"], hint: "Fundamental science enables technological advances..."},
+                {q: "Imagine you are a water droplet traveling through a polluted watershed. Describe your journey and challenges.", a: ["narrative showing pollution sources, impacts, and potential solutions from a droplet's perspective"], hint: "Personification can make complex systems relatable..."},
+                {q: "Why is interdisciplinary collaboration essential for solving water pollution?", a: ["scientists, engineers, policymakers, economists, and communities all have crucial roles", "complex problems need diverse expertise", "holistic solutions require multiple perspectives"], hint: "No single field has all the answers..."},
+                {q: "How can art and storytelling raise awareness about water pollution?", a: ["emotional connection inspires action", "makes abstract issues tangible", "reaches diverse audiences", "memorable messages drive change"], hint: "Facts inform, but stories transform..."},
+                {q: "What would a 'water-positive' community look like?", a: ["returns more clean water to the environment than it uses", "protects watersheds", "engages all residents in stewardship", "innovates in conservation and reuse"], hint: "Think beyond sustainability to regeneration..."},
+                {q: "How might emerging technologies like AI help address water pollution?", a: ["predict pollution events", "optimize treatment processes", "analyze large monitoring datasets", "improve resource allocation"], hint: "Technology amplifies human capabilities..."},
+                {q: "If you could change one policy to better protect water resources, what would it be and why?", a: ["stronger regulations on industrial discharge", "incentives for conservation", "protection of wetlands and riparian zones", "universal access to clean water"], hint: "Policy shapes behavior at scale..."},
+                {q: "Explain how the concept of 'dilution is not the solution to pollution' applies to water management.", a: ["adding pollutants to large water bodies still causes harm", "pollutants accumulate and biomagnify", "ecosystems have limited capacity to absorb waste"], hint: "Just because you can't see it doesn't mean it's gone..."},
+                {q: "How can students become water ambassadors in their communities?", a: ["share knowledge with family and neighbors", "lead conservation projects", "participate in local decision-making", "use social media for advocacy"], hint: "Youth voices are powerful catalysts for change..."},
+                {q: "What legacy do you want to leave regarding water resources for future generations?", a: ["clean, accessible water for all", "healthy aquatic ecosystems", "a culture of stewardship", "innovative solutions to emerging challenges"], hint: "Today's choices shape tomorrow's world..."},
+                {q: "Reflect: How has learning about mixtures and water pollution changed your perspective on everyday actions?", a: ["personal reflection connecting knowledge to behavior change", "awareness of interconnectedness", "motivation to act responsibly"], hint: "Learning is most powerful when it transforms how we live..."}
+            ]
+        };
+
+        const gameState = {
+            currentLevel: 1,
+            currentQuestionIndex: 0,
+            score: 0,
+            correctAnswers: 0,
+            timer: 40,
+            timerInterval: null,
+            hintShown: false,
+            answered: false,
+            levelQuestions: [],
+            userAnswers: [],
+            voiceEnabled: true,
+            synth: window.speechSynthesis
+        };
+
+        const elements = {
+            startScreen: document.getElementById('start-screen'),
+            gameContainer: document.getElementById('game-container'),
+            levelComplete: document.getElementById('level-complete'),
+            gameComplete: document.getElementById('game-complete'),
+            startBtn: document.getElementById('start-btn'),
+            nextLevelBtn: document.getElementById('next-level-btn'),
+            retryLevelBtn: document.getElementById('retry-level-btn'),
+            playAgainBtn: document.getElementById('play-again-btn'),
+            currentLevelEl: document.getElementById('current-level'),
+            progressBar: document.getElementById('progress-bar'),
+            questionCounter: document.getElementById('question-counter'),
+            timerEl: document.getElementById('timer'),
+            voiceBtn: document.getElementById('voice-btn'),
+            questionText: document.getElementById('question-text'),
+            hintEl: document.getElementById('hint'),
+            answerInput: document.getElementById('answer-input'),
+            feedbackEl: document.getElementById('feedback'),
+            submitBtn: document.getElementById('submit-btn'),
+            scoreEl: document.getElementById('score'),
+            correctCountEl: document.getElementById('correct-count'),
+            accuracyEl: document.getElementById('accuracy'),
+            levelScoreEl: document.getElementById('level-score'),
+            levelAccuracyEl: document.getElementById('level-accuracy'),
+            finalScoreEl: document.getElementById('final-score'),
+            finalAccuracyEl: document.getElementById('final-accuracy'),
+            levelMessageEl: document.getElementById('level-message')
+        };
+
+        function initGame() {
+            elements.startBtn.addEventListener('click', startGame);
+            elements.nextLevelBtn.addEventListener('click', nextLevel);
+            elements.retryLevelBtn.addEventListener('click', retryLevel);
+            elements.playAgainBtn.addEventListener('click', restartGame);
+            elements.submitBtn.addEventListener('click', submitAnswer);
+            elements.voiceBtn.addEventListener('click', () => speakMessage(gameState.levelQuestions[gameState.currentQuestionIndex].q));
+            elements.answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !gameState.answered) submitAnswer();
+            });
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('cbcScienceQuest_progress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                gameState.currentLevel = progress.level || 1;
+            }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('cbcScienceQuest_progress', JSON.stringify({ level: gameState.currentLevel, timestamp: Date.now() }));
+        }
+
+        function startGame() {
+            elements.startScreen.classList.remove('active');
+            elements.gameContainer.style.display = 'block';
+            loadLevel(gameState.currentLevel);
+        }
+
+        function loadLevel(level) {
+            gameState.currentLevel = level;
+            gameState.currentQuestionIndex = 0;
+            gameState.correctAnswers = 0;
+            gameState.score = 0;
+            gameState.userAnswers = [];
+            const allQuestions = [...questionsDB[level]];
+            gameState.levelQuestions = shuffleArray(allQuestions).slice(0, 30);
+            updateUI();
+            loadQuestion();
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function updateUI() {
+            elements.currentLevelEl.textContent = gameState.currentLevel;
+            elements.questionCounter.textContent = gameState.currentQuestionIndex + 1;
+            elements.progressBar.style.width = `${((gameState.currentQuestionIndex) / 30) * 100}%`;
+            elements.scoreEl.textContent = gameState.score;
+            elements.correctCountEl.textContent = gameState.correctAnswers;
+            const accuracy = gameState.currentQuestionIndex > 0 ? Math.round((gameState.correctAnswers / gameState.currentQuestionIndex) * 100) : 0;
+            elements.accuracyEl.textContent = `${accuracy}%`;
+        }
+
+        function loadQuestion() {
+            if (gameState.currentQuestionIndex >= 30) {
+                endLevel();
+                return;
+            }
+            const question = gameState.levelQuestions[gameState.currentQuestionIndex];
+            elements.questionText.textContent = question.q;
+            elements.answerInput.value = '';
+            elements.answerInput.className = 'answer-input';
+            elements.feedbackEl.className = 'feedback';
+            elements.feedbackEl.textContent = '';
+            elements.hintEl.className = 'hint';
+            elements.hintEl.textContent = `💡 Hint: ${question.hint}`;
+            gameState.hintShown = false;
+            gameState.answered = false;
+            elements.submitBtn.disabled = false;
+            elements.answerInput.focus();
+            if (gameState.voiceEnabled && gameState.synth) {
+                setTimeout(() => speakMessage(question.q), 500);
+            }
+            startTimer();
+        }
+
+        function startTimer() {
+            gameState.timer = 40;
+            updateTimerDisplay();
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer--;
+                updateTimerDisplay();
+                if (gameState.timer === 15 && !gameState.hintShown && !gameState.answered) {
+                    elements.hintEl.classList.add('visible');
+                    gameState.hintShown = true;
+                }
+                if (gameState.timer <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    if (!gameState.answered) {
+                        speakMessage("Time is up! Moving to the next question.");
+                        submitAnswer(true);
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            elements.timerEl.textContent = gameState.timer;
+            elements.timerEl.className = 'timer';
+            if (gameState.timer <= 10) elements.timerEl.classList.add('danger');
+            else if (gameState.timer <= 20) elements.timerEl.classList.add('warning');
+        }
+
+        // NEW: Reusable voice function for any message
+        function speakMessage(text) {
+            if (!gameState.synth || !gameState.voiceEnabled) return;
+            gameState.synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            elements.voiceBtn.classList.add('speaking');
+            utterance.onend = () => elements.voiceBtn.classList.remove('speaking');
+            utterance.onerror = () => elements.voiceBtn.classList.remove('speaking');
+            gameState.synth.speak(utterance);
+        }
+
+        function submitAnswer(timeUp = false) {
+            if (gameState.answered) return;
+            gameState.answered = true;
+            clearInterval(gameState.timerInterval);
+            elements.submitBtn.disabled = true;
+            
+            const question = gameState.levelQuestions[gameState.currentQuestionIndex];
+            const userAnswer = elements.answerInput.value.trim().toLowerCase();
+            const correctAnswers = question.a.map(a => a.toLowerCase());
+            
+            let isCorrect = false;
+            
+            // FIX: Only check correctness if student actually typed something
+            if (userAnswer.length > 0) {
+                isCorrect = correctAnswers.some(correct => 
+                    userAnswer.includes(correct) || 
+                    correct.includes(userAnswer) || 
+                    levenshteinDistance(userAnswer, correct) <= Math.max(2, Math.floor(correct.length * 0.25))
+                );
+            }
+            
+            if (isCorrect) {
+                elements.answerInput.classList.add('correct');
+                elements.feedbackEl.textContent = "✨ Excellent! That's correct!";
+                elements.feedbackEl.classList.add('correct');
+                gameState.correctAnswers++;
+                gameState.score += 10;
+                createConfetti();
+                speakMessage("Correct! Great job!");
+            } else {
+                elements.answerInput.classList.add('incorrect');
+                const feedbackText = timeUp 
+                    ? `⏰ Time's up! The correct answer was: ${question.a[0]}` 
+                    : `💡 Not quite. The answer was: ${question.a[0]}`;
+                elements.feedbackEl.textContent = feedbackText;
+                elements.feedbackEl.classList.add('incorrect');
+            }
+            
+            gameState.userAnswers.push({
+                question: question.q,
+                userAnswer: userAnswer || "(no answer)",
+                correct: isCorrect,
+                correctAnswer: question.a[0]
+            });
+            
+            updateUI();
+            setTimeout(() => {
+                gameState.currentQuestionIndex++;
+                if (gameState.currentQuestionIndex < 30) loadQuestion();
+                else endLevel();
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function levenshteinDistance(a, b) {
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i-1) === a.charAt(j-1)) matrix[i][j] = matrix[i-1][j-1];
+                    else matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, matrix[i][j-1] + 1, matrix[i-1][j] + 1);
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function endLevel() {
+            clearInterval(gameState.timerInterval);
+            elements.gameContainer.style.display = 'none';
+            const accuracy = Math.round((gameState.correctAnswers / 30) * 100);
+            elements.levelScoreEl.textContent = gameState.score;
+            elements.levelAccuracyEl.textContent = `${accuracy}%`;
+            const stars = elements.levelComplete.querySelectorAll('.star');
+            stars.forEach(star => star.classList.remove('earned'));
+            if (accuracy >= 80) {
+                elements.levelMessageEl.textContent = `Amazing work! You scored ${accuracy}% and earned ${Math.min(3, Math.floor(accuracy/25))} stars!`;
+                for (let i = 0; i < Math.min(3, Math.floor(accuracy/25)); i++) stars[i].classList.add('earned');
+                elements.nextLevelBtn.style.display = 'inline-block';
+                elements.retryLevelBtn.style.display = 'none';
+                if (gameState.currentLevel < 5) { gameState.currentLevel++; saveProgress(); }
+            } else {
+                elements.levelMessageEl.textContent = `You scored ${accuracy}%. You need 80% to advance. Keep learning and try again!`;
+                elements.nextLevelBtn.style.display = 'none';
+                elements.retryLevelBtn.style.display = 'inline-block';
+            }
+            elements.levelComplete.classList.add('active');
+            if (accuracy >= 80) setTimeout(createConfetti, 500);
+        }
+
+        function nextLevel() {
+            elements.levelComplete.classList.remove('active');
+            if (gameState.currentLevel > 5) showGameComplete();
+            else { elements.gameContainer.style.display = 'block'; loadLevel(gameState.currentLevel); }
+        }
+
+        function retryLevel() {
+            elements.levelComplete.classList.remove('active');
+            elements.gameContainer.style.display = 'block';
+            loadLevel(gameState.currentLevel);
+        }
+
+        function showGameComplete() {
+            elements.levelComplete.classList.remove('active');
+            elements.gameComplete.classList.add('active');
+            const totalAccuracy = Math.round((gameState.correctAnswers / 150) * 100);
+            elements.finalScoreEl.textContent = gameState.score;
+            elements.finalAccuracyEl.textContent = `${totalAccuracy}%`;
+            const stars = elements.gameComplete.querySelectorAll('.star');
+            stars.forEach((star, i) => { if (i < Math.min(5, Math.floor(totalAccuracy / 20))) star.classList.add('earned'); });
+            createConfetti(); setTimeout(createConfetti, 300); setTimeout(createConfetti, 600);
+        }
+
+        function restartGame() {
+            elements.gameComplete.classList.remove('active');
+            gameState.currentLevel = 1;
+            startGame();
+        }
+
+        function createConfetti() {
+            const colors = ['#2c7be5', '#00d97e', '#f5803e', '#ffc107', '#6f42c1'];
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = `${3 + Math.random() * 3}s`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 6000);
+            }
+        }
+
+        function checkVoiceSupport() {
+            if (!window.speechSynthesis) {
+                elements.voiceBtn.style.display = 'none';
+                gameState.voiceEnabled = false;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            loadProgress();
+            checkVoiceSupport();
+        });
+
+        window.addEventListener('beforeunload', (e) => {
+            if (elements.gameContainer.style.display === 'block' && !gameState.answered) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>

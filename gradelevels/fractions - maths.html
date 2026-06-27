@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grade 1 Maths | Halves - A Half as Part of a Whole | Fractions | Voice Output</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #E65100 0%, #BF360C 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1100px;
+            width: 100%;
+            background: #FFF8F0;
+            border-radius: 60px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #FF8F00;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 6px solid #E65100;
+        }
+
+        .level-badge, .score-badge, .progress-badge {
+            background: #2c2b28;
+            color: #FFD966;
+            font-weight: bold;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+
+        .timer-area {
+            background: #1f2c0e;
+            padding: 5px 15px;
+            border-radius: 50px;
+            color: #FFD966;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .story-card {
+            background: #FFFDE7;
+            margin: 20px 25px;
+            padding: 20px 25px;
+            border-radius: 55px;
+            text-align: center;
+        }
+
+        .voice-btn {
+            background: #FF8F00;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 0 #E65100;
+        }
+        .voice-btn:active { transform: translateY(2px); }
+
+        .narrative-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #BF360C;
+            background: #FFF3E0;
+            padding: 15px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: #FFE0B2;
+            padding: 25px;
+            border-radius: 60px;
+            color: #BF360C;
+            margin: 15px 0;
+        }
+
+        .answer-area {
+            margin: 20px 0;
+        }
+        .answer-input {
+            font-size: 2rem;
+            padding: 15px 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+            border: 4px solid #FF8F00;
+            border-radius: 60px;
+            font-weight: bold;
+            font-family: monospace;
+            background: white;
+        }
+        .submit-btn {
+            background: #FF8F00;
+            border: none;
+            font-size: 1.3rem;
+            padding: 12px 30px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin-left: 15px;
+            box-shadow: 0 4px 0 #E65100;
+        }
+        .submit-btn:active { transform: translateY(2px); }
+
+        .hint-box {
+            background: #FFF3E0;
+            padding: 10px;
+            border-radius: 40px;
+            margin: 15px 0;
+            font-size: 1rem;
+            color: #BF360C;
+        }
+
+        .next-area { margin: 15px 0; }
+        .next-btn {
+            background: #FF8F00;
+            border: none;
+            font-size: 1.3rem;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #E65100;
+        }
+        .next-btn:active { transform: translateY(2px); }
+        .next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .info-message {
+            font-size: 1rem;
+            background: #FFE0B2;
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 30px;
+            margin-top: 10px;
+        }
+        footer {
+            background: #FFCC80;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #BF360C;
+        }
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.3rem; }
+            .answer-input { font-size: 1.3rem; width: 70%; }
+            .submit-btn { font-size: 1rem; padding: 10px 20px; }
+            .next-btn { font-size: 1rem; }
+        }
+        .fraction-visual {
+            font-size: 1.5rem;
+            background: #FFF8E1;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="score-badge" id="scoreDisplay">Score: 0 / 0</div>
+        <div class="progress-badge" id="progressDisplay">Q: 1 / 30</div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span> s</div>
+    </div>
+    <div class="story-card">
+        <button id="readQuestionBtn" class="voice-btn">🔊 Read Question</button>
+        <div class="narrative-text" id="storyNarrative">🥧 Fractions: A Half as Part of a Whole | Type your answer!</div>
+        <div class="question-text" id="questionText">Loading...</div>
+        <div class="answer-area">
+            <input type="number" id="answerInput" class="answer-input" placeholder="Type answer here..." inputmode="numeric">
+            <button id="submitAnswerBtn" class="submit-btn">✅ Submit</button>
+        </div>
+        <div class="hint-box" id="hintBox">💡 Hint will appear when time is low...</div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton" disabled>➡️ Next Question (Answer First)</button>
+        </div>
+        <div><span id="feedbackMsg" class="info-message">🎤 Click "Read Question" to hear it. Type your answer in the box.</span></div>
+    </div>
+    <footer>🎵 A half is one of two equal parts. Type the correct number! You need 80% to pass each level.</footer>
+</div>
+
+<script>
+    // ------------------- VOICE OUTPUT -------------------
+    function speakText(text) {
+        if (!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) { console.warn(e); }
+    }
+
+    // Speak with a pause between two phrases for time-up message
+    function speakWithPause(part1, part2) {
+        if (!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance1 = new SpeechSynthesisUtterance(part1);
+            utterance1.lang = "en-US";
+            utterance1.rate = 0.9;
+            utterance1.onend = () => {
+                setTimeout(() => {
+                    let utterance2 = new SpeechSynthesisUtterance(part2);
+                    utterance2.lang = "en-US";
+                    utterance2.rate = 0.9;
+                    window.speechSynthesis.speak(utterance2);
+                }, 800);
+            };
+            window.speechSynthesis.speak(utterance1);
+        } catch(e) { console.warn(e); }
+    }
+
+    function speakTimerMessage() {
+        speakWithPause("Time is up", "moving to the next question");
+    }
+
+    // ------------------- QUESTION BANK (5 levels x 30 questions = 150 unique) -------------------
+    // Topic: A Half as Part of a Whole
+    // Question types:
+    // 1. Finding half of a number (even numbers only)
+    // 2. Word problems about sharing equally (half)
+    // 3. Visual fraction questions (half of a shape)
+    // 4. Completing the half sentence
+    
+    const generateQuestionBank = () => {
+        const bank = [];
+        const usedKeys = new Set();
+        
+        const shapeNames = ["circle", "square", "rectangle", "pizza", "chocolate bar", "sandwich", "apple", "orange"];
+        
+        for (let level = 1; level <= 5; level++) {
+            let levelQuestions = [];
+            let qCount = 0;
+            let attempts = 0;
+            
+            while (qCount < 30 && attempts < 400) {
+                let topicChoice = (level + qCount) % 4;
+                let questionText = "";
+                let correctAnswer = "";
+                let narrative = "";
+                
+                if (topicChoice === 0) {
+                    // Finding half of an even number (up to 50)
+                    let maxNum = Math.min(50, 20 + level * 6);
+                    let num = Math.floor(Math.random() * (maxNum / 2)) * 2 + 2; // even numbers 2-50
+                    if (num > 50) num = 20;
+                    let half = num / 2;
+                    questionText = `What is half of ${num}?`;
+                    correctAnswer = half.toString();
+                    narrative = `🍕 Half of ${num} means splitting ${num} into 2 equal groups. Half is ${half}.`;
+                }
+                else if (topicChoice === 1) {
+                    // Word problem: sharing equally between 2 people
+                    let items = ["apples", "oranges", "candies", "cookies", "bananas", "marbles", "stickers", "books"];
+                    let item = items[Math.floor(Math.random() * items.length)];
+                    let maxNum = Math.min(40, 16 + level * 4);
+                    let total = Math.floor(Math.random() * (maxNum / 2)) * 2 + 2;
+                    if (total > 40) total = 20;
+                    let half = total / 2;
+                    questionText = `If you have ${total} ${item} and you share them equally with your friend, how many ${item} does each person get?`;
+                    correctAnswer = half.toString();
+                    narrative = `🤝 Sharing equally between 2 people means dividing by 2. ${total} ÷ 2 = ${half}. Each person gets ${half} ${item}.`;
+                }
+                else if (topicChoice === 2) {
+                    // Half of a shape (how many parts are shaded?)
+                    let parts = [2, 4, 6, 8];
+                    let totalParts = parts[Math.floor(Math.random() * parts.length)];
+                    let shaded = totalParts / 2;
+                    questionText = `A ${shapeNames[Math.floor(Math.random() * shapeNames.length)]} is cut into ${totalParts} equal parts. ${shaded} parts are shaded. What fraction of the shape is shaded? (Type the numerator only)`;
+                    correctAnswer = "1";
+                    narrative = `📐 A half means 1 out of 2 equal parts. ${shaded} out of ${totalParts} simplifies to 1/2. The numerator is 1.`;
+                    // Ensure we ask for "how many halves?" or "what fraction?"
+                    if (shaded === totalParts / 2 && totalParts === 2) {
+                        questionText = `A shape is cut into 2 equal parts. 1 part is shaded. What fraction of the shape is shaded? (Type the number on top: numerator)`;
+                        correctAnswer = "1";
+                    } else {
+                        questionText = `A shape is cut into ${totalParts} equal parts. ${shaded} parts are shaded. What fraction represents the shaded part? (Type the numerator only)`;
+                        correctAnswer = "1";
+                    }
+                }
+                else {
+                    // Completing the half sentence
+                    let numbers = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+                    let num = numbers[Math.floor(Math.random() * numbers.length)];
+                    let half = num / 2;
+                    questionText = `Half of ${num} is _____.`;
+                    correctAnswer = half.toString();
+                    narrative = `🧮 Half means divide by 2. ${num} ÷ 2 = ${half}.`;
+                }
+                
+                const key = questionText + correctAnswer;
+                if (!usedKeys.has(key) && correctAnswer && parseInt(correctAnswer) <= 50) {
+                    usedKeys.add(key);
+                    levelQuestions.push({ narrative, question: questionText, correctAnswer });
+                    qCount++;
+                }
+                attempts++;
+            }
+            // Fill any missing questions with fallback
+            while (levelQuestions.length < 30) {
+                let fallbackNum = (levelQuestions.length + 2) * 2;
+                levelQuestions.push({ 
+                    narrative: `🧠 Finding half of an even number`, 
+                    question: `What is half of ${fallbackNum}?`, 
+                    correctAnswer: (fallbackNum / 2).toString() 
+                });
+            }
+            bank.push(levelQuestions);
+        }
+        return bank;
+    };
+    
+    const questionBank = generateQuestionBank();
+    
+    // Game state
+    let currentLevel = 1, currentQIndex = 0, scoreInLevel = 0;
+    const totalPerLevel = 30, requiredPass = 24;
+    let answered = false, timerInterval = null, timeLeft = 40, waitingForNext = false, gameActive = true;
+    let currentQuestionObj = null;
+    
+    // DOM elements
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const progressDisplay = document.getElementById('progressDisplay');
+    const timerSpan = document.getElementById('timerSeconds');
+    const storyDiv = document.getElementById('storyNarrative');
+    const questionDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitAnswerBtn');
+    const nextBtn = document.getElementById('nextButton');
+    const feedbackSpan = document.getElementById('feedbackMsg');
+    const hintBox = document.getElementById('hintBox');
+    const readBtn = document.getElementById('readQuestionBtn');
+    
+    function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+    
+    function startTimer() {
+        stopTimer();
+        if (!gameActive || waitingForNext || answered) return;
+        timeLeft = 40;
+        timerSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if (!gameActive || waitingForNext || answered) return;
+            if (timeLeft <= 1) {
+                if (!answered) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    handleTimeout();
+                } else { stopTimer(); }
+            } else {
+                timeLeft--;
+                timerSpan.innerText = timeLeft;
+                // Show hints as time decreases
+                if (timeLeft === 15) {
+                    hintBox.innerHTML = "💡 Hint: " + getHint();
+                    speakText("Hint: " + getHint());
+                } else if (timeLeft === 8) {
+                    hintBox.innerHTML = "⚠️ Hurry! " + getHint();
+                } else if (timeLeft === 3) {
+                    hintBox.innerHTML = "⏰ Last chance! " + getHint();
+                }
+            }
+        }, 1000);
+    }
+    
+    function getHint() {
+        if (!currentQuestionObj) return "Think carefully!";
+        const q = currentQuestionObj.question.toLowerCase();
+        if (q.includes("half of")) {
+            const numbers = q.match(/\d+/g);
+            if (numbers && numbers[0]) {
+                let num = parseInt(numbers[0]);
+                return `Half of ${num} is ${num} divided by 2. ${num} ÷ 2 = ?`;
+            }
+            return "To find half, divide the number by 2.";
+        }
+        if (q.includes("share them equally") || q.includes("share equally")) {
+            return "Sharing equally between 2 people means divide the total by 2.";
+        }
+        if (q.includes("fraction") || q.includes("shaded")) {
+            return "A half means 1 out of 2 equal parts. The numerator (top number) is 1.";
+        }
+        return "Half means one of two equal parts. Divide by 2!";
+    }
+    
+    function handleTimeout() {
+        if (answered) return;
+        answered = true; gameActive = false;
+        speakTimerMessage();
+        feedbackSpan.innerHTML = `⏰ Time is up! The correct answer was: ${currentQuestionObj.correctAnswer}`;
+        feedbackSpan.style.color = "#C62828";
+        disableInputs(true);
+        waitingForNext = true;
+        setTimeout(() => { if (waitingForNext) moveToNextQuestion(); }, 3000);
+    }
+    
+    function disableInputs(disabled) {
+        answerInput.disabled = disabled;
+        submitBtn.disabled = disabled;
+        if (disabled) {
+            nextBtn.disabled = false;
+            nextBtn.innerText = "➡️ Next Question";
+        } else {
+            nextBtn.disabled = true;
+            nextBtn.innerText = "➡️ Next Question (Answer First)";
+        }
+    }
+    
+    function checkAnswer() {
+        if (!gameActive || answered || waitingForNext) {
+            speakText("Please wait for the next question.");
+            return;
+        }
+        const userAnswer = answerInput.value.trim();
+        if (userAnswer === "") {
+            speakText("Please type your answer.");
+            feedbackSpan.innerHTML = "✏️ Type your answer in the box!";
+            return;
+        }
+        stopTimer();
+        answered = true;
+        gameActive = false;
+        const isCorrect = (userAnswer === currentQuestionObj.correctAnswer);
+        if (isCorrect) {
+            scoreInLevel++;
+            speakText(`Correct! The answer is ${currentQuestionObj.correctAnswer}. Good job!`);
+            feedbackSpan.innerHTML = `✅ Correct! The answer is ${currentQuestionObj.correctAnswer}. +1 point!`;
+            feedbackSpan.style.color = "#2E7D32";
+        } else {
+            speakText(`Wrong! The correct answer is ${currentQuestionObj.correctAnswer}.`);
+            feedbackSpan.innerHTML = `❌ Wrong! Correct answer: ${currentQuestionObj.correctAnswer}`;
+            feedbackSpan.style.color = "#C62828";
+        }
+        disableInputs(true);
+        updateUI();
+        waitingForNext = true;
+        setTimeout(() => { if (waitingForNext) moveToNextQuestion(); }, 2000);
+    }
+    
+    function moveToNextQuestion() {
+        waitingForNext = false;
+        if (currentQIndex + 1 >= totalPerLevel) {
+            let percent = (scoreInLevel / totalPerLevel) * 100;
+            if (percent >= 80) {
+                if (currentLevel === 5) {
+                    feedbackSpan.innerHTML = "🏆🏆 YOU COMPLETED ALL LEVELS! FRACTIONS CHAMPION! 🏆🏆";
+                    speakText("Congratulations! You are a Fractions champion! You mastered halves!");
+                    gameActive = false; disableInputs(true); nextBtn.disabled = true; stopTimer();
+                    return;
+                } else {
+                    currentLevel++; currentQIndex = 0; scoreInLevel = 0;
+                    resetLevel();
+                    loadQuestion();
+                    speakText(`Congratulations! You passed Level ${currentLevel-1}. You are now on Level ${currentLevel}!`);
+                    feedbackSpan.innerHTML = `🎉 You passed! Now Level ${currentLevel} 🎉`;
+                    return;
+                }
+            } else {
+                feedbackSpan.innerHTML = `😭 You got ${Math.round(percent)}%. Need 80%. Restarting Level ${currentLevel}. Try again!`;
+                speakText(`Sorry, you got only ${Math.round(percent)} percent. You need 80 percent to pass. Restarting this level.`);
+                scoreInLevel = 0; currentQIndex = 0;
+                resetLevel();
+                loadQuestion();
+                return;
+            }
+        } else {
+            currentQIndex++;
+            loadQuestion();
+        }
+    }
+    
+    function resetLevel() {
+        stopTimer(); answered = false; waitingForNext = false; gameActive = true;
+        disableInputs(false);
+        answerInput.value = "";
+        hintBox.innerHTML = "💡 Hint will appear when time is low...";
+        updateUI();
+    }
+    
+    function updateUI() {
+        levelDisplay.innerText = `Level ${currentLevel}`;
+        scoreDisplay.innerText = `Score: ${scoreInLevel} / ${totalPerLevel}`;
+        progressDisplay.innerText = `Q: ${currentQIndex+1} / ${totalPerLevel}`;
+    }
+    
+    function loadQuestion() {
+        currentQuestionObj = questionBank[currentLevel-1][currentQIndex];
+        storyDiv.innerHTML = `📘 ${currentQuestionObj.narrative}`;
+        questionDiv.innerHTML = `❓ ${currentQuestionObj.question}`;
+        answerInput.value = "";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        nextBtn.disabled = true;
+        nextBtn.innerText = "➡️ Next Question (Answer First)";
+        answered = false; gameActive = true; waitingForNext = false;
+        updateUI();
+        stopTimer(); startTimer();
+        feedbackSpan.innerHTML = "🎤 Click 'Read Question' to hear it. Type your answer.";
+        feedbackSpan.style.color = "#BF360C";
+        hintBox.innerHTML = "💡 Hint will appear when time is low (15 seconds left).";
+    }
+    
+    // Event listeners
+    readBtn.addEventListener('click', () => {
+        if (currentQuestionObj) {
+            speakText(currentQuestionObj.question);
+        }
+    });
+    submitBtn.addEventListener('click', checkAnswer);
+    answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+    nextBtn.addEventListener('click', () => {
+        if (!answered && gameActive && !waitingForNext) {
+            speakText("Please answer the current question first.");
+            feedbackSpan.innerHTML = "⚠️ Answer the question before moving on!";
+            return;
+        }
+        if (waitingForNext) { if (timerInterval) stopTimer(); moveToNextQuestion(); }
+    });
+    
+    function init() { loadQuestion(); }
+    init();
+</script>
+</body>
+</html>

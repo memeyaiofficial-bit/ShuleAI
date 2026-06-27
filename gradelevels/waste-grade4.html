@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Eco Warrior | Grade 4 Science | Solid Waste Management</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #2e5e3b 0%, #1a3a24 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 1px 4px rgba(255, 250, 210, 0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 6px solid #145a32;
+            color: white;
+            text-shadow: 2px 2px 0 #145a32;
+        }
+
+        .level-badge {
+            background: #0e2e1a;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.7rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #27ae60, 0 6px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-area {
+            background: #0a2214;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: inset 0 0 0 3px #a9dfbf, 0 6px 0 #145a32;
+        }
+
+        .timer-number {
+            background: #000000;
+            padding: 6px 20px;
+            border-radius: 50px;
+            color: #a9dfbf;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+            min-width: 110px;
+            text-align: center;
+            transition: 0.1s;
+        }
+
+        .score-progress {
+            background: #e8ddc5;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #b89a6e;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: #1e8449;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .question-card {
+            padding: 30px 28px 20px;
+            background: #fffaf0;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 700;
+            background: #d5f5e3;
+            padding: 24px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 0 4px white, 0 10px 18px rgba(0,0,0,0.1);
+            color: #1e3a2e;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            padding: 16px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.07s linear;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #aa8e6c;
+            color: #2d2418;
+            font-family: inherit;
+        }
+
+        .option-prefix {
+            background: #27ae60;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 0 #145a32;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #ffefcf;
+            transform: scale(0.97);
+        }
+
+        .option-btn.correct-highlight {
+            background: #2e7d32;
+            color: white;
+            box-shadow: 0 3px 0 #1b5e1f;
+        }
+
+        .option-btn.correct-highlight .option-prefix {
+            background: #1b5e20;
+        }
+
+        .option-btn.wrong-highlight {
+            background: #c62828;
+            color: white;
+            text-decoration: line-through;
+            box-shadow: 0 3px 0 #7f2a2a;
+        }
+
+        .option-btn.wrong-highlight .option-prefix {
+            background: #8b2a2a;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+
+        .next-area {
+            text-align: center;
+            padding-bottom: 25px;
+        }
+
+        .next-btn {
+            background: #f4a261;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 45px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c45c1a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #c45c1a;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #1e8449;
+            color: #d5f5e3;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-top: 2px solid #f5bc70;
+        }
+
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 18px;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+
+        .restart-btn:hover {
+            background: #5e3f2a;
+            color: white;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.2rem; }
+            .timer-number { font-size: 1.5rem; min-width: 75px; letter-spacing: 2px; }
+            .level-badge { font-size: 1.2rem; }
+        }
+
+        .timer-critical {
+            background: #8b0000 !important;
+            color: #ffcc44 !important;
+            text-shadow: 0 0 4px red;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.85; transform: scale(1.03);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+        
+        .eco-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge">♻️ LEVEL <span id="levelNum">1</span> 🌍</div>
+        <div class="timer-area">⏱️ TIME LEFT <span class="timer-number" id="timerDisplay">00</span></div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 80% TO PASS → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading waste management challenge...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">♻️ ECO WARRIOR! Learn to classify waste, stop pollution, and manage waste properly. Timer is RUNNING! Save the planet!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC SCIENCE AND TECHNOLOGY: SOLID WASTE MANAGEMENT
+    // Topics: Classifying solid waste (decomposable vs non-decomposable)
+    // Dangers of solid waste to the environment
+    // Methods of managing waste (reducing, reusing, recycling, composting, landfilling)
+    // Importance of proper solid waste management
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // ---------- BANK 1: CLASSIFYING SOLID WASTE (Decomposable vs Non-decomposable) ----------
+    const classifyBank = [
+        { q: "Which of these is decomposable (biodegradable) waste?", correct: "Banana peel", options: ["Plastic bottle", "Banana peel", "Glass cup", "Metal can"] },
+        { q: "Which of these is non-decomposable (non-biodegradable) waste?", correct: "Plastic bag", options: ["Apple core", "Plastic bag", "Paper", "Leaves"] },
+        { q: "Decomposable waste can be broken down by:", correct: "Microorganisms like bacteria and fungi", options: ["Only fire", "Microorganisms like bacteria and fungi", "Freezing", "Plastic machines"] },
+        { q: "Non-decomposable waste takes __________ to break down.", correct: "Hundreds or thousands of years", options: ["A few days", "Hundreds or thousands of years", "One week", "One month"] },
+        { q: "Which of the following is decomposable?", correct: "Eggshell", options: ["Plastic spoon", "Eggshell", "Aluminum foil", "Nylon rope"] },
+        { q: "Which of the following is non-decomposable?", correct: "Styrofoam cup", options: ["Orange peel", "Styrofoam cup", "Paper napkin", "Grass clippings"] },
+        { q: "Composting is a method used for:", correct: "Decomposable waste only", options: ["Non-decomposable waste only", "Decomposable waste only", "All waste types", "Only plastics"] },
+        { q: "Paper is generally:", correct: "Decomposable (biodegradable)", options: ["Non-decomposable", "Decomposable", "Toxic only", "Radioactive"] },
+        { q: "A glass bottle is considered:", correct: "Non-decomposable (takes very long to break down)", options: ["Decomposable", "Non-decomposable", "Compostable", "Edible"] },
+        { q: "Food scraps like vegetables and fruits are:", correct: "Decomposable waste", options: ["Decomposable waste", "Non-decomposable waste", "Electronic waste", "Hazardous waste"] }
+    ];
+
+    // ---------- BANK 2: DANGERS OF SOLID WASTE TO THE ENVIRONMENT ----------
+    const dangersBank = [
+        { q: "Burning plastic waste releases:", correct: "Toxic fumes that harm lungs and the ozone layer", options: ["Fresh oxygen", "Toxic fumes that harm lungs and the ozone layer", "Clean water", "Fertilizer"] },
+        { q: "Plastic waste in the ocean can:", correct: "Kill marine animals that eat or get tangled in it", options: ["Help fish grow", "Kill marine animals that eat or get tangled in it", "Clean the water", "Make more oxygen"] },
+        { q: "Improper waste disposal can cause:", correct: "Spread of diseases like cholera and typhoid", options: ["Better health", "Spread of diseases like cholera and typhoid", "Cleaner environment", "More trees"] },
+        { q: "Clogged drainage from solid waste leads to:", correct: "Flooding and breeding of mosquitoes", options: ["Clean water", "Flooding and breeding of mosquitoes", "Better roads", "More fish"] },
+        { q: "Non-decomposable waste piling up causes:", correct: "Land pollution and loss of fertile soil", options: ["Land pollution and loss of fertile soil", "More farming land", "Cleaner air", "More animals"] },
+        { q: "Which disease is spread by flies breeding on garbage?", correct: "Diarrhea and dysentery", options: ["Malaria", "Diarrhea and dysentery", "COVID-19", "Asthma"] },
+        { q: "Dumping waste in rivers harms:", correct: "Aquatic life and people who use the water", options: ["Only fish", "Aquatic life and people who use the water", "Only birds", "Only trees"] },
+        { q: "Littering on land makes the environment:", correct: "Ugly, smelly, and unhealthy", options: ["Beautiful", "Ugly, smelly, and unhealthy", "More productive", "Clean"] }
+    ];
+
+    // ---------- BANK 3: METHODS OF MANAGING SOLID WASTE ----------
+    const methodsBank = [
+        { q: "What does the '3Rs' stand for in waste management?", correct: "Reduce, Reuse, Recycle", options: ["Run, Rest, Replay", "Reduce, Reuse, Recycle", "Rip, Repair, Return", "Read, Write, Recite"] },
+        { q: "Using a cloth bag instead of a plastic bag is an example of:", correct: "Reusing", options: ["Recycling", "Reusing", "Reducing", "Burning"] },
+        { q: "Turning old newspapers into new paper products is called:", correct: "Recycling", options: ["Reusing", "Reducing", "Recycling", "Composting"] },
+        { q: "Buying only what you need to create less waste is called:", correct: "Reducing", options: ["Reusing", "Recycling", "Reducing", "Composting"] },
+        { q: "Composting is a method of:", correct: "Turning organic waste into fertilizer for plants", options: ["Burning waste", "Turning organic waste into fertilizer", "Burying plastic", "Dumping in rivers"] },
+        { q: "A sanitary landfill is:", correct: "A designated area where waste is buried safely", options: ["A river", "A designated area where waste is buried safely", "A burning pit", "A compost heap"] },
+        { q: "Which waste management method is best for plastic bottles?", correct: "Recycling into new products", options: ["Burning", "Recycling", "Composting", "Feeding to animals"] },
+        { q: "Which waste management method is best for vegetable peels?", correct: "Composting", options: ["Burning", "Landfill only", "Composting", "Throwing in water"] },
+        { q: "Waste segregation at home means:", correct: "Separating decomposable from non-decomposable waste", options: ["Mixing all waste", "Separating decomposable from non-decomposable waste", "Burning everything", "Burying everything"] },
+        { q: "Drop-off centers and buy-back centers are used for:", correct: "Collecting recyclable materials", options: ["Burning waste", "Collecting recyclable materials", "Composting only", "Burying waste"] }
+    ];
+
+    // ---------- BANK 4: IMPORTANCE OF PROPER WASTE MANAGEMENT ----------
+    const importanceBank = [
+        { q: "Proper waste management helps to:", correct: "Protect the environment and human health", options: ["Increase pollution", "Protect the environment and human health", "Create more waste", "Kill animals"] },
+        { q: "Recycling reduces the need for:", correct: "Raw materials like trees and oil", options: ["Clean water", "Raw materials like trees and oil", "Sunlight", "Air"] },
+        { q: "Composting kitchen waste helps to:", correct: "Enrich soil for farming", options: ["Create plastic", "Enrich soil for farming", "Pollute water", "Kill insects"] },
+        { q: "Proper waste management creates:", correct: "Jobs in recycling and collection", options: ["Only problems", "Jobs in recycling and collection", "More germs", "More floods"] },
+        { q: "Reducing waste saves:", correct: "Money, energy, and natural resources", options: ["Money, energy, and natural resources", "Only time", "Only plastic", "Only germs"] },
+        { q: "A clean environment from good waste management leads to:", correct: "Fewer diseases and better quality of life", options: ["More sickness", "Fewer diseases and better quality of life", "More waste", "More flies"] },
+        { q: "Proper disposal of hazardous waste (batteries, medicine) prevents:", correct: "Poisoning of soil and water", options: ["Better taste of water", "Poisoning of soil and water", "More electricity", "Faster growth"] },
+        { q: "Teaching children about waste management ensures:", correct: "A cleaner and greener future", options: ["More pollution", "A cleaner and greener future", "More garbage", "More plastic"] }
+    ];
+
+    // ---------- BANK 5: WASTE MANAGEMENT ACTIONS AND SOLUTIONS ----------
+    const actionsBank = [
+        { q: "What can you do with an old glass jar?", correct: "Clean and reuse it to store items", options: ["Break it and throw", "Clean and reuse it", "Bury it", "Burn it"] },
+        { q: "What should you do with a used plastic water bottle?", correct: "Rinse and put in recycling bin", options: ["Throw in bush", "Rinse and put in recycling bin", "Bury in ground", "Burn it"] },
+        { q: "Which waste can be turned into compost?", correct: "Fruit and vegetable scraps", options: ["Plastic bags", "Fruit and vegetable scraps", "Broken glass", "Metal cans"] },
+        { q: "When shopping, the best choice for the environment is:", correct: "Carrying a reusable cloth bag", options: ["Taking many plastic bags", "Carrying a reusable cloth bag", "Leaving waste everywhere", "Burning waste"] },
+        { q: "A school eco-club can help by:", correct: "Organizing waste clean-ups and recycling drives", options: ["Littering more", "Organizing waste clean-ups and recycling drives", "Burning waste", "Throwing trash in rivers"] },
+        { q: "The best way to dispose of electronic waste (old phones) is:", correct: "Take to a certified e-waste recycler", options: ["Bury in ground", "Take to a certified e-waste recycler", "Burn it", "Throw in river"] },
+        { q: "What does 'zero waste' mean?", correct: "Aiming to send nothing to landfill by reducing, reusing, recycling", options: ["Producing no waste at all instantly", "Aiming to send nothing to landfill by reducing, reusing, recycling", "Burning all waste", "Burying all waste"] }
+    ];
+
+    // Combine all banks into categories
+    const categories = [classifyBank, dangersBank, methodsBank, importanceBank, actionsBank];
+    
+    // Build 5 levels (30 Q each, each category contributes 6 per level)
+    let levelsData = [];
+
+    function buildGame() {
+        for (let lvl = 1; lvl <= 5; lvl++) {
+            let levelQs = [];
+            for (let cat of categories) {
+                for (let i = 0; i < 6; i++) {
+                    let source = cat[i % cat.length];
+                    let newQ = {
+                        text: source.q,
+                        options: [...source.options],
+                        correct: source.correct
+                    };
+                    if (lvl >= 3 && i % 2 === 0) newQ.text = "♻️ " + newQ.text;
+                    if (lvl >= 4) newQ.text = "⭐ " + newQ.text + " ⭐";
+                    if (lvl === 5 && i % 3 === 0) newQ.text = "🏆 ECO WARRIOR: " + newQ.text;
+                    levelQs.push(newQ);
+                }
+            }
+            levelQs = shuffleArray(levelQs);
+            levelsData.push(levelQs);
+        }
+    }
+    buildGame();
+
+    // ---------- GAME ENGINE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+
+    let levelTimerSec = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionDiv = document.getElementById('questionText');
+    const optionsDiv = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const messageDiv = document.getElementById('gameMessage');
+
+    function updateScoreUI() {
+        scoreSpan.innerText = levelScore;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        const timeMap = {1: 90, 2: 80, 3: 70, 4: 60, 5: 50};
+        levelTimerSec = timeMap[currentLevel];
+        timerDisplaySpan.innerText = levelTimerSec;
+        timerDisplaySpan.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelFinished) return;
+            if (levelTimerSec <= 1) {
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                messageDiv.innerHTML = `⏰💀 TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to become an Eco Warrior! 💀⏰`;
+                showRestartButton();
+            } else {
+                levelTimerSec--;
+                timerDisplaySpan.innerText = levelTimerSec;
+                if (levelTimerSec <= 10) {
+                    timerDisplaySpan.classList.add('timer-critical');
+                } else {
+                    timerDisplaySpan.classList.remove('timer-critical');
+                }
+                if (levelTimerSec === 15) {
+                    messageDiv.innerHTML = `⚠️ ONLY ${levelTimerSec} SECONDS! Waste management saves the planet — answer fast! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+
+    function disableAllOptions() {
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+    }
+
+    function showRestartButton() {
+        let existing = document.querySelector('.restart-custom');
+        if (existing) existing.remove();
+        const restartBtn = document.createElement('button');
+        restartBtn.innerText = '♻️ RESTART WASTE CHALLENGE ♻️';
+        restartBtn.className = 'restart-btn restart-custom';
+        restartBtn.onclick = () => location.reload();
+        messageDiv.appendChild(restartBtn);
+    }
+
+    function highlightCorrectAnswer(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            const rawText = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if (rawText === correctText) {
+                btn.classList.add('correct-highlight');
+            }
+        });
+    }
+
+    function handleAnswer(selected, correctAnswer, btnElement) {
+        if (answerLocked || waitingForNext || !gameActive || levelFinished) return;
+        answerLocked = true;
+        const isCorrect = (selected === correctAnswer);
+        
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            btnElement.classList.add('correct-highlight');
+            messageDiv.innerHTML = `✅ ECO WARRIOR! +1 point! (${levelScore}/${TOTAL_QS}) | Time left: ${levelTimerSec}s`;
+        } else {
+            btnElement.classList.add('wrong-highlight');
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                const txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if (txt === correctAnswer) {
+                    btn.classList.add('correct-highlight');
+                }
+            });
+            messageDiv.innerHTML = `❌ NOT QUITE! Correct: "${correctAnswer}". Keep learning to protect our environment! Score: ${levelScore}/${TOTAL_QS}`;
+        }
+        disableAllOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+
+    function loadCurrentQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const levelData = levelsData[currentLevel - 1];
+        const q = levelData[currentQIndex];
+        questionDiv.innerText = q.text;
+        optionsDiv.innerHTML = '';
+        
+        const shuffledOps = shuffleArray([...q.options]);
+        const prefixes = ['A', 'B', 'C', 'D'];
+        shuffledOps.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, q.correct, btn));
+            optionsDiv.appendChild(btn);
+        });
+        
+        answerLocked = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        messageDiv.innerHTML = `♻️ Level ${currentLevel} • Question ${currentQIndex+1}/30 • Waste Management! Reduce, Reuse, Recycle! ⏱️`;
+    }
+
+    function onNextQuestion() {
+        if (!waitingForNext) return;
+        if (levelFinished) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadCurrentQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                messageDiv.innerHTML = `🏆♻️🌍✨ AMAZING! You've mastered waste classification, dangers, management methods, and the importance of proper waste disposal! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). You are a true Eco Warrior! ✨🌍♻️🏆`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                messageDiv.innerHTML = `🎉🎊 LEVEL ${currentLevel} COMPLETE! 🎊🎉 ${levelScore}/${TOTAL_QS} PASS (${Math.round(levelScore/TOTAL_QS*100)}%). Moving to LEVEL ${currentLevel+1}... ♻️🌍`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelFinished = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadCurrentQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableAllOptions();
+            nextBtn.disabled = true;
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect} correct). Press RESTART to become an Eco Champion! 😭`;
+            showRestartButton();
+        }
+    }
+
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelFinished = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadCurrentQuestion();
+        nextBtn.addEventListener('click', onNextQuestion);
+    }
+
+    initGame();
+</script>
+</body>
+</html>

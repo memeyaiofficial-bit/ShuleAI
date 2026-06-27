@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChezaAI Physical & Health Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #FF6B6B;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .level-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        .level-beginner {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: white;
+        }
+
+        .level-intermediate {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .level-advanced {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 18px;
+            color: #FF6B6B;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            color: #FF6B6B;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #FF6B6B;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: #FF6B6B;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .option-btn.wrong {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+            transition: transform 0.2s;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .result-screen.active {
+            display: block;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            color: #FF6B6B;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .level-completion {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .level-completion h3 {
+            color: #FF6B6B;
+            margin-bottom: 10px;
+        }
+
+        .level-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .level-item.completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .quiz-screen {
+            display: block;
+        }
+
+        .quiz-screen.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Physical & Health Education Quiz</h1>
+            <p>Grade 4-6 | CBC Curriculum</p>
+        </div>
+
+        <div class="quiz-screen" id="quizScreen">
+            <div class="level-display" id="levelDisplay">
+                <span class="level-badge level-beginner" id="levelBadge">Level 1: Beginner</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="score-display" id="scoreDisplay">Score: 0/30</div>
+
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">Question 1 of 30</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" disabled>Next Question</button>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-score" id="resultScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            
+            <div class="level-completion">
+                <h3>Level Breakdown</h3>
+                <div class="level-item" id="level1Status">
+                    <span>🥉 Level 1: Beginner (Q1-10)</span>
+                    <span id="level1Score">0/10</span>
+                </div>
+                <div class="level-item" id="level2Status">
+                    <span>🥈 Level 2: Intermediate (Q11-20)</span>
+                    <span id="level2Score">0/10</span>
+                </div>
+                <div class="level-item" id="level3Status">
+                    <span>🥇 Level 3: Advanced (Q21-30)</span>
+                    <span id="level3Score">0/10</span>
+                </div>
+            </div>
+
+            <button class="restart-btn" onclick="restartQuiz()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Level 1: Beginner (Q1-10)
+            {q: "What is physical fitness?", options: ["Being lazy", "Being healthy and strong", "Eating only", "Sleeping all day"], answer: 1, level: 1},
+            {q: "How many hours of sleep do children need?", options: ["2-3 hours", "4-5 hours", "8-10 hours", "15 hours"], answer: 2, level: 1},
+            {q: "What should you do before exercising?", options: ["Eat a lot", "Warm up", "Go to sleep", "Watch TV"], answer: 1, level: 1},
+            {q: "Which is a healthy drink?", options: ["Soda", "Energy drink", "Water", "Coffee"], answer: 2, level: 1},
+            {q: "What is the most important meal of the day?", options: ["Lunch", "Dinner", "Breakfast", "Snacks"], answer: 2, level: 1},
+            {q: "How often should you exercise?", options: ["Never", "Once a year", "Regularly", "Only when sick"], answer: 2, level: 1},
+            {q: "What does your heart do during exercise?", options: ["Stops", "Beats faster", "Beats slower", "Nothing"], answer: 1, level: 1},
+            {q: "Which is good for strong bones?", options: ["Soda", "Milk", "Candy", "Chips"], answer: 1, level: 1},
+            {q: "What should you wear during sports?", options: ["Tight clothes", "Uncomfortable shoes", "Proper sports attire", "Nothing special"], answer: 2, level: 1},
+            {q: "Why is rest important?", options: ["It's not important", "Helps body recover", "Waste of time", "Makes you weak"], answer: 1, level: 1},
+
+            // Level 2: Intermediate (Q11-20)
+            {q: "What is a warm-up exercise?", options: ["Heavy lifting", "Gentle activity before main exercise", "Cooling down", "Sleeping"], answer: 1, level: 2},
+            {q: "Which sport uses a bat and ball?", options: ["Swimming", "Cricket", "Running", "Cycling"], answer: 1, level: 2},
+            {q: "What is flexibility?", options: ["Being stiff", "Ability to bend and stretch", "Running fast", "Being weak"], answer: 1, level: 2},
+            {q: "How does exercise help your body?", options: ["Makes it weaker", "Keeps it healthy and strong", "Makes you sick", "No effect"], answer: 1, level: 2},
+            {q: "What is stamina?", options: ["Being tired quickly", "Ability to exercise for long time", "Being lazy", "Avoiding sports"], answer: 1, level: 2},
+            {q: "Which muscle helps you breathe?", options: ["Arm muscle", "Leg muscle", "Diaphragm", "Stomach"], answer: 2, level: 2},
+            {q: "What should you do after exercising?", options: ["Eat junk food", "Cool down and stretch", "Sit immediately", "Stop drinking water"], answer: 1, level: 2},
+            {q: "What is team spirit?", options: ["Playing alone", "Working together with teammates", "Being selfish", "Ignoring others"], answer: 1, level: 2},
+            {q: "Which nutrient gives quick energy?", options: ["Vitamins", "Carbohydrates", "Water", "Minerals"], answer: 1, level: 2},
+            {q: "What is coordination?", options: ["Being clumsy", "Using body parts together smoothly", "Sitting still", "Being slow"], answer: 1, level: 2},
+
+            // Level 3: Advanced (Q21-30)
+            {q: "What is the main benefit of aerobic exercise?", options: ["Builds big muscles", "Improves heart and lung health", "Makes you taller", "Reduces appetite"], answer: 1, level: 3},
+            {q: "What does BMI measure?", options: ["Height only", "Body Mass Index", "Brain activity", "Muscle strength"], answer: 1, level: 3},
+            {q: "Which is an Olympic sport?", options: ["Video gaming", "Athletics", "Shopping", "Sleeping"], answer: 1, level: 3},
+            {q: "What is dehydration?", options: ["Too much water", "Not enough water in body", "Eating too much", "Sleeping too little"], answer: 1, level: 3},
+            {q: "What is the role of protein in diet?", options: ["Only gives energy", "Builds and repairs muscles", "Makes you fat", "Has no role"], answer: 1, level: 3},
+            {q: "What is fair play in sports?", options: ["Cheating to win", "Following rules and being honest", "Winning at all costs", "Being unfair"], answer: 1, level: 3},
+            {q: "What happens to muscles during exercise?", options: ["They disappear", "They get stronger", "They get weaker", "Nothing"], answer: 1, level: 3},
+            {q: "What is a balanced diet?", options: ["Eating only one food", "Eating variety of nutrients", "Skipping meals", "Only eating sweets"], answer: 1, level: 3},
+            {q: "Why is posture important?", options: ["It's not important", "Prevents back pain and injury", "Makes you look shorter", "No reason"], answer: 1, level: 3},
+            {q: "What is sportsmanship?", options: ["Being a bad loser", "Showing respect in sports", "Cheating", "Being arrogant"], answer: 1, level: 3}
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let level1Score = 0;
+        let level2Score = 0;
+        let level3Score = 0;
+        let answered = false;
+
+        function getCurrentLevel() {
+            if (currentQuestion < 10) return 1;
+            if (currentQuestion < 20) return 2;
+            return 3;
+        }
+
+        function updateLevelDisplay() {
+            const level = getCurrentLevel();
+            const badge = document.getElementById('levelBadge');
+            
+            if (level === 1) {
+                badge.textContent = '🥉 Level 1: Beginner';
+                badge.className = 'level-badge level-beginner';
+            } else if (level === 2) {
+                badge.textContent = '🥈 Level 2: Intermediate';
+                badge.className = 'level-badge level-intermediate';
+            } else {
+                badge.textContent = '🥇 Level 3: Advanced';
+                badge.className = 'level-badge level-advanced';
+            }
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            updateLevelDisplay();
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of 30`;
+            document.getElementById('questionText').textContent = q.q;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('nextBtn').disabled = true;
+            updateProgress();
+        }
+
+        function selectAnswer(selected) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.answer) {
+                    btn.classList.add('correct');
+                }
+                if (index === selected && selected !== q.answer) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selected === q.answer) {
+                score++;
+                if (q.level === 1) level1Score++;
+                if (q.level === 2) level2Score++;
+                if (q.level === 3) level3Score++;
+                document.getElementById('scoreDisplay').textContent = `Score: ${score}/30`;
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+
+            const percentage = (score / questions.length) * 100;
+            let emoji, title, message;
+
+            if (percentage >= 90) {
+                emoji = '🏆';
+                title = 'Sports Champion!';
+                message = 'You are a fitness and health expert!';
+            } else if (percentage >= 75) {
+                emoji = '⚽';
+                title = 'Athletic Star!';
+                message = 'Excellent knowledge of health and fitness!';
+            } else if (percentage >= 60) {
+                emoji = '👍';
+                title = 'Good Athlete!';
+                message = 'Keep learning about health and sports!';
+            } else if (percentage >= 40) {
+                emoji = '💪';
+                title = 'Keep Training!';
+                message = 'Practice more to improve your knowledge!';
+            } else {
+                emoji = '📚';
+                title = 'Keep Learning!';
+                message = 'Study health and fitness topics!';
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultScore').textContent = `You scored ${score} out of 30`;
+            document.getElementById('resultMessage').textContent = message;
+
+            // Update level scores
+            document.getElementById('level1Score').textContent = `${level1Score}/10`;
+            document.getElementById('level2Score').textContent = `${level2Score}/10`;
+            document.getElementById('level3Score').textContent = `${level3Score}/10`;
+
+            // Mark completed levels
+            if (level1Score >= 7) document.getElementById('level1Status').classList.add('completed');
+            if (level2Score >= 7) document.getElementById('level2Status').classList.add('completed');
+            if (level3Score >= 7) document.getElementById('level3Status').classList.add('completed');
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            level1Score = 0;
+            level2Score = 0;
+            level3Score = 0;
+            document.getElementById('scoreDisplay').textContent = 'Score: 0/30';
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.remove('active');
+            document.getElementById('level1Status').classList.remove('completed');
+            document.getElementById('level2Status').classList.remove('completed');
+            document.getElementById('level3Status').classList.remove('completed');
+            loadQuestion();
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+        loadQuestion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBC Grade 1 Creative Arts Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --secondary: #00A896;
+            --accent: #FFD166;
+            --dark: #1A535C;
+            --light: #F8F9FA;
+            --success: #06D6A0;
+            --warning: #FF9E6D;
+            --danger: #EF476F;
+            --purple: #C77DFF;
+            --blue: #4CC9F0;
+            --shadow: 0 8px 20px rgba(0,0,0,0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Nunito', 'Comic Neue', cursive, sans-serif;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        #main-container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        #main-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--purple));
+            border-radius: 6px 6px 0 0;
+            z-index: 10;
+        }
+
+        #home-screen { text-align: center; padding: 30px 20px 20px; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .home-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--accent); color: var(--dark); font-weight: 800;
+            font-size: clamp(0.75rem, 2vw, 0.9rem); padding: 6px 18px;
+            border-radius: 30px; margin-bottom: 20px;
+            animation: popIn 0.6s cubic-bezier(.175,.885,.32,1.275) both;
+        }
+        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.8rem); margin: 15px 0;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; line-height: 1.2;
+        }
+
+        .subtitle { font-size: clamp(1rem, 2.5vw, 1.3rem); color: #555; margin: 10px 0 25px; font-weight: 600; }
+
+        .game-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 10px; max-width: 800px; margin: 0 auto; }
+
+        .game-card {
+            background: white; border-radius: 24px; padding: 30px 20px; box-shadow: var(--shadow);
+            cursor: pointer; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); border: 3px solid transparent;
+            position: relative; overflow: hidden;
+        }
+        .game-card:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+        .game-card.card1 { border-color: #FF6B6B; background: linear-gradient(145deg, #fff5f5, #ffe0e0); }
+        .game-card.card2 { border-color: #4ECDC4; background: linear-gradient(145deg, #f0fffe, #d4f8f5); }
+        .game-card .card-emoji { font-size: clamp(3rem, 8vw, 4.5rem); display: block; margin-bottom: 15px; animation: floatEmoji 3s ease-in-out infinite; }
+        @keyframes floatEmoji { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .game-card .card-title { font-family: 'Fredoka One', cursive; font-size: clamp(1.3rem, 3vw, 1.8rem); color: var(--dark); margin-bottom: 8px; }
+        .game-card .card-desc { font-size: clamp(0.85rem, 2vw, 1rem); color: #666; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
+        .card-badge { display: inline-block; font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; }
+        .card1 .card-badge { background: #FFE5E5; color: #C0392B; }
+        .card2 .card-badge { background: #E0FAF8; color: #1A9E96; }
+        .footer-note { text-align: center; margin-top: 30px; color: #999; font-size: 0.85rem; font-weight: 600; }
+
+        /* Game Wrapper */
+        .game-wrapper { display: none; animation: fadeIn 0.4s ease; padding: 10px; }
+        .game-wrapper.active { display: block; }
+
+        .back-btn {
+            position: absolute; top: 15px; left: 20px; z-index: 20; background: white; border: none;
+            padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: var(--transition); color: var(--dark);
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+
+        /* Game 1 Styles */
+        .game1-container { max-width: 100%; background: #fef9e8; border-radius: 70px 70px 80px 80px; box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8); overflow: hidden; }
+        .game1-header { background: #ffb74d; padding: 15px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 6px solid #ff8c2e; }
+        .level-badge { background: #2e7d64; padding: 6px 16px; border-radius: 60px; color: white; font-weight: bold; font-size: 1.1rem; box-shadow: inset 0 -2px 0 #1e5a48, 0 4px 10px rgba(0,0,0,0.1); }
+        .score-box { background: #f9a825; padding: 6px 16px; border-radius: 60px; font-weight: bold; font-size: 1.2rem; color: #2c2c2c; }
+        .timer-area { background: #1f2f3a; padding: 4px 16px; border-radius: 50px; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold; font-size: 0.9rem; }
+        .timer-clock { font-size: 1.6rem; font-family: monospace; background: black; padding: 4px 12px; border-radius: 40px; letter-spacing: 2px; }
+        .game1-question-card { padding: 25px 20px 15px; text-align: center; }
+        .question-text { font-size: clamp(1.2rem, 3vw, 1.6rem); background: #fff2df; padding: 20px; border-radius: 50px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.02), 0 8px 16px rgba(0,0,0,0.1); font-weight: bold; margin-bottom: 20px; border: 3px solid #ffcf9a; word-break: break-word; }
+        .action-buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+        .voice-btn, .next-btn { background: #ffe0b5; border: none; padding: 10px 20px; border-radius: 60px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.1s linear; box-shadow: 0 4px 0 #b97f3a; color: #3b2a1f; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; }
+        .next-btn { background: #66bb6a; box-shadow: 0 4px 0 #2e6b2f; color: white; }
+        .voice-btn:active, .next-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b97f3a; }
+        .next-btn:active { box-shadow: 0 1px 0 #2e6b2f; }
+        .hint-area { background: #ffcd94; padding: 10px 20px; border-radius: 60px; font-weight: bold; font-size: 1rem; color: #3b2a1f; display: inline-block; margin-bottom: 10px; }
+        .answer-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px 0 15px; }
+        #game1Answer { flex: 2; min-width: 180px; font-size: 1.3rem; padding: 14px 20px; border-radius: 60px; border: 3px solid #ffb465; font-family: inherit; text-align: center; background: white; outline: none; }
+        .submit-btn { background: #4caf50; border: none; font-size: 1.2rem; font-weight: bold; padding: 10px 28px; border-radius: 60px; color: white; cursor: pointer; box-shadow: 0 5px 0 #2e6b2f; transition: 0.05s linear; font-family: inherit; }
+        .submit-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #2e6b2f; }
+        .feedback { margin: 10px 15px 20px; padding: 10px; font-size: 1.1rem; border-radius: 50px; text-align: center; font-weight: bold; }
+        .progress-info { margin-top: 8px; font-size: 0.9rem; color: #7b5a3b; }
+
+        /* Game 2 Styles */
+        .game2-container { background: rgba(255, 255, 255, 0.95); border-radius: 25px; box-shadow: var(--shadow); padding: 15px; position: relative; }
+        .game2-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary)); border-radius: 6px 6px 0 0; }
+        .game2-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 0; margin-bottom: 10px; }
+        .game2-level-indicator { font-size: 1.3rem; font-weight: bold; color: var(--dark); background: var(--accent); padding: 8px 18px; border-radius: 30px; box-shadow: 0 4px 0 rgba(200, 150, 0, 0.8); }
+        .game2-voice-btn { background: linear-gradient(45deg, #9d50ff, #6e48aa); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; border: none; cursor: pointer; box-shadow: 0 4px 0 rgba(100, 50, 150, 0.8); transition: var(--transition); }
+        .game2-voice-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(100, 50, 150, 0.8); }
+        .game2-timer-container { text-align: center; margin: 10px 0; }
+        .game2-timer { font-size: 3rem; font-weight: bold; color: var(--danger); text-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
+        .game2-timer.warning { color: var(--warning); }
+        .game2-timer.danger { color: var(--danger); animation: shake 0.5s infinite; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+        .game2-question-container { background: white; border-radius: 20px; padding: 20px; margin: 15px 0; box-shadow: var(--shadow); border: 3px solid var(--secondary); min-height: 100px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: clamp(1.2rem, 2.5vw, 1.5rem); line-height: 1.4; }
+        .game2-hint-container { min-height: 50px; margin: 10px 0; padding: 10px; border-radius: 15px; background: #e3f2fd; border-left: 4px solid var(--secondary); display: none; font-size: 1.1rem; color: var(--dark); }
+        .game2-hint-container.show { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        #game2Answer { width: 100%; padding: 14px 20px; font-size: 1.3rem; border: 4px solid var(--secondary); border-radius: 20px; margin: 10px 0; text-align: center; transition: var(--transition); background: #f8f9ff; font-family: inherit; }
+        #game2Answer:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.2); background: white; }
+        .game2-feedback { min-height: 40px; margin: 10px 0; font-size: 1.2rem; font-weight: bold; text-align: center; padding: 10px; border-radius: 15px; }
+        .feedback-correct { background: rgba(6, 214, 160, 0.2); color: #047a57; border: 2px solid var(--success); }
+        .feedback-incorrect { background: rgba(239, 71, 111, 0.15); color: #a3153e; border: 2px solid var(--danger); }
+        .feedback-timeup { background: rgba(255, 158, 109, 0.2); color: #8a4a00; border: 2px solid var(--warning); }
+        .game2-progress-container { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding: 10px 15px; background: white; border-radius: 15px; box-shadow: var(--shadow); }
+        .game2-progress-bar { flex: 1; height: 16px; background: #e0e0e0; border-radius: 10px; margin: 0 15px; overflow: hidden; }
+        .game2-progress-fill { height: 100%; background: linear-gradient(90deg, var(--secondary), var(--primary)); border-radius: 10px; width: 0%; transition: width 0.5s ease; }
+        .game2-action-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+        .game2-btn { background: linear-gradient(45deg, var(--primary), #FF8E8E); color: white; border: none; padding: 12px 28px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 0 rgba(200, 50, 50, 0.8); transition: var(--transition); font-weight: bold; font-family: inherit; }
+        .game2-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(200, 50, 50, 0.8); }
+        .game2-btn-secondary { background: linear-gradient(45deg, var(--secondary), #6EDBD5); box-shadow: 0 4px 0 rgba(40, 150, 140, 0.8); }
+
+        @media (max-width: 600px) {
+            #main-container { border-radius: 20px; padding: 0; }
+            .game-cards { grid-template-columns: 1fr; gap: 15px; }
+            .game-card { padding: 20px 15px; }
+            .game1-header { flex-direction: column; text-align: center; padding: 12px 15px; }
+            .question-text { font-size: 1.1rem; padding: 15px; border-radius: 35px; }
+            #game1Answer { font-size: 1.1rem; padding: 12px 16px; }
+            .submit-btn { font-size: 1rem; padding: 10px 22px; }
+            .game2-timer { font-size: 2.5rem; }
+            .game2-question-container { font-size: 1.2rem; padding: 15px; }
+            #game2Answer { font-size: 1.2rem; padding: 12px 16px; }
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 1.5rem; }
+            .game-card .card-emoji { font-size: 2.5rem; }
+            .game-card .card-title { font-size: 1.2rem; }
+            .back-btn { top: 10px; left: 10px; font-size: 0.8rem; padding: 6px 12px; }
+            .level-badge, .score-box { font-size: 0.9rem; padding: 5px 12px; }
+            .timer-clock { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-container">
+        <!-- HOME SCREEN -->
+        <div id="home-screen">
+            <div class="home-badge">🎨 Grade 1 CBC Creative Arts Games</div>
+            <h1>Choose Your<br>Adventure!</h1>
+            <p class="subtitle">Two exciting games to test your Grade 1 Creative Arts knowledge</p>
+            <div class="game-cards">
+                <div class="game-card card1" onclick="startGame1()">
+                    <span class="card-emoji">🎵🏃</span>
+                    <div class="card-title">Roll, Balance<br>& Sing!</div>
+                    <p class="card-desc">Log rolls, T-balances, songs, modelling & percussion instruments!</p>
+                    <span class="card-badge">🌟 Grade 1</span>
+                </div>
+                <div class="game-card card2" onclick="startGame2()">
+                    <span class="card-emoji">🦁🎨</span>
+                    <div class="card-title">Kenya Kids<br>Art Adventure</div>
+                    <p class="card-desc">Singing games, throwing & catching, and paper craft fun!</p>
+                    <span class="card-badge">🌟 Grade 1</span>
+                </div>
+            </div>
+            <div class="footer-note">📱 Works on all devices · CBC Aligned · Fun Learning!</div>
+        </div>
+
+        <!-- GAME 1 WRAPPER -->
+        <div id="game1-wrapper" class="game-wrapper">
+            <button class="back-btn" onclick="goHome()">← Home</button>
+            <div class="game1-container" id="game1App">
+                <div class="game1-header">
+                    <div class="level-badge" id="levelDisplay">🎵 LEVEL 1</div>
+                    <div class="score-box" id="scoreDisplay">✅ SCORE: 0 / 0</div>
+                    <div class="timer-area">⏱️ <span class="timer-clock" id="timerCountdown">40</span></div>
+                </div>
+                <div class="game1-question-card">
+                    <div class="question-text" id="questionText">Loading fun challenge...</div>
+                    <div class="action-buttons">
+                        <button class="voice-btn" id="readAloudBtn">🔊 READ QUESTION</button>
+                        <button class="next-btn" id="nextQuestionBtn">⏩ NEXT QUESTION</button>
+                    </div>
+                    <div class="hint-area" id="hintBox">💡 Hint will appear here as time goes</div>
+                    <div class="answer-area">
+                        <input type="text" id="game1Answer" placeholder="Type your answer here..." autocomplete="off">
+                        <button class="submit-btn" id="submitAnswer">✔️ CHECK ANSWER</button>
+                    </div>
+                    <div class="feedback" id="feedbackMsg">🎶 Answer each question! 80% needed to level up.</div>
+                    <div class="progress-info" id="progressInfo">Question 1 / 30</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME 2 WRAPPER -->
+        <div id="game2-wrapper" class="game-wrapper">
+            <button class="back-btn" onclick="goHome()">← Home</button>
+            <div class="game2-container" id="game2App">
+                <div class="game2-header">
+                    <div class="game2-level-indicator">Level <span id="game2CurrentLevel">1</span> 🇰🇪</div>
+                    <button class="game2-voice-btn" id="game2VoiceBtn">🔊</button>
+                </div>
+                <div class="game2-timer-container">
+                    <div class="game2-timer" id="game2Timer">40</div>
+                    <div style="font-size: 1rem; color: #666;">seconds remaining</div>
+                </div>
+                <div class="game2-question-container" id="game2Question">Loading question...</div>
+                <div class="game2-hint-container" id="game2Hint"></div>
+                <input type="text" id="game2Answer" placeholder="Type your answer here..." autocomplete="off">
+                <div class="game2-feedback" id="game2Feedback"></div>
+                <div class="game2-progress-container">
+                    <div style="font-size: 1rem; font-weight: bold;">Score: <span id="game2Score">0</span>/<span id="game2Total">30</span></div>
+                    <div class="game2-progress-bar"><div class="game2-progress-fill" id="game2ProgressFill"></div></div>
+                    <div style="font-size: 1rem; font-weight: bold;"><span id="game2Answered">0</span>/30</div>
+                </div>
+                <div class="game2-action-buttons">
+                    <button class="game2-btn" id="game2SubmitBtn">✓ Submit Answer</button>
+                    <button class="game2-btn game2-btn-secondary" id="game2NextBtn" style="display: none;">Next Question →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================== NAVIGATION ======================
+        function goHome() {
+            document.getElementById('game1-wrapper').classList.remove('active');
+            document.getElementById('game2-wrapper').classList.remove('active');
+            document.getElementById('home-screen').style.display = 'block';
+            if (g1timer) clearInterval(g1timer);
+            if (g2timer) clearInterval(g2timer);
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+        function startGame1() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('game1-wrapper').classList.add('active');
+            document.getElementById('game2-wrapper').classList.remove('active');
+            if (!g1init) { initGame1(); g1init = true; }
+            loadG1Level(0);
+        }
+        function startGame2() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('game1-wrapper').classList.remove('active');
+            document.getElementById('game2-wrapper').classList.add('active');
+            if (!g2init) { initGame2(); g2init = true; }
+            startG2Level();
+        }
+
+        // ====================== SPEECH HELPER ======================
+        function speakText(text, isTimeUp = false) {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US'; u.rate = isTimeUp ? 1.0 : 0.85; u.pitch = 1.15;
+            window.speechSynthesis.speak(u);
+        }
+
+        // ====================== GAME 1: ROLL, BALANCE & SING ======================
+        let g1init = false, g1timer = null, g1timeLeft = 40, g1waiting = true, g1submitted = false;
+        let g1level = 0, g1qIdx = 0, g1correct = 0, g1answered = 0, g1locked = false;
+        let g1questions = [], g1currentQ = null;
+
+        const g1bank = [
+            // Log rolls & T-balances (15)
+            { text: "What is the name of the move where you roll sideways like a log?", correct: "log roll", alt: "logroll", topic: "log rolls & balances" },
+            { text: "To do a T-balance, you stand on one leg and stretch your arms out like a ___", correct: "T", alt: "letter t", topic: "log rolls & balances" },
+            { text: "When doing a log roll, your body should be straight like a ___", correct: "log", alt: "stick", topic: "log rolls & balances" },
+            { text: "In a T-balance, which body part keeps you steady?", correct: "foot", alt: "leg", topic: "log rolls & balances" },
+            { text: "What word means to hold your body still without wobbling?", correct: "balance", alt: "steady", topic: "log rolls & balances" },
+            { text: "Name a safe surface to practice log rolls.", correct: "mat", alt: "floor", topic: "log rolls & balances" },
+            { text: "When you make a T shape with your body, your arms are out to the ___", correct: "sides", alt: "side", topic: "log rolls & balances" },
+            { text: "Log rolls help you learn body ___", correct: "control", alt: "awareness", topic: "log rolls & balances" },
+            { text: "In T-balance, the standing leg should be slightly ___", correct: "bent", alt: "soft", topic: "log rolls & balances" },
+            { text: "What body part do you look at to help keep balance?", correct: "eyes", alt: "head", topic: "log rolls & balances" },
+            { text: "A log roll is a type of ___ roll.", correct: "side", alt: "lateral", topic: "log rolls & balances" },
+            { text: "True or false: T-balance requires two feet on the ground.", correct: "false", alt: "no", topic: "log rolls & balances" },
+            { text: "To finish a log roll, you end lying on your ___", correct: "back", alt: "stomach", topic: "log rolls & balances" },
+            { text: "Name a sport that uses balance skills.", correct: "gymnastics", alt: "dance", topic: "log rolls & balances" },
+            { text: "In T-balance, your arms make the top of the letter ___", correct: "T", alt: "tee", topic: "log rolls & balances" },
+            // Songs (15)
+            { text: "What song has the lyrics 'Twinkle, twinkle, little star'?", correct: "twinkle twinkle little star", alt: "twinkle", topic: "songs" },
+            { text: "In 'Old MacDonald', what animal says 'moo'?", correct: "cow", topic: "songs" },
+            { text: "Complete the line: 'The wheels on the bus go round and ___'", correct: "round", alt: "around", topic: "songs" },
+            { text: "Which song says 'If you're happy and you know it, clap your ___'", correct: "hands", alt: "hand", topic: "songs" },
+            { text: "Name a song about a spider climbing up a water spout.", correct: "itsy bitsy spider", alt: "incy wincy", topic: "songs" },
+            { text: "In 'Row Row Row Your Boat', what do we do gently?", correct: "row", topic: "songs" },
+            { text: "What song has the line 'I'm a little teapot, short and stout'?", correct: "i'm a little teapot", alt: "teapot", topic: "songs" },
+            { text: "Which song teaches the ABCs?", correct: "alphabet song", alt: "abc", topic: "songs" },
+            { text: "In 'Head, Shoulders, Knees and Toes', what comes after knees?", correct: "toes", topic: "songs" },
+            { text: "Sing: 'Frère Jacques, Frère Jacques, dormez-vous?' That song is from which country?", correct: "france", alt: "french", topic: "songs" },
+            { text: "What song has a 'choo-choo' train sound?", correct: "down by the station", alt: "train song", topic: "songs" },
+            { text: "Complete: 'You are my sunshine, my only ___'", correct: "sunshine", alt: "sun", topic: "songs" },
+            { text: "Which nursery rhyme is about a lamb following Mary?", correct: "mary had a little lamb", alt: "mary", topic: "songs" },
+            { text: "In 'Five Little Ducks', how many ducks come back?", correct: "four", alt: "4", topic: "songs" },
+            { text: "What do we do in 'The Hokey Pokey' when we turn around?", correct: "turn yourself around", alt: "turn", topic: "songs" },
+            // Modelling (15)
+            { text: "What soft material do you use for modelling?", correct: "clay", alt: "play dough", topic: "modelling" },
+            { text: "When you roll clay into a long snake shape, you are ____ it.", correct: "rolling", alt: "making", topic: "modelling" },
+            { text: "What tool helps you cut clay?", correct: "plastic knife", alt: "clay tool", topic: "modelling" },
+            { text: "To join two pieces of clay, you need to ___ them together.", correct: "press", alt: "squeeze", topic: "modelling" },
+            { text: "Name a 3D shape you can make with modelling clay.", correct: "ball", alt: "sphere", topic: "modelling" },
+            { text: "What do you call a model of a person made from clay?", correct: "figure", alt: "statue", topic: "modelling" },
+            { text: "Before modelling, you should roll clay into a ___ to warm it.", correct: "ball", alt: "lump", topic: "modelling" },
+            { text: "What does 'pinch pot' mean?", correct: "pinching clay into a bowl", alt: "bowl", topic: "modelling" },
+            { text: "What can you add to clay to make it soft?", correct: "water", alt: "moisture", topic: "modelling" },
+            { text: "In modelling, what does 'score' mean?", correct: "scratch lines to join clay", alt: "scratch", topic: "modelling" },
+            { text: "Name a famous modelling material that bakes hard.", correct: "polymer clay", alt: "fimo", topic: "modelling" },
+            { text: "To make a coil pot, you roll clay into ___", correct: "coils", alt: "snakes", topic: "modelling" },
+            { text: "What do you call a flat piece of clay rolled with a rolling pin?", correct: "slab", alt: "sheet", topic: "modelling" },
+            { text: "Which finger is used most for pinching clay?", correct: "thumb", topic: "modelling" },
+            { text: "Modelling helps improve your fine ___ skills.", correct: "motor", alt: "hand", topic: "modelling" },
+            // Percussion (15)
+            { text: "What percussion instrument do you shake?", correct: "maraca", alt: "shaker", topic: "percussion" },
+            { text: "You hit a drum with your hands or ___", correct: "drumstick", alt: "stick", topic: "percussion" },
+            { text: "Which percussion instrument has jingles and you shake it?", correct: "tambourine", topic: "percussion" },
+            { text: "What do you call a large drum that you play with mallets?", correct: "timpani", alt: "kettle drum", topic: "percussion" },
+            { text: "Name a percussion instrument that you scrape.", correct: "guiro", alt: "scraper", topic: "percussion" },
+            { text: "Which two wooden sticks are clicked together?", correct: "claves", alt: "rhythm sticks", topic: "percussion" },
+            { text: "What percussion instrument has metal bars and you hit with mallets?", correct: "xylophone", alt: "glockenspiel", topic: "percussion" },
+            { text: "A triangle is made of ___ and you strike it with a beater.", correct: "metal", alt: "steel", topic: "percussion" },
+            { text: "Name a drum you wear around your neck and play with hands.", correct: "djembe", alt: "conga", topic: "percussion" },
+            { text: "What word means to play percussion with a steady beat?", correct: "drumming", alt: "tapping", topic: "percussion" },
+            { text: "Which instrument is also called a 'sand block'?", correct: "sandpaper block", alt: "scratch block", topic: "percussion" },
+            { text: "You hit a cymbal with a ___ to make a crash sound.", correct: "drumstick", alt: "mallet", topic: "percussion" },
+            { text: "What small percussion instrument is filled with beads and shaken?", correct: "egg shaker", alt: "shaker egg", topic: "percussion" },
+            { text: "Name a percussion family that has a membrane.", correct: "drum", alt: "membranophone", topic: "percussion" },
+            { text: "Cowbells are played with a ___", correct: "mallet", alt: "stick", topic: "percussion" }
+        ];
+
+        function genG1Level() {
+            const s = [...g1bank].sort(() => Math.random() - 0.5);
+            const b = s.filter(q => q.topic === "log rolls & balances").slice(0, 8);
+            const sg = s.filter(q => q.topic === "songs").slice(0, 8);
+            const m = s.filter(q => q.topic === "modelling").slice(0, 7);
+            const p = s.filter(q => q.topic === "percussion").slice(0, 7);
+            let sel = [...b, ...sg, ...m, ...p];
+            while (sel.length < 30) sel.push(s[sel.length % s.length]);
+            if (sel.length > 30) sel = sel.slice(0, 30);
+            return sel.sort(() => Math.random() - 0.5);
+        }
+
+        function initGame1() {
+            document.getElementById('submitAnswer').addEventListener('click', g1eval);
+            document.getElementById('readAloudBtn').addEventListener('click', () => { if (g1currentQ) speakText(g1currentQ.text); });
+            document.getElementById('nextQuestionBtn').addEventListener('click', g1nextManual);
+            document.getElementById('game1Answer').addEventListener('keypress', (e) => { if (e.key === 'Enter' && !g1submitted && g1waiting) g1eval(); });
+        }
+
+        function loadG1Level(lvl) {
+            g1locked = false; g1level = lvl; g1qIdx = 0; g1correct = 0; g1answered = 0;
+            g1questions = genG1Level();
+            document.getElementById('levelDisplay').innerText = `🎵 LEVEL ${g1level + 1} 🎵`;
+            loadG1Q(0);
+        }
+
+        function loadG1Q(idx) {
+            if (idx >= g1questions.length) { finishG1Level(); return; }
+            g1currentQ = g1questions[idx];
+            document.getElementById('questionText').innerText = g1currentQ.text;
+            g1waiting = true; g1submitted = false;
+            const inp = document.getElementById('game1Answer'); inp.value = ""; inp.disabled = false; inp.focus();
+            document.getElementById('submitAnswer').disabled = false;
+            document.getElementById('feedbackMsg').innerHTML = "🎤 Type your answer and click CHECK!";
+            document.getElementById('feedbackMsg').style.background = "#fff3e0";
+            updateG1UI();
+            if (g1timer) clearInterval(g1timer);
+            startG1Timer();
+        }
+
+        function startG1Timer() {
+            g1timeLeft = 40; document.getElementById('timerCountdown').innerText = g1timeLeft; updateG1Hint();
+            g1timer = setInterval(() => {
+                if (!g1waiting || g1locked || g1submitted) return;
+                if (g1timeLeft <= 1) { clearInterval(g1timer); g1timeUp(); }
+                else { g1timeLeft--; document.getElementById('timerCountdown').innerText = g1timeLeft; updateG1Hint(); }
+            }, 1000);
+        }
+
+        function updateG1Hint() {
+            const hb = document.getElementById('hintBox');
+            if (!g1currentQ) return;
+            if (g1timeLeft > 28) hb.innerHTML = "💡 Topic: " + g1currentQ.topic + ". Think about the lesson!";
+            else if (g1timeLeft > 18) hb.innerHTML = `🔎 Hint: The answer starts with "${g1currentQ.correct[0]}"...`;
+            else if (g1timeLeft > 8) hb.innerHTML = `✨ Hint: The answer is "${g1currentQ.correct}".`;
+            else hb.innerHTML = `🚀 Last chance! Answer: "${g1currentQ.correct}". Hurry!`;
+        }
+
+        function updateG1UI() {
+            document.getElementById('scoreDisplay').innerText = `✅ SCORE: ${g1correct} / ${g1answered}`;
+            document.getElementById('progressInfo').innerText = `Question ${g1answered + 1} / ${g1questions.length}`;
+        }
+
+        function g1timeUp() {
+            speakText("Time is up!", true); g1waiting = false; g1submitted = true;
+            document.getElementById('feedbackMsg').innerHTML = "⏰ TIME IS UP! Moving to next question.";
+            document.getElementById('feedbackMsg').style.background = "#ffccbb";
+            document.getElementById('game1Answer').disabled = true;
+            document.getElementById('submitAnswer').disabled = true;
+            setTimeout(() => { if (!g1locked) g1moveNext(); }, 1500);
+        }
+
+        function g1eval() {
+            if (!g1waiting || g1locked || g1submitted) return;
+            const ua = document.getElementById('game1Answer').value.trim().toLowerCase();
+            if (!ua) { speakText("Please type an answer."); return; }
+            const c = g1currentQ.correct.toLowerCase(), a = g1currentQ.alt ? g1currentQ.alt.toLowerCase() : "";
+            const ok = (ua === c) || (a && ua === a);
+            g1submitted = true; g1waiting = false; clearInterval(g1timer);
+            if (ok) { g1correct++; speakText("Correct! Great job!"); document.getElementById('feedbackMsg').innerHTML = "🎉 CORRECT! +1 point 🎉"; document.getElementById('feedbackMsg').style.background = "#c8e6c9"; }
+            else { speakText(`Incorrect. The correct answer is ${g1currentQ.correct}.`); document.getElementById('feedbackMsg').innerHTML = `❌ INCORRECT! Answer: "${g1currentQ.correct}"`; document.getElementById('feedbackMsg').style.background = "#ffcdd2"; }
+            g1answered++; updateG1UI();
+            document.getElementById('submitAnswer').disabled = true; document.getElementById('game1Answer').disabled = true;
+        }
+
+        function g1nextManual() {
+            if (g1locked) return;
+            if (g1waiting && !g1submitted) { document.getElementById('feedbackMsg').innerHTML = "⚠️ Please answer before moving on!"; speakText("Please check your answer first."); return; }
+            if (g1submitted && !g1waiting) { clearInterval(g1timer); g1moveNext(); }
+        }
+
+        function g1moveNext() {
+            if (g1locked) return;
+            if (g1answered >= g1questions.length) { finishG1Level(); return; }
+            g1qIdx++; loadG1Q(g1qIdx);
+        }
+
+        function finishG1Level() {
+            const pct = (g1correct / g1questions.length) * 100;
+            if (pct >= 80 && g1level + 1 < 5) {
+                speakText(`Excellent! You passed level ${g1level+1} with ${Math.floor(pct)} percent.`);
+                document.getElementById('feedbackMsg').innerHTML = `🎊 LEVEL UP! 🎊 ${g1correct}/${g1questions.length} (${Math.floor(pct)}%) → Next Level!`;
+                document.getElementById('feedbackMsg').style.background = "#ffecb3";
+                g1level++; setTimeout(() => loadG1Level(g1level), 2000);
+            } else if (pct >= 80 && g1level + 1 >= 5) {
+                g1locked = true; clearInterval(g1timer);
+                document.getElementById('feedbackMsg').innerHTML = `🏆 CHAMPION! All 5 levels complete! 🏆`;
+                document.getElementById('feedbackMsg').style.background = "#ffecb3";
+                speakText("Congratulations! You finished all levels!");
+            } else {
+                document.getElementById('feedbackMsg').innerHTML = `⚠️ ${Math.floor(pct)}% - Need 80%. Restarting level...`;
+                document.getElementById('feedbackMsg').style.background = "#ffb3ba";
+                speakText(`Need 80 percent. Restarting level ${g1level+1}.`);
+                setTimeout(() => loadG1Level(g1level), 2000);
+            }
+        }
+
+        // ====================== GAME 2: KENYA KIDS ART ADVENTURE ======================
+        let g2init = false, g2timer = null, g2timeLeft = 40, g2score = 0, g2answered = 0;
+        let g2level = 1, g2currentQ = null, g2used = new Set();
+
+        const g2bank = {
+            singing: [
+                { q: "What do we do when we sing 'Jambo Bwana'?", a: ["dance", "clap", "sing", "move"], hint: "We move our bodies to the music!" },
+                { q: "Name a Kenyan song you sing with friends.", a: ["jambo bwana", "malaika", "rafiki", "kamba"], hint: "A happy song about friends!" },
+                { q: "What body part do we use to sing?", a: ["mouth", "voice", "throat"], hint: "We open this to make sounds!" },
+                { q: "When singing games, what do we often do with our hands?", a: ["clap", "wave", "move"], hint: "Hit hands together: clap clap!" },
+                { q: "What animal sound do we make in 'Old MacDonald' Kenyan style?", a: ["moo", "baa", "cock-a-doodle", "meow"], hint: "A cow says this!" },
+                { q: "Name something we shake when singing.", a: ["shaker", "maraca", "bottle", "tin"], hint: "A toy that makes rattling sounds!" },
+                { q: "What do we call singing in a group?", a: ["choir", "together", "group"], hint: "Many voices singing as one!" },
+                { q: "In 'Rafiki Yangu', what does 'rafiki' mean?", a: ["friend", "friends"], hint: "Someone you play with!" },
+                { q: "What do we do to the beat when singing?", a: ["clap", "tap", "stomp"], hint: "Hit hands or feet to the rhythm!" },
+                { q: "Name a Kenyan language we sing in.", a: ["swahili", "kikuyu", "luo", "luhya"], hint: "The language with 'Jambo'!" }
+            ],
+            throwing: [
+                { q: "What do we use to throw and catch?", a: ["ball", "beanbag", "soft toy"], hint: "A round thing we play with!" },
+                { q: "When catching, what body part do we use most?", a: ["hands", "arms"], hint: "The parts at the end of your arms!" },
+                { q: "What should we do before throwing to a friend?", a: ["look", "aim", "call name"], hint: "Make sure they are ready!" },
+                { q: "Name a soft thing we can throw safely.", a: ["beanbag", "soft ball", "sock ball", "foam ball"], hint: "Won't hurt if it hits someone!" },
+                { q: "What do we say when we catch the ball?", a: ["got it", "yes", "catch"], hint: "A happy word when you hold it!" },
+                { q: "When throwing, should we use one hand or two?", a: ["one hand", "either"], hint: "Most throws use just this many!" },
+                { q: "What shape is a ball we throw?", a: ["round", "circle", "sphere"], hint: "No corners, rolls easily!" },
+                { q: "What do we do if the ball drops?", a: ["pick it up", "get it", "try again"], hint: "Bend down and hold it again!" },
+                { q: "Name a game where we throw and catch.", a: ["catch", "throw catch", "ball game"], hint: "The name says what we do!" },
+                { q: "When catching a big ball, how many hands should we use?", a: ["two hands", "both hands"], hint: "Use all your hands to be safe!" }
+            ],
+            craft: [
+                { q: "What do we use to cut paper for crafts?", a: ["scissors", "child scissors"], hint: "A tool with two blades that snip!" },
+                { q: "Name a color of paper we use for crafts.", a: ["red", "blue", "yellow", "green", "any color"], hint: "A bright, happy color!" },
+                { q: "What do we put on paper to stick things?", a: ["glue", "paste", "stick"], hint: "A sticky liquid that holds things!" },
+                { q: "What shape do we make when we fold paper in half?", a: ["rectangle", "half", "two parts"], hint: "One piece becomes two equal parts!" },
+                { q: "Name something we can make with paper craft.", a: ["card", "hat", "animal", "flower", "boat"], hint: "A gift for someone special!" },
+                { q: "What do we call folding paper to make shapes?", a: ["origami", "paper folding", "fold art"], hint: "A Japanese art of folding!" },
+                { q: "What should we do with glue after using it?", a: ["close lid", "put cap on", "cover it"], hint: "Keep it from drying out!" },
+                { q: "Name a Kenyan animal we can make with paper.", a: ["lion", "elephant", "giraffe", "zebra"], hint: "Has a long neck and spots!" },
+                { q: "What do we use to draw on paper before cutting?", a: ["pencil", "crayon", "marker"], hint: "A tool for making light lines first!" },
+                { q: "What shape has three sides?", a: ["triangle", "three sides"], hint: "Like a slice of pizza!" }
+            ]
+        };
+
+        function getG2Q() {
+            const all = [...g2bank.singing.map((q,i)=>({...q,topic:'singing',id:'s_'+i})),...g2bank.throwing.map((q,i)=>({...q,topic:'throwing',id:'t_'+i})),...g2bank.craft.map((q,i)=>({...q,topic:'craft',id:'c_'+i}))];
+            const av = all.filter(q => !g2used.has(q.id));
+            if (av.length === 0) { g2used.clear(); return getG2Q(); }
+            const r = av[Math.floor(Math.random() * av.length)]; g2used.add(r.id); return r;
+        }
+
+        function initGame2() {
+            document.getElementById('game2SubmitBtn').addEventListener('click', g2submit);
+            document.getElementById('game2NextBtn').addEventListener('click', g2next);
+            document.getElementById('game2VoiceBtn').addEventListener('click', () => { if (g2currentQ) speakText(g2currentQ.q); });
+            document.getElementById('game2Answer').addEventListener('keypress', (e) => { if (e.key === 'Enter' && !document.getElementById('game2Answer').disabled) g2submit(); });
+        }
+
+        function startG2Level() {
+            g2score = 0; g2answered = 0; g2used.clear();
+            document.getElementById('game2CurrentLevel').textContent = g2level;
+            document.getElementById('game2Total').textContent = '30';
+            updateG2Progress(); loadG2Q();
+        }
+
+        function loadG2Q() {
+            document.getElementById('game2Hint').classList.remove('show');
+            document.getElementById('game2Feedback').textContent = ''; document.getElementById('game2Feedback').className = 'game2-feedback';
+            document.getElementById('game2NextBtn').style.display = 'none'; document.getElementById('game2SubmitBtn').style.display = 'inline-flex';
+            g2currentQ = getG2Q(); document.getElementById('game2Question').textContent = g2currentQ.q;
+            const inp = document.getElementById('game2Answer'); inp.value = ''; inp.disabled = false; inp.focus();
+            setTimeout(() => speakText(g2currentQ.q), 500);
+            if (g2timer) clearInterval(g2timer); startG2Timer();
+        }
+
+        function startG2Timer() {
+            g2timeLeft = 40; document.getElementById('game2Timer').textContent = g2timeLeft; document.getElementById('game2Timer').className = 'game2-timer';
+            g2timer = setInterval(() => {
+                g2timeLeft--; document.getElementById('game2Timer').textContent = g2timeLeft;
+                if (g2timeLeft <= 10) document.getElementById('game2Timer').className = 'game2-timer danger';
+                else if (g2timeLeft <= 20) document.getElementById('game2Timer').className = 'game2-timer warning';
+                if (g2timeLeft <= 20 && g2timeLeft > 10 && g2currentQ) {
+                    document.getElementById('game2Hint').innerHTML = `💡 Hint: ${g2currentQ.hint}`;
+                    document.getElementById('game2Hint').classList.add('show');
+                }
+                if (g2timeLeft <= 0) { clearInterval(g2timer); g2timeUp(); }
+            }, 1000);
+        }
+
+        function g2timeUp() {
+            speakText("Time is up!");
+            document.getElementById('game2Feedback').textContent = "⏰ Time's up! Answer: " + g2currentQ.a[0];
+            document.getElementById('game2Feedback').className = 'game2-feedback feedback-timeup';
+            document.getElementById('game2Answer').disabled = true;
+            document.getElementById('game2SubmitBtn').style.display = 'none'; document.getElementById('game2NextBtn').style.display = 'inline-flex';
+            g2answered++; updateG2Progress(); if (g2answered >= 30) setTimeout(g2endLevel, 2000);
+        }
+
+        function g2submit() {
+            clearInterval(g2timer);
+            const ua = document.getElementById('game2Answer').value.trim().toLowerCase();
+            const ok = g2currentQ.a.some(ans => ua.includes(ans.toLowerCase()));
+            if (ok) { g2score++; document.getElementById('game2Feedback').textContent = "✨ Brilliant! That's correct!"; document.getElementById('game2Feedback').className = 'game2-feedback feedback-correct'; speakText("Great job! That's correct!"); }
+            else { document.getElementById('game2Feedback').textContent = "💭 Good try! Answer: " + g2currentQ.a[0]; document.getElementById('game2Feedback').className = 'game2-feedback feedback-incorrect'; speakText("Good try! The answer was: " + g2currentQ.a[0]); }
+            g2answered++; updateG2Progress();
+            document.getElementById('game2Answer').disabled = true;
+            document.getElementById('game2SubmitBtn').style.display = 'none'; document.getElementById('game2NextBtn').style.display = 'inline-flex';
+            if (g2answered >= 30) setTimeout(g2endLevel, 2000);
+        }
+
+        function g2next() { if (g2answered >= 30) g2endLevel(); else loadG2Q(); }
+
+        function updateG2Progress() {
+            document.getElementById('game2Score').textContent = g2score; document.getElementById('game2Answered').textContent = g2answered;
+            document.getElementById('game2ProgressFill').style.width = (g2answered / 30) * 100 + '%';
+        }
+
+        function g2endLevel() {
+            clearInterval(g2timer); const pct = (g2score / 30) * 100;
+            const fb = document.getElementById('game2Feedback');
+            if (pct >= 80 && g2level < 5) {
+                fb.textContent = `🎉 Level ${g2level} Complete! ${Math.round(pct)}% - Moving to Level ${g2level + 1}!`;
+                fb.className = 'game2-feedback feedback-correct'; speakText(`Excellent! Moving to level ${g2level + 1}!`);
+                g2level++; setTimeout(() => startG2Level(), 2500);
+            } else if (pct >= 80 && g2level >= 5) {
+                fb.textContent = `🏆 All Levels Complete! ${Math.round(pct)}% - You're a Champion!`;
+                fb.className = 'game2-feedback feedback-correct'; speakText("Congratulations! You completed all levels!");
+                document.getElementById('game2Answer').disabled = true;
+                document.getElementById('game2SubmitBtn').style.display = 'none'; document.getElementById('game2NextBtn').style.display = 'none';
+            } else {
+                fb.textContent = `💪 ${Math.round(pct)}% - Need 80% to pass. Try again!`;
+                fb.className = 'game2-feedback feedback-incorrect'; speakText("Practice makes perfect! Try again!");
+                setTimeout(() => startG2Level(), 2000);
+            }
+        }
+
+        // ====================== INITIALIZATION ======================
+        window.addEventListener('load', () => { document.getElementById('home-screen').style.display = 'block'; });
+    </script>
+</body>
+</html>

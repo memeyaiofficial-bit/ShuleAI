@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cell Explorer: Biology Adventure</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in;
+      }
+
+      .header h1 {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .game-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .main-game-area {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .info-panel {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .cell-display {
+        width: 100%;
+        height: 500px;
+        background: linear-gradient(135deg, #f6f8ff 0%, #e3f2fd 100%);
+        border-radius: 15px;
+        position: relative;
+        border: 3px solid #74b9ff;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+
+      .organelle {
+        position: absolute;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .organelle:hover {
+        transform: scale(1.1);
+        z-index: 10;
+      }
+
+      .organelle-icon {
+        font-size: 3rem;
+        margin-bottom: 5px;
+      }
+
+      .organelle-label {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+
+      .nucleus {
+        top: 40%;
+        left: 45%;
+      }
+      .mitochondria {
+        top: 60%;
+        left: 30%;
+      }
+      .ribosome {
+        top: 25%;
+        left: 35%;
+      }
+      .golgi {
+        top: 30%;
+        left: 65%;
+      }
+      .er {
+        top: 50%;
+        left: 60%;
+        width: 100px;
+      }
+      .vacuole {
+        top: 70%;
+        left: 65%;
+      }
+      .chloroplast {
+        top: 20%;
+        left: 70%;
+      }
+      .lysosome {
+        top: 75%;
+        left: 25%;
+      }
+      .cell-wall {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 3px dashed #e17055;
+        border-radius: 15px;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+        color: white;
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .info-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 5px solid #74b9ff;
+      }
+
+      .info-title {
+        color: #2d3436;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .info-content {
+        line-height: 1.6;
+        color: #636e72;
+      }
+
+      .quiz-section {
+        background: #fff9e6;
+        border-radius: 15px;
+        padding: 20px;
+        border-left: 5px solid #fdcb6e;
+      }
+
+      .quiz-question {
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #2d3436;
+      }
+
+      .quiz-options {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .quiz-option {
+        padding: 12px;
+        background: white;
+        border: 2px solid #dfe6e9;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .quiz-option:hover {
+        border-color: #74b9ff;
+        background: #f1f9ff;
+      }
+
+      .quiz-option.correct {
+        border-color: #00b894;
+        background: #e8faf1;
+      }
+
+      .quiz-option.incorrect {
+        border-color: #d63031;
+        background: #ffeaea;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 10px;
+        background: #dfe6e9;
+        border-radius: 5px;
+        overflow: hidden;
+        margin: 20px 0;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00b894 0%, #00a085 100%);
+        transition: width 0.5s ease;
+      }
+
+      .achievement {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border-left: 4px solid #74b9ff;
+      }
+
+      .achievement.locked {
+        opacity: 0.5;
+      }
+
+      .achievement-icon {
+        font-size: 1.5rem;
+      }
+
+      .cell-type-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .cell-type {
+        background: #f8f9fa;
+        border: 3px solid transparent;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .cell-type:hover {
+        background: #e3f2fd;
+        transform: scale(1.05);
+      }
+
+      .cell-type.selected {
+        border-color: #74b9ff;
+        background: #e3f2fd;
+      }
+
+      .cell-type-icon {
+        font-size: 2.5rem;
+        margin-bottom: 8px;
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        max-width: 300px;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-left: 5px solid #00b894;
+      }
+
+      .notification.error {
+        border-left: 5px solid #d63031;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .game-container {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔬 Cell Explorer: Biology Adventure</h1>
+        <p>Discover the amazing world of cells and their organelles!</p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-value" id="score">0</div>
+          <div class="stat-label">🏆 Knowledge Points</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="cellsExplored">0</div>
+          <div class="stat-label">🔍 Cells Explored</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="organellesFound">0</div>
+          <div class="stat-label">🧬 Organelles Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="quizScore">0%</div>
+          <div class="stat-label">📚 Quiz Accuracy</div>
+        </div>
+      </div>
+
+      <div class="game-container">
+        <div class="main-game-area">
+          <h3
+            style="
+              color: #2d3436;
+              margin-bottom: 20px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+          >
+            <span id="currentCellIcon">🐭</span>
+            <span id="currentCellName">Animal Cell</span>
+          </h3>
+
+          <div class="cell-display" id="cellDisplay">
+            <!-- Organelles will be dynamically added here -->
+          </div>
+
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              id="explorationProgress"
+              style="width: 0%"
+            ></div>
+          </div>
+
+          <div class="controls">
+            <button class="btn btn-primary" onclick="scanCell()">
+              🔍 Scan Cell
+            </button>
+            <button class="btn btn-secondary" onclick="takeQuiz()">
+              📝 Take Quiz
+            </button>
+            <button class="btn btn-warning" onclick="discoverNewOrganelle()">
+              🎯 Discover Organelle
+            </button>
+          </div>
+
+          <div class="cell-type-selector">
+            <div class="cell-type selected" onclick="selectCellType('animal')">
+              <div class="cell-type-icon">🐭</div>
+              <div>Animal Cell</div>
+            </div>
+            <div class="cell-type" onclick="selectCellType('plant')">
+              <div class="cell-type-icon">🌿</div>
+              <div>Plant Cell</div>
+            </div>
+            <div class="cell-type" onclick="selectCellType('bacteria')">
+              <div class="cell-type-icon">🦠</div>
+              <div>Bacterial Cell</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-section">
+            <div class="info-title">
+              <span id="selectedOrganelleIcon">🔬</span>
+              <span id="selectedOrganelleName">Cell Explorer</span>
+            </div>
+            <div class="info-content" id="organelleInfo">
+              Welcome to Cell Explorer! Click on organelles to learn about their
+              functions, scan cells to discover new components, and take quizzes
+              to test your knowledge!
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">📊 Discovery Progress</div>
+            <div id="discoveryProgress">
+              <div style="margin-bottom: 10px">
+                No organelles discovered yet
+              </div>
+            </div>
+          </div>
+
+          <div class="quiz-section" id="quizSection" style="display: none">
+            <div class="quiz-question" id="quizQuestion"></div>
+            <div class="quiz-options" id="quizOptions"></div>
+            <button
+              class="btn btn-primary"
+              onclick="nextQuestion()"
+              id="nextBtn"
+              style="display: none"
+            >
+              Next Question
+            </button>
+          </div>
+
+          <div class="info-section">
+            <div class="info-title">🏆 Achievements</div>
+            <div id="achievementsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      <div id="notificationText"></div>
+    </div>
+
+    <script>
+      // Cell and organelle data
+      const cellTypes = {
+        animal: {
+          name: "Animal Cell",
+          icon: "🐭",
+          organelles: [
+            {
+              id: "nucleus",
+              name: "Nucleus",
+              icon: "🎯",
+              discovered: false,
+              info: "The control center of the cell. Contains DNA and regulates gene expression.",
+            },
+            {
+              id: "mitochondria",
+              name: "Mitochondria",
+              icon: "⚡",
+              discovered: false,
+              info: "Powerhouse of the cell! Produces ATP through cellular respiration.",
+            },
+            {
+              id: "ribosome",
+              name: "Ribosome",
+              icon: "🔬",
+              discovered: false,
+              info: "Protein synthesis factory. Reads mRNA and assembles amino acids into proteins.",
+            },
+            {
+              id: "golgi",
+              name: "Golgi Apparatus",
+              icon: "📦",
+              discovered: false,
+              info: "Modifies, sorts, and packages proteins for transport.",
+            },
+            {
+              id: "er",
+              name: "Endoplasmic Reticulum",
+              icon: "🔄",
+              discovered: false,
+              info: "Transport system and protein/lipid synthesis. Rough ER has ribosomes.",
+            },
+            {
+              id: "lysosome",
+              name: "Lysosome",
+              icon: "🧹",
+              discovered: false,
+              info: "Digestive system of the cell. Breaks down waste and foreign materials.",
+            },
+          ],
+        },
+        plant: {
+          name: "Plant Cell",
+          icon: "🌿",
+          organelles: [
+            {
+              id: "nucleus",
+              name: "Nucleus",
+              icon: "🎯",
+              discovered: false,
+              info: "The control center of the cell. Contains DNA and regulates gene expression.",
+            },
+            {
+              id: "chloroplast",
+              name: "Chloroplast",
+              icon: "🌱",
+              discovered: false,
+              info: "Site of photosynthesis! Converts sunlight into chemical energy.",
+            },
+            {
+              id: "vacuole",
+              name: "Vacuole",
+              icon: "💧",
+              discovered: false,
+              info: "Storage compartment for water, nutrients, and waste products.",
+            },
+            {
+              id: "cell-wall",
+              name: "Cell Wall",
+              icon: "🧱",
+              discovered: false,
+              info: "Rigid outer layer providing structure and protection.",
+            },
+            {
+              id: "mitochondria",
+              name: "Mitochondria",
+              icon: "⚡",
+              discovered: false,
+              info: "Powerhouse of the cell! Produces ATP through cellular respiration.",
+            },
+          ],
+        },
+        bacteria: {
+          name: "Bacterial Cell",
+          icon: "🦠",
+          organelles: [
+            {
+              id: "nucleoid",
+              name: "Nucleoid",
+              icon: "🧬",
+              discovered: false,
+              info: "Region containing bacterial DNA, not enclosed by a membrane.",
+            },
+            {
+              id: "ribosome",
+              name: "Ribosome",
+              icon: "🔬",
+              discovered: false,
+              info: "Protein synthesis factory. Smaller than eukaryotic ribosomes.",
+            },
+            {
+              id: "cell-wall",
+              name: "Cell Wall",
+              icon: "🧱",
+              discovered: false,
+              info: "Provides structure and protection. Made of peptidoglycan.",
+            },
+            {
+              id: "flagellum",
+              name: "Flagellum",
+              icon: "🏃",
+              discovered: false,
+              info: "Whip-like structure used for movement and propulsion.",
+            },
+            {
+              id: "pili",
+              name: "Pili",
+              icon: "🔗",
+              discovered: false,
+              info: "Hair-like structures for attachment and genetic exchange.",
+            },
+          ],
+        },
+      };
+
+      // Quiz questions
+      const quizQuestions = [
+        {
+          question: "Which organelle is known as the 'powerhouse of the cell'?",
+          options: ["Nucleus", "Mitochondria", "Ribosome", "Golgi Apparatus"],
+          correct: 1,
+          explanation:
+            "Mitochondria produce ATP through cellular respiration, making them the cell's powerhouse!",
+        },
+        {
+          question: "Where does photosynthesis occur in plant cells?",
+          options: ["Mitochondria", "Nucleus", "Chloroplast", "Vacuole"],
+          correct: 2,
+          explanation:
+            "Chloroplasts contain chlorophyll and are where photosynthesis takes place!",
+        },
+        {
+          question: "What is the function of ribosomes?",
+          options: [
+            "Energy production",
+            "Protein synthesis",
+            "Cellular digestion",
+            "DNA storage",
+          ],
+          correct: 1,
+          explanation:
+            "Ribosomes read mRNA and assemble amino acids into proteins!",
+        },
+        {
+          question: "Which structure is unique to plant cells?",
+          options: ["Mitochondria", "Chloroplast", "Nucleus", "Ribosome"],
+          correct: 1,
+          explanation:
+            "Chloroplasts are found only in plant cells and some protists!",
+        },
+        {
+          question: "What is the main function of the nucleus?",
+          options: [
+            "Protein synthesis",
+            "Cellular control",
+            "Energy production",
+            "Waste removal",
+          ],
+          correct: 1,
+          explanation:
+            "The nucleus contains DNA and controls cellular activities!",
+        },
+      ];
+
+      // Achievements
+      const achievements = [
+        {
+          id: 1,
+          name: "First Discovery",
+          icon: "🔍",
+          description: "Discover your first organelle",
+          earned: false,
+        },
+        {
+          id: 2,
+          name: "Cell Biologist",
+          icon: "👨‍🔬",
+          description: "Discover all organelles in one cell type",
+          earned: false,
+        },
+        {
+          id: 3,
+          name: "Master Explorer",
+          icon: "🌍",
+          description: "Explore all three cell types",
+          earned: false,
+        },
+        {
+          id: 4,
+          name: "Quiz Whiz",
+          icon: "🏆",
+          description: "Score 100% on a quiz",
+          earned: false,
+        },
+        {
+          id: 5,
+          name: "Research Expert",
+          icon: "📚",
+          description: "Discover 10 organelles total",
+          earned: false,
+        },
+      ];
+
+      // Game state
+      let currentCellType = "animal";
+      let score = 0;
+      let cellsExplored = 0;
+      let organellesFound = 0;
+      let totalOrganellesDiscovered = 0;
+      let quizCorrect = 0;
+      let quizTotal = 0;
+      let currentQuiz = null;
+      let currentQuestionIndex = 0;
+
+      function initGame() {
+        renderCell();
+        updateStats();
+        updateAchievements();
+        updateDiscoveryProgress();
+      }
+
+      function renderCell() {
+        const cellDisplay = document.getElementById("cellDisplay");
+        const cell = cellTypes[currentCellType];
+
+        cellDisplay.innerHTML = "";
+
+        cell.organelles.forEach((organelle) => {
+          const organelleElement = document.createElement("div");
+          organelleElement.className = `organelle ${organelle.id} ${
+            organelle.discovered ? "discovered" : ""
+          }`;
+          organelleElement.innerHTML = `
+                    <div class="organelle-icon">${
+                      organelle.discovered ? organelle.icon : "❓"
+                    }</div>
+                    <div class="organelle-label">${
+                      organelle.discovered ? organelle.name : "???"
+                    }</div>
+                `;
+          organelleElement.onclick = () => selectOrganelle(organelle);
+          cellDisplay.appendChild(organelleElement);
+        });
+
+        document.getElementById("currentCellName").textContent = cell.name;
+        document.getElementById("currentCellIcon").textContent = cell.icon;
+      }
+
+      function selectOrganelle(organelle) {
+        if (!organelle.discovered) {
+          showNotification(
+            "error",
+            "🔍 Scan the cell first to discover this organelle!"
+          );
+          return;
+        }
+
+        document.getElementById("selectedOrganelleName").textContent =
+          organelle.name;
+        document.getElementById("selectedOrganelleIcon").textContent =
+          organelle.icon;
+        document.getElementById("organelleInfo").textContent = organelle.info;
+      }
+
+      function selectCellType(type) {
+        // Update UI
+        document
+          .querySelectorAll(".cell-type")
+          .forEach((el) => el.classList.remove("selected"));
+        event.target.closest(".cell-type").classList.add("selected");
+
+        currentCellType = type;
+        renderCell();
+        cellsExplored++;
+        updateStats();
+        checkAchievements();
+      }
+
+      function scanCell() {
+        const cell = cellTypes[currentCellType];
+        let newDiscoveries = 0;
+
+        cell.organelles.forEach((organelle) => {
+          if (!organelle.discovered && Math.random() > 0.6) {
+            // 40% chance to discover
+            organelle.discovered = true;
+            newDiscoveries++;
+            organellesFound++;
+            totalOrganellesDiscovered++;
+            score += 50;
+
+            // Show discovery animation
+            const element = document.querySelector(`.${organelle.id}`);
+            if (element) {
+              element.classList.add("pulse");
+              setTimeout(() => element.classList.remove("pulse"), 2000);
+            }
+          }
+        });
+
+        if (newDiscoveries > 0) {
+          showNotification(
+            "success",
+            `🔍 Discovered ${newDiscoveries} new organelles! +${
+              newDiscoveries * 50
+            } points`
+          );
+          renderCell();
+          updateDiscoveryProgress();
+          checkAchievements();
+        } else {
+          showNotification(
+            "error",
+            "No new organelles found this time. Try again!"
+          );
+        }
+
+        updateStats();
+      }
+
+      function discoverNewOrganelle() {
+        const cell = cellTypes[currentCellType];
+        const undiscovered = cell.organelles.filter((o) => !o.discovered);
+
+        if (undiscovered.length === 0) {
+          showNotification(
+            "error",
+            "All organelles in this cell type have been discovered!"
+          );
+          return;
+        }
+
+        const organelle =
+          undiscovered[Math.floor(Math.random() * undiscovered.length)];
+        organelle.discovered = true;
+        organellesFound++;
+        totalOrganellesDiscovered++;
+        score += 100;
+
+        showNotification(
+          "success",
+          `🎯 Discovered ${organelle.name}! +100 points`
+        );
+        renderCell();
+        updateDiscoveryProgress();
+        updateStats();
+        checkAchievements();
+      }
+
+      function takeQuiz() {
+        currentQuiz = [...quizQuestions]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+        currentQuestionIndex = 0;
+        showNextQuestion();
+        document.getElementById("quizSection").style.display = "block";
+      }
+
+      function showNextQuestion() {
+        if (currentQuestionIndex >= currentQuiz.length) {
+          endQuiz();
+          return;
+        }
+
+        const question = currentQuiz[currentQuestionIndex];
+        document.getElementById("quizQuestion").textContent = question.question;
+
+        const optionsContainer = document.getElementById("quizOptions");
+        optionsContainer.innerHTML = "";
+
+        question.options.forEach((option, index) => {
+          const optionElement = document.createElement("div");
+          optionElement.className = "quiz-option";
+          optionElement.textContent = option;
+          optionElement.onclick = () => checkAnswer(index, question.correct);
+          optionsContainer.appendChild(optionElement);
+        });
+
+        document.getElementById("nextBtn").style.display = "none";
+      }
+
+      function checkAnswer(selected, correct) {
+        const options = document.querySelectorAll(".quiz-option");
+        quizTotal++;
+
+        options.forEach((option, index) => {
+          option.classList.remove("correct", "incorrect");
+          if (index === correct) {
+            option.classList.add("correct");
+          }
+          if (index === selected && index !== correct) {
+            option.classList.add("incorrect");
+          }
+        });
+
+        if (selected === correct) {
+          quizCorrect++;
+          score += 25;
+          showNotification("success", "✅ Correct! +25 points");
+        } else {
+          showNotification("error", "❌ Incorrect. Better luck next time!");
+        }
+
+        document.getElementById("nextBtn").style.display = "block";
+        updateStats();
+      }
+
+      function nextQuestion() {
+        currentQuestionIndex++;
+        showNextQuestion();
+      }
+
+      function endQuiz() {
+        document.getElementById("quizSection").style.display = "none";
+        const accuracy = Math.round((quizCorrect / quizTotal) * 100);
+
+        if (accuracy === 100) {
+          showNotification(
+            "success",
+            `🏆 Perfect quiz! ${accuracy}% accuracy!`
+          );
+          achievements[3].earned = true;
+          updateAchievements();
+        } else {
+          showNotification(
+            "success",
+            `📚 Quiz completed! ${accuracy}% accuracy`
+          );
+        }
+      }
+
+      function updateStats() {
+        document.getElementById("score").textContent = score;
+        document.getElementById("cellsExplored").textContent = cellsExplored;
+        document.getElementById("organellesFound").textContent =
+          organellesFound;
+
+        const accuracy =
+          quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0;
+        document.getElementById("quizScore").textContent = accuracy + "%";
+
+        // Update progress bar
+        const cell = cellTypes[currentCellType];
+        const discovered = cell.organelles.filter((o) => o.discovered).length;
+        const total = cell.organelles.length;
+        const progress = (discovered / total) * 100;
+        document.getElementById("explorationProgress").style.width =
+          progress + "%";
+      }
+
+      function updateDiscoveryProgress() {
+        const cell = cellTypes[currentCellType];
+        const progressContainer = document.getElementById("discoveryProgress");
+
+        let html = "";
+        cell.organelles.forEach((organelle) => {
+          html += `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">${
+                          organelle.discovered ? organelle.icon : "❓"
+                        }</span>
+                        <span style="flex: 1; color: ${
+                          organelle.discovered ? "#2d3436" : "#b2bec3"
+                        }">
+                            ${
+                              organelle.discovered
+                                ? organelle.name
+                                : "Undiscovered Organelle"
+                            }
+                        </span>
+                        <span style="color: ${
+                          organelle.discovered ? "#00b894" : "#dfe6e9"
+                        }">
+                            ${organelle.discovered ? "✓" : "✗"}
+                        </span>
+                    </div>
+                `;
+        });
+
+        progressContainer.innerHTML = html;
+      }
+
+      function updateAchievements() {
+        const achievementsList = document.getElementById("achievementsList");
+        achievementsList.innerHTML = achievements
+          .map(
+            (achievement) => `
+                    <div class="achievement ${
+                      achievement.earned ? "" : "locked"
+                    }">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div>
+                            <div style="font-weight: bold;">${
+                              achievement.name
+                            }</div>
+                            <div style="font-size: 0.8rem; color: #666;">${
+                              achievement.description
+                            }</div>
+                        </div>
+                    </div>
+                `
+          )
+          .join("");
+      }
+
+      function checkAchievements() {
+        // First Discovery
+        if (organellesFound >= 1 && !achievements[0].earned) {
+          achievements[0].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: First Discovery!"
+          );
+        }
+
+        // Cell Biologist
+        const currentCell = cellTypes[currentCellType];
+        const allDiscovered = currentCell.organelles.every((o) => o.discovered);
+        if (allDiscovered && !achievements[1].earned) {
+          achievements[1].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Cell Biologist!"
+          );
+        }
+
+        // Master Explorer
+        if (cellsExplored >= 3 && !achievements[2].earned) {
+          achievements[2].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Master Explorer!"
+          );
+        }
+
+        // Research Expert
+        if (totalOrganellesDiscovered >= 10 && !achievements[4].earned) {
+          achievements[4].earned = true;
+          showNotification(
+            "success",
+            "🏆 Achievement Unlocked: Research Expert!"
+          );
+        }
+
+        updateAchievements();
+      }
+
+      function showNotification(type, message) {
+        const notification = document.getElementById("notification");
+        notification.className = `notification ${type} show`;
+        document.getElementById("notificationText").textContent = message;
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 3000);
+      }
+
+      // Initialize the game
+      initGame();
+    </script>
+  </body>
+</html>

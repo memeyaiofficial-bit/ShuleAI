@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Wildlife Explorer | Grade 4 Science | Animals & Their Environment</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #2d6a4f 0%, #1b4332 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', 'Fredoka One', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 1px 4px rgba(255, 250, 210, 0.9);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #40916c, #2d6a4f);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 6px solid #1b4332;
+            color: white;
+            text-shadow: 2px 2px 0 #1b4332;
+        }
+
+        .level-badge {
+            background: #1b4332;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.7rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #40916c, 0 6px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-area {
+            background: #0d2818;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: inset 0 0 0 3px #b7e4c7, 0 6px 0 #1b4332;
+        }
+
+        .timer-number {
+            background: #000000;
+            padding: 6px 20px;
+            border-radius: 50px;
+            color: #a7e0b0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+            min-width: 110px;
+            text-align: center;
+            transition: 0.1s;
+        }
+
+        .score-progress {
+            background: #e8ddc5;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px dashed #b89a6e;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .score-text, .required-text {
+            background: white;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: #2d6a4f;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .question-card {
+            padding: 30px 28px 20px;
+            background: #fffaf0;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 700;
+            background: #d8f3dc;
+            padding: 24px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 0 4px white, 0 10px 18px rgba(0,0,0,0.1);
+            color: #1b4332;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background: #f0e2d0;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            padding: 16px 12px;
+            border-radius: 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.07s linear;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #aa8e6c;
+            color: #2d2418;
+            font-family: inherit;
+        }
+
+        .option-prefix {
+            background: #2d6a4f;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 2px 0 #1b4332;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #ffefcf;
+            transform: scale(0.97);
+        }
+
+        .option-btn.correct-highlight {
+            background: #2e7d32;
+            color: white;
+            box-shadow: 0 3px 0 #1b5e1f;
+        }
+
+        .option-btn.correct-highlight .option-prefix {
+            background: #1b5e20;
+        }
+
+        .option-btn.wrong-highlight {
+            background: #c62828;
+            color: white;
+            text-decoration: line-through;
+            box-shadow: 0 3px 0 #7f2a2a;
+        }
+
+        .option-btn.wrong-highlight .option-prefix {
+            background: #8b2a2a;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+
+        .next-area {
+            text-align: center;
+            padding-bottom: 25px;
+        }
+
+        .next-btn {
+            background: #f4a261;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 12px 45px;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c45c1a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+
+        .next-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #c45c1a;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            background: #2d6a4f;
+            color: #d8f3dc;
+            text-align: center;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-top: 2px solid #f5bc70;
+        }
+
+        .restart-btn {
+            background: #3c2a1f;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            color: #ffddbb;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 18px;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+
+        .restart-btn:hover {
+            background: #5e3f2a;
+            color: white;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.2rem; }
+            .timer-number { font-size: 1.5rem; min-width: 75px; letter-spacing: 2px; }
+            .level-badge { font-size: 1.2rem; }
+        }
+
+        .timer-critical {
+            background: #8b0000 !important;
+            color: #ffcc44 !important;
+            text-shadow: 0 0 4px red;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.85; transform: scale(1.03);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+        
+        .animal-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge">🦁 LEVEL <span id="levelNum">1</span> 🐘</div>
+        <div class="timer-area">⏱️ TIME LEFT <span class="timer-number" id="timerDisplay">00</span></div>
+    </div>
+    <div class="score-progress">
+        <div class="score-text">🏆 SCORE: <span id="currentScore">0</span> / <span id="totalQPerLevel">30</span></div>
+        <div class="required-text">🎯 80% TO PASS → <span id="passMark">24</span> correct</div>
+    </div>
+    <div class="question-card">
+        <div class="question-text" id="questionText">Loading animal kingdom challenge...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area">
+            <button class="next-btn" id="nextButton">➡️ NEXT QUESTION ⬅️</button>
+        </div>
+    </div>
+    <div class="message-area" id="gameMessage">🦁 WILDLIFE EXPLORER! Learn animal characteristics, vertebrates vs invertebrates, and how to care for animals. Timer is RUNNING!</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // GRADE 4 CBC SCIENCE AND TECHNOLOGY: CHARACTERISTICS OF ANIMALS AS LIVING THINGS
+    // DIFFERENCE BETWEEN VERTEBRATES AND INVERTEBRATES, NEED TO CARE FOR ANIMALS
+    // Topics: Movement, growth, reproduction, feeding, respiration; backbone vs no backbone;
+    // Animal welfare, protection, habitat conservation
+    // 5 LEVELS × 30 QUESTIONS = 150 UNIQUE QUESTIONS
+    // --------------------------------------------------------------
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // ---------- BANK 1: CHARACTERISTICS OF ANIMALS AS LIVING THINGS ----------
+    const characteristicsBank = [
+        { q: "All living things can move. What is the term for movement in animals?", correct: "Locomotion", options: ["Locomotion", "Respiration", "Growth", "Reproduction"] },
+        { q: "Animals need food to get:", correct: "Energy for growth and movement", options: ["Only water", "Energy for growth and movement", "Sleep", "Air only"] },
+        { q: "The process by which animals produce young ones is called:", correct: "Reproduction", options: ["Respiration", "Reproduction", "Excretion", "Digestion"] },
+        { q: "Animals breathe to get which gas for energy?", correct: "Oxygen", options: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"] },
+        { q: "When an animal increases in size and changes, this is called:", correct: "Growth", options: ["Movement", "Growth", "Reproduction", "Sensitivity"] },
+        { q: "Animals respond to changes around them. This is called:", correct: "Sensitivity or irritability", options: ["Movement", "Sensitivity", "Sleeping", "Eating"] },
+        { q: "All animals eventually die. This shows they are:", correct: "Mortal (have a lifespan)", options: ["Immortal", "Mortal", "Eternal", "Unchanging"] },
+        { q: "Getting rid of waste products from the body is called:", correct: "Excretion", options: ["Respiration", "Excretion", "Digestion", "Reproduction"] }
+    ];
+
+    // ---------- BANK 2: VERTEBRATES (Animals with Backbone) ----------
+    const vertebratesBank = [
+        { q: "Animals that have a backbone are called:", correct: "Vertebrates", options: ["Invertebrates", "Vertebrates", "Mammals", "Reptiles"] },
+        { q: "Which of the following is a vertebrate?", correct: "Lion", options: ["Earthworm", "Lion", "Butterfly", "Snail"] },
+        { q: "Fish belong to which group of vertebrates?", correct: "Fish", options: ["Mammals", "Fish", "Birds", "Reptiles"] },
+        { q: "Which vertebrate group has feathers and lays eggs with hard shells?", correct: "Birds", options: ["Mammals", "Reptiles", "Birds", "Amphibians"] },
+        { q: "Mammals are vertebrates that:", correct: "Have hair/fur and feed their young with milk", options: ["Lay eggs", "Have hair/fur and feed young milk", "Live only in water", "Have scales"] },
+        { q: "Reptiles (like snakes and lizards) have skin covered with:", correct: "Scales or dry plates", options: ["Feathers", "Fur", "Scales or dry plates", "Smooth wet skin"] },
+        { q: "Amphibians like frogs live:", correct: "Both in water and on land", options: ["Only in water", "Only on land", "Both in water and on land", "Only in trees"] },
+        { q: "Which is the largest group of vertebrates?", correct: "Fish", options: ["Mammals", "Birds", "Fish", "Reptiles"] }
+    ];
+
+    // ---------- BANK 3: INVERTEBRATES (Animals without Backbone) ----------
+    const invertebratesBank = [
+        { q: "Animals without a backbone are called:", correct: "Invertebrates", options: ["Vertebrates", "Invertebrates", "Mammals", "Fish"] },
+        { q: "Which of these is an invertebrate?", correct: "Grasshopper", options: ["Lizard", "Grasshopper", "Frog", "Bird"] },
+        { q: "Insects have how many pairs of legs?", correct: "Three pairs (6 legs)", options: ["Two pairs", "Three pairs (6 legs)", "One pair", "Four pairs"] },
+        { q: "An earthworm is an invertebrate because it:", correct: "Has no backbone", options: ["Has a backbone", "Has no backbone", "Has feathers", "Swims"] },
+        { q: "Which invertebrate has a soft body and often a shell (like a snail)?", correct: "Mollusk", options: ["Insect", "Arachnid", "Mollusk", "Crustacean"] },
+        { q: "Spiders and scorpions belong to which group of invertebrates?", correct: "Arachnids", options: ["Insects", "Arachnids", "Crustaceans", "Mollusks"] },
+        { q: "Crabs and lobsters are invertebrates called:", correct: "Crustaceans", options: ["Insects", "Arachnids", "Crustaceans", "Mollusks"] },
+        { q: "Which is the largest group of invertebrates?", correct: "Insects", options: ["Arachnids", "Insects", "Mollusks", "Worms"] }
+    ];
+
+    // ---------- BANK 4: CARING FOR ANIMALS (Animal Welfare) ----------
+    const animalCareBank = [
+        { q: "Why should we care for animals?", correct: "They are living things that feel pain and need our protection", options: ["Because they can talk", "They are living things that feel pain and need our protection", "Because they are dangerous", "Only for food"] },
+        { q: "What is the best way to care for a pet dog?", correct: "Provide food, water, shelter and veterinary care", options: ["Leave it hungry", "Provide food, water, shelter and veterinary care", "Chain it forever", "Beat it"] },
+        { q: "A good home for a domestic animal should have:", correct: "Clean water, proper food, and a safe resting place", options: ["Only a leash", "Clean water, proper food, and a safe resting place", "No shelter", "Dirty surroundings"] },
+        { q: "Which of these is an act of animal cruelty?", correct: "Beating or starving an animal", options: ["Feeding an animal", "Beating or starving an animal", "Taking a pet to the vet", "Building a shelter for a dog"] },
+        { q: "Why should we not keep wild animals as pets?", correct: "They belong in their natural habitat and can be dangerous", options: ["They are cute", "They belong in their natural habitat and can be dangerous", "They are cheap", "They never grow"] },
+        { q: "What should you do if you see an injured wild animal?", correct: "Report it to a wildlife ranger or vet", options: ["Ignore it", "Report it to a wildlife ranger or vet", "Take it home", "Chase it away"] },
+        { q: "Vaccinating your pet helps:", correct: "Prevent diseases that can harm the animal and spread to humans", options: ["Make it angry", "Prevent diseases that can harm the animal and spread to humans", "Make it sleep all day", "Stop it from eating"] }
+    ];
+
+    // ---------- BANK 5: ANIMALS AND THEIR ENVIRONMENT (Habitats & Conservation) ----------
+    const habitatBank = [
+        { q: "The natural home of an animal is called its:", correct: "Habitat", options: ["Cage", "Habitat", "Zoo", "House"] },
+        { q: "A lion lives in which habitat?", correct: "Savanna grassland", options: ["Forest", "Savanna grassland", "Desert", "Ocean"] },
+        { q: "A fish lives in:", correct: "Water (aquatic habitat)", options: ["Trees", "Water", "Burrow", "Cave"] },
+        { q: "Cutting down forests destroys animal habitats. This leads to:", correct: "Endangerment and extinction of animals", options: ["More animals", "Endangerment and extinction of animals", "Better homes for animals", "Cleaner air"] },
+        { q: "A zoo is a:", correct: "Man-made conservation place where animals are protected", options: ["Natural habitat", "Man-made conservation place where animals are protected", "Hunting ground", "Forest"] },
+        { q: "What does 'endangered species' mean?", correct: "Animals at risk of becoming extinct", options: ["Animals that are many", "Animals at risk of becoming extinct", "Animals that are dangerous", "Domestic animals"] },
+        { q: "How can we protect animals in their environment?", correct: "Plant trees, stop poaching, and keep water sources clean", options: ["Burn forests", "Plant trees, stop poaching, and keep water sources clean", "Dump waste in rivers", "Hunt all animals"] }
+    ];
+
+    // Combine all banks into categories
+    const categories = [characteristicsBank, vertebratesBank, invertebratesBank, animalCareBank, habitatBank];
+    
+    // Build 5 levels (30 Q each, each category contributes 6 per level)
+    let levelsData = [];
+
+    function buildGame() {
+        for (let lvl = 1; lvl <= 5; lvl++) {
+            let levelQs = [];
+            for (let cat of categories) {
+                // each category gives 6 questions (total 30 per level)
+                for (let i = 0; i < 6; i++) {
+                    let source = cat[i % cat.length];
+                    let newQ = {
+                        text: source.q,
+                        options: [...source.options],
+                        correct: source.correct
+                    };
+                    // Add challenge flavor based on level
+                    if (lvl >= 3 && i % 2 === 0) newQ.text = "🦁 " + newQ.text;
+                    if (lvl >= 4) newQ.text = "⭐ " + newQ.text + " ⭐";
+                    if (lvl === 5 && i % 3 === 0) newQ.text = "🏆 ANIMAL MASTER: " + newQ.text;
+                    levelQs.push(newQ);
+                }
+            }
+            levelQs = shuffleArray(levelQs);
+            levelsData.push(levelQs);
+        }
+    }
+    buildGame();
+
+    // ---------- GAME ENGINE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelScore = 0;
+    const TOTAL_QS = 30;
+    const PASS_PERCENT = 80;
+    let requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100); // 24
+
+    let levelTimerSec = 0;
+    let timerInterval = null;
+    let gameActive = true;
+    let answerLocked = false;
+    let waitingForNext = false;
+    let levelFinished = false;
+
+    // DOM elements
+    const levelSpan = document.getElementById('levelNum');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const scoreSpan = document.getElementById('currentScore');
+    const totalQSpan = document.getElementById('totalQPerLevel');
+    const passMarkSpan = document.getElementById('passMark');
+    const questionDiv = document.getElementById('questionText');
+    const optionsDiv = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const messageDiv = document.getElementById('gameMessage');
+
+    function updateScoreUI() {
+        scoreSpan.innerText = levelScore;
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startLevelTimer() {
+        if (timerInterval) stopTimer();
+        // Challenging timer: Level1=90s, L2=80s, L3=70s, L4=60s, L5=50s
+        const timeMap = {1: 90, 2: 80, 3: 70, 4: 60, 5: 50};
+        levelTimerSec = timeMap[currentLevel];
+        timerDisplaySpan.innerText = levelTimerSec;
+        timerDisplaySpan.classList.remove('timer-critical');
+        
+        timerInterval = setInterval(() => {
+            if (!gameActive || levelFinished) return;
+            if (levelTimerSec <= 1) {
+                // TIME'S UP - Level failure
+                stopTimer();
+                timerDisplaySpan.innerText = "0";
+                gameActive = false;
+                levelFinished = true;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                messageDiv.innerHTML = `⏰💀 TIME'S UP! Level ${currentLevel} FAILED! Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect}). Restart to become an animal expert! 💀⏰`;
+                showRestartButton();
+            } else {
+                levelTimerSec--;
+                timerDisplaySpan.innerText = levelTimerSec;
+                if (levelTimerSec <= 10) {
+                    timerDisplaySpan.classList.add('timer-critical');
+                } else {
+                    timerDisplaySpan.classList.remove('timer-critical');
+                }
+                if (levelTimerSec === 15) {
+                    messageDiv.innerHTML = `⚠️ ONLY ${levelTimerSec} SECONDS! Animals need your knowledge — answer fast! ⚠️`;
+                }
+            }
+        }, 1000);
+    }
+
+    function disableAllOptions() {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => btn.disabled = true);
+    }
+
+    function showRestartButton() {
+        let existing = document.querySelector('.restart-custom');
+        if (existing) existing.remove();
+        const restartBtn = document.createElement('button');
+        restartBtn.innerText = '🦁 RESTART WILDLIFE CHALLENGE 🦁';
+        restartBtn.className = 'restart-btn restart-custom';
+        restartBtn.onclick = () => location.reload();
+        messageDiv.appendChild(restartBtn);
+    }
+
+    function highlightCorrectAnswer(correctText) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            const rawText = btn.innerText.replace(/^[A-D]\.\s*/, '');
+            if (rawText === correctText) {
+                btn.classList.add('correct-highlight');
+            }
+        });
+    }
+
+    function handleAnswer(selected, correctAnswer, btnElement) {
+        if (answerLocked || waitingForNext || !gameActive || levelFinished) return;
+        answerLocked = true;
+        const isCorrect = (selected === correctAnswer);
+        
+        if (isCorrect) {
+            levelScore++;
+            updateScoreUI();
+            btnElement.classList.add('correct-highlight');
+            messageDiv.innerHTML = `✅ ANIMAL EXPERT! +1 point! (${levelScore}/${TOTAL_QS}) | Time left: ${levelTimerSec}s`;
+        } else {
+            btnElement.classList.add('wrong-highlight');
+            // Show correct answer by highlighting it among all options
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => {
+                btn.disabled = true;
+                const txt = btn.innerText.replace(/^[A-D]\.\s*/, '');
+                if (txt === correctAnswer) {
+                    btn.classList.add('correct-highlight');
+                }
+            });
+            messageDiv.innerHTML = `❌ NOT QUITE! Correct: "${correctAnswer}". Learn to protect our animal friends! Score: ${levelScore}/${TOTAL_QS}`;
+        }
+        disableAllOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+
+    function loadCurrentQuestion() {
+        if (!gameActive) return;
+        if (currentQIndex >= TOTAL_QS) {
+            finishLevel();
+            return;
+        }
+        const levelData = levelsData[currentLevel - 1];
+        const q = levelData[currentQIndex];
+        questionDiv.innerText = q.text;
+        optionsDiv.innerHTML = '';
+        
+        const shuffledOps = shuffleArray([...q.options]);
+        const prefixes = ['A', 'B', 'C', 'D'];
+        shuffledOps.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span><span>${opt}</span>`;
+            btn.addEventListener('click', () => handleAnswer(opt, q.correct, btn));
+            optionsDiv.appendChild(btn);
+        });
+        
+        answerLocked = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        messageDiv.innerHTML = `🦜 Level ${currentLevel} • Question ${currentQIndex+1}/30 • Animal Kingdom! Be a wildlife hero! ⏱️`;
+    }
+
+    function onNextQuestion() {
+        if (!waitingForNext) return;
+        if (levelFinished) return;
+        currentQIndex++;
+        if (currentQIndex < TOTAL_QS) {
+            loadCurrentQuestion();
+        } else {
+            finishLevel();
+        }
+    }
+
+    function finishLevel() {
+        if (levelFinished) return;
+        levelFinished = true;
+        stopTimer();
+        const passed = (levelScore >= requiredCorrect);
+        if (passed) {
+            if (currentLevel === 5) {
+                // GRAND VICTORY
+                messageDiv.innerHTML = `🏆🦁🐘✨ SPECTACULAR! You've mastered animal characteristics, vertebrates vs invertebrates, and animal care! Final Score: ${levelScore}/${TOTAL_QS} (${Math.round(levelScore/TOTAL_QS*100)}%). You are a true Wildlife Explorer! ✨🐘🦁🏆`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                gameActive = false;
+                return;
+            } else {
+                messageDiv.innerHTML = `🎉🎊 LEVEL ${currentLevel} COMPLETE! 🎊🎉 ${levelScore}/${TOTAL_QS} PASS (${Math.round(levelScore/TOTAL_QS*100)}%). Moving to LEVEL ${currentLevel+1}... 🦁🐘`;
+                disableAllOptions();
+                nextBtn.disabled = true;
+                currentLevel++;
+                currentQIndex = 0;
+                levelScore = 0;
+                requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+                passMarkSpan.innerText = requiredCorrect;
+                levelSpan.innerText = currentLevel;
+                updateScoreUI();
+                levelFinished = false;
+                gameActive = true;
+                answerLocked = false;
+                waitingForNext = false;
+                stopTimer();
+                startLevelTimer();
+                loadCurrentQuestion();
+                return;
+            }
+        } else {
+            gameActive = false;
+            disableAllOptions();
+            nextBtn.disabled = true;
+            messageDiv.innerHTML = `😭 GAME OVER! Level ${currentLevel} failed. Score: ${levelScore}/${TOTAL_QS} (need ${requiredCorrect} correct). Press RESTART to become an animal champion! 😭`;
+            showRestartButton();
+        }
+    }
+
+    function initGame() {
+        totalQSpan.innerText = TOTAL_QS;
+        requiredCorrect = Math.ceil(TOTAL_QS * PASS_PERCENT / 100);
+        passMarkSpan.innerText = requiredCorrect;
+        levelScore = 0;
+        updateScoreUI();
+        gameActive = true;
+        levelFinished = false;
+        answerLocked = false;
+        waitingForNext = false;
+        startLevelTimer();
+        loadCurrentQuestion();
+        nextBtn.addEventListener('click', onNextQuestion);
+    }
+
+    initGame();
+</script>
+</body>
+</html>

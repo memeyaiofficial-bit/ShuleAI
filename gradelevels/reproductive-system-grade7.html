@@ -1,0 +1,3045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBC Integrated Science Challenge - Grade 7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --reproductive-pink: #ec4899;
+            --excretory-blue: #3b82f6;
+            --science-teal: #14b8a6;
+        }
+        
+        body {
+            background: var(--gradient);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background-attachment: fixed;
+            line-height: 1.5;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 28px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 95vh;
+        }
+        
+        .header {
+            background: var(--gradient);
+            color: white;
+            padding: 20px 25px;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .header h1 {
+            font-size: 1.7rem;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .header p {
+            opacity: 0.95;
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        .level-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .level-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .level-dot.active {
+            background: white;
+            transform: scale(1.3);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.6);
+            z-index: 2;
+        }
+        
+        .level-dot.completed {
+            background: #4ade80;
+            box-shadow: 0 0 0 2px white;
+        }
+        
+        .level-dot::after {
+            content: attr(data-level);
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: white;
+            opacity: 0.9;
+            white-space: nowrap;
+        }
+        
+        .game-area {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .start-screen {
+            text-align: center;
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .start-screen h2 {
+            font-size: 2rem;
+            margin: 15px 0;
+            color: var(--secondary);
+            background: linear-gradient(to right, var(--reproductive-pink), var(--excretory-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+        
+        .start-screen p {
+            margin: 12px 0;
+            line-height: 1.6;
+            color: var(--dark);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .topic-card {
+            background: white;
+            border-radius: 18px;
+            padding: 14px 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 100px;
+            justify-content: center;
+        }
+        
+        .topic-card:hover, .topic-card.selected {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .topic-card i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--reproductive-pink);
+        }
+        
+        .topic-card span {
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: block;
+            line-height: 1.3;
+        }
+        
+        .btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 12px 0;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 350px;
+            align-self: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(99, 102, 241, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #059669);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #d97706);
+        }
+        
+        .question-container {
+            margin: 10px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .timer-container {
+            background: white;
+            border-radius: 50px;
+            padding: 6px 18px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 110px;
+            justify-content: center;
+            border: 2px solid var(--warning);
+            position: relative;
+        }
+        
+        .timer-bar {
+            height: 7px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .timer-progress {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 4px;
+            width: 100%;
+            transition: width 0.3s linear;
+        }
+        
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin: 10px 0 15px;
+            color: var(--dark);
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+        }
+        
+        .speak-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: var(--transition);
+            flex-shrink: 0;
+            align-self: flex-start;
+            margin-top: 3px;
+        }
+        
+        .speak-btn:hover {
+            transform: scale(1.1);
+            background: #0da271;
+        }
+        
+        .speak-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .answer-section {
+            margin: 15px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .answer-input-container {
+            position: relative;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 3px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            transition: var(--transition);
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        .answer-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        
+        .answer-input.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            animation: pulse 0.4s;
+        }
+        
+        .answer-input.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            animation: shake 0.4s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        
+        .hint-container {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-size: 1.05rem;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .hint-container.show {
+            display: block;
+        }
+        
+        .hint-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .feedback {
+            min-height: 50px;
+            margin: 15px 0;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 500;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .feedback.correct {
+            background: rgba(16, 185, 129, 0.2);
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+        
+        .feedback.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .progress-text {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 10px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        
+        .level-complete {
+            text-align: center;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .level-complete h2 {
+            font-size: 2.1rem;
+            margin: 10px 0;
+            color: var(--secondary);
+            line-height: 1.3;
+        }
+        
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            color: white;
+            font-size: 2.3rem;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .score-circle::before {
+            content: "";
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .score-circle span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .result-message {
+            font-size: 1.3rem;
+            margin: 15px 0;
+            min-height: 50px;
+            font-weight: 600;
+            text-align: center;
+            padding: 0 10px;
+            flex-shrink: 0;
+        }
+        
+        .result-message.success {
+            color: #166534;
+        }
+        
+        .result-message.fail {
+            color: #991b1b;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            flex-shrink: 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 15px 10px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .stat-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 8px 0;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+            opacity: 0.85;
+            font-weight: 500;
+        }
+        
+        .final-screen {
+            text-align: center;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .final-screen h2 {
+            font-size: 2.2rem;
+            margin: 15px 0;
+            background: linear-gradient(to right, var(--reproductive-pink), var(--excretory-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+        
+        .final-screen p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--dark);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #f00;
+            border-radius: 0;
+            animation: confetti-fall 4s ease-in-out forwards;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            25% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .voice-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: var(--transition);
+            z-index: 10;
+            color: var(--primary);
+        }
+        
+        .voice-toggle.muted {
+            background: #fecaca;
+            color: var(--danger);
+        }
+        
+        .voice-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .topic-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        
+        .instructions {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: 0 12px 12px 0;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            flex-shrink: 0;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-top: 6px;
+        }
+        
+        .instructions li {
+            margin: 4px 0;
+        }
+        
+        .science-illustration {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 3.5rem;
+            flex-shrink: 0;
+        }
+        
+        .knowledge-meter {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .knowledge-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .knowledge-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .knowledge-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--reproductive-pink), var(--excretory-blue));
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .knowledge-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+        
+        .submit-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 280px;
+            align-self: center;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+        
+        .submit-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .answer-status {
+            text-align: center;
+            font-weight: 500;
+            margin: 8px 0;
+            min-height: 24px;
+            font-size: 1.05rem;
+        }
+        
+        .answer-status.correct {
+            color: var(--success);
+            animation: pulse 0.4s;
+        }
+        
+        .answer-status.incorrect {
+            color: var(--danger);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.95rem;
+            }
+            
+            .game-area {
+                padding: 15px;
+            }
+            
+            .question-text {
+                font-size: 1.25rem;
+                min-height: 65px;
+            }
+            
+            .answer-input {
+                padding: 14px 18px;
+                font-size: 1.05rem;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 1.05rem;
+                max-width: 300px;
+            }
+            
+            .score-circle {
+                width: 140px;
+                height: 140px;
+                font-size: 2rem;
+            }
+            
+            .level-indicator {
+                gap: 4px;
+            }
+            
+            .level-dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .level-dot::after {
+                font-size: 0.65rem;
+                bottom: -18px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-value {
+                font-size: 1.7rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px 12px;
+            }
+            
+            .header h1 {
+                font-size: 1.35rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .game-area {
+                padding: 12px;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-bottom: 10px;
+            }
+            
+            .timer-container {
+                width: 100%;
+                justify-content: center;
+                padding: 5px 15px;
+                font-size: 1.15rem;
+            }
+            
+            .question-text {
+                font-size: 1.15rem;
+                min-height: 60px;
+            }
+            
+            .answer-input {
+                padding: 12px 16px;
+                font-size: 1rem;
+            }
+            
+            .submit-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+                max-width: 260px;
+            }
+            
+            .score-circle {
+                width: 120px;
+                height: 120px;
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 11px 20px;
+                font-size: 1rem;
+                max-width: 280px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .science-illustration {
+                font-size: 2.8rem;
+            }
+            
+            .hint-container {
+                font-size: 0.95rem;
+                padding: 10px 15px;
+            }
+        }
+        
+        /* Animation for question transition */
+        .question-slide {
+            animation: slideIn 0.35s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Floating elements for visual appeal */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+        
+        /* Focus states for accessibility */
+        button:focus, .answer-input:focus {
+            outline: 3px solid #a5b4fc;
+            outline-offset: 2px;
+        }
+        
+        /* Hide visually but keep accessible */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .loading::after {
+            content: "";
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            margin-left: 12px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Success animation for level up */
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .celebrate {
+            animation: celebrate 0.4s ease;
+        }
+        
+        /* Science animation for correct answers */
+        @keyframes cellDivide {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .cell-correct {
+            animation: cellDivide 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="voiceToggle" class="voice-toggle" aria-label="Toggle voice output">
+            🔊
+        </button>
+        
+        <div class="header">
+            <h1>🧬 CBC Integrated Science Challenge</h1>
+            <p>Grade 7 • Human Reproductive & Excretory Systems</p>
+            <div class="header-badge">Understand Your Body • Stay Healthy</div>
+            <div class="level-indicator" id="levelIndicator">
+                <div class="level-dot active" data-level="1"></div>
+                <div class="level-dot" data-level="2"></div>
+                <div class="level-dot" data-level="3"></div>
+                <div class="level-dot" data-level="4"></div>
+                <div class="level-dot" data-level="5"></div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <!-- Start Screen -->
+            <div id="startScreen" class="screen active">
+                <div class="start-screen">
+                    <div class="science-illustration floating">🧬🫁💧</div>
+                    <h2>Ready to Explore Human Body Systems?</h2>
+                    <p>Master the Human Reproductive and Excretory Systems through 5 exciting levels!</p>
+                    
+                    <div class="topics-grid">
+                        <div class="topic-card selected" data-topic="all">
+                            <i>🎯</i>
+                            <span>All Topics</span>
+                        </div>
+                        <div class="topic-card" data-topic="reproductive">
+                            <i>👶</i>
+                            <span>Human Reproductive System</span>
+                        </div>
+                        <div class="topic-card" data-topic="excretory">
+                            <i>🫁</i>
+                            <span>Human Excretory System</span>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <strong>How to Play:</strong>
+                        <ul>
+                            <li>5 levels with 30 questions each (150 total)</li>
+                            <li>Type your answer - no multiple choice!</li>
+                            <li>Score 80% or higher to advance to next level</li>
+                            <li>40 seconds per question with progressive hints</li>
+                            <li>Voice support: questions read aloud + feedback</li>
+                            <li>Hints appear as time runs out to help you learn</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="knowledge-meter">
+                        <div class="knowledge-title">🧠 Science Knowledge Progress</div>
+                        <div class="knowledge-bar">
+                            <div class="knowledge-fill" id="knowledgeFill"></div>
+                        </div>
+                        <div class="knowledge-value" id="knowledgeValue">0%</div>
+                    </div>
+                    
+                    <button id="startBtn" class="btn">
+                        <span>🚀</span> Start Science Challenge
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Question Screen -->
+            <div id="questionScreen" class="screen">
+                <div class="question-container">
+                    <div class="question-header">
+                        <div>
+                            <span class="topic-badge" id="topicBadge">All Topics</span>
+                            <div>Question <span id="questionNumber">1</span> of 30</div>
+                        </div>
+                        <div class="timer-container">
+                            <span>⏱️</span>
+                            <span id="timer">40</span>s
+                        </div>
+                    </div>
+                    <div class="timer-bar">
+                        <div class="timer-progress" id="timerProgress"></div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: flex-start; margin: 15px 0; gap: 8px;">
+                        <div class="question-text" id="questionText">Loading question...</div>
+                        <button class="speak-btn" id="speakQuestionBtn" aria-label="Read question aloud">🔊</button>
+                    </div>
+                    
+                    <div class="answer-section">
+                        <div class="answer-input-container">
+                            <input type="text" class="answer-input" id="answerInput" placeholder="Type your answer here..." autocomplete="off">
+                        </div>
+                        
+                        <div class="hint-container" id="hintContainer">
+                            <div class="hint-title">💡 Hint:</div>
+                            <div id="hintText"></div>
+                        </div>
+                        
+                        <div class="answer-status" id="answerStatus"></div>
+                        
+                        <button class="submit-btn" id="submitBtn">
+                            ✓ Submit Answer
+                        </button>
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-text">
+                            <span>Level Progress</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-display">
+                        Score: <span id="currentScore">0</span>/<span id="totalQuestions">30</span> • 
+                        Target: <span id="targetScore">24</span> (80%)
+                    </div>
+                    
+                    <button id="nextBtn" class="btn" style="display: none;">
+                        Next Question →
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Level Complete Screen -->
+            <div id="levelCompleteScreen" class="screen">
+                <div class="level-complete">
+                    <h2>🎉 Level <span id="completedLevel">1</span> Complete!</h2>
+                    <div class="score-circle celebrate">
+                        <span id="levelScore">0%</span>
+                    </div>
+                    <div class="result-message" id="levelResult">Great effort! Keep building your science knowledge!</div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="correctCount">0</div>
+                            <div class="stat-label">Correct Answers</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="incorrectCount">0</div>
+                            <div class="stat-label">To Improve</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="timeTaken">0s</div>
+                            <div class="stat-label">Time Taken</div>
+                        </div>
+                    </div>
+                    
+                    <div class="knowledge-meter">
+                        <div class="knowledge-title">🧬 Body Systems Knowledge Gained</div>
+                        <div class="knowledge-bar">
+                            <div class="knowledge-fill" id="levelKnowledgeFill"></div>
+                        </div>
+                        <div class="knowledge-value" id="levelKnowledgeValue">0%</div>
+                    </div>
+                    
+                    <button id="nextLevelBtn" class="btn btn-success" style="display: none;">
+                        Next Level → Advance Your Science Skills!
+                    </button>
+                    <button id="retryLevelBtn" class="btn btn-warning">
+                        ↻ Retry Level & Improve
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Final Screen -->
+            <div id="finalScreen" class="screen">
+                <div class="final-screen">
+                    <div class="science-illustration">🏆✨</div>
+                    <h2>🌟 Science Champion!</h2>
+                    <p>You've mastered all 5 levels of Human Body Systems!</p>
+                    
+                    <div class="score-circle floating">
+                        <span id="finalScore">0%</span>
+                    </div>
+                    
+                    <div class="result-message success" id="finalMessage">
+                        Outstanding! You understand how your body works!
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalCorrect">0</div>
+                            <div class="stat-label">Total Correct</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalQuestionsFinal">150</div>
+                            <div class="stat-label">Questions Answered</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="levelsCompleted">5</div>
+                            <div class="stat-label">Levels Mastered</div>
+                        </div>
+                    </div>
+                    
+                    <div class="knowledge-meter">
+                        <div class="knowledge-title">🧠 Overall Science Proficiency</div>
+                        <div class="knowledge-bar">
+                            <div class="knowledge-fill" id="finalKnowledgeFill"></div>
+                        </div>
+                        <div class="knowledge-value" id="finalKnowledgeValue">0%</div>
+                    </div>
+                    
+                    <button id="restartBtn" class="btn">
+                        🔄 Start New Challenge
+                    </button>
+                    <button id="shareBtn" class="btn btn-outline">
+                        📤 Share My Achievement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentLevel: 1,
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 30,
+            timePerQuestion: 40, // Increased to 40 seconds as requested
+            timer: null,
+            timeLeft: 40,
+            questions: [],
+            askedQuestions: new Set(),
+            voiceEnabled: true,
+            selectedTopic: 'all',
+            levelScores: [],
+            startTime: null,
+            levelStartTime: null,
+            totalKnowledge: 0,
+            currentHintLevel: 0,
+            hintTimer: null
+        };
+
+        // DOM Elements
+        const elements = {
+            startScreen: document.getElementById('startScreen'),
+            questionScreen: document.getElementById('questionScreen'),
+            levelCompleteScreen: document.getElementById('levelCompleteScreen'),
+            finalScreen: document.getElementById('finalScreen'),
+            startBtn: document.getElementById('startBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            nextLevelBtn: document.getElementById('nextLevelBtn'),
+            retryLevelBtn: document.getElementById('retryLevelBtn'),
+            restartBtn: document.getElementById('restartBtn'),
+            shareBtn: document.getElementById('shareBtn'),
+            voiceToggle: document.getElementById('voiceToggle'),
+            speakQuestionBtn: document.getElementById('speakQuestionBtn'),
+            topicCards: document.querySelectorAll('.topic-card'),
+            questionText: document.getElementById('questionText'),
+            answerInput: document.getElementById('answerInput'),
+            submitBtn: document.getElementById('submitBtn'),
+            hintContainer: document.getElementById('hintContainer'),
+            hintText: document.getElementById('hintText'),
+            answerStatus: document.getElementById('answerStatus'),
+            timerDisplay: document.getElementById('timer'),
+            timerProgress: document.getElementById('timerProgress'),
+            questionNumber: document.getElementById('questionNumber'),
+            totalQuestions: document.getElementById('totalQuestions'),
+            currentScore: document.getElementById('currentScore'),
+            targetScore: document.getElementById('targetScore'),
+            progressFill: document.getElementById('progressFill'),
+            progressPercent: document.getElementById('progressPercent'),
+            feedback: document.getElementById('feedback'),
+            topicBadge: document.getElementById('topicBadge'),
+            levelIndicator: document.getElementById('levelIndicator'),
+            completedLevel: document.getElementById('completedLevel'),
+            levelScore: document.getElementById('levelScore'),
+            levelResult: document.getElementById('levelResult'),
+            correctCount: document.getElementById('correctCount'),
+            incorrectCount: document.getElementById('incorrectCount'),
+            timeTaken: document.getElementById('timeTaken'),
+            finalScore: document.getElementById('finalScore'),
+            finalMessage: document.getElementById('finalMessage'),
+            totalCorrect: document.getElementById('totalCorrect'),
+            totalQuestionsFinal: document.getElementById('totalQuestionsFinal'),
+            levelsCompleted: document.getElementById('levelsCompleted'),
+            knowledgeFill: document.getElementById('knowledgeFill'),
+            knowledgeValue: document.getElementById('knowledgeValue'),
+            levelKnowledgeFill: document.getElementById('levelKnowledgeFill'),
+            levelKnowledgeValue: document.getElementById('levelKnowledgeValue'),
+            finalKnowledgeFill: document.getElementById('finalKnowledgeFill'),
+            finalKnowledgeValue: document.getElementById('finalKnowledgeValue')
+        };
+
+        // Question Bank - 150 questions across 5 levels and 2 topics for Integrated Science
+        // Format: { question, answers: [array of acceptable answers], hints: [3 hint levels], topic, level }
+        const questionBank = {
+            reproductive: [
+                { 
+                    level: 1, 
+                    question: "What is the main function of the human reproductive system?", 
+                    answers: ["to produce offspring", "reproduction", "to create new humans", "to make babies", "procreation"], 
+                    hints: [
+                        "It's about creating new life...",
+                        "This system allows humans to have children...",
+                        "The purpose is ______ of the species"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "Name one male reproductive organ.", 
+                    answers: ["testes", "testis", "penis", "scrotum", "vas deferens", "prostate"], 
+                    hints: [
+                        "These produce sperm cells...",
+                        "They are located in a sac outside the body...",
+                        "Male sex organs that make testosterone and sperm"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "Name one female reproductive organ.", 
+                    answers: ["ovaries", "ovary", "uterus", "womb", "fallopian tube", "vagina"], 
+                    hints: [
+                        "These produce egg cells...",
+                        "The place where a baby develops during pregnancy...",
+                        "Female organs that release eggs monthly"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the male sex cell called?", 
+                    answers: ["sperm", "sperm cell", "spermatozoon"], 
+                    hints: [
+                        "It's the tiny cell that fertilizes the egg...",
+                        "Male reproductive cell with a tail for swimming...",
+                        "The cell that carries father's genetic information"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the female sex cell called?", 
+                    answers: ["egg", "ovum", "egg cell", "ova"], 
+                    hints: [
+                        "It's the cell released from ovaries during ovulation...",
+                        "Female reproductive cell that can be fertilized...",
+                        "The largest cell in the human body"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is fertilization?", 
+                    answers: ["when sperm meets egg", "union of sperm and egg", "fusion of sex cells", "conception"], 
+                    hints: [
+                        "It's when the male and female sex cells join...",
+                        "This process starts the development of a new human...",
+                        "Sperm + egg = new life"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "Where does fertilization usually occur in females?", 
+                    answers: ["fallopian tube", "oviduct", "uterine tube"], 
+                    hints: [
+                        "It's a tube connecting ovaries to uterus...",
+                        "The pathway eggs travel from ovaries...",
+                        "Where sperm typically meets the egg"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the womb also called?", 
+                    answers: ["uterus"], 
+                    hints: [
+                        "It's the medical term for womb...",
+                        "Where the baby grows during pregnancy...",
+                        "A muscular organ in female pelvis"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "What hormone is primarily produced by male testes?", 
+                    answers: ["testosterone"], 
+                    hints: [
+                        "It's the main male sex hormone...",
+                        "Responsible for male characteristics like deep voice...",
+                        "Develops male reproductive tissues and secondary sex traits"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 1, 
+                    question: "What hormone is primarily produced by female ovaries?", 
+                    answers: ["estrogen", "oestrogen"], 
+                    hints: [
+                        "It's the main female sex hormone...",
+                        "Regulates menstrual cycle and female characteristics...",
+                        "Develops female reproductive tissues and secondary sex traits"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is puberty?", 
+                    answers: ["the stage when body changes to become adult", "adolescent development", "sexual maturation", "growth to adulthood"], 
+                    hints: [
+                        "It's the time when children's bodies change into adult bodies...",
+                        "Happens between ages 8-14, different for everyone...",
+                        "When reproductive organs become functional"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is menstruation?", 
+                    answers: ["monthly period", "menstrual period", "monthly bleeding", "period"], 
+                    hints: [
+                        "It's the monthly shedding of the uterine lining...",
+                        "Happens when pregnancy doesn't occur...",
+                        "Also called a woman's period or monthly flow"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is ovulation?", 
+                    answers: ["release of egg from ovary", "egg release", "ovarian release"], 
+                    hints: [
+                        "It's when a mature egg is released from the ovary...",
+                        "Happens about midway through menstrual cycle...",
+                        "The time when a woman can get pregnant"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the placenta?", 
+                    answers: ["organ that nourishes fetus during pregnancy", "fetal nourishment organ", "pregnancy support organ"], 
+                    hints: [
+                        "It connects mother and baby during pregnancy...",
+                        "Provides oxygen and nutrients to the developing fetus...",
+                        "Removes waste products from the baby's blood"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the umbilical cord?", 
+                    answers: ["cord connecting fetus to placenta", "fetal-placental connection", "baby's lifeline"], 
+                    hints: [
+                        "It's the tube that connects baby to placenta...",
+                        "Carries blood, oxygen and nutrients to the fetus...",
+                        "Contains blood vessels for exchange between mother and baby"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is gestation period in humans?", 
+                    answers: ["9 months", "40 weeks", "about 9 months", "approximately 40 weeks"], 
+                    hints: [
+                        "It's the time from conception to birth...",
+                        "Average human pregnancy lasts this long...",
+                        "About 280 days from last menstrual period"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the function of the scrotum?", 
+                    answers: ["holds and protects testes", "testes sac", "protects male reproductive organs"], 
+                    hints: [
+                        "It's the external sac that contains the testes...",
+                        "Helps regulate temperature for sperm production...",
+                        "Keeps testes slightly cooler than body temperature"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the cervix?", 
+                    answers: ["lower part of uterus that opens into vagina", "uterine opening", "neck of uterus"], 
+                    hints: [
+                        "It's the narrow passage between uterus and vagina...",
+                        "Dilates during childbirth to allow baby to pass...",
+                        "Produces mucus that changes during menstrual cycle"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is semen?", 
+                    answers: ["fluid containing sperm", "male reproductive fluid", "sperm-carrying fluid"], 
+                    hints: [
+                        "It's the fluid ejaculated during male orgasm...",
+                        "Contains sperm cells and nutrients for them...",
+                        "Produced by testes and accessory glands"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the function of fallopian tubes?", 
+                    answers: ["transport eggs from ovaries to uterus", "egg transport tubes", "oviducts for egg movement"], 
+                    hints: [
+                        "They carry eggs from ovaries toward the uterus...",
+                        "Site where fertilization usually occurs...",
+                        "Have tiny hair-like structures to move the egg"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is implantation in human reproduction?", 
+                    answers: ["when fertilized egg attaches to uterine wall", "embryo attachment to uterus", "zygote embedding in endometrium"], 
+                    hints: [
+                        "It happens about 6-10 days after fertilization...",
+                        "The blastocyst burrows into the uterine lining...",
+                        "Essential for pregnancy to continue"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the menstrual cycle?", 
+                    answers: ["monthly hormonal cycle preparing for pregnancy", "female reproductive cycle", "hormonal preparation for conception"], 
+                    hints: [
+                        "It's a series of changes in the female body each month...",
+                        "Prepares the uterus for possible pregnancy...",
+                        "Involves hormones like estrogen and progesterone"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of progesterone?", 
+                    answers: ["prepares uterus for pregnancy", "maintains pregnancy", "supports uterine lining"], 
+                    hints: [
+                        "It's a hormone produced after ovulation...",
+                        "Thickens uterine lining for possible implantation...",
+                        "Maintains pregnancy if fertilization occurs"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is amniotic fluid?", 
+                    answers: ["fluid surrounding fetus in womb", "protective fetal fluid", "womb fluid for baby"], 
+                    hints: [
+                        "It's the liquid inside the amniotic sac...",
+                        "Protects and cushions the developing baby...",
+                        "Allows fetal movement and lung development"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the prostate gland?", 
+                    answers: ["produces fluid for semen", "seminal fluid production", "adds nutrients to sperm"], 
+                    hints: [
+                        "It's a male gland below the bladder...",
+                        "Produces fluid that nourishes and transports sperm...",
+                        "Helps sperm survive in female reproductive tract"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is menopause?", 
+                    answers: ["end of menstrual cycles", "cessation of periods", "end of female fertility"], 
+                    hints: [
+                        "It's when a woman stops having periods permanently...",
+                        "Usually occurs between ages 45-55...",
+                        "Marks the end of reproductive years"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the epididymis?", 
+                    answers: ["stores and matures sperm", "sperm maturation site", "sperm storage tube"], 
+                    hints: [
+                        "It's a coiled tube behind each testis...",
+                        "Sperm gain motility and fertilizing ability here...",
+                        "Stores sperm until ejaculation"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is a zygote?", 
+                    answers: ["fertilized egg cell", "cell formed after fertilization", "initial cell of new organism"], 
+                    hints: [
+                        "It's the cell formed when sperm fertilizes egg...",
+                        "Contains genetic material from both parents...",
+                        "Begins dividing to form an embryo"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the endometrium?", 
+                    answers: ["uterine lining that thickens for pregnancy", "inner uterine layer", "pregnancy preparation lining"], 
+                    hints: [
+                        "It's the inner lining of the uterus...",
+                        "Thickens each month in preparation for implantation...",
+                        "Sheds during menstruation if no pregnancy occurs"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is contraception?", 
+                    answers: ["methods to prevent pregnancy", "birth control", "pregnancy prevention methods"], 
+                    hints: [
+                        "These are methods to avoid conception...",
+                        "Include condoms, pills, IUDs, and other methods...",
+                        "Helps plan if and when to have children"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the corpus luteum?", 
+                    answers: ["produces progesterone after ovulation", "hormone-producing structure post-ovulation", "temporary endocrine gland in ovary"], 
+                    hints: [
+                        "It forms from the follicle after egg release...",
+                        "Secretes progesterone to maintain uterine lining...",
+                        "If no pregnancy, it degenerates causing menstruation"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is spermatogenesis?", 
+                    answers: ["production of sperm cells", "sperm cell formation", "male gamete production"], 
+                    hints: [
+                        "It's the process of sperm production in testes...",
+                        "Takes about 64 days from start to mature sperm...",
+                        "Occurs continuously after puberty in males"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is oogenesis?", 
+                    answers: ["production of egg cells", "egg cell formation", "female gamete production"], 
+                    hints: [
+                        "It's the process of egg production in ovaries...",
+                        "Begins before birth but completes only if fertilized...",
+                        "One mature egg typically released per menstrual cycle"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the bulbourethral glands?", 
+                    answers: ["produce pre-ejaculate fluid", "lubricating fluid production", "pre-seminal fluid secretion"], 
+                    hints: [
+                        "They're small glands below the prostate...",
+                        "Secrete fluid that lubricates urethra before ejaculation...",
+                        "Helps neutralize acidity in urethra for sperm survival"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the fimbriae?", 
+                    answers: ["finger-like projections that catch released egg", "egg-catching structures", "oviduct entrance projections"], 
+                    hints: [
+                        "They're at the end of fallopian tubes near ovaries...",
+                        "Sweep over ovary to capture released egg...",
+                        "Help guide egg into fallopian tube"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the seminal vesicles?", 
+                    answers: ["produce most of semen fluid", "seminal fluid production", "fructose-rich fluid for sperm"], 
+                    hints: [
+                        "They're glands that contribute about 60% of semen volume...",
+                        "Produce fluid with fructose to nourish sperm...",
+                        "Help sperm motility and survival in female tract"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the myometrium?", 
+                    answers: ["muscular layer of uterus that contracts during labor", "uterine muscle layer", "labor contraction muscle"], 
+                    hints: [
+                        "It's the thick middle layer of the uterine wall...",
+                        "Contracts powerfully during childbirth...",
+                        "Also contracts during menstruation to shed lining"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the acrosome in sperm?", 
+                    answers: ["cap with enzymes to penetrate egg", "sperm head enzyme cap", "egg-penetrating structure"], 
+                    hints: [
+                        "It's a cap-like structure on the sperm head...",
+                        "Contains enzymes to digest egg's outer layers...",
+                        "Essential for fertilization to occur"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the zona pellucida?", 
+                    answers: ["protective layer around egg", "egg outer membrane", "fertilization barrier"], 
+                    hints: [
+                        "It's a glycoprotein layer surrounding the egg...",
+                        "Sperm must penetrate it for fertilization...",
+                        "Prevents multiple sperm from fertilizing one egg"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the ductus deferens?", 
+                    answers: ["transports sperm from epididymis to urethra", "sperm transport tube", "vas deferens function"], 
+                    hints: [
+                        "It's a muscular tube carrying sperm during ejaculation...",
+                        "Also called the vas deferens...",
+                        "Contracts to propel sperm forward during orgasm"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of inhibin in reproductive system?", 
+                    answers: ["inhibits FSH production", "regulates follicle stimulating hormone", "negative feedback on FSH"], 
+                    hints: [
+                        "It's a hormone produced by gonads...",
+                        "Provides negative feedback to pituitary gland...",
+                        "Helps regulate gamete production"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of relaxin during pregnancy?", 
+                    answers: ["relaxes pelvic ligaments for childbirth", "prepares birth canal", "softens pelvic joints"], 
+                    hints: [
+                        "It's a hormone produced during pregnancy...",
+                        "Loosens ligaments in pelvis to allow baby's passage...",
+                        "Also helps prevent premature uterine contractions"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the gubernaculum in development?", 
+                    answers: ["guides testicular descent in fetus", "testis descent guide", "fetal reproductive development structure"], 
+                    hints: [
+                        "It's a structure in fetal development...",
+                        "Helps testes move from abdomen to scrotum...",
+                        "Failure can result in cryptorchidism (undescended testes)"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the theca cells in ovarian follicles?", 
+                    answers: ["produce androgens converted to estrogen", "androgen production for estrogen synthesis", "follicle hormone precursor cells"], 
+                    hints: [
+                        "They're cells surrounding developing follicles...",
+                        "Produce androgens that granulosa cells convert to estrogen...",
+                        "Essential for estrogen production in menstrual cycle"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the sperm midpiece?", 
+                    answers: ["contains mitochondria for energy", "sperm energy production", "motility power source"], 
+                    hints: [
+                        "It's the middle section of the sperm cell...",
+                        "Packed with mitochondria to produce ATP...",
+                        "Provides energy for sperm tail movement"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the uterine arteries during pregnancy?", 
+                    answers: ["supply blood to placenta and fetus", "fetal blood supply", "pregnancy circulation adaptation"], 
+                    hints: [
+                        "They undergo remodeling during pregnancy...",
+                        "Increase blood flow to support growing fetus...",
+                        "Critical for delivering oxygen and nutrients to baby"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the sperm flagellum?", 
+                    answers: ["provides motility for sperm movement", "sperm tail for swimming", "propulsion structure"], 
+                    hints: [
+                        "It's the long tail-like structure of sperm...",
+                        "Moves in whip-like motion to propel sperm...",
+                        "Essential for sperm to reach and fertilize egg"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the decidual reaction?", 
+                    answers: ["prepares endometrium for implantation", "uterine preparation for embryo", "implantation support response"], 
+                    hints: [
+                        "It's a change in uterine lining after ovulation...",
+                        "Creates a receptive environment for embryo implantation...",
+                        "Involves immune modulation and tissue remodeling"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the sperm centriole?", 
+                    answers: ["forms zygote's first mitotic spindle", "initial cell division organizer", "fertilization division trigger"], 
+                    hints: [
+                        "It's contributed by sperm during fertilization...",
+                        "Organizes the first cell divisions of the embryo...",
+                        "Essential for early embryonic development"
+                    ], 
+                    topic: "reproductive" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the human chorionic gonadotropin (hCG)?", 
+                    answers: ["maintains corpus luteum in early pregnancy", "pregnancy hormone", "prevents menstruation after conception"], 
+                    hints: [
+                        "It's produced by the developing placenta...",
+                        "Detected by pregnancy tests...",
+                        "Signals corpus luteum to continue progesterone production"
+                    ], 
+                    topic: "reproductive" 
+                }
+            ],
+            excretory: [
+                { 
+                    level: 1, 
+                    question: "What is the main function of the excretory system?", 
+                    answers: ["to remove waste from body", "waste removal", "eliminate metabolic wastes", "get rid of body wastes"], 
+                    hints: [
+                        "It gets rid of substances the body doesn't need...",
+                        "Removes toxins and excess materials...",
+                        "Keeps internal environment balanced"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "Name one organ of the human excretory system.", 
+                    answers: ["kidney", "kidneys", "lungs", "skin", "liver"], 
+                    hints: [
+                        "These bean-shaped organs filter blood...",
+                        "Produce urine to remove wastes...",
+                        "Located on either side of the spine"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "What liquid waste do kidneys produce?", 
+                    answers: ["urine"], 
+                    hints: [
+                        "It's the yellow liquid we pass when we pee...",
+                        "Contains water, salts, and urea...",
+                        "Stored in bladder before elimination"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "What gas do lungs remove from the body?", 
+                    answers: ["carbon dioxide", "co2"], 
+                    hints: [
+                        "It's the waste gas from cellular respiration...",
+                        "We breathe it out when we exhale...",
+                        "Produced when cells use oxygen for energy"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "How does skin help in excretion?", 
+                    answers: ["through sweat", "perspiration", "sweating"], 
+                    hints: [
+                        "It releases water and salts through pores...",
+                        "Helps cool body and remove small wastes...",
+                        "Sweat glands produce this liquid"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the tube that carries urine from kidney to bladder?", 
+                    answers: ["ureter"], 
+                    hints: [
+                        "There are two of these, one from each kidney...",
+                        "Muscular tubes that use peristalsis to move urine...",
+                        "Connects kidneys to the urinary bladder"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the sac that stores urine?", 
+                    answers: ["bladder", "urinary bladder"], 
+                    hints: [
+                        "It's a muscular sac in the pelvis...",
+                        "Expands as it fills with urine...",
+                        "Sends signal to brain when full"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the tube that carries urine out of the body?", 
+                    answers: ["urethra"], 
+                    hints: [
+                        "It's the final passage for urine elimination...",
+                        "Different lengths in males and females...",
+                        "Also carries semen in males"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "What waste product is formed from protein breakdown?", 
+                    answers: ["urea"], 
+                    hints: [
+                        "It's produced in the liver from ammonia...",
+                        "Less toxic than ammonia, soluble in water...",
+                        "Main nitrogenous waste in human urine"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 1, 
+                    question: "What is the functional unit of the kidney?", 
+                    answers: ["nephron"], 
+                    hints: [
+                        "Each kidney has about one million of these...",
+                        "Where blood filtration and urine formation occur...",
+                        "Contains glomerulus and tubules"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is filtration in the kidney?", 
+                    answers: ["blood filtering in glomerulus", "initial blood cleaning process", "glomerular filtration"], 
+                    hints: [
+                        "It's the first step in urine formation...",
+                        "Blood pressure forces fluid through capillary walls...",
+                        "Produces filtrate that becomes urine"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is reabsorption in nephrons?", 
+                    answers: ["taking back useful substances to blood", "recovering needed materials", "nutrient recovery process"], 
+                    hints: [
+                        "It happens in kidney tubules after filtration...",
+                        "Glucose, water, and salts are returned to blood...",
+                        "Prevents loss of essential nutrients"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is secretion in nephrons?", 
+                    answers: ["adding wastes to filtrate", "active waste transport to urine", "tubular secretion"], 
+                    hints: [
+                        "It's the process of moving substances from blood to tubule...",
+                        "Removes extra ions, drugs, and toxins...",
+                        "Helps regulate blood pH and composition"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What hormone regulates water reabsorption in kidneys?", 
+                    answers: ["adh", "antidiuretic hormone", "vasopressin"], 
+                    hints: [
+                        "It's produced by pituitary gland...",
+                        "Makes kidneys reabsorb more water when body is dehydrated...",
+                        "Reduces urine volume to conserve water"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the role of the liver in excretion?", 
+                    answers: ["processes nitrogenous wastes", "converts ammonia to urea", "detoxifies blood"], 
+                    hints: [
+                        "It transforms toxic ammonia into less toxic urea...",
+                        "Processes drugs and toxins for elimination...",
+                        "Produces bile that carries waste to intestines"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "How do lungs excrete waste?", 
+                    answers: ["by exhaling carbon dioxide", "removing co2 through breathing", "gas exchange waste removal"], 
+                    hints: [
+                        "During breathing, we release this waste gas...",
+                        "Produced by cells during energy production...",
+                        "Exchange happens in alveoli of lungs"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the function of the glomerulus?", 
+                    answers: ["filters blood in kidney", "blood filtration capillary cluster", "initial filtration site"], 
+                    hints: [
+                        "It's a network of capillaries in the nephron...",
+                        "High pressure forces fluid out of blood...",
+                        "First step in urine formation"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the function of the loop of Henle?", 
+                    answers: ["concentrates urine by reabsorbing water", "water conservation structure", "urine concentration mechanism"], 
+                    hints: [
+                        "It's a U-shaped tube in the nephron...",
+                        "Creates salt gradient to reabsorb water...",
+                        "Essential for producing concentrated urine"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is dialysis?", 
+                    answers: ["artificial kidney function", "machine blood filtration", "waste removal treatment"], 
+                    hints: [
+                        "It's a treatment when kidneys fail...",
+                        "Machine filters blood to remove wastes...",
+                        "Can be hemodialysis or peritoneal dialysis"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 2, 
+                    question: "What is the function of the renal artery?", 
+                    answers: ["carries blood to kidneys for filtration", "kidney blood supply", "delivers blood for cleaning"], 
+                    hints: [
+                        "It branches from the aorta to supply kidneys...",
+                        "Brings blood containing wastes to be filtered...",
+                        "About 20% of cardiac output goes to kidneys"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the collecting duct?", 
+                    answers: ["collects urine from multiple nephrons", "final urine concentration site", "urine gathering tube"], 
+                    hints: [
+                        "It receives filtrate from many nephrons...",
+                        "Final site for water reabsorption regulated by ADH...",
+                        "Delivers concentrated urine to renal pelvis"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the renal pelvis?", 
+                    answers: ["funnels urine from kidney to ureter", "urine collection area", "kidney drainage structure"], 
+                    hints: [
+                        "It's the funnel-shaped part of the kidney...",
+                        "Collects urine from collecting ducts...",
+                        "Connects to ureter for urine transport"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of aldosterone?", 
+                    answers: ["regulates sodium reabsorption in kidneys", "salt balance hormone", "sodium conservation hormone"], 
+                    hints: [
+                        "It's produced by adrenal glands...",
+                        "Increases sodium reabsorption in kidney tubules...",
+                        "Helps regulate blood pressure and volume"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the proximal convoluted tubule?", 
+                    answers: ["reabsorbs most nutrients and water", "major reabsorption site", "initial tubule processing"], 
+                    hints: [
+                        "It's the first part of the renal tubule...",
+                        "Reabsorbs glucose, amino acids, and most water...",
+                        "Also secretes some wastes into filtrate"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the distal convoluted tubule?", 
+                    answers: ["fine-tunes electrolyte balance", "final electrolyte regulation", "ion adjustment site"], 
+                    hints: [
+                        "It's the last part of the renal tubule before collecting duct...",
+                        "Regulates potassium, sodium, and pH...",
+                        "Responds to aldosterone and other hormones"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the renal vein?", 
+                    answers: ["carries filtered blood away from kidneys", "returns clean blood to circulation", "kidney blood exit"], 
+                    hints: [
+                        "It takes blood that has been filtered by kidneys...",
+                        "Returns blood with reduced wastes to heart...",
+                        "Has lower urea concentration than renal artery"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the juxtaglomerular apparatus?", 
+                    answers: ["regulates blood pressure and filtration rate", "kidney blood pressure control", "filtration rate regulator"], 
+                    hints: [
+                        "It's a specialized structure near the glomerulus...",
+                        "Releases renin to regulate blood pressure...",
+                        "Monitors blood pressure and sodium levels"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the vasa recta?", 
+                    answers: ["maintains concentration gradient in medulla", "countercurrent exchange vessels", "medulla blood supply"], 
+                    hints: [
+                        "They're capillaries surrounding the loop of Henle...",
+                        "Preserve the salt gradient for urine concentration...",
+                        "Essential for kidney's ability to concentrate urine"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the macula densa?", 
+                    answers: ["senses sodium concentration in filtrate", "tubule sodium sensor", "filtrate composition monitor"], 
+                    hints: [
+                        "It's a group of cells in the distal tubule...",
+                        "Detects sodium levels to regulate filtration...",
+                        "Part of the juxtaglomerular apparatus"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 3, 
+                    question: "What is the function of the renal capsule?", 
+                    answers: ["protects kidney from injury", "kidney protective layer", "external kidney covering"], 
+                    hints: [
+                        "It's a tough fibrous layer surrounding the kidney...",
+                        "Protects against trauma and infection...",
+                        "Helps maintain kidney shape and position"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the countercurrent multiplier system?", 
+                    answers: ["creates concentration gradient for urine concentration", "urine concentration mechanism", "medullary gradient establishment"], 
+                    hints: [
+                        "It involves the loop of Henle and vasa recta...",
+                        "Uses active transport to build salt gradient...",
+                        "Allows kidneys to produce urine more concentrated than blood"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of renin in the kidney?", 
+                    answers: ["enzyme that starts blood pressure regulation cascade", "blood pressure regulating enzyme", "raas system initiator"], 
+                    hints: [
+                        "It's released by juxtaglomerular cells...",
+                        "Converts angiotensinogen to angiotensin I...",
+                        "Part of the renin-angiotensin-aldosterone system"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of erythropoietin (EPO)?", 
+                    answers: ["hormone that stimulates red blood cell production", "rbc production hormone", "kidney hormone for blood cells"], 
+                    hints: [
+                        "It's produced by kidneys in response to low oxygen...",
+                        "Stimulates bone marrow to make more red blood cells...",
+                        "Important for oxygen transport in blood"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the brush border in proximal tubule?", 
+                    answers: ["increases surface area for reabsorption", "microvilli for absorption", "reabsorption surface enhancement"], 
+                    hints: [
+                        "It's made of microvilli on tubule cells...",
+                        "Greatly increases area for nutrient reabsorption...",
+                        "Contains transport proteins for glucose and amino acids"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the podocytes in glomerulus?", 
+                    answers: ["form filtration slits for blood filtering", "glomerular filtration cells", "capillary wrapping cells"], 
+                    hints: [
+                        "They're specialized cells wrapping glomerular capillaries...",
+                        "Have foot processes creating filtration slits...",
+                        "Prevent large proteins from entering filtrate"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the peritubular capillaries?", 
+                    answers: ["reabsorb substances from tubules back to blood", "tubule-blood exchange vessels", "reabsorption blood supply"], 
+                    hints: [
+                        "They surround the renal tubules...",
+                        "Receive reabsorbed water and nutrients...",
+                        "Return useful substances to systemic circulation"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the trigone in bladder?", 
+                    answers: ["smooth triangular area guiding urine flow", "bladder flow direction zone", "urine exit guidance area"], 
+                    hints: [
+                        "It's a smooth triangular region in bladder base...",
+                        "Helps direct urine flow toward urethra...",
+                        "Prevents backflow of urine to ureters"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the detrusor muscle?", 
+                    answers: ["contracts to expel urine from bladder", "bladder emptying muscle", "urination contraction muscle"], 
+                    hints: [
+                        "It's the smooth muscle layer of bladder wall...",
+                        "Contracts during urination to push out urine...",
+                        "Relaxes to allow bladder filling"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the internal urethral sphincter?", 
+                    answers: ["involuntary control of urine release", "automatic urine flow control", "bladder exit valve"], 
+                    hints: [
+                        "It's a ring of smooth muscle at bladder neck...",
+                        "Prevents urine leakage when bladder fills...",
+                        "Relaxes involuntarily during urination"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 4, 
+                    question: "What is the function of the external urethral sphincter?", 
+                    answers: ["voluntary control of urination", "conscious urine flow control", "skeletal muscle urine valve"], 
+                    hints: [
+                        "It's made of skeletal muscle under conscious control...",
+                        "Allows us to delay urination until convenient...",
+                        "Relaxes voluntarily to allow urine flow"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of aquaporins in kidney tubules?", 
+                    answers: ["water channel proteins for reabsorption", "water transport proteins", "facilitated water diffusion channels"], 
+                    hints: [
+                        "They're specialized proteins in cell membranes...",
+                        "Allow rapid water movement following osmotic gradients...",
+                        "Regulated by ADH to control water reabsorption"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the sodium-potassium pump in nephrons?", 
+                    answers: ["creates electrochemical gradient for reabsorption", "ion gradient establishment", "active transport foundation"], 
+                    hints: [
+                        "It's an ATP-driven transporter in tubule cells...",
+                        "Pumps sodium out and potassium into cells...",
+                        "Creates gradient that drives reabsorption of other substances"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the glomerular basement membrane?", 
+                    answers: ["selective filtration barrier in glomerulus", "blood filtration selectivity layer", "size and charge barrier"], 
+                    hints: [
+                        "It's a specialized extracellular matrix layer...",
+                        "Prevents large proteins and cells from entering filtrate...",
+                        "Has negative charges repelling negatively charged proteins"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the renin-angiotensin-aldosterone system (RAAS)?", 
+                    answers: ["regulates blood pressure and fluid balance", "blood pressure homeostasis system", "fluid-electrolyte regulation cascade"], 
+                    hints: [
+                        "It's a hormone cascade involving kidneys, lungs, and adrenal glands...",
+                        "Responds to low blood pressure or volume...",
+                        "Increases blood pressure through vasoconstriction and sodium retention"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of atrial natriuretic peptide (ANP)?", 
+                    answers: ["hormone that promotes sodium and water excretion", "blood volume reduction hormone", "natriuresis promoting hormone"], 
+                    hints: [
+                        "It's released by heart atria when blood volume is high...",
+                        "Opposes RAAS to reduce blood volume and pressure...",
+                        "Increases glomerular filtration rate and sodium excretion"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the countercurrent exchange in vasa recta?", 
+                    answers: ["preserves medullary concentration gradient", "gradient maintenance mechanism", "medulla osmolarity preservation"], 
+                    hints: [
+                        "Blood flows opposite to tubule fluid in medulla...",
+                        "Minimizes washout of salt gradient established by loop of Henle...",
+                        "Essential for kidney's ability to concentrate urine"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of urea recycling in the kidney?", 
+                    answers: ["contributes to medullary concentration gradient", "osmotic gradient enhancement", "urine concentration support"], 
+                    hints: [
+                        "Urea diffuses out of collecting duct into medulla...",
+                        "Adds to osmotic gradient for water reabsorption...",
+                        "Part of the kidney's urine concentrating mechanism"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the slit diaphragm between podocyte foot processes?", 
+                    answers: ["final filtration barrier preventing protein loss", "protein retention filter", "glomerular size selectivity"], 
+                    hints: [
+                        "It's a specialized cell junction in glomerulus...",
+                        "Contains proteins like nephrin that form size-selective pores...",
+                        "Mutations can cause proteinuria and kidney disease"
+                    ], 
+                    topic: "excretory" 
+                },
+                { 
+                    level: 5, 
+                    question: "What is the function of the tubuloglomerular feedback?", 
+                    answers: ["regulates glomerular filtration rate based on tubule flow", "gfr autoregulation mechanism", "filtration rate adjustment system"], 
+                    hints: [
+                        "Macula densa senses sodium chloride in distal tubule...",
+                        "Signals afferent arteriole to constrict or dilate...",
+                        "Maintains stable filtration despite blood pressure changes"
+                    ], 
+                    topic: "excretory" 
+                }
+            ]
+        };
+
+        // Initialize the game
+        function initGame() {
+            // Event listeners
+            elements.startBtn.addEventListener('click', startGame);
+            elements.nextBtn.addEventListener('click', nextQuestion);
+            elements.nextLevelBtn.addEventListener('click', startNextLevel);
+            elements.retryLevelBtn.addEventListener('click', retryLevel);
+            elements.restartBtn.addEventListener('click', restartGame);
+            elements.shareBtn.addEventListener('click', shareAchievement);
+            elements.voiceToggle.addEventListener('click', toggleVoice);
+            elements.speakQuestionBtn.addEventListener('click', speakQuestion);
+            elements.submitBtn.addEventListener('click', submitAnswer);
+            elements.answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !elements.submitBtn.disabled) {
+                    submitAnswer();
+                }
+            });
+            
+            // Topic selection
+            elements.topicCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    elements.topicCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    gameState.selectedTopic = card.dataset.topic;
+                });
+            });
+            
+            // Initialize speech synthesis
+            initSpeech();
+            
+            // Set total questions display
+            elements.totalQuestions.textContent = gameState.totalQuestions;
+            elements.totalQuestionsFinal.textContent = gameState.totalQuestions * 5;
+            elements.targetScore.textContent = Math.round(gameState.totalQuestions * 0.8);
+            
+            // Initialize knowledge meter
+            updateKnowledgeMeter(0);
+        }
+
+        // Initialize speech synthesis
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                // Check if voices are loaded
+                if (speechSynthesis.getVoices().length === 0) {
+                    speechSynthesis.onvoiceschanged = () => {
+                        // Voices loaded
+                    };
+                }
+            } else {
+                elements.voiceToggle.style.display = 'none';
+                elements.speakQuestionBtn.style.display = 'none';
+                gameState.voiceEnabled = false;
+            }
+        }
+
+        // Toggle voice output
+        function toggleVoice() {
+            gameState.voiceEnabled = !gameState.voiceEnabled;
+            elements.voiceToggle.textContent = gameState.voiceEnabled ? '🔊' : '🔇';
+            elements.voiceToggle.classList.toggle('muted', !gameState.voiceEnabled);
+            speakText(gameState.voiceEnabled ? "Voice output enabled" : "Voice output disabled");
+        }
+
+        // Speak text using Web Speech API
+        function speakText(text, onEnd = null) {
+            if (!gameState.voiceEnabled || !('speechSynthesis' in window)) return;
+            
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; // Slightly slower for clarity
+            
+            if (onEnd) {
+                utterance.onend = onEnd;
+            }
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // Speak the current question
+        function speakQuestion() {
+            if (gameState.questions[gameState.currentQuestion]) {
+                speakText(gameState.questions[gameState.currentQuestion].question);
+            }
+        }
+
+        // Update knowledge meter display
+        function updateKnowledgeMeter(percentage) {
+            const fill = elements.knowledgeFill;
+            const value = elements.knowledgeValue;
+            
+            fill.style.width = `${percentage}%`;
+            value.textContent = `${percentage}%`;
+            
+            // Color gradient based on knowledge level
+            if (percentage < 33) {
+                fill.style.background = 'linear-gradient(to right, #fbbf24, #f59e0b)';
+            } else if (percentage < 66) {
+                fill.style.background = 'linear-gradient(to right, #3b82f6, #8b5cf6)';
+            } else {
+                fill.style.background = 'linear-gradient(to right, #10b981, #14b8a6)';
+            }
+        }
+
+        // Start the game
+        function startGame() {
+            gameState.currentLevel = 1;
+            gameState.levelScores = [];
+            gameState.totalKnowledge = 0;
+            updateLevelIndicator();
+            loadLevelQuestions();
+            showScreen('questionScreen');
+            startLevel();
+        }
+
+        // Load questions for current level and topic
+        function loadLevelQuestions() {
+            let allQuestions = [];
+            
+            // Collect questions for current level and selected topic
+            Object.values(questionBank).forEach(topicQuestions => {
+                topicQuestions.forEach(q => {
+                    if (q.level === gameState.currentLevel && 
+                        (gameState.selectedTopic === 'all' || q.topic === gameState.selectedTopic)) {
+                        // Create unique ID from question text first 30 chars
+                        const qid = `${q.topic}-${q.level}-${q.question.substring(0, 30).replace(/\s+/g, '-')}`;
+                        allQuestions.push({...q, id: qid});
+                    }
+                });
+            });
+            
+            // Shuffle and select 30 questions (or all if less)
+            gameState.questions = shuffleArray(allQuestions).slice(0, gameState.totalQuestions);
+            gameState.askedQuestions = new Set();
+        }
+
+        // Start a level
+        function startLevel() {
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.levelStartTime = Date.now();
+            elements.currentScore.textContent = '0';
+            elements.questionNumber.textContent = '1';
+            elements.progressFill.style.width = '0%';
+            elements.progressPercent.textContent = '0%';
+            elements.topicBadge.textContent = gameState.selectedTopic === 'all' ? 'All Topics' : 
+                gameState.selectedTopic.charAt(0).toUpperCase() + gameState.selectedTopic.slice(1);
+            loadQuestion();
+        }
+
+        // Load a question
+        function loadQuestion() {
+            if (gameState.currentQuestion >= gameState.questions.length) {
+                endLevel();
+                return;
+            }
+            
+            const question = gameState.questions[gameState.currentQuestion];
+            elements.questionText.textContent = question.question;
+            elements.answerInput.value = '';
+            elements.answerInput.className = 'answer-input';
+            elements.answerInput.disabled = false;
+            elements.answerInput.placeholder = 'Type your answer here...';
+            elements.hintContainer.classList.remove('show');
+            elements.hintText.textContent = '';
+            elements.answerStatus.textContent = '';
+            elements.answerStatus.className = 'answer-status';
+            elements.feedback.className = 'feedback';
+            elements.feedback.textContent = '';
+            elements.submitBtn.disabled = false;
+            elements.nextBtn.style.display = 'none';
+            gameState.currentHintLevel = 0;
+            
+            // Reset timer
+            resetTimer();
+            
+            // Add slide animation
+            elements.questionScreen.querySelector('.question-container').classList.add('question-slide');
+            setTimeout(() => {
+                elements.questionScreen.querySelector('.question-container').classList.remove('question-slide');
+            }, 350);
+            
+            // Focus on answer input
+            elements.answerInput.focus();
+        }
+
+        // Reset timer for question
+        function resetTimer() {
+            clearInterval(gameState.timer);
+            clearInterval(gameState.hintTimer);
+            gameState.timeLeft = gameState.timePerQuestion;
+            elements.timerDisplay.textContent = gameState.timeLeft;
+            elements.timerProgress.style.width = '100%';
+            elements.timerDisplay.style.color = '';
+            elements.timerProgress.style.background = 'var(--gradient)';
+            
+            // Update timer display every second
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                elements.timerDisplay.textContent = gameState.timeLeft;
+                elements.timerProgress.style.width = `${(gameState.timeLeft / gameState.timePerQuestion) * 100}%`;
+                
+                // Warning color when time is low
+                if (gameState.timeLeft <= 10) {
+                    elements.timerDisplay.style.color = '#ef4444';
+                    elements.timerProgress.style.background = 'linear-gradient(to right, #ef4444, #f97316)';
+                } else if (gameState.timeLeft <= 20) {
+                    elements.timerDisplay.style.color = '#f59e0b';
+                    elements.timerProgress.style.background = 'linear-gradient(to right, #f59e0b, #eab308)';
+                }
+                
+                // Provide hints at specific time intervals (as requested)
+                if (gameState.timeLeft === 30 && gameState.currentHintLevel === 0) {
+                    showHint(0);
+                    gameState.currentHintLevel = 1;
+                } else if (gameState.timeLeft === 20 && gameState.currentHintLevel === 1) {
+                    showHint(1);
+                    gameState.currentHintLevel = 2;
+                } else if (gameState.timeLeft === 10 && gameState.currentHintLevel === 2) {
+                    showHint(2);
+                    gameState.currentHintLevel = 3;
+                }
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        // Show progressive hint based on time remaining
+        function showHint(hintIndex) {
+            const question = gameState.questions[gameState.currentQuestion];
+            if (question.hints && question.hints[hintIndex]) {
+                elements.hintText.textContent = question.hints[hintIndex];
+                elements.hintContainer.classList.add('show');
+                speakText(`Hint: ${question.hints[hintIndex]}`);
+            }
+        }
+
+        // Handle time up
+        function timeUp() {
+            // Disable input and submit
+            elements.answerInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            
+            // Show correct answer in feedback
+            const question = gameState.questions[gameState.currentQuestion];
+            const correctAnswer = question.answers[0]; // Show first acceptable answer
+            
+            showFeedback(false, `⏰ Time's up! The answer was: ${correctAnswer}`);
+            speakText(`Time's up! The correct answer was: ${correctAnswer}`);
+            
+            // Mark as incorrect
+            elements.answerInput.classList.add('incorrect');
+            elements.answerStatus.textContent = 'Incorrect - Time expired';
+            elements.answerStatus.className = 'answer-status incorrect';
+            
+            elements.nextBtn.style.display = 'inline-flex';
+        }
+
+        // Submit answer
+        function submitAnswer() {
+            const userAnswer = elements.answerInput.value.trim().toLowerCase();
+            const question = gameState.questions[gameState.currentQuestion];
+            
+            // Check if answer matches any acceptable answer (case-insensitive, flexible matching)
+            const isCorrect = checkAnswer(userAnswer, question.answers);
+            
+            // Stop timer and hint timer
+            clearInterval(gameState.timer);
+            clearInterval(gameState.hintTimer);
+            
+            // Disable input and submit
+            elements.answerInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            
+            // Show feedback
+            if (isCorrect) {
+                elements.answerInput.classList.add('correct');
+                elements.answerStatus.textContent = '✓ Correct!';
+                elements.answerStatus.className = 'answer-status correct';
+                showFeedback(true, "✨ Excellent! That's correct! Great science knowledge!");
+                speakText("Excellent! That's correct!");
+                gameState.score++;
+                elements.currentScore.textContent = gameState.score;
+                
+                // Add knowledge boost for correct answer
+                const knowledgeBoost = Math.round(100 / (gameState.totalQuestions * 5));
+                gameState.totalKnowledge = Math.min(100, gameState.totalKnowledge + knowledgeBoost);
+                updateKnowledgeMeter(gameState.totalKnowledge);
+            } else {
+                elements.answerInput.classList.add('incorrect');
+                elements.answerStatus.textContent = '✗ Incorrect';
+                elements.answerStatus.className = 'answer-status incorrect';
+                const correctAnswer = question.answers[0]; // Show first acceptable answer
+                showFeedback(false, `💡 Not quite. The answer was: ${correctAnswer}`);
+                speakText(`Not quite. The correct answer was: ${correctAnswer}`);
+            }
+            
+            // Update progress
+            const progress = ((gameState.currentQuestion + 1) / gameState.totalQuestions) * 100;
+            elements.progressFill.style.width = `${progress}%`;
+            elements.progressPercent.textContent = `${Math.round(progress)}%`;
+            
+            // Enable next button
+            elements.nextBtn.style.display = 'inline-flex';
+        }
+
+        // Check if user answer matches any acceptable answer
+        function checkAnswer(userAnswer, acceptableAnswers) {
+            // Simple matching: check if user answer is included in any acceptable answer or vice versa
+            // Also handles common variations and synonyms
+            return acceptableAnswers.some(accept => {
+                const acceptLower = accept.toLowerCase().trim();
+                // Exact match or substring match in either direction
+                if (userAnswer === acceptLower || acceptLower.includes(userAnswer) || userAnswer.includes(acceptLower)) {
+                    return true;
+                }
+                // Handle common abbreviations and variations
+                if (acceptLower.includes('antidiuretic hormone') && userAnswer.includes('adh')) return true;
+                if (acceptLower.includes('antidiuretic hormone') && userAnswer.includes('vasopressin')) return true;
+                if (acceptLower.includes('carbon dioxide') && userAnswer.includes('co2')) return true;
+                if (acceptLower.includes('oestrogen') && userAnswer.includes('estrogen')) return true;
+                if (acceptLower.includes('testes') && userAnswer.includes('testis')) return true;
+                if (acceptLower.includes('ovaries') && userAnswer.includes('ovary')) return true;
+                return false;
+            });
+        }
+
+        // Show feedback message
+        function showFeedback(isCorrect, message) {
+            elements.feedback.textContent = message;
+            elements.feedback.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+        }
+
+        // Go to next question
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            
+            if (gameState.currentQuestion < gameState.totalQuestions) {
+                elements.questionNumber.textContent = gameState.currentQuestion + 1;
+                loadQuestion();
+            } else {
+                endLevel();
+            }
+        }
+
+        // End current level
+        function endLevel() {
+            clearInterval(gameState.timer);
+            clearInterval(gameState.hintTimer);
+            const levelTime = Math.round((Date.now() - gameState.levelStartTime) / 1000);
+            const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
+            
+            // Save level score
+            gameState.levelScores.push({
+                level: gameState.currentLevel,
+                score: gameState.score,
+                percentage: percentage,
+                time: levelTime
+            });
+            
+            // Update level complete screen
+            elements.completedLevel.textContent = gameState.currentLevel;
+            elements.levelScore.textContent = `${percentage}%`;
+            elements.correctCount.textContent = gameState.score;
+            elements.incorrectCount.textContent = gameState.totalQuestions - gameState.score;
+            elements.timeTaken.textContent = `${levelTime}s`;
+            
+            // Update level knowledge meter
+            const levelKnowledge = Math.min(100, Math.round(percentage * 0.8));
+            elements.levelKnowledgeFill.style.width = `${levelKnowledge}%`;
+            elements.levelKnowledgeValue.textContent = `${levelKnowledge}%`;
+            
+            // Determine result message
+            if (percentage >= 80) {
+                elements.levelResult.textContent = "🌟 Outstanding! You've mastered this level! Ready for more advanced science!";
+                elements.levelResult.className = "result-message success";
+                elements.nextLevelBtn.style.display = 'inline-flex';
+                elements.retryLevelBtn.style.display = 'none';
+                
+                // Show confetti for success
+                if (gameState.currentLevel < 5) {
+                    createConfetti(40);
+                }
+            } else {
+                elements.levelResult.textContent = "💪 Keep learning! Body systems knowledge grows with practice. Try again!";
+                elements.levelResult.className = "result-message fail";
+                elements.nextLevelBtn.style.display = 'none';
+                elements.retryLevelBtn.style.display = 'inline-flex';
+            }
+            
+            // Speak result
+            speakText(percentage >= 80 ? 
+                `Congratulations! You scored ${percentage}% and passed level ${gameState.currentLevel}!` : 
+                `You scored ${percentage}%. You need 80% to advance. Let's practice and grow your science knowledge!`);
+            
+            showScreen('levelCompleteScreen');
+        }
+
+        // Start next level
+        function startNextLevel() {
+            gameState.currentLevel++;
+            updateLevelIndicator();
+            
+            if (gameState.currentLevel > 5) {
+                showFinalScreen();
+            } else {
+                loadLevelQuestions();
+                showScreen('questionScreen');
+                startLevel();
+            }
+        }
+
+        // Retry current level
+        function retryLevel() {
+            loadLevelQuestions();
+            showScreen('questionScreen');
+            startLevel();
+        }
+
+        // Show final screen
+        function showFinalScreen() {
+            const totalCorrect = gameState.levelScores.reduce((sum, level) => sum + level.score, 0);
+            const totalPossible = gameState.totalQuestions * 5;
+            const finalPercentage = Math.round((totalCorrect / totalPossible) * 100);
+            
+            elements.finalScore.textContent = `${finalPercentage}%`;
+            elements.totalCorrect.textContent = totalCorrect;
+            elements.levelsCompleted.textContent = '5';
+            
+            // Update final knowledge meter
+            elements.finalKnowledgeFill.style.width = `${Math.min(100, finalPercentage)}%`;
+            elements.finalKnowledgeValue.textContent = `${Math.min(100, finalPercentage)}%`;
+            
+            // Personalized message
+            let message = "";
+            if (finalPercentage >= 95) {
+                message = "🌟 Perfect mastery! You're a Human Body Systems Expert!";
+            } else if (finalPercentage >= 85) {
+                message = "🏆 Exceptional! You understand how your body works!";
+            } else if (finalPercentage >= 75) {
+                message = "👏 Great job! You've built strong science knowledge!";
+            } else {
+                message = "🌱 Well done for completing the challenge! Keep learning about your body!";
+            }
+            
+            elements.finalMessage.textContent = message;
+            elements.finalMessage.className = `result-message ${finalPercentage >= 75 ? 'success' : ''}`;
+            
+            // Speak final message
+            speakText(`Challenge complete! You scored ${finalPercentage}% overall. ${message}`);
+            
+            showScreen('finalScreen');
+            
+            // Final confetti celebration
+            createConfetti(80);
+        }
+
+        // Restart game
+        function restartGame() {
+            gameState.currentLevel = 1;
+            gameState.levelScores = [];
+            gameState.totalKnowledge = 0;
+            gameState.selectedTopic = 'all';
+            elements.topicCards.forEach(c => c.classList.remove('selected'));
+            elements.topicCards[0].classList.add('selected');
+            updateLevelIndicator();
+            updateKnowledgeMeter(0);
+            showScreen('startScreen');
+        }
+
+        // Share achievement
+        function shareAchievement() {
+            const totalCorrect = gameState.levelScores.reduce((sum, level) => sum + level.score, 0);
+            const totalPossible = gameState.totalQuestions * 5;
+            const percentage = Math.round((totalCorrect / totalPossible) * 100);
+            
+            const text = `I just completed the CBC Integrated Science Challenge for Grade 7! 🧬🫁\nScored ${percentage}% across 5 levels and 150 questions on Human Body Systems!\n#CBCKenya #IntegratedScience #HumanBody #Grade7 #ScienceEducation`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'CBC Integrated Science Challenge',
+                    text: text,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Achievement copied to clipboard! Share your science journey with friends! 🚀');
+                });
+            }
+        }
+
+        // Update level indicator dots
+        function updateLevelIndicator() {
+            document.querySelectorAll('.level-dot').forEach(dot => {
+                const level = parseInt(dot.dataset.level);
+                dot.classList.remove('active', 'completed');
+                
+                if (level === gameState.currentLevel) {
+                    dot.classList.add('active');
+                } else if (level < gameState.currentLevel) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
+        // Show specific screen
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Shuffle array (Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Create confetti effect
+        function createConfetti(count = 30) {
+            const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#ef4444', '#10b981'];
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confetti.style.animationDelay = `${Math.random() * 1.5}s`;
+                confetti.style.width = `${Math.random() * 8 + 4}px`;
+                confetti.style.height = confetti.style.width;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                container.appendChild(confetti);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000);
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

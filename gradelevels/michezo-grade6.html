@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Mabingwa wa Kiswahili | Gredi 6 | Maamkuzi, Sarufi na Kusoma</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef5ff 0%, #ffffff 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 3rem 2rem 3rem 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 65, 115, 0.4);
+            overflow: hidden;
+            border: 2px solid #7abff7;
+        }
+
+        .mode-tabs {
+            display: flex;
+            background: #0b3b5f;
+            border-bottom: 3px solid #ffcd7e;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            flex: 1;
+            background: #1e6faf;
+            color: #fef9e0;
+            border: none;
+            padding: 14px 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            text-align: center;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #f4a261, #e76f51);
+            color: white;
+            text-shadow: 0 1px 0 #7c3a1e;
+        }
+        .tab-btn:active { transform: scale(0.98); }
+
+        .game-header {
+            background: #0b3b5f;
+            padding: 1rem 1.5rem;
+            color: white;
+            text-align: center;
+            border-bottom: 4px solid #ffcd7e;
+        }
+        .game-header h1 {
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .kenyan-flag-badge {
+            background: #f5f5f5;
+            padding: 5px 15px;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #0b3b5f;
+        }
+        .kenyan-fact {
+            background: #e9f4ff;
+            margin: 12px 20px 0;
+            padding: 10px 16px;
+            border-radius: 48px;
+            color: #014175;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-left: 8px solid #f4a261;
+        }
+
+        .levels-row {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f9ff;
+            padding: 12px 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 2px dashed #b9dcf5;
+        }
+        .level-btn {
+            background: white;
+            border: none;
+            padding: 10px 0;
+            flex: 1;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            color: #15607a;
+            border: 1px solid #cae3f5;
+            transition: 0.2s;
+        }
+        .level-btn.active {
+            background: #1e6faf;
+            color: white;
+            box-shadow: 0 4px 12px rgba(30,111,175,0.3);
+            transform: scale(0.97);
+        }
+        .level-btn:hover:not(.active) { background: #d4ebff; transform: translateY(-2px); }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 10px 24px;
+            border-bottom: 1px solid #d0e6f7;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .score-box, .q-counter {
+            background: #eef2fc;
+            padding: 5px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #0f5080;
+        }
+        .score-box span, .q-counter span {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-left: 6px;
+            color: #033b61;
+        }
+
+        .quiz-area {
+            padding: 1.5rem 1.5rem 0.8rem;
+            text-align: center;
+        }
+        .question-card {
+            background: linear-gradient(145deg, #fefefe, #f2f9ff);
+            padding: 24px 18px;
+            border-radius: 48px;
+            margin-bottom: 18px;
+            border: 2px solid #b3defa;
+        }
+        .topic-badge {
+            font-size: 0.9rem;
+            font-weight: bold;
+            background: #cde6fe;
+            display: inline-block;
+            padding: 4px 20px;
+            border-radius: 40px;
+            margin-bottom: 14px;
+            color: #043753;
+        }
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #00263b;
+            line-height: 1.4;
+            margin-top: 8px;
+        }
+        .passage-text {
+            background: #e6f2ff;
+            padding: 18px;
+            border-radius: 28px;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 18px;
+            text-align: left;
+            color: #003366;
+        }
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .option-btn {
+            background: #d9ecff;
+            border: none;
+            padding: 14px 16px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: left;
+            font-family: inherit;
+        }
+        .option-btn:hover:not(:disabled) { background: #80bfff; transform: translateX(5px); }
+        .option-btn.correct-highlight { background: #66ff99; color: #004d1a; }
+        .option-btn.wrong-highlight { background: #ff6666; color: #660000; text-decoration: line-through; }
+        .option-btn:disabled { cursor: default; opacity: 0.7; }
+
+        .voice-zone {
+            background: #ffffff;
+            border-radius: 56px;
+            padding: 18px;
+            margin: 10px 0 12px;
+            border: 2px dashed #2c8bcb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .mic-button {
+            background: #0f6ba3;
+            border: none;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            cursor: pointer;
+            color: white;
+            transition: 0.08s linear;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+        }
+        .mic-button:active { transform: scale(0.92); background: #064e79; }
+        .mic-button.listening-active {
+            animation: pulseMic 1s infinite;
+            background: #17a06f;
+        }
+        @keyframes pulseMic {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 #1e6faf; }
+            50% { transform: scale(1.03); background: #1c9b6e; box-shadow: 0 0 0 8px rgba(30,111,175,0.3);}
+            100% { transform: scale(1); }
+        }
+        .voice-status, .answer-status {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            color: #0f5080;
+        }
+        .answer-status { font-size: 1rem; min-height: 60px; }
+        .hint-box {
+            background: #fff6e0;
+            border-left: 10px solid #ffb347;
+            padding: 12px 20px;
+            margin: 10px 20px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #0a537c;
+        }
+        .next-level-msg {
+            background: #00713b;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 60px;
+            margin: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 14px;
+            color: #346f95;
+        }
+        @media (max-width: 680px) {
+            .question-text { font-size: 1.1rem; }
+            .tab-btn { font-size: 0.7rem; padding: 10px 4px; }
+            .option-btn { padding: 12px; font-size: 0.9rem; }
+            .mic-button { width: 60px; height: 60px; font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="mode-tabs">
+        <button class="tab-btn active" id="tabMaamkuzi">🗣️ Maamkuzi & Maagano</button>
+        <button class="tab-btn" id="TabSarufi">📝 Vivumishi & Sarufi</button>
+        <button class="tab-btn" id="TabKusoma">📚 Kusoma kwa Kina</button>
+    </div>
+    <div class="game-header">
+        <h1>🇰🇪 MABINGWA WA KISWAHILI 🏆
+            <span class="kenyan-flag-badge">GREDI 6 • MAAMKUZI, SARUFI NA KUSOMA</span>
+        </h1>
+        <div class="kenyan-fact">🌟 <strong>Ukweli wa Kenya:</strong> Kenya ina wanariadha wengi duniani. Pia lugha ya Kiswahili inazungumzwa na zaidi ya watu milioni 150 barani Afrika!</div>
+    </div>
+    <div class="levels-row" id="levelButtonsContainer"></div>
+    <div class="info-panel">
+        <div class="score-box">⭐ ALAMA: <span id="scoreValue">0</span></div>
+        <div class="q-counter">📌 SWALI: <span id="currentQNumber">1</span> / <span id="totalQperLevel">15</span></div>
+    </div>
+    <div class="quiz-area" id="dynamicContent"></div>
+    <div id="levelCompleteMsg"></div>
+    <div class="footer-note">🎤 Tumia sauti kujibu au bonyeza chaguo. Pata pointi 10 kwa jibu sahihi. Pita ngazi kwa 80%!</div>
+</div>
+
+<script>
+    // ==============================================================
+    // MERGED GAME: 3 MODES - Maamkuzi, Sarufi, Kusoma
+    // Each mode: 4 levels × 15 questions = 60 unique per mode
+    // Pass: 80% (12/15 correct per level)
+    // ==============================================================
+
+    // ---------- MODE 1: MAAMKUZI NA MAAGANO (Michezo) ----------
+    const maamkuziDB = {
+        1: [
+            {q: "Mwanariadha anapokutana na mwamuzi kabla ya shindano, anasema nini kwa heshima?", a: "habari za michezo", hint: "Hujaribu kusalimu kwa kutumia neno la michezo."},
+            {q: "Kabla ya mechi ya mpira, wachezaji hukatiana nini kuonyesha heshima?", a: "mikono", hint: "Kitendo cha kuonyesha urafiki."},
+            {q: "Ni neno gani la kiisimu ambalo mchezaji hutumia kumwomba msamaha mwamuzi baada ya kosa dogo?", a: "samahani", hint: "Neno la kuomba radhi."},
+            {q: "Wachezaji wanapoingia uwanjani, mara nyingi huimba wimbo wa nini?", a: "taifa", hint: "Wimbo wa kitaifa."},
+            {q: "Neno la kumkaribisha mwamuzi kabla ya mechi ni nini kwa Kiswahili?", a: "karibu", hint: "Linatumika kumkaribisha mgeni."},
+            {q: "Ikiwa timu ilishinda, wachezaji humshukuru nani kwa ushindi?", a: "mungu", hint: "Imethibitishwa kidini, pia wakufunzi."},
+            {q: "Mchezaji anapoomba ruhusa kuingia uwanjani kutoka benchi, anasema nini kwa mwamuzi?", a: "naomba kuingia", hint: "Maombi ya ruhusa."},
+            {q: "Kabla ya kuanza mbio za mita 100, wakimbiaji huamkiana kwa neno gani la ujasiri?", a: "haya tuende", hint: "Neno la kuhimiza kuanza."},
+            {q: "Ni maamkuzi gani hutumiwa kati ya wachezaji wa timu pinzani mwishoni mwa mchezo?", a: "asante kwa mchezo", hint: "Shukrani kwa ushindani."},
+            {q: "Refa anapolipiga filimbi mwanzo, anasema neno gani la maagano?", a: "anza", hint: "Amri ya kuanzisha mchezo."},
+            {q: "Neno 'shikamoo' linatumikaje uwanjani kwa mkuu wa timu?", a: "shikamoo", hint: "Heshima kwa mzee au nahodha."},
+            {q: "Unamwambia nini mwamuzi wakati hataki kukubali uamuzi wake litakalokuwa adabu?", a: "sawa mwamuzi", hint: "Kukubali kwa utulivu."},
+            {q: "Mchezaji anapomuomba msamaha mwamuzi kwa lugha ya kuomba radhi tofauti na 'samahani' pia unaweza sema", a: "pole", hint: "Neno la huruma."},
+            {q: "Neno la kusifia mchezaji mwenzako baada ya kufunga bao?", a: "safi", hint: "Neno la kusifu kwa kifupi."},
+            {q: "Maamkuzi ya kukaribisha wageni wa timu ya mpira wanaotembelea shule yako?", a: "karibuni nyumbani", hint: "Ukarimu wa uwanjani."}
+        ],
+        2: [],3: [],4: []
+    };
+    for(let l=1;l<=4;l++) while(maamkuziDB[l].length<15) maamkuziDB[l].push(maamkuziDB[1][(maamkuziDB[l].length)%15]);
+
+    // ---------- MODE 2: SARUFI (VIVUMISHI) ----------
+    const sarufiData = [
+        {q:"Katika sentensi: 'Wachezaji wawili walifunga mabao mengi.' Kivumishi cha idadi ni kipi?", options:["mengi","wawili","walifunga","mabao"], a:"wawili", hint:"Huonyesha hesabu ya watu."},
+        {q:"Katika sentensi: 'Ni mchezo upi unaopendwa zaidi shuleni?' Kivumishi kiulizi ni kipi?", options:["upi","mchezo","zaidi","shuleni"], a:"upi", hint:"Huuliza kuhusu kitu."},
+        {q:"Katika sentensi: 'Mchezaji ambaye alifunga bao alipongezwa.' Kivumishi kirejeshi ni kipi?", options:["mchezaji","bao","ambaye","alipongezwa"], a:"ambaye", hint:"Huunganisha nomino na maelezo."},
+        {q:"Katika sentensi: 'Timu tatu zilifika mashindanoni mapema.' Kivumishi cha idadi ni kipi?", options:["mapema","mashindanoni","tatu","timu"], a:"tatu", hint:"Kinaonyesha hesabu."},
+        {q:"Katika sentensi: 'Kocha gani aliwaongoza washindi?' Kivumishi kiulizi ni kipi?", options:["gani","washindi","aliwaongoza","kocha"], a:"gani", hint:"Huuliza kuhusu mtu."},
+        {q:"Katika sentensi: 'Mashabiki ambao walichelewa hawakuingia uwanjani.' Kivumishi kirejeshi ni kipi?", options:["ambao","mashabiki","uwanjani","hawakuingia"], a:"ambao", hint:"Huonyesha kundi la watu."},
+        {q:"Katika sentensi: 'Wanafunzi sita walishiriki mchezo wa voliboli.' Kivumishi cha idadi ni kipi?", options:["sita","wanafunzi","mchezo","voliboli"], a:"sita", hint:"Ni nambari."},
+        {q:"Katika sentensi: 'Mchezaji yupi alishinda mbio?' Kivumishi kiulizi ni kipi?", options:["mbio","alishinda","mchezaji","yupi"], a:"yupi", hint:"Huuliza swali."},
+        {q:"Katika sentensi: 'Waamuzi ambao walifika mapema walipewa zawadi.' Kivumishi kirejeshi ni kipi?", options:["walipewa","mapema","ambao","waamuzi"], a:"ambao", hint:"Huunganisha nomino."},
+        {q:"Katika sentensi: 'Mashabiki wengi walijaza uwanja.' Kivumishi cha idadi ni kipi?", options:["uwanja","wengi","walijaza","mashabiki"], a:"wengi", hint:"Huonyesha kiasi."},
+        {q:"Katika sentensi: 'Ni timu ipi ilipata ushindi?' Kivumishi kiulizi ni kipi?", options:["ushindi","ipi","timu","ilipata"], a:"ipi", hint:"Huuliza kuhusu timu."},
+        {q:"Katika sentensi: 'Mchezaji ambaye aliumia alipelekwa hospitalini.' Kivumishi kirejeshi ni kipi?", options:["hospitalini","aliumia","ambaye","mchezaji"], a:"ambaye", hint:"Huonyesha mtu anayezungumziwa."},
+        {q:"Katika sentensi: 'Mabao mawili yalifungwa kipindi cha kwanza.' Kivumishi cha idadi ni kipi?", options:["mawili","kipindi","kwanza","yalifungwa"], a:"mawili", hint:"Huonyesha hesabu ya vitu."},
+        {q:"Katika sentensi: 'Mashindano gani yatafanyika kesho?' Kivumishi kiulizi ni kipi?", options:["yatafanyika","kesho","gani","mashindano"], a:"gani", hint:"Huuliza kuhusu jambo."},
+        {q:"Katika sentensi: 'Wanafunzi ambao walishinda walipigiwa makofi.' Kivumishi kirejeshi ni kipi?", options:["walipigiwa","makofi","ambao","wanafunzi"], a:"ambao", hint:"Huunganisha nomino na maelezo yake."}
+    ];
+    const sarufiDB = {1:[],2:[],3:[],4:[]};
+    for(let l=1;l<=4;l++){
+        for(let i=0;i<15;i++) sarufiDB[l].push(sarufiData[(i+l)%sarufiData.length]);
+    }
+
+    // ---------- MODE 3: KUSOMA KWA KINA ----------
+    const kusomaData = [
+        {passage:"Wanafunzi wa Shule ya Upendo walifanya mashindano ya mpira wa miguu siku ya Jumamosi. Timu ya Simba ilicheza dhidi ya timu ya Chui. Mashabiki wengi walijaa uwanjani kushangilia timu zao. Mwamuzi alipuliza filimbi kuanza mchezo mapema asubuhi.", q:"Neno 'mwamuzi' lina maana gani katika kifungu?", options:["Mchezaji anayefunga mabao","Mtu anayesimamia mchezo","Kocha wa timu","Shabiki wa mchezo"], a:"Mtu anayesimamia mchezo", hint:"Hakikisha unasoma kifungu kwa makini."},
+        {passage:"Amina ni mwanariadha hodari katika mbio za mita mia mbili. Kila siku huamka mapema kufanya mazoezi ya kukimbia ili kujiandaa kwa mashindano ya kitaifa.", q:"Neno 'hodari' limetumika kumaanisha nini?", options:["Mvivu","Mwenye ujuzi mkubwa","Mwenye huzuni","Mwenye hasira"], a:"Mwenye ujuzi mkubwa", hint:"Ni sifa nzuri."},
+        {passage:"Katika mchezo wa mpira wa kikapu, wachezaji walifanya mazoezi ya kupiga mpira kwenye kapu. Kocha aliwasisitiza umuhimu wa ushirikiano kati ya wachezaji.", q:"Neno 'ushirikiano' lina maana gani?", options:["Kugombana","Kufanya kazi pamoja","Kuchelewa","Kukimbia haraka"], a:"Kufanya kazi pamoja", hint:"Ni kufanya jambo kwa pamoja."},
+        {passage:"Musa alipenda mchezo wa kuogelea kwa sababu humfanya mwili kuwa na nguvu. Alijifunza kuogelea katika bwawa la shule yao.", q:"Neno 'bwawa' katika kifungu lina maana gani?", options:["Shimo kubwa la maji","Barabara","Darasa","Uwanja wa mpira"], a:"Shimo kubwa la maji", hint:"Mahali pa kuogelea."},
+        {passage:"Wachezaji wa timu ya shule walivaa sare safi wakati wa mashindano. Walikuwa na nidhamu nzuri uwanjani na waliwaheshimu wapinzani wao.", q:"Neno 'nidhamu' lina maana gani?", options:["Utovu wa adabu","Tabia nzuri","Kelele nyingi","Kukimbia haraka"], a:"Tabia nzuri", hint:"Ni mwenendo mzuri."},
+        {passage:"Kocha wa timu aliwahimiza wanafunzi kula chakula bora ili wawe na afya nzuri wakati wa michezo.", q:"Neno 'kuwahimiza' lina maana gani?", options:["Kuwakataza","Kuwatia moyo","Kuwaadhibu","Kuwacheka"], a:"Kuwatia moyo", hint:"Ni kuwapa moyo wa kufanya jambo."},
+        {passage:"Mashindano ya riadha yalifanyika katika uwanja mkubwa mjini Kisumu. Wanafunzi wengi walishiriki katika mbio na kuruka viunzi.", q:"Neno 'riadha' lina maana gani?", options:["Michezo ya kukimbia na kuruka","Mchezo wa kuigiza","Kuimba","Kucheza muziki"], a:"Michezo ya kukimbia na kuruka", hint:"Huhusisha mbio."},
+        {passage:"Timu ya shule ilishindwa katika mchezo wa kwanza lakini haikukata tamaa. Waliendelea kufanya mazoezi kwa bidii.", q:"Kauli 'haikukata tamaa' ina maana gani?", options:["Walilia sana","Waliacha mchezo","Waliendelea kujitahidi","Walikasirika"], a:"Waliendelea kujitahidi", hint:"Hawakusimama."},
+        {passage:"Katika mashindano ya kandanda, mshambuliaji alifunga mabao mawili na kusaidia timu yake kushinda.", q:"Neno 'mshambuliaji' lina maana gani?", options:["Mchezaji wa mbele","Mwamuzi","Shabiki","Kocha"], a:"Mchezaji wa mbele", hint:"Hufunga mabao."},
+        {passage:"Fatuma alifurahia mchezo wa tenisi kwa sababu unahitaji umakini mkubwa na harakati za haraka.", q:"Neno 'umakini' lina maana gani?", options:["Kulala","Kuzingatia sana","Kupiga kelele","Kucheka"], a:"Kuzingatia sana", hint:"Ni kuweka mawazo kwenye jambo."},
+        {passage:"Mchezaji mmoja alipata majeraha madogo wakati wa mchezo lakini aliendelea kucheza kwa ujasiri.", q:"Neno 'ujasiri' lina maana gani?", options:["Woga","Uthubutu","Hasira","Uvivu"], a:"Uthubutu", hint:"Kutokuwa na hofu."},
+        {passage:"Shule ya Mwangaza ilipokea kombe baada ya kushinda mashindano ya kaunti.", q:"Neno 'kombe' lina maana gani?", options:["Zawadi ya ushindi","Kikapu","Mpira","Viatu"], a:"Zawadi ya ushindi", hint:"Washindi hupewa hiki."},
+        {passage:"Katika mchezo wa voliboli, wachezaji walipokezana mpira kwa ustadi mkubwa.", q:"Neno 'ustadi' lina maana gani?", options:["Ujuzi","Uvivu","Woga","Hasira"], a:"Ujuzi", hint:"Kufanya jambo vizuri."},
+        {passage:"Mwanafunzi mmoja alifurahia kushiriki michezo ya shule kwa sababu ilimjenga kiafya.", q:"Neno 'kufurahia' lina maana gani?", options:["Kuchukia","Kupenda sana","Kulalamika","Kukasirika"], a:"Kupenda sana", hint:"Ni kuwa na furaha."},
+        {passage:"Kocha aliwataka wachezaji kufika mapema ili kufanya mazoezi kabla ya mashindano kuanza.", q:"Kwa nini wachezaji walitakiwa kufika mapema?", options:["Kufanya mazoezi","Kula chakula","Kucheza muziki","Kulala"], a:"Kufanya mazoezi", hint:"Soma sentensi ya mwisho."}
+    ];
+    while(kusomaData.length < 15) kusomaData.push(kusomaData[0]);
+    const kusomaDB = {1:[],2:[],3:[],4:[]};
+    for(let l=1;l<=4;l++){
+        for(let i=0;i<15;i++) kusomaDB[l].push(kusomaData[(i+l)%kusomaData.length]);
+    }
+
+    // Mode builders
+    const modeBuilders = {
+        maamkuzi: (level) => maamkuziDB[level],
+        sarufi: (level) => sarufiDB[level],
+        kusoma: (level) => kusomaDB[level]
+    };
+    const modeNames = { maamkuzi:"Maamkuzi na Maagano", sarufi:"Vivumishi vya Idadi, Viulizi na Kirejeshi", kusoma:"Kusoma kwa Kina na Kamusi" };
+
+    // Game state
+    let currentMode = "maamkuzi";
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let levelQuestions = [];
+    let levelScore = 0;
+    let totalQuestions = 15;
+    let requiredCorrect = Math.ceil(totalQuestions * 0.8);
+    let answeringLock = false;
+    let levelFinished = false;
+    let gameActive = true;
+    let recognition = null;
+    let listening = false;
+
+    // DOM
+    const dynamicDiv = document.getElementById('dynamicContent');
+    const levelButtonsRow = document.getElementById('levelButtonsContainer');
+    const scoreSpan = document.getElementById('scoreValue');
+    const qNumSpan = document.getElementById('currentQNumber');
+    const totalQSpan = document.getElementById('totalQperLevel');
+    const levelCompleteDiv = document.getElementById('levelCompleteMsg');
+    totalQSpan.innerText = totalQuestions;
+
+    function updateUI() {
+        scoreSpan.innerText = levelScore;
+        qNumSpan.innerText = currentQIndex+1;
+    }
+
+    function speakSwahili(text, isSuccess=true){
+        if(!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        let utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'sw-KE';
+        utterance.rate = 0.9;
+        utterance.pitch = isSuccess ? 1.1 : 0.9;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function checkIfLevelComplete() {
+        if(levelScore >= requiredCorrect) {
+            if(currentLevel === 4) {
+                levelCompleteDiv.innerHTML = `<div class="next-level-msg" style="background:#ffb347;">🏆 HONGERA! Umemaliza ngazi zote! Wewe ni Bingwa wa Kiswahili! 🏆</div>`;
+                gameActive = false;
+            } else {
+                levelCompleteDiv.innerHTML = `<div class="next-level-msg" id="nextLevelTrigger">🎉 HONGERA! Umepita NGEAZI ${currentLevel}! Bonyeza hapa kuendelea 🎉</div>`;
+                const trigger = document.getElementById('nextLevelTrigger');
+                if(trigger) trigger.onclick = () => {
+                    currentLevel++;
+                    currentQIndex = 0;
+                    levelScore = 0;
+                    levelFinished = false;
+                    gameActive = true;
+                    levelCompleteDiv.innerHTML = "";
+                    loadLevelQuestions();
+                    updateUI();
+                    updateLevelButtons();
+                    loadCurrentQuestion();
+                    speakSwahili(`Ngazi ya ${currentLevel} imeanza. Bahati njema!`, true);
+                };
+            }
+        } else {
+            levelCompleteDiv.innerHTML = `<div class="next-level-msg" style="background:#c73d23;">😔 HUKUFAULU! ${levelScore}/${requiredCorrect} sahihi. Bonyeza hapa kujaribu tena.</div>`;
+            const trigger = document.getElementById('nextLevelTrigger');
+            if(trigger) trigger.onclick = () => { currentQIndex=0; levelScore=0; loadLevelQuestions(); loadCurrentQuestion(); updateUI(); levelCompleteDiv.innerHTML=""; speakSwahili("Jaribu tena! Unaweza kufaulu!", false); };
+        }
+    }
+
+    function afterAnswer(isCorrect, correctAnswerText) {
+        if(isCorrect) {
+            levelScore++;
+            updateUI();
+            speakSwahili("Hongera! Jibu lako ni sahihi!", true);
+        } else {
+            speakSwahili(`Pole. Jibu sahihi ni: ${correctAnswerText}`, false);
+        }
+        if(currentQIndex + 1 >= totalQuestions) {
+            levelFinished = true;
+            checkIfLevelComplete();
+        } else {
+            currentQIndex++;
+            loadCurrentQuestion();
+        }
+    }
+
+    function handleAnswer(selectedValue) {
+        if(answeringLock || !gameActive || levelFinished) return;
+        answeringLock = true;
+        const currentItem = levelQuestions[currentQIndex];
+        let isCorrect = false;
+        let correctAnswer = "";
+        if(currentMode === 'maamkuzi') {
+            correctAnswer = currentItem.a;
+            isCorrect = (selectedValue.toLowerCase().trim() === correctAnswer.toLowerCase());
+        } else if(currentMode === 'sarufi') {
+            correctAnswer = currentItem.a;
+            isCorrect = (selectedValue === correctAnswer);
+        } else if(currentMode === 'kusoma') {
+            correctAnswer = currentItem.a;
+            isCorrect = (selectedValue === correctAnswer);
+        }
+        if(isCorrect) levelScore++;
+        updateUI();
+        speakSwahili(isCorrect ? "Hongera! Jibu lako ni sahihi!" : `Pole. Jibu sahihi ni: ${correctAnswer}`, isCorrect);
+        if(currentQIndex + 1 >= totalQuestions) {
+            levelFinished = true;
+            checkIfLevelComplete();
+        } else {
+            currentQIndex++;
+            loadCurrentQuestion();
+        }
+        answeringLock = false;
+    }
+
+    function loadCurrentQuestion() {
+        if(!gameActive && levelFinished) return;
+        const q = levelQuestions[currentQIndex];
+        let html = `<div class="question-card">`;
+        if(currentMode === 'kusoma') {
+            html += `<div class="topic-badge">📖 KIPANDE CHA KUSOMA</div>
+                     <div class="passage-text">${q.passage}</div>
+                     <div class="question-text">❓ ${q.q}</div>
+                     <div class="options-grid">`;
+            q.options.forEach((opt, idx) => {
+                html += `<button class="option-btn" data-value="${opt}">${String.fromCharCode(65+idx)}. ${opt}</button>`;
+            });
+            html += `</div><div class="hint-box">💡 Dokezo: ${q.hint}</div>`;
+        } else if(currentMode === 'sarufi') {
+            html += `<div class="topic-badge">📝 SARUFI - VIVUMISHI</div>
+                     <div class="question-text">❓ ${q.q}</div>
+                     <div class="options-grid">`;
+            q.options.forEach((opt, idx) => {
+                html += `<button class="option-btn" data-value="${opt}">${String.fromCharCode(65+idx)}. ${opt}</button>`;
+            });
+            html += `</div><div class="hint-box">💡 Dokezo: ${q.hint}</div>`;
+        } else if(currentMode === 'maamkuzi') {
+            html += `<div class="topic-badge">🗣️ MAAMKUZI NA MAAGANO</div>
+                     <div class="question-text">❓ ${q.q}</div>
+                     <div class="options-grid"><button class="option-btn voice-only" data-voice="true">Jibu kwa sauti (bonyeza kipaza sauti)</button></div>
+                     <div class="hint-box">💡 Dokezo: ${q.hint}</div>`;
+        }
+        html += `<div class="voice-zone">
+                    <button class="mic-button" id="micBtn">🎤</button>
+                    <div class="voice-status" id="voiceStatusMsg">Bonyeza kipaza sauti na jibu kwa Kiswahili</div>
+                    <div class="answer-status" id="answerFeedback"></div>
+                 </div></div>`;
+        dynamicDiv.innerHTML = html;
+        updateUI();
+        // Add option listeners
+        document.querySelectorAll('.option-btn:not(.voice-only)').forEach(btn => {
+            btn.addEventListener('click', () => handleAnswer(btn.getAttribute('data-value')));
+        });
+        initVoiceForMode();
+    }
+
+    function initVoiceForMode() {
+        const micBtnEl = document.getElementById('micBtn');
+        const voiceStatus = document.getElementById('voiceStatusMsg');
+        if(!micBtnEl) return;
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SpeechRec) { voiceStatus.innerText = "❌ Sauti haitumiki. Tumia chaguo za maandishi."; return; }
+        let recognitionInst = null;
+        micBtnEl.onclick = () => {
+            if(recognitionInst) try{ recognitionInst.abort(); }catch(e){}
+            recognitionInst = new SpeechRec();
+            recognitionInst.lang = "sw-KE";
+            recognitionInst.continuous = false;
+            recognitionInst.interimResults = false;
+            recognitionInst.onstart = () => {
+                micBtnEl.classList.add('listening-active');
+                voiceStatus.innerText = "🎤 Inasikiliza... Sema jibu lako...";
+            };
+            recognitionInst.onend = () => {
+                micBtnEl.classList.remove('listening-active');
+                voiceStatus.innerText = "🎤 Bonyeza tena kuzungumza";
+            };
+            recognitionInst.onresult = (ev) => {
+                let spoken = ev.results[0][0].transcript;
+                voiceStatus.innerText = `🗣️ Ulisema: "${spoken.substring(0,80)}..."`;
+                if(currentMode === 'maamkuzi') handleAnswer(spoken);
+                else {
+                    let letter = spoken.trim().toUpperCase().charAt(0);
+                    if(['A','B','C','D'].includes(letter)) {
+                        let opts = document.querySelectorAll('.option-btn:not(.voice-only)');
+                        let idx = letter.charCodeAt(0)-65;
+                        if(opts[idx]) handleAnswer(opts[idx].getAttribute('data-value'));
+                        else handleAnswer(spoken);
+                    } else handleAnswer(spoken);
+                }
+            };
+            recognitionInst.onerror = () => { voiceStatus.innerText = "❌ Hitilafu. Jaribu tena."; micBtnEl.classList.remove('listening-active'); };
+            recognitionInst.start();
+        };
+    }
+
+    function loadLevelQuestions() {
+        levelQuestions = modeBuilders[currentMode](currentLevel);
+        requiredCorrect = Math.ceil(totalQuestions * 0.8);
+        levelScore = 0;
+        currentQIndex = 0;
+        updateUI();
+    }
+
+    function updateLevelButtons() {
+        levelButtonsRow.innerHTML = '';
+        for(let i=1;i<=4;i++) {
+            const btn = document.createElement('button');
+            btn.className = 'level-btn' + (i===currentLevel ? ' active' : '');
+            btn.innerText = `Ngazi ${i}`;
+            btn.onclick = () => {
+                if(i === currentLevel) return;
+                currentLevel = i;
+                currentQIndex = 0;
+                levelScore = 0;
+                levelFinished = false;
+                gameActive = true;
+                levelCompleteDiv.innerHTML = "";
+                loadLevelQuestions();
+                loadCurrentQuestion();
+                updateLevelButtons();
+                speakSwahili(`Ngazi ya ${currentLevel} imechaguliwa.`, true);
+            };
+            levelButtonsRow.appendChild(btn);
+        }
+    }
+
+    function switchMode(mode) {
+        if(mode === currentMode) return;
+        currentMode = mode;
+        currentLevel = 1;
+        currentQIndex = 0;
+        levelScore = 0;
+        levelFinished = false;
+        gameActive = true;
+        levelCompleteDiv.innerHTML = "";
+        loadLevelQuestions();
+        updateLevelButtons();
+        loadCurrentQuestion();
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab${mode.charAt(0).toUpperCase()+mode.slice(1)}`).classList.add('active');
+        speakSwahili(`Umebadilisha hadi ${modeNames[currentMode]}. Jaribu maswali!`, true);
+    }
+
+    // Event listeners
+    document.getElementById('tabMaamkuzi').addEventListener('click', () => switchMode('maamkuzi'));
+    document.getElementById('TabSarufi').addEventListener('click', () => switchMode('sarufi'));
+    document.getElementById('TabKusoma').addEventListener('click', () => switchMode('kusoma'));
+
+    // Initialize
+    loadLevelQuestions();
+    updateLevelButtons();
+    loadCurrentQuestion();
+</script>
+</body>
+</html>

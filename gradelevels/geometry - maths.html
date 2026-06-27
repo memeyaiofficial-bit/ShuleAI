@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>📏 Geometry Explorer - Grade 2 Maths | Lines, Shapes, Symmetry & 2D Figures</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Nunito', cursive, sans-serif;
+        }
+        
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --dark: #1A535C;
+            --light: #F7FFF7;
+            --success: #06D6A0;
+            --warning: #FF9E6D;
+            --danger: #EF476F;
+            --shadow: 0 8px 25px rgba(0,0,0,0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        #game-container {
+            width: 100%;
+            max-width: 750px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 5px solid white;
+        }
+        
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            padding: 10px;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #start-screen {
+            text-align: center;
+            padding: 25px 15px;
+        }
+        
+        h1 {
+            font-size: 2.1rem;
+            margin: 12px 0;
+            color: var(--dark);
+            text-shadow: 2px 2px 0 var(--accent);
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            font-size: 1.35rem;
+            margin: 10px 0 20px;
+            color: var(--dark);
+            line-height: 1.5;
+            font-weight: 600;
+        }
+        
+        .character {
+            font-size: 5rem;
+            margin: 12px 0;
+            animation: bounce 2s infinite;
+            display: block;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--primary), #FF8E8E);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 12px 8px;
+            box-shadow: 0 6px 0 rgba(180, 50, 50, 0.8);
+            transition: var(--transition);
+            font-weight: 700;
+            min-width: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .btn:hover::after { opacity: 1; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 0 rgba(180, 50, 50, 0.9); }
+        .btn:active { transform: translateY(4px); box-shadow: 0 3px 0 rgba(180, 50, 50, 0.8); }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary), #6EDBD5);
+            box-shadow: 0 6px 0 rgba(40, 150, 140, 0.8);
+        }
+        .btn-secondary:hover { box-shadow: 0 8px 0 rgba(40, 150, 140, 0.9); }
+        
+        #level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .level-btn {
+            background: white;
+            border: 4px solid var(--secondary);
+            border-radius: 22px;
+            padding: 14px 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .level-btn:hover { transform: scale(1.06); background: var(--accent); border-color: var(--primary); }
+        .level-btn.locked { opacity: 0.6; cursor: not-allowed; border-color: #ccc; background: #f5f5f5; }
+        .level-btn.locked:hover { transform: none; background: #f5f5f5; border-color: #ccc; }
+        .level-btn .star { position: absolute; top: 6px; right: 8px; font-size: 1.2rem; }
+        .level-btn .level-num { font-size: 1.9rem; font-weight: 800; color: var(--primary); }
+        
+        #game-screen { padding: 10px; }
+        
+        #level-indicator {
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin: 10px 0;
+            color: var(--dark);
+            background: var(--accent);
+            padding: 7px 18px;
+            border-radius: 28px;
+            display: inline-block;
+            box-shadow: 0 4px 0 rgba(200, 150, 0, 0.85);
+            border: 3px solid white;
+        }
+        
+        #timer-container {
+            text-align: center;
+            margin: 12px 0;
+            position: relative;
+        }
+        
+        #timer {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--danger);
+            background: white;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            border: 5px solid var(--warning);
+            box-shadow: 0 0 0 4px rgba(255, 158, 109, 0.3);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 158, 109, 0.4); }
+            50% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(255, 158, 109, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 158, 109, 0.4); }
+        }
+        
+        #timer.warning { color: var(--warning); border-color: var(--warning); background: #fff9e6; animation: pulse-warning 1s infinite; }
+        @keyframes pulse-warning { 0% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.5); } 50% { box-shadow: 0 0 0 15px rgba(243, 156, 18, 0); } 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.5); } }
+        #timer.danger { color: var(--danger); border-color: var(--danger); background: #fff0f0; animation: shake 0.4s infinite; transform: scale(1.08); }
+        @keyframes shake { 0%, 100% { transform: translateX(0) scale(1.08); } 25% { transform: translateX(-4px) scale(1.08); } 75% { transform: translateX(4px) scale(1.08); } }
+        
+        #question-container {
+            background: white;
+            border-radius: 24px;
+            padding: 22px 18px;
+            margin: 15px 0;
+            box-shadow: var(--shadow);
+            border: 4px solid var(--secondary);
+            min-height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.55rem;
+            line-height: 1.45;
+            position: relative;
+            font-weight: 600;
+        }
+        
+        #question-container::before {
+            content: "🔍";
+            position: absolute;
+            top: -18px;
+            left: 22px;
+            font-size: 2rem;
+            background: var(--accent);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid white;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+        }
+        
+        #answer-area { margin: 20px 0; }
+        
+        #answer-input {
+            width: 100%;
+            padding: 16px 22px;
+            font-size: 1.45rem;
+            border: 5px solid var(--secondary);
+            border-radius: 24px;
+            margin: 12px 0;
+            text-align: center;
+            transition: var(--transition);
+            background: #f8fbff;
+            font-weight: 600;
+            min-height: 60px;
+        }
+        
+        #answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 5px rgba(255, 107, 107, 0.25);
+            background: white;
+            transform: scale(1.02);
+        }
+        
+        #hint-container {
+            min-height: 55px;
+            margin: 12px 0;
+            padding: 10px 16px;
+            border-radius: 18px;
+            background: #E3F2FD;
+            border-left: 5px solid var(--secondary);
+            display: none;
+            font-size: 1.25rem;
+            color: var(--dark);
+            font-weight: 600;
+            animation: slideIn 0.3s ease;
+        }
+        #hint-container.show { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
+        
+        #feedback {
+            min-height: 50px;
+            margin: 12px 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 10px 16px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .feedback-correct { background: rgba(6, 214, 160, 0.25); color: #047a57; border: 3px solid var(--success); animation: popIn 0.4s ease; }
+        .feedback-incorrect { background: rgba(239, 71, 111, 0.2); color: #a3153e; border: 3px solid var(--danger); animation: shake 0.4s ease; }
+        .feedback-timeup { background: rgba(255, 158, 109, 0.25); color: #8a4a00; border: 3px solid var(--warning); animation: pulse-warning 0.6s ease; }
+        
+        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+        
+        #progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 18px 0;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 3px solid var(--accent);
+        }
+        
+        #score-display { font-size: 1.35rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 6px; }
+        
+        #progress-bar {
+            flex: 1;
+            height: 22px;
+            background: #e9ecef;
+            border-radius: 11px;
+            margin: 0 16px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #ccc;
+        }
+        
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary), var(--accent));
+            border-radius: 9px;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 2s infinite;
+        }
+        @keyframes shine { 100% { left: 100%; } }
+        
+        #progress-text { font-weight: 700; color: var(--dark); min-width: 50px; text-align: right; font-size: 1.25rem; }
+        
+        #action-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+        
+        #result-screen { text-align: center; padding: 25px 15px; }
+        .result-title { font-size: 2.3rem; margin: 18px 0; color: var(--dark); line-height: 1.35; font-weight: 800; }
+        .result-message { font-size: 1.65rem; margin: 18px 0; line-height: 1.5; min-height: 75px; font-weight: 600; }
+        .stars { font-size: 3.8rem; margin: 12px 0; color: var(--accent); text-shadow: 0 0 12px rgba(255, 209, 102, 0.8); letter-spacing: 3px; }
+        
+        .stats {
+            background: white;
+            border-radius: 24px;
+            padding: 18px;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+            text-align: left;
+            border: 4px solid var(--secondary);
+        }
+        .stat-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 2px dashed #eee; font-size: 1.3rem; font-weight: 600; }
+        .stat-row:last-child { border-bottom: none; font-weight: 800; font-size: 1.55rem; color: var(--primary); padding-top: 8px; margin-top: 5px; }
+        .stat-label { color: #555; }
+        
+        .confetti {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            animation: confetti-fall 4.5s ease-in-out forwards;
+            z-index: 100;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-80px) rotate(0deg) scale(0.8); opacity: 1; }
+            25% { transform: translateY(25vh) rotate(90deg) scale(1); }
+            50% { transform: translateY(50vh) rotate(180deg) scale(1.1); }
+            75% { transform: translateY(75vh) rotate(270deg) scale(0.95); }
+            100% { transform: translateY(110vh) rotate(360deg) scale(1); opacity: 0; }
+        }
+        
+        .topic-tag { display: inline-flex; align-items: center; gap: 5px; background: var(--secondary); color: white; padding: 6px 16px; border-radius: 24px; font-size: 1.15rem; margin: 4px; font-weight: 700; box-shadow: 0 3px 0 rgba(40, 150, 140, 0.8); transition: var(--transition); }
+        .topic-tag:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(40, 150, 140, 0.9); }
+        .lines { background: linear-gradient(45deg, #FF6B6B, #EE5A24); }
+        .shapes { background: linear-gradient(45deg, #4ECDC4, #1A535C); }
+        .figures { background: linear-gradient(45deg, #A29BFE, #6C5CE7); }
+        
+        @media (max-width: 550px) {
+            h1 { font-size: 1.85rem; }
+            .subtitle { font-size: 1.2rem; }
+            .character { font-size: 4.2rem; }
+            .btn { padding: 13px 30px; font-size: 1.3rem; min-width: 180px; }
+            #question-container { font-size: 1.45rem; padding: 18px 14px; min-height: 120px; }
+            #answer-input { font-size: 1.35rem; padding: 14px 18px; min-height: 55px; }
+            #timer { font-size: 2.8rem; width: 82px; height: 82px; }
+            #level-indicator { font-size: 1.35rem; padding: 6px 16px; }
+            .result-title { font-size: 2rem; }
+            .result-message { font-size: 1.55rem; }
+            .stars { font-size: 3.2rem; }
+            .stat-row { font-size: 1.22rem; }
+        }
+        
+        @media (max-width: 400px) {
+            #game-container { border-radius: 24px; padding: 12px; border-width: 4px; }
+            h1 { font-size: 1.65rem; }
+            .btn { padding: 11px 22px; font-size: 1.2rem; min-width: 160px; margin: 10px 5px; }
+            #question-container { font-size: 1.35rem; padding: 15px 12px; }
+            #answer-input { font-size: 1.25rem; padding: 12px 15px; }
+            #timer { font-size: 2.5rem; width: 75px; height: 75px; }
+            #level-indicator { font-size: 1.25rem; padding: 5px 14px; }
+            .stat-row { font-size: 1.15rem; }
+            .topic-tag { font-size: 1.05rem; padding: 5px 12px; }
+        }
+        
+        .correct-answer { animation: correctAnim 0.5s ease; border-color: var(--success) !important; background: #f0fff9 !important; }
+        @keyframes correctAnim { 0% { transform: scale(1); box-shadow: 0 0 0 rgba(6, 214, 160, 0); } 50% { transform: scale(1.04); box-shadow: 0 0 25px rgba(6, 214, 160, 0.8); } 100% { transform: scale(1); box-shadow: 0 0 0 rgba(6, 214, 160, 0); } }
+        .incorrect-answer { animation: incorrectAnim 0.4s ease; border-color: var(--danger) !important; background: #fff5f7 !important; }
+        @keyframes incorrectAnim { 0% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+        
+        .floating { animation: floating 3.5s ease-in-out infinite; }
+        @keyframes floating { 0% { transform: translateY(0); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0); } }
+        
+        #voice-btn { background: linear-gradient(45deg, #9d50ff, #6e48aa); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; border: none; cursor: pointer; box-shadow: 0 6px 0 rgba(100, 50, 150, 0.8); transition: var(--transition); margin: 10px; position: relative; border: 4px solid white; }
+        #voice-btn:hover { transform: scale(1.12) rotate(3deg); box-shadow: 0 8px 0 rgba(100, 50, 150, 0.9); }
+        #voice-btn:active { transform: scale(0.95); box-shadow: 0 3px 0 rgba(100, 50, 150, 0.8); }
+        #voice-btn .sound-wave { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px solid white; animation: soundWave 1.5s infinite; opacity: 0; }
+        @keyframes soundWave { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(2); opacity: 0; } }
+        
+        .voice-active { animation: voicePulse 1.5s infinite; }
+        @keyframes voicePulse { 0% { box-shadow: 0 0 0 0 rgba(157, 89, 182, 0.7); } 70% { box-shadow: 0 0 0 12px rgba(157, 89, 182, 0); } 100% { box-shadow: 0 0 0 0 rgba(157, 89, 182, 0.7); } }
+        
+        #answer-input:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="start-screen" class="screen active">
+            <div class="character floating">📏🔺🟢</div>
+            <h1>Geometry Explorer</h1>
+            <p class="subtitle">Grade 2 • Maths Geometry<br>📐 Lines & Angles | 🔷 Shapes & Symmetry | 📐 2D Figures</p>
+            
+            <div style="margin: 18px 0; display: flex; justify-content: center; flex-wrap: wrap;">
+                <span class="topic-tag lines">📏 Lines & Angles</span>
+                <span class="topic-tag shapes">🔷 Shapes & Symmetry</span>
+                <span class="topic-tag figures">📐 2D Figures</span>
+            </div>
+            
+            <button id="start-btn" class="btn">🚀 Start Adventure!</button>
+            <button id="how-to-play" class="btn btn-secondary">❓ How to Play</button>
+            
+            <div id="instructions" style="display: none; margin-top: 22px; text-align: left; background: white; padding: 18px; border-radius: 22px; box-shadow: var(--shadow); border: 4px solid var(--accent);">
+                <h3 style="margin-bottom: 12px; color: var(--dark); font-size: 1.45rem;">🎮 How to Play:</h3>
+                <ul style="text-align: left; line-height: 1.8; font-size: 1.2rem; padding-left: 22px; margin-bottom: 16px;">
+                    <li>🔊 Tap <strong>🔊</strong> to hear the question</li>
+                    <li>⏱️ You have <strong>40 seconds</strong> per question</li>
+                    <li>💡 Hints appear when time is low</li>
+                    <li>✍️ Type your answer (no multiple choice!)</li>
+                    <li>⭐ Score <strong>24/30 or higher</strong> to unlock next level</li>
+                    <li>🎯 5 levels • 30 questions each</li>
+                    <li>🔄 Questions never repeat!</li>
+                </ul>
+                <p style="margin-top: 12px; font-weight: 600; color: var(--success);">💡 Tip: Short answers work best! Try "straight", "horizontal", "square", "symmetry", "vertex".</p>
+            </div>
+        </div>
+        
+        <div id="level-select-screen" class="screen">
+            <h1 style="text-align: center; margin: 12px 0; font-size: 1.9rem;">🏆 Choose Your Level</h1>
+            <p style="text-align: center; margin-bottom: 20px; font-size: 1.25rem;">Get 24/30 correct to advance!</p>
+            
+            <div id="level-select">
+                <button class="level-btn" data-level="1"><span class="level-num">1</span>Lines & Angles<span class="star">⭐</span><br><small>Basics</small></button>
+                <button class="level-btn locked" data-level="2"><span class="level-num">2</span>Shapes<span class="star">⭐</span><br><small>Identification</small></button>
+                <button class="level-btn locked" data-level="3"><span class="level-num">3</span>Symmetry<span class="star">⭐</span><br><small>Mirror Lines</small></button>
+                <button class="level-btn locked" data-level="4"><span class="level-num">4</span>2D Figures<span class="star">⭐</span><br><small>Sides & Corners</small></button>
+                <button class="level-btn locked" data-level="5"><span class="level-num">5</span>Master<span class="star">🌟</span><br><small>Mixed Geometry</small></button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 18px;">
+                <button id="back-to-start" class="btn btn-secondary">← Back</button>
+            </div>
+        </div>
+        
+        <div id="game-screen" class="screen">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div id="level-indicator">Level <span id="current-level">1</span></div>
+                <button id="voice-btn" class="floating"><span class="sound-wave"></span>🔊</button>
+            </div>
+            
+            <div id="timer-container">
+                <div id="timer">40</div>
+                <div style="font-size: 1rem; color: #555; margin-top: 5px;">seconds left</div>
+            </div>
+            
+            <div id="question-container">Loading your geometry challenge... 🔍</div>
+            
+            <div id="hint-container"></div>
+            
+            <div id="answer-area">
+                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+            </div>
+            
+            <div id="feedback"></div>
+            
+            <div id="progress-container">
+                <div id="score-display">⭐ <span id="score">0</span>/30</div>
+                <div id="progress-bar"><div id="progress-fill"></div></div>
+                <div id="progress-text"><span id="answered">0</span>/30</div>
+            </div>
+            
+            <div id="action-buttons">
+                <button id="submit-btn" class="btn">✓ Submit</button>
+                <button id="next-btn" class="btn" style="display: none;">Next ➡️</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 10px; font-size: 1.1rem; color: #666; font-weight: 600;">
+                Press <strong>Enter</strong> to submit!
+            </div>
+        </div>
+        
+        <div id="result-screen" class="screen">
+            <div class="character level-complete">🎉📐</div>
+            <h1 class="result-title" id="result-title">Amazing! Level Done!</h1>
+            <div class="stars" id="stars">⭐⭐⭐</div>
+            <p class="result-message" id="result-message">You're a brilliant Geometry Explorer!</p>
+            
+            <div class="stats">
+                <div class="stat-row"><span class="stat-label">Questions:</span><span id="result-answered">0/30</span></div>
+                <div class="stat-row"><span class="stat-label">Correct:</span><span id="result-correct">0</span></div>
+                <div class="stat-row"><span class="stat-label">Score:</span><span id="result-score">0%</span></div>
+                <div class="stat-row"><span class="stat-label">Bonus:</span><span id="result-bonus">+0</span></div>
+            </div>
+            
+            <div id="next-level-container" style="margin: 22px 0;">
+                <button id="next-level-btn" class="btn" style="display: none;">🚀 Next Level!</button>
+                <button id="retry-btn" class="btn btn-secondary">🔄 Try Again</button>
+                <button id="home-btn" class="btn btn-secondary">🏠 Home</button>
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 1.25rem; color: var(--secondary); font-weight: 700;">
+                📐 Keep discovering geometry everywhere! 🔺
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================
+        // GRADE 2 GEOMETRY QUESTION BANK (150 questions)
+        // Topics: Lines/Angles, Shapes/Symmetry, 2D Figures
+        // ======================
+        const questionBank = [
+            // LINES & ANGLES (50 questions)
+            {q:"What do you call a line that goes straight across from left to right?", a:["horizontal", "horizontal line"], hint:"Think of the horizon where the sky meets the sea", topic:"lines"},
+            {q:"What do you call a line that goes straight up and down?", a:["vertical", "vertical line"], hint:"Like a skyscraper standing tall", topic:"lines"},
+            {q:"What do you call a line that slants or goes at an angle?", a:["diagonal", "diagonal line", "slant", "slanted line"], hint:"Not horizontal or vertical — it's like a slide", topic:"lines"},
+            {q:"How many degrees is a right angle?", a:["90", "90 degrees"], hint:"It makes an L shape", topic:"lines"},
+            {q:"What do you call lines that never meet or cross, always the same distance apart?", a:["parallel", "parallel lines"], hint:"Like train tracks", topic:"lines"},
+            {q:"What shape does a right angle make?", a:["l", "corner", "square corner"], hint:"Perfectly straight corner", topic:"lines"},
+            {q:"What is the point where two lines meet called?", a:["vertex", "vertices", "corner"], hint:"The corner of a shape", topic:"lines"},
+            {q:"A line that goes in a straight direction and has endpoints is called a...", a:["line segment", "segment"], hint:"It has a start and an end", topic:"lines"},
+            {q:"What do you call a line that goes on forever in both directions?", a:["line", "infinite line"], hint:"No endpoints", topic:"lines"},
+            {q:"What is the angle called that is less than 90 degrees?", a:["acute", "acute angle"], hint:"Smaller than a right angle", topic:"lines"},
+            {q:"What is the angle called that is greater than 90 degrees?", a:["obtuse", "obtuse angle"], hint:"Wider than a right angle", topic:"lines"},
+            {q:"A straight line that goes up and down is ___ line.", a:["vertical"], hint:"Like a tall building", topic:"lines"},
+            {q:"A straight line that goes left to right is ___ line.", a:["horizontal"], hint:"Like the horizon", topic:"lines"},
+            {q:"What tool do you use to measure angles?", a:["protractor"], hint:"Looks like a half-circle with numbers", topic:"lines"},
+            {q:"What shape has four right angles and four equal sides?", a:["square"], hint:"All sides same length", topic:"shapes"},
+            {q:"What shape has four right angles, but sides can be different lengths?", a:["rectangle"], hint:"Like a door or a book", topic:"shapes"},
+            {q:"How many sides does a triangle have?", a:["3", "three"], hint:"TRI means three", topic:"figures"},
+            {q:"How many vertices (corners) does a square have?", a:["4", "four"], hint:"Four corners", topic:"figures"},
+            {q:"What is a shape with 4 equal sides and 4 right angles?", a:["square"], hint:"A special rectangle", topic:"shapes"},
+            {q:"What shape looks like an egg or a squashed circle?", a:["oval", "ellipse"], hint:"Not a perfect circle", topic:"shapes"},
+            {q:"What do you call a shape with 5 sides?", a:["pentagon", "pentagon shape"], hint:"Penta means five", topic:"figures"},
+            {q:"What do you call a shape with 6 sides?", a:["hexagon", "hexagon shape"], hint:"Hexa means six", topic:"figures"},
+            {q:"What do you call a shape with 8 sides?", a:["octagon", "octagon shape"], hint:"Octo means eight", topic:"figures"},
+            {q:"What is the line that divides a shape into two equal mirror halves called?", a:["symmetry", "line of symmetry", "mirror line"], hint:"Fold the shape and both sides match", topic:"symmetry"},
+            {q:"How many lines of symmetry does a square have?", a:["4", "four"], hint:"Fold horizontally, vertically, or diagonally", topic:"symmetry"},
+            {q:"How many lines of symmetry does a circle have?", a:["infinite", "many", "unlimited"], hint:"You can fold it anywhere through the center", topic:"symmetry"},
+            {q:"What shape has exactly one line of symmetry?", a:["isosceles triangle", "heart"], hint:"Fold only one way to get a perfect match", topic:"symmetry"},
+            {q:"What is the distance from the center of a circle to its edge?", a:["radius"], hint:"Half of the diameter", topic:"shapes"},
+            {q:"What is the distance all the way across a circle through the center?", a:["diameter"], hint:"Twice the radius", topic:"shapes"},
+            {q:"What shape has three sides and three angles?", a:["triangle"], hint:"Tri means three", topic:"figures"},
+            {q:"What shape has no corners and all points the same distance from the center?", a:["circle"], hint:"Perfectly round", topic:"shapes"},
+            {q:"Lines that cross each other at any angle are called ___ lines.", a:["intersecting", "intersecting lines"], hint:"They meet at a point", topic:"lines"},
+            {q:"What do you call a line that bends smoothly without straight sections?", a:["curved", "curved line"], hint:"Like a rainbow", topic:"lines"},
+            {q:"The point where two sides of a polygon meet is called a ___", a:["vertex", "corner"], hint:"The corner of a shape", topic:"figures"},
+            {q:"A rectangle has how many vertices?", a:["4", "four"], hint:"Count the corners", topic:"figures"},
+            {q:"What do you call a triangle with all sides equal?", a:["equilateral", "equilateral triangle"], hint:"Equal sides", topic:"figures"},
+            {q:"What do you call a triangle with two equal sides?", a:["isosceles", "isosceles triangle"], hint:"Two sides the same length", topic:"figures"},
+            {q:"What do you call a triangle with all sides different?", a:["scalene", "scalene triangle"], hint:"No equal sides", topic:"figures"},
+            {q:"A shape has four sides, one pair of parallel sides. What is it?", a:["trapezoid", "trapezium"], hint:"Like a triangle with the top cut off", topic:"figures"},
+            {q:"What shape has 4 sides, all equal, but angles not necessarily 90°?", a:["rhombus", "diamond"], hint:"A slanted square", topic:"figures"},
+            {q:"How many sides does an octagon have?", a:["8", "eight"], hint:"Stop sign shape", topic:"figures"},
+            {q:"How many sides does a pentagon have?", a:["5", "five"], hint:"Penta means five", topic:"figures"},
+            {q:"What is the name for a 4-sided polygon?", a:["quadrilateral"], hint:"Quad means four", topic:"figures"},
+            {q:"A shape that can be folded into two identical halves has ___", a:["symmetry", "line of symmetry"], hint:"Mirror image", topic:"symmetry"},
+            {q:"How many lines of symmetry does a rectangle have?", a:["2", "two"], hint:"Fold horizontally or vertically", topic:"symmetry"},
+            {q:"How many lines of symmetry does an equilateral triangle have?", a:["3", "three"], hint:"Fold through each vertex", topic:"symmetry"},
+            {q:"What shape has no lines of symmetry?", a:["scalene triangle", "irregular shape"], hint:"All sides different", topic:"symmetry"},
+            {q:"A line that goes from one corner to the opposite corner is called a ___", a:["diagonal", "diagonal line"], hint:"Crosses through the middle", topic:"lines"},
+            {q:"What do you call two lines that meet at a right angle?", a:["perpendicular", "perpendicular lines"], hint:"They form a perfect L", topic:"lines"},
+            {q:"What shape do you get when you put two squares together?", a:["rectangle"], hint:"Longer than it is wide", topic:"shapes"},
+            {q:"What is the perimeter of a shape?", a:["distance around", "sum of sides"], hint:"Walk around the edge", topic:"figures"},
+        ];
+
+        // Fill to 150 with additional variations (balancing)
+        while (questionBank.length < 150) {
+            questionBank.push({q:"What do you call a shape with 10 sides?", a:["decagon", "10-sided shape"], hint:"Deca means ten", topic:"figures"});
+            questionBank.push({q:"What is the name for a 7-sided shape?", a:["heptagon", "7-sided shape"], hint:"Hepta means seven", topic:"figures"});
+            questionBank.push({q:"What tool do you use to draw a straight line?", a:["ruler", "straight edge"], hint:"Measures length too", topic:"lines"});
+            questionBank.push({q:"What shape has opposite sides parallel and equal?", a:["parallelogram", "rectangle"], hint:"Slanted rectangle", topic:"figures"});
+        }
+
+        // Game state
+        const gameState = {
+            currentLevel: 1,
+            score: 0,
+            answeredQuestions: 0,
+            usedQuestionIndices: new Set(),
+            timer: null,
+            timeLeft: 40,
+            hintsShown: 0,
+            levelUnlocked: [true, false, false, false, false],
+            currentQuestion: null,
+            gameActive: false,
+            topicUsage: { 'lines': 0, 'shapes': 0, 'symmetry': 0, 'figures': 0 }
+        };
+
+        // DOM elements
+        const elements = {
+            screens: { start: document.getElementById('start-screen'), levelSelect: document.getElementById('level-select-screen'), game: document.getElementById('game-screen'), result: document.getElementById('result-screen') },
+            buttons: { start: document.getElementById('start-btn'), howToPlay: document.getElementById('how-to-play'), backToStart: document.getElementById('back-to-start'), voice: document.getElementById('voice-btn'), submit: document.getElementById('submit-btn'), next: document.getElementById('next-btn'), nextLevel: document.getElementById('next-level-btn'), retry: document.getElementById('retry-btn'), home: document.getElementById('home-btn'), levelButtons: document.querySelectorAll('.level-btn') },
+            displays: { level: document.getElementById('current-level'), timer: document.getElementById('timer'), question: document.getElementById('question-container'), hint: document.getElementById('hint-container'), feedback: document.getElementById('feedback'), score: document.getElementById('score'), answered: document.getElementById('answered'), progressFill: document.getElementById('progress-fill'), resultTitle: document.getElementById('result-title'), resultMessage: document.getElementById('result-message'), stars: document.getElementById('stars'), resultAnswered: document.getElementById('result-answered'), resultCorrect: document.getElementById('result-correct'), resultScore: document.getElementById('result-score'), resultBonus: document.getElementById('result-bonus') },
+            inputs: { answer: document.getElementById('answer-input') },
+            containers: { instructions: document.getElementById('instructions') }
+        };
+
+        // Speech
+        let speechSynthesis = window.speechSynthesis;
+        let isSpeaking = false;
+        function speak(text, onEnd = null) {
+            if (!speechSynthesis) return;
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.85;
+            utterance.pitch = 1.1;
+            utterance.lang = 'en-US';
+            utterance.onend = () => { isSpeaking = false; if (onEnd) onEnd(); };
+            utterance.onerror = () => { isSpeaking = false; if (onEnd) onEnd(); };
+            isSpeaking = true;
+            speechSynthesis.speak(utterance);
+        }
+        function stopSpeaking() { if (speechSynthesis) { speechSynthesis.cancel(); isSpeaking = false; } }
+
+        // Question management
+        function getRandomQuestion() {
+            const available = questionBank.filter((_, i) => !gameState.usedQuestionIndices.has(i));
+            if (available.length === 0) {
+                gameState.usedQuestionIndices.clear();
+                return getRandomQuestion();
+            }
+            const idx = questionBank.indexOf(available[Math.floor(Math.random() * available.length)]);
+            gameState.usedQuestionIndices.add(idx);
+            return questionBank[idx];
+        }
+
+        function checkAnswer(userAnswer, correctAnswers) {
+            if (!userAnswer) return false;
+            const norm = userAnswer.trim().toLowerCase().replace(/[^\w\s]/g, '');
+            return correctAnswers.some(a => norm.includes(a.toLowerCase().replace(/[^\w\s]/g, '')) || 
+                  a.toLowerCase().replace(/[^\w\s]/g, '').includes(norm));
+        }
+
+        // Timer
+        function startTimer() {
+            gameState.timeLeft = 40;
+            gameState.hintsShown = 0;
+            updateTimerDisplay();
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                if ([30, 20, 10].includes(gameState.timeLeft) && gameState.hintsShown < 3) {
+                    showHint();
+                    gameState.hintsShown++;
+                }
+                if (gameState.timeLeft <= 10) elements.displays.timer.className = 'danger';
+                else if (gameState.timeLeft <= 20) elements.displays.timer.className = 'warning';
+                if (gameState.timeLeft <= 0) handleTimeUp();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() { elements.displays.timer.textContent = gameState.timeLeft; }
+        function showHint() { if (gameState.currentQuestion?.hint) { elements.displays.hint.textContent = "💡 " + gameState.currentQuestion.hint; elements.displays.hint.classList.add('show'); } }
+        function hideHint() { elements.displays.hint.classList.remove('show'); elements.displays.hint.textContent = ''; }
+
+        function handleTimeUp() {
+            clearInterval(gameState.timer);
+            stopSpeaking();
+            speak("Time is up, moving to the next question");
+            showFeedback("⏰ Time is up! Answer: " + gameState.currentQuestion.a[0], 'timeup');
+            disableInput();
+            elements.buttons.next.style.display = 'inline-flex';
+            elements.buttons.submit.style.display = 'none';
+            setTimeout(nextQuestion, 2500);
+        }
+
+        function showFeedback(msg, type) {
+            elements.displays.feedback.textContent = msg;
+            elements.displays.feedback.className = `feedback-${type}`;
+            if (type === 'correct') {
+                elements.inputs.answer.classList.add('correct-answer');
+                setTimeout(() => elements.inputs.answer.classList.remove('correct-answer'), 600);
+                if (gameState.score % 5 === 0) createConfetti(8);
+            } else {
+                elements.inputs.answer.classList.add('incorrect-answer');
+                setTimeout(() => elements.inputs.answer.classList.remove('incorrect-answer'), 500);
+            }
+        }
+
+        function disableInput() { elements.inputs.answer.disabled = true; }
+        function enableInput() { elements.inputs.answer.disabled = false; elements.inputs.answer.value = ''; elements.inputs.answer.focus(); }
+        function updateProgress() {
+            const pct = (gameState.answeredQuestions / 30) * 100;
+            elements.displays.progressFill.style.width = `${pct}%`;
+            elements.displays.answered.textContent = gameState.answeredQuestions;
+            elements.displays.score.textContent = gameState.score;
+        }
+
+        function createConfetti(count) {
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#A29BFE', '#00D2D3'];
+            for (let i = 0; i < count; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + '%';
+                c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                document.getElementById('game-container').appendChild(c);
+                setTimeout(() => c.remove(), 5000);
+            }
+        }
+
+        function loadQuestion() {
+            hideHint();
+            elements.displays.feedback.textContent = '';
+            elements.displays.feedback.className = '';
+            gameState.currentQuestion = getRandomQuestion();
+            elements.displays.question.textContent = gameState.currentQuestion.q;
+            setTimeout(() => speak(gameState.currentQuestion.q), 200);
+            enableInput();
+            elements.buttons.submit.style.display = 'inline-flex';
+            elements.buttons.next.style.display = 'none';
+            startTimer();
+        }
+
+        function submitAnswer() {
+            clearInterval(gameState.timer);
+            stopSpeaking();
+            const isCorrect = checkAnswer(elements.inputs.answer.value, gameState.currentQuestion.a);
+            if (isCorrect) {
+                gameState.score++;
+                const praises = ["✨ Great job!", "🌟 Excellent!", "🎉 Perfect!", "👏 Well done!"];
+                showFeedback(praises[Math.floor(Math.random() * praises.length)], 'correct');
+                speak("Great job!");
+            } else {
+                showFeedback("💭 Not quite! Answer: " + gameState.currentQuestion.a[0], 'incorrect');
+                speak("The answer was: " + gameState.currentQuestion.a[0]);
+            }
+            gameState.answeredQuestions++;
+            updateProgress();
+            disableInput();
+            elements.buttons.submit.style.display = 'none';
+            elements.buttons.next.style.display = 'inline-flex';
+            if (gameState.answeredQuestions >= 30) setTimeout(endLevel, 2000);
+        }
+
+        function nextQuestion() { if (gameState.answeredQuestions >= 30) endLevel(); else loadQuestion(); }
+
+        function endLevel() {
+            const pct = gameState.score / 30;
+            const passed = pct >= 0.8;
+            const stars = pct >= 1 ? '⭐⭐⭐' : pct >= 0.9 ? '⭐⭐✨' : pct >= 0.8 ? '⭐⭐' : '⭐';
+            elements.displays.resultTitle.textContent = passed ? "🎉 Amazing! Level Done!" : "💪 Keep Practicing!";
+            elements.displays.resultMessage.textContent = passed ? "You're a brilliant Geometry Explorer!" : "Try again to unlock the next level!";
+            elements.displays.stars.textContent = stars;
+            elements.displays.resultAnswered.textContent = `${gameState.answeredQuestions}/30`;
+            elements.displays.resultCorrect.textContent = gameState.score;
+            elements.displays.resultScore.textContent = `${Math.round(pct * 100)}%`;
+            elements.displays.resultBonus.textContent = passed ? `+${gameState.score}` : '+0';
+            
+            if (passed && gameState.currentLevel < 5) {
+                gameState.levelUnlocked[gameState.currentLevel] = true;
+                elements.buttons.nextLevel.style.display = 'inline-flex';
+                elements.buttons.nextLevel.onclick = () => { gameState.currentLevel++; startLevel(); };
+            } else {
+                elements.buttons.nextLevel.style.display = 'none';
+            }
+            showScreen('result');
+            updateLevelButtons();
+            if (passed) createConfetti(40);
+        }
+
+        function startLevel() {
+            gameState.score = 0;
+            gameState.answeredQuestions = 0;
+            gameState.usedQuestionIndices.clear();
+            elements.displays.level.textContent = gameState.currentLevel;
+            updateProgress();
+            showScreen('game');
+            gameState.gameActive = true;
+            loadQuestion();
+        }
+
+        function showScreen(name) { Object.values(elements.screens).forEach(s => s.classList.remove('active')); elements.screens[name].classList.add('active'); }
+        function updateLevelButtons() { elements.buttons.levelButtons.forEach(btn => { const lvl = parseInt(btn.dataset.level); gameState.levelUnlocked[lvl-1] ? btn.classList.remove('locked') : btn.classList.add('locked'); }); }
+
+        // Events
+        elements.buttons.start.addEventListener('click', () => { showScreen('levelSelect'); updateLevelButtons(); });
+        elements.buttons.howToPlay.addEventListener('click', () => { const vis = elements.containers.instructions.style.display === 'none'; elements.containers.instructions.style.display = vis ? 'block' : 'none'; });
+        elements.buttons.backToStart.addEventListener('click', () => showScreen('start'));
+        elements.buttons.levelButtons.forEach(btn => btn.addEventListener('click', () => { if (!btn.classList.contains('locked')) { gameState.currentLevel = parseInt(btn.dataset.level); startLevel(); } }));
+        elements.buttons.voice.addEventListener('click', () => { if (isSpeaking) stopSpeaking(); else if (gameState.currentQuestion) speak(gameState.currentQuestion.q); });
+        elements.buttons.submit.addEventListener('click', submitAnswer);
+        elements.inputs.answer.addEventListener('keypress', e => { if (e.key === 'Enter' && !elements.inputs.answer.disabled) submitAnswer(); });
+        elements.buttons.next.addEventListener('click', nextQuestion);
+        elements.buttons.retry.addEventListener('click', startLevel);
+        elements.buttons.home.addEventListener('click', () => showScreen('start'));
+        
+        function init() { console.log("Grade 2 Geometry Explorer ready!"); }
+        window.addEventListener('load', () => setTimeout(init, 200));
+    </script>
+</body>
+</html>

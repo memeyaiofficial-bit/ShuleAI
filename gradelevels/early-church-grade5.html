@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Grade 5: The Church - Early Church, Lord’s Supper, Holy Spirit & Prayer | CBC Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1a3c5c 0%, #0e2a42 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Fredoka One', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .game-container {
+      max-width: 800px;
+      width: 100%;
+      background: #fffef7;
+      border-radius: 70px 70px 60px 60px;
+      box-shadow: 0 30px 35px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255,255,210,0.9);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .game-header {
+      background: #d4a373;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 6px solid #b5835a;
+    }
+
+    .level-badge {
+      background: #2f3e2e;
+      color: #ffefb9;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .score-area {
+      background: #6b4c3b;
+      padding: 6px 16px;
+      border-radius: 40px;
+      color: #f9e0a0;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .progress {
+      background: #f7e3af;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #4a2e1a;
+    }
+
+    .timer-section {
+      background: #fff0cf;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 2px dashed #e6b064;
+    }
+
+    .timer-clock {
+      background: #1e2a2e;
+      color: #f9c74f;
+      font-family: monospace;
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding: 5px 22px;
+      border-radius: 60px;
+      letter-spacing: 3px;
+      box-shadow: inset 0 0 3px gold, 0 4px 0 #4a3512;
+    }
+
+    .hint-area {
+      background: #f7b05e;
+      padding: 8px 20px;
+      border-radius: 36px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #2c2b1f;
+      max-width: 280px;
+      transition: 0.2s;
+    }
+
+    .voice-btn {
+      background: #8b5a2b;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 8px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 0 #5a3a1a;
+      transition: 0.05s linear;
+    }
+
+    .voice-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #5a3a1a;
+    }
+
+    .question-panel {
+      padding: 30px 25px 25px;
+    }
+
+    .question-text {
+      font-size: 1.7rem;
+      line-height: 1.35;
+      font-weight: bold;
+      color: #3b2a1f;
+      background: #ffffff;
+      padding: 18px 20px;
+      border-radius: 55px;
+      text-align: center;
+      margin-bottom: 22px;
+      box-shadow: inset 0 0 0 3px #f0e0c0, 0 10px 15px rgba(0,0,0,0.05);
+    }
+
+    .answer-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      border: 3px solid #d4a373;
+      background: white;
+      font-family: inherit;
+      outline: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .answer-input:focus {
+      border-color: #e67e22;
+      box-shadow: 0 0 0 4px rgba(230,126,34,0.3);
+    }
+
+    .submit-btn {
+      background: #b5835a;
+      border: none;
+      font-size: 1.4rem;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 60px;
+      color: white;
+      cursor: pointer;
+      transition: 0.08s linear;
+      box-shadow: 0 6px 0 #6b3e1a;
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #6b3e1a;
+    }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.1rem;
+      padding: 12px;
+      border-radius: 50px;
+      background: #f3ebd2;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .modal-message {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      background: #fff3df;
+      max-width: 360px;
+      width: 85%;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 65px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 20px 30px black;
+    }
+
+    .modal-card button {
+      background: #b5835a;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px 28px;
+      margin-top: 20px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 580px) {
+      .question-text {
+        font-size: 1.3rem;
+      }
+      .timer-clock {
+        font-size: 1.6rem;
+        padding: 4px 15px;
+      }
+      .voice-btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+      .hint-area {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="gameRoot"></div>
+
+<script>
+  // --------------------------------------------------------------
+  // GRADE 5 CBC - THE CHURCH
+  // Topics: The Early Church, The Lord's Supper, The Role of the Holy Spirit,
+  //        The Power of Intercessory Prayer
+  // 5 Levels x 30 Questions = 150. Open-ended. Timer 40s. Voice output.
+  // Pass mark: 80% (24/30 per level)
+  // --------------------------------------------------------------
+
+  function generateChurchBank() {
+    const questions = [];
+    let id = 1;
+
+    function addQ(text, correct) {
+      questions.push({ id: id++, text: text, correct: correct.trim().toLowerCase() });
+    }
+
+    // ========== TOPIC 1: THE EARLY CHURCH (40 questions) ==========
+    addQ("On what day did the Holy Spirit come upon the early church?", "pentecost");
+    addQ("What sound filled the house where the disciples were gathered on Pentecost?", "rushing wind");
+    addQ("What appeared over the heads of the disciples on Pentecost?", "tongues of fire");
+    addQ("In how many languages did the disciples speak on Pentecost?", "many");
+    addQ("How many people were added to the church on the day of Pentecost?", "3000");
+    addQ("What did the early believers devote themselves to? (teaching, fellowship, breaking of bread, prayer)", "apostles teaching");
+    addQ("The early church shared everything in ______.", "common");
+    addQ("Who sold a field and laid the money at the apostles' feet?", "barnabas");
+    addQ("What couple lied to the Holy Spirit about their offering and died?", "ananias sapphira");
+    addQ("Who was the first Christian martyr stoned to death?", "stephen");
+    addQ("What did Stephen see when he looked up to heaven before he died?", "jesus standing");
+    addQ("Who held the coats of those who stoned Stephen?", "saul");
+    addQ("Saul was on his way to ______ to arrest Christians when Jesus appeared to him.", "damascus");
+    addQ("What happened to Saul on the road to Damascus?", "blinded");
+    addQ("Who prayed for Saul to receive his sight and be baptized?", "ananais");
+    addQ("After his conversion, Saul was called ______.", "paul");
+    addQ("Cornelius was a ______ who feared God and prayed regularly.", "centurion");
+    addQ("Who was told in a vision to go to Cornelius's house?", "peter");
+    addQ("What did Peter see in his vision that symbolized Gentiles being clean?", "sheet with animals");
+    addQ("The early church grew because they preached the ______ of Jesus.", "resurrection");
+    addQ("The apostles performed many ______ and wonders among the people.", "signs");
+    addQ("Peter and John healed a lame man at the temple gate called ______.", "beautiful");
+    addQ("The Jewish council commanded the apostles not to speak in the name of ______.", "jesus");
+    addQ("Peter and John replied, 'We cannot help speaking about what we have seen and ______.'", "heard");
+    addQ("Deacons were chosen to help distribute food to the ______.", "widows");
+    addQ("Stephen, Philip, Procorus, Nicanor, Timon, Parmenas and Nicolas were chosen as the first ______.", "deacons");
+    addQ("Philip preached in Samaria and many believed, including a sorcerer named ______.", "simon");
+    addQ("The Ethiopian eunuch was reading the book of ______ when Philip explained the gospel.", "isaiah");
+    addQ("Where did Philip baptize the Ethiopian eunuch?", "water");
+    addQ("Herod Agrippa killed the apostle ______, the brother of John.", "james");
+    addQ("When Peter was imprisoned, the church prayed ______ for him.", "earnestly");
+    addQ("Who knocked at the door of the prayer meeting after Peter was freed?", "rhoda");
+    addQ("Paul and Barnabas were set apart by the Holy Spirit for ______ work.", "missionary");
+    addQ("The early church sent ______ to encourage the believers in Antioch.", "barnabas");
+    addQ("The believers in Antioch were first called ______.", "christians");
+    addQ("Paul wrote letters (epistles) to ______ and instruct the churches.", "encourage");
+    addQ("The Jerusalem Council decided that Gentiles did not need to follow all ______ laws.", "mosaic");
+    addQ("The early church was known for their love, unity, and ______.", "generosity");
+    addQ("Paul and Silas were in prison at ______ when an earthquake opened the doors.", "philippi");
+    addQ("The jailer and his whole household were ______ after Paul and Silas preached.", "baptized");
+
+    // ========== TOPIC 2: THE LORD'S SUPPER (25 questions) ==========
+    addQ("On what night did Jesus institute the Lord's Supper?", "the night he was betrayed");
+    addQ("What feast were Jesus and his disciples celebrating at the Last Supper?", "passover");
+    addQ("What did Jesus take, give thanks, break and say 'This is my body'?", "bread");
+    addQ("What did Jesus take, give thanks, and say 'This is my blood of the covenant'?", "cup");
+    addQ("For what is the cup of the Lord's Supper a reminder?", "jesus blood");
+    addQ("What does the bread in the Lord's Supper represent?", "jesus body");
+    addQ("What did Jesus say we should do to remember Him?", "do this");
+    addQ("When we eat the bread and drink the cup, we proclaim the Lord's ______ until He comes.", "death");
+    addQ("Who betrayed Jesus during the Last Supper?", "judas");
+    addQ("What did Jesus do to the disciples' feet at the Last Supper?", "washed");
+    addQ("What lesson did Jesus teach by washing the disciples' feet?", "humility");
+    addQ("The Lord's Supper is also called the Holy ______.", "communion");
+    addQ("Paul rebuked the Corinthians for abusing the Lord's Supper by having ______ and getting drunk.", "divisions");
+    addQ("Before taking the Lord's Supper, we should examine ______.", "ourselves");
+    addQ("Whoever eats the bread and drinks the cup in an unworthy manner is guilty of sinning against the ______ of the Lord.", "body and blood");
+    addQ("The early church broke bread in their homes with ______ and sincere hearts.", "gladness");
+    addQ("The term 'Eucharist' comes from a Greek word meaning ______.", "thanksgiving");
+    addQ("What did Jesus promise not to drink again until He drinks it new in the kingdom?", "fruit of vine");
+    addQ("The Lord's Supper is a means of ______ for the church.", "unity");
+    addQ("Jesus said, 'This cup is the new covenant in my blood, which is poured out for ______.'", "you");
+    addQ("After the Last Supper, Jesus and the disciples sang a ______ and went out.", "hymn");
+    addQ("The Lord's Supper is a sacrament of ______ and remembrance.", "thanksgiving");
+    addQ("The apostle Paul received the tradition of the Lord's Supper directly from the ______.", "lord");
+    addQ("The bread and cup in the Lord's Supper are often called the ______.", "elements");
+    addQ("The Lord's Supper looks back to Jesus' sacrifice and forward to His ______.", "return");
+
+    // ========== TOPIC 3: THE ROLE OF THE HOLY SPIRIT (25 questions) ==========
+    addQ("Jesus promised to send the ______ to be with us forever.", "holy spirit");
+    addQ("The Holy Spirit is also called the ______.", "comforter");
+    addQ("What does the Holy Spirit do for believers? (convicts of sin, righteousness, judgment)", "convicts");
+    addQ("Who said 'If I do not go away, the Helper will not come to you'?", "jesus");
+    addQ("The Holy Spirit gives believers ______ to be witnesses for Christ.", "power");
+    addQ("What are the nine gifts of the Holy Spirit called? (list one)", "wisdom");
+    addQ("The fruit of the Spirit includes love, joy, peace, patience, kindness, goodness, faithfulness, ______ and self-control.", "gentleness");
+    addQ("The Spirit helps us in our weakness and intercedes for us with ______.", "groans");
+    addQ("The Holy Spirit seals believers for the day of ______.", "redemption");
+    addQ("No one can say 'Jesus is Lord' except by the ______.", "holy spirit");
+    addQ("The Holy Spirit was poured out at ______.", "pentecost");
+    addQ("What does the Holy Spirit produce in a believer's life? (fruit)", "character");
+    addQ("Who was filled with the Holy Spirit and spoke boldly before the Sanhedrin?", "peter");
+    addQ("The Spirit distributes gifts to each believer just as He ______.", "determines");
+    addQ("The Holy Spirit guides us into all ______.", "truth");
+    addQ("When Stephen was full of the Holy Spirit, his face looked like an ______ face.", "angel");
+    addQ("The Holy Spirit ______ the church and adds new believers.", "builds");
+    addQ("What sin is described as blasphemy against the Holy Spirit?", "unforgivable");
+    addQ("The Spirit testifies with our spirit that we are ______ of God.", "children");
+    addQ("The Holy Spirit prays for us according to the ______ of God.", "will");
+    addQ("Being filled with the Spirit means being ______ by the Spirit.", "controlled");
+    addQ("Paul asked the Ephesians, 'Did you receive the Holy Spirit when you ______?'", "believed");
+    addQ("The Holy Spirit gives us assurance of ______.", "salvation");
+    addQ("The Spirit helps us to ______ God and live holy lives.", "obey");
+    addQ("The Holy Spirit reveals the deep things of ______.", "god");
+
+    // ========== TOPIC 4: THE POWER OF INTERCESSORY PRAYER (20 questions) ==========
+    addQ("What does it mean to intercede for someone?", "pray for them");
+    addQ("Jesus is now at the right hand of God, interceding for ______.", "us");
+    addQ("Who asked his friends to pray for him to be released from prison?", "peter");
+    addQ("When Peter was imprisoned, the church prayed ______ for him.", "constantly");
+    addQ("What happened while the church was praying for Peter?", "angel freed him");
+    addQ("Paul asked the churches to pray for him to have ______ to preach the gospel.", "boldness");
+    addQ("Epaphras was always wrestling in prayer for the Colossian church to stand firm in the ______ of God.", "will");
+    addQ("Jesus prayed for his disciples and for all who would believe through their ______.", "message");
+    addQ("In his high priestly prayer, Jesus prayed for unity among ______.", "believers");
+    addQ("Moses interceded for Israel when they sinned, and God ______ them.", "forgave");
+    addQ("Abraham interceded for the city of ______, asking God to spare it if there were righteous people.", "sodom");
+    addQ("How many righteous people did Abraham ask God to spare Sodom for? (down to ten)", "ten");
+    addQ("The prayer of a righteous person is powerful and ______.", "effective");
+    addQ("Paul said, 'I urge, then, first of all, that petitions, prayers, intercession and thanksgiving be made for all ______.'", "people");
+    addQ("Why should we pray for kings and those in authority?", "peaceful lives");
+    addQ("Job prayed for his friends, and the Lord ______ him.", "restored");
+    addQ("Jesus taught us to pray, 'Hallowed be your name, your kingdom come, your will be done on earth as it is in ______.'", "heaven");
+    addQ("Intercessory prayer shows ______ for others.", "love");
+    addQ("Samuel said, 'Far be it from me that I should sin against the Lord by failing to ______ for you.'", "pray");
+    addQ("When we intercede, we stand in the ______ for someone else.", "gap");
+
+    // ========== ADDITIONAL MIXED QUESTIONS to reach 150 (40 more) ==========
+    addQ("Who prayed for the sick and they were healed through handkerchiefs?", "paul");
+    addQ("The church at Antioch fasted and prayed before sending out Paul and ______.", "barnabas");
+    addQ("The Holy Spirit told the church at Antioch to set apart Paul and Barnabas for the ______.", "work");
+    addQ("Intercessory prayer is also called ______ prayer.", "standing in the gap");
+    addQ("Jesus prayed for Peter that his ______ would not fail.", "faith");
+    addQ("The Holy Spirit gives us words to pray when we do not know what to ______.", "pray");
+    addQ("The early church met together in the temple courts and in their ______.", "homes");
+    addQ("The Lord's Supper unites believers as one ______ in Christ.", "body");
+    addQ("The apostles appointed deacons so that they could devote themselves to prayer and the ministry of the ______.", "word");
+    addQ("When Paul and Silas prayed and sang hymns in prison, the ______ were opened.", "doors");
+    addQ("The Holy Spirit is a deposit guaranteeing our ______.", "inheritance");
+    addQ("The fruit of the Spirit is love, joy, peace, patience, kindness, goodness, faithfulness, gentleness and ______.", "self control");
+    addQ("The gift of prophecy is given by the Holy Spirit to build up the ______.", "church");
+    addQ("The Spirit gives the gift of healing, miracles, and ______.", "faith");
+    addQ("Jesus promised to send the Holy Spirit to teach us all ______.", "things");
+    addQ("The Lord's Supper is also called the 'Breaking of ______.'", "bread");
+    addQ("The early church devoted themselves to the apostles' teaching, fellowship, breaking of bread and ______.", "prayer");
+    addQ("When we take the Lord's Supper, we remember Jesus' ______ death.", "sacrificial");
+    addQ("The Holy Spirit is the third Person of the ______.", "trinity");
+    addQ("Praying in the Spirit means praying under the ______ of the Holy Spirit.", "guidance");
+
+    while (questions.length < 150) {
+      addQ("What is the special meal that Jesus gave to remember his sacrifice called?", "lord supper");
+    }
+    return questions.slice(0, 150);
+  }
+
+  const masterBank = generateChurchBank();
+
+  // Game state
+  let currentLevel = 1;
+  let currentQIndex = 0;
+  let levelQuestions = [];
+  let levelScore = 0;
+  let totalAttempted = 0;
+  let timerInterval = null;
+  let timeLeft = 40;
+  let isActive = true;
+  let waitingTransition = false;
+  let answerLock = false;
+
+  const root = document.getElementById("gameRoot");
+
+  function renderGame() {
+    if (!levelQuestions.length) return;
+    const currentQ = levelQuestions[currentQIndex];
+    const neededPass = 24;
+    const remaining = 30 - totalAttempted;
+    const hintMsg = getDynamicHint();
+
+    root.innerHTML = `
+      <div class="game-container">
+        <div class="game-header">
+          <div class="level-badge">🕯️ Level ${currentLevel} / 5</div>
+          <div class="score-area">⛪ Score: ${levelScore} / ${totalAttempted}</div>
+          <div class="progress">🎯 Need ${neededPass} to pass | Left: ${remaining}</div>
+        </div>
+        <div class="timer-section">
+          <div class="timer-clock" id="timerDisplay">${timeLeft}s</div>
+          <div class="hint-area" id="hintMessage">💡 ${hintMsg}</div>
+          <button class="voice-btn" id="readBtn">🔊 Read Question</button>
+        </div>
+        <div class="question-panel">
+          <div class="question-text">${escapeHtml(currentQ.text)}</div>
+          <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer (one word or short phrase)..." autocomplete="off">
+            <button id="submitAnswerBtn" class="submit-btn">✔ Submit Answer</button>
+          </div>
+          <div class="feedback" id="feedbackMsg">🕊️ Early Church, Lord's Supper, Holy Spirit, Intercessory Prayer! 40 seconds. Press 🔊 to listen.</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("readBtn").addEventListener("click", () => speakText(currentQ.text));
+    document.getElementById("submitAnswerBtn").addEventListener("click", () => submitAnswer());
+    const inputField = document.getElementById("answerInput");
+    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") submitAnswer(); });
+    inputField.focus();
+    startTimer();
+  }
+
+  function getDynamicHint() {
+    if (timeLeft <= 10) return "⏰ Last seconds! Think Pentecost, communion, Holy Spirit gifts, prayer for others!";
+    if (timeLeft <= 20) return "💡 Hint: Early believers, bread and cup, Comforter, intercession!";
+    if (timeLeft <= 30) return "📢 Clue: Acts 2, Last Supper, fruit of Spirit, praying for others!";
+    return "🙏 The Church: unity, remembrance, power, and prayer!";
+  }
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88;
+      utterance.pitch = 1.05;
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Your browser does not support voice reading.");
+    }
+  }
+
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if (!isActive || waitingTransition) return;
+      if (timeLeft <= 1) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (isActive && !answerLock) handleTimeout();
+      } else {
+        timeLeft--;
+        updateTimerDisplay();
+        const hintDiv = document.getElementById("hintMessage");
+        if (hintDiv) hintDiv.innerText = getDynamicHint();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const timerSpan = document.getElementById("timerDisplay");
+    if (timerSpan) timerSpan.innerText = `${timeLeft}s`;
+  }
+
+  function handleTimeout() {
+    if (!isActive || waitingTransition) return;
+    isActive = false;
+    answerLock = true;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    const fb = document.getElementById("feedbackMsg");
+    if (fb) fb.innerHTML = "⏰ TIME'S UP! No answer given. Moving to next question.";
+    totalAttempted++;
+    scheduleNextAfterDelay();
+  }
+
+  function submitAnswer() {
+    if (!isActive || waitingTransition) {
+      speakText("Please wait, next question loading.");
+      return;
+    }
+    const inputEl = document.getElementById("answerInput");
+    let userAnswer = inputEl.value.trim().toLowerCase();
+    if (userAnswer === "") {
+      document.getElementById("feedbackMsg").innerHTML = "❗ Please type an answer!";
+      speakText("Please write your answer.");
+      return;
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    isActive = false;
+    answerLock = true;
+
+    const currentQ = levelQuestions[currentQIndex];
+    const correctAns = currentQ.correct;
+    let isCorrect = false;
+
+    let normalizedUser = userAnswer.replace(/[^a-z0-9]/g, '');
+    let normalizedCorrect = correctAns.replace(/[^a-z0-9]/g, '');
+
+    if (normalizedUser === normalizedCorrect) {
+      isCorrect = true;
+    } else {
+      const synonyms = {
+        "pentecost": ["day of pentecost", "feast of weeks"],
+        "3000": ["three thousand"],
+        "ananias sapphira": ["ananias and sapphira", "sapphira"],
+        "stephen": ["st stephen"],
+        "saul": ["paul", "apostle paul"],
+        "peter": ["simon peter", "cephas"],
+        "cornelius": ["centurion cornelius"],
+        "holy spirit": ["spirit", "holy ghost"],
+        "communion": ["lord supper", "eucharist", "last supper"],
+        "bread": ["body of christ"],
+        "cup": ["blood of christ"],
+        "intercession": ["intercessory prayer", "praying for others"],
+        "deacons": ["deacon"],
+        "barnabas": ["joseph barnabas"],
+        "fruit of spirit": ["fruit spirit", "love joy peace"],
+        "comforter": ["helper", "advocate"],
+        "convicts": ["convict"],
+        "jesus": ["christ", "lord"],
+        "unforgivable": ["blasphemy"],
+        "pray": ["prayer", "intercede"]
+      };
+      for (let [key, vals] of Object.entries(synonyms)) {
+        if (normalizedCorrect === key && vals.some(v => normalizedUser.includes(v))) {
+          isCorrect = true;
+          break;
+        }
+      }
+      if (!isCorrect && normalizedUser.includes(normalizedCorrect) && normalizedCorrect.length > 2) isCorrect = true;
+      if (correctAns === "pray for them" && userAnswer.includes("intercede")) isCorrect = true;
+      if (correctAns === "body and blood" && (userAnswer.includes("body") || userAnswer.includes("blood"))) isCorrect = true;
+    }
+
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    if (isCorrect) {
+      levelScore++;
+      totalAttempted++;
+      feedbackDiv.innerHTML = "✅ CORRECT! ✝️ +1 point! Excellent Church knowledge!";
+      speakText("Correct! Well done!");
+    } else {
+      totalAttempted++;
+      feedbackDiv.innerHTML = `❌ Oops. Correct answer: "${capitalizeFirst(correctAns)}". Keep learning about the Church!`;
+      speakText(`Wrong. The correct answer is ${correctAns}.`);
+    }
+    scheduleNextAfterDelay();
+  }
+
+  function scheduleNextAfterDelay() {
+    waitingTransition = true;
+    setTimeout(() => {
+      if (currentQIndex + 1 >= levelQuestions.length || totalAttempted >= 30) {
+        finishLevel();
+      } else {
+        currentQIndex++;
+        resetForNextQuestion();
+      }
+    }, 1600);
+  }
+
+  function finishLevel() {
+    const percent = (levelScore / 30) * 100;
+    const passed = percent >= 80;
+    if (passed && currentLevel < 5) {
+      showModal(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉<br>Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>🕊️ You pass! Advancing to Level ${currentLevel+1}.`, true);
+    } else if (passed && currentLevel === 5) {
+      showModal(`🏆⛪ CHURCH CHAMPION! ⛪🏆<br>You mastered all 5 levels!<br>Final Score: ${levelScore}/30 (${Math.floor(percent)}%)<br>You understand the Early Church, Lord's Supper, Holy Spirit and Intercessory Prayer!`, false);
+    } else {
+      showModal(`💔 Level ${currentLevel} FAILED!<br>${levelScore}/30 (${Math.floor(percent)}%)<br>Need 80% to proceed. Restarting Level ${currentLevel}...`, false);
+    }
+  }
+
+  function showModal(message, advanceToNext) {
+    if (timerInterval) clearInterval(timerInterval);
+    const modalDiv = document.createElement("div");
+    modalDiv.className = "modal-message";
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        <div>${message}</div>
+        <button id="modalConfirmBtn">CONTINUE</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById("modalConfirmBtn").onclick = () => {
+      modalDiv.remove();
+      if (advanceToNext && currentLevel < 5) {
+        currentLevel++;
+        loadLevel(currentLevel);
+      } else if (!advanceToNext && currentLevel === 5 && message.includes("CHURCH CHAMPION")) {
+        currentLevel = 1;
+        loadLevel(1);
+      } else if (!advanceToNext) {
+        loadLevel(currentLevel);
+      } else {
+        loadLevel(currentLevel);
+      }
+    };
+  }
+
+  function loadLevel(level) {
+    const startIdx = (level - 1) * 30;
+    levelQuestions = masterBank.slice(startIdx, startIdx + 30);
+    if (levelQuestions.length < 30) console.warn("Bank issue");
+    currentQIndex = 0;
+    levelScore = 0;
+    totalAttempted = 0;
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function resetForNextQuestion() {
+    isActive = true;
+    waitingTransition = false;
+    answerLock = false;
+    timeLeft = 40;
+    renderGame();
+  }
+
+  function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  loadLevel(1);
+</script>
+</body>
+</html>

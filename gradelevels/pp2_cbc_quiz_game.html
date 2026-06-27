@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PP2 Star Scholar Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f172a;--card:#1e293b;--card2:#243047;
+  --purple:#a78bfa;--purple2:#7c3aed;
+  --green:#34d399;--green2:#059669;
+  --yellow:#fbbf24;--yellow2:#d97706;
+  --red:#f87171;--red2:#dc2626;
+  --blue:#60a5fa;--blue2:#2563eb;
+  --pink:#f472b6;--pink2:#db2777;
+  --orange:#fb923c;--orange2:#ea580c;
+  --teal:#2dd4bf;--teal2:#0d9488;
+  --white:#f1f5f9;--muted:#94a3b8;
+  --r:16px;--r2:12px;
+}
+html,body{width:100%;min-height:100%;background:var(--bg);font-family:'Nunito',sans-serif;color:var(--white);overflow-x:hidden}
+button{font-family:'Nunito',sans-serif;cursor:pointer;border:none;outline:none}
+
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,0.3) 0%,transparent 100%),
+  radial-gradient(1px 1px at 80% 10%,rgba(255,255,255,0.2) 0%,transparent 100%),
+  radial-gradient(1px 1px at 50% 70%,rgba(255,255,255,0.25) 0%,transparent 100%),
+  radial-gradient(1px 1px at 10% 80%,rgba(255,255,255,0.15) 0%,transparent 100%),
+  radial-gradient(1px 1px at 90% 60%,rgba(255,255,255,0.2) 0%,transparent 100%);
+  pointer-events:none;z-index:0}
+
+#app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:12px}
+
+.screen{display:none;width:100%;max-width:480px;animation:fadeIn .35s ease}
+.screen.active{display:flex;flex-direction:column;align-items:center}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(0.7)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+@keyframes confetti{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+.logo-area{text-align:center;padding:24px 0 16px;width:100%}
+.logo-star{font-size:72px;animation:bounce 2s ease-in-out infinite;display:block;line-height:1}
+.logo-title{font-family:'Fredoka One',cursive;font-size:clamp(28px,8vw,40px);background:linear-gradient(135deg,var(--yellow),var(--orange),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:8px 0 4px}
+.logo-sub{font-size:14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+.student-form{width:100%;background:var(--card);border-radius:var(--r);padding:20px;margin:12px 0}
+.form-label{font-size:13px;color:var(--muted);margin-bottom:6px;display:block;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.form-input{width:100%;background:var(--card2);border:2px solid rgba(255,255,255,0.08);border-radius:var(--r2);padding:12px 16px;color:var(--white);font-size:16px;font-family:'Nunito',sans-serif;transition:.2s}
+.form-input:focus{border-color:var(--purple);outline:none}
+
+.subject-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;margin:10px 0}
+.subj-btn{background:var(--card2);border:2px solid transparent;border-radius:var(--r2);padding:14px 10px;text-align:center;cursor:pointer;transition:.2s;color:var(--white)}
+.subj-btn:hover{transform:scale(1.03)}
+.subj-btn.selected{border-color:var(--color, var(--purple));background:rgba(167,139,250,.15)}
+.subj-btn.selected .subj-icon{animation:pop .3s ease}
+.subj-icon{font-size:30px;display:block;margin-bottom:6px}
+.subj-name{font-size:12px;font-weight:700;letter-spacing:.3px}
+
+.play-btn{width:100%;background:linear-gradient(135deg,var(--yellow),var(--orange));color:#1a1a1a;border-radius:var(--r);padding:18px;font-size:18px;font-weight:800;font-family:'Fredoka One',cursive;letter-spacing:1px;transition:.2s;margin-top:10px}
+.play-btn:hover{transform:scale(1.02);filter:brightness(1.05)}
+.play-btn:active{transform:scale(0.98)}
+.play-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.hud{width:100%;max-width:480px;display:flex;align-items:center;justify-content:space-between;padding:10px 0;gap:8px}
+.hud-score{font-family:'Fredoka One',cursive;font-size:22px;color:var(--yellow);min-width:80px}
+.hud-score span{font-size:12px;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:600;display:block}
+.hud-lives{display:flex;gap:4px}
+.heart{font-size:20px;transition:.3s}
+.heart.lost{opacity:.2;filter:grayscale(1)}
+.hud-streak{background:rgba(251,191,36,.1);border:1.5px solid rgba(251,191,36,.3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700;color:var(--yellow)}
+
+.timer-wrap{width:100%;max-width:480px;background:rgba(255,255,255,.08);border-radius:20px;height:8px;margin:4px 0 10px;overflow:hidden}
+.timer-bar{height:100%;border-radius:20px;transition:width .1s linear,background .5s;background:var(--green)}
+.timer-bar.warn{background:var(--yellow)}
+.timer-bar.danger{background:var(--red);animation:pulse .5s ease infinite}
+
+.q-card{width:100%;background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:12px;border:2px solid rgba(255,255,255,.05)}
+.q-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.q-subj-badge{font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+.q-num{font-size:12px;color:var(--muted);font-weight:600;margin-left:auto}
+.q-text{font-size:clamp(16px,4.5vw,19px);font-weight:700;line-height:1.5;color:var(--white)}
+.q-img{width:100%;border-radius:var(--r2);margin-top:12px;max-height:160px;object-fit:cover}
+
+.options-grid{width:100%;display:flex;flex-direction:column;gap:9px}
+.opt-btn{background:var(--card2);border:2px solid rgba(255,255,255,.08);border-radius:var(--r2);padding:14px 16px;text-align:left;color:var(--white);font-size:15px;font-weight:600;transition:.15s;display:flex;align-items:center;gap:12px}
+.opt-btn:hover:not(:disabled){background:rgba(167,139,250,.12);border-color:var(--purple);transform:translateX(4px)}
+.opt-btn:disabled{cursor:default}
+.opt-btn.correct{background:rgba(52,211,153,.15);border-color:var(--green);color:var(--green)}
+.opt-btn.wrong{background:rgba(248,113,113,.12);border-color:var(--red);color:var(--red);animation:shake .4s ease}
+.opt-letter{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.opt-btn.correct .opt-letter{background:var(--green);color:#063}
+.opt-btn.wrong .opt-letter{background:var(--red);color:#fff}
+
+.feedback{width:100%;text-align:center;padding:12px;border-radius:var(--r2);font-size:15px;font-weight:700;margin-top:4px;animation:pop .3s ease;display:none}
+.feedback.show{display:block}
+.feedback.correct{background:rgba(52,211,153,.15);color:var(--green)}
+.feedback.wrong{background:rgba(248,113,113,.1);color:var(--red)}
+
+.next-btn{width:100%;background:var(--purple2);color:#fff;border-radius:var(--r2);padding:15px;font-size:16px;font-weight:800;margin-top:10px;transition:.2s;display:none}
+.next-btn.show{display:block;animation:slideIn .3s ease}
+.next-btn:hover{background:var(--purple);transform:scale(1.02)}
+
+.hint-btn{background:rgba(96,165,250,.1);border:1.5px solid rgba(96,165,250,.25);color:var(--blue);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:700;transition:.2s}
+.hint-btn:hover{background:rgba(96,165,250,.2)}
+.hint-btn:disabled{opacity:.4;cursor:not-allowed}
+.hint-area{width:100%;background:rgba(96,165,250,.08);border:1.5px solid rgba(96,165,250,.2);border-radius:var(--r2);padding:12px 14px;font-size:14px;color:var(--blue);margin-top:8px;display:none}
+.hint-area.show{display:block;animation:fadeIn .3s ease}
+
+.result-card{width:100%;background:var(--card);border-radius:var(--r);padding:24px;text-align:center}
+.result-trophy{font-size:80px;animation:bounce 1.5s ease infinite;display:block}
+.result-grade{font-family:'Fredoka One',cursive;font-size:clamp(40px,12vw,64px)}
+.result-label{font-size:14px;color:var(--muted);margin:4px 0 16px;font-weight:600}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.stat-box{background:var(--card2);border-radius:var(--r2);padding:14px 8px;text-align:center}
+.stat-val{font-family:'Fredoka One',cursive;font-size:24px}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;text-transform:uppercase}
+
+.badges-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+.badge{background:var(--card2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;border:1.5px solid rgba(255,255,255,.1)}
+
+.action-row{display:flex;gap:10px;width:100%;margin-top:14px}
+.action-btn{flex:1;padding:14px;border-radius:var(--r2);font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;transition:.2s}
+.action-btn:hover{transform:scale(1.02)}
+.btn-retry{background:var(--card2);color:var(--white);border:2px solid rgba(255,255,255,.1)}
+.btn-home{background:linear-gradient(135deg,var(--yellow),var(--orange));color:#1a1a1a}
+
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;pointer-events:none;animation:confetti 3s ease-out forwards;z-index:999}
+
+.s-math{--color:var(--blue);background:rgba(96,165,250,.15);color:var(--blue)}
+.s-english{--color:var(--pink);background:rgba(244,114,182,.15);color:var(--pink)}
+.s-kiswahili{--color:var(--green);background:rgba(52,211,153,.15);color:var(--green)}
+.s-science{--color:var(--purple);background:rgba(167,139,250,.15);color:var(--purple)}
+.s-social{--color:var(--orange);background:rgba(251,146,60,.15);color:var(--orange)}
+.s-cre{--color:var(--yellow);background:rgba(251,191,36,.15);color:var(--yellow)}
+.s-arts{--color:var(--teal);background:rgba(45,212,191,.15);color:var(--teal)}
+
+.combo-popup{position:fixed;top:30%;left:50%;transform:translateX(-50%);background:var(--yellow);color:#1a1a1a;border-radius:30px;padding:10px 28px;font-family:'Fredoka One',cursive;font-size:22px;pointer-events:none;z-index:100;animation:pop .4s ease,fadeOut 1.5s .8s ease forwards;white-space:nowrap}
+@keyframes fadeOut{to{opacity:0;transform:translateX(-50%) translateY(-20px)}}
+
+@media(max-width:380px){.subject-grid{grid-template-columns:repeat(2,1fr)}.result-stats{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:600px){#app{padding:20px}.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
+
+.level-badge{background:linear-gradient(135deg,var(--purple2),var(--pink2));border-radius:20px;padding:4px 14px;font-size:12px;font-weight:800;letter-spacing:.5px}
+.progress-dots{display:flex;flex-wrap:wrap;gap:4px;width:100%;max-width:480px;margin:6px 0}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.1);transition:.3s}
+.dot.done-ok{background:var(--green)}
+.dot.done-wrong{background:var(--red)}
+.dot.current{background:var(--yellow);animation:pulse .8s ease infinite}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="screen-home" class="screen active">
+  <div class="logo-area">
+    <span class="logo-star">⭐</span>
+    <div class="logo-title">PP2 Star Scholar</div>
+    <div class="logo-sub">CBC Quiz Challenge</div>
+  </div>
+  <div class="student-form">
+    <label class="form-label" for="studentName">Your Name</label>
+    <input class="form-input" id="studentName" type="text" placeholder="Enter your name..." maxlength="24" autocomplete="off">
+  </div>
+  <div style="width:100%;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">Choose Subjects</div>
+  <div class="subject-grid" id="subjectGrid">
+    <button class="subj-btn selected" data-subj="math" style="--color:var(--blue)"><span class="subj-icon">🔢</span><span class="subj-name" style="color:var(--blue)">Mathematics</span></button>
+    <button class="subj-btn selected" data-subj="english" style="--color:var(--pink)"><span class="subj-icon">📖</span><span class="subj-name" style="color:var(--pink)">English</span></button>
+    <button class="subj-btn selected" data-subj="kiswahili" style="--color:var(--green)"><span class="subj-icon">🗣️</span><span class="subj-name" style="color:var(--green)">Kiswahili</span></button>
+    <button class="subj-btn selected" data-subj="science" style="--color:var(--purple)"><span class="subj-icon">🔬</span><span class="subj-name" style="color:var(--purple)">Science</span></button>
+    <button class="subj-btn selected" data-subj="social" style="--color:var(--orange)"><span class="subj-icon">🌍</span><span class="subj-name" style="color:var(--orange)">Social Studies</span></button>
+    <button class="subj-btn selected" data-subj="cre" style="--color:var(--yellow)"><span class="subj-icon">✝️</span><span class="subj-name" style="color:var(--yellow)">C.R.E</span></button>
+    <button class="subj-btn selected" data-subj="arts" style="--color:var(--teal)"><span class="subj-icon">🎨</span><span class="subj-name" style="color:var(--teal)">Creative Arts</span></button>
+  </div>
+  <div style="width:100%;display:flex;gap:10px;margin:10px 0 6px;align-items:center">
+    <div style="font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Difficulty</div>
+    <div style="display:flex;gap:6px;margin-left:auto">
+      <button class="diff-btn" data-diff="easy" style="background:rgba(52,211,153,.15);border:1.5px solid rgba(52,211,153,.3);color:var(--green);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:700">Easy</button>
+      <button class="diff-btn selected" data-diff="mixed" style="background:rgba(251,191,36,.15);border:1.5px solid rgba(251,191,36,.4);color:var(--yellow);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:700">Mixed</button>
+      <button class="diff-btn" data-diff="hard" style="background:rgba(248,113,113,.12);border:1.5px solid rgba(248,113,113,.3);color:var(--red);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:700">Hard</button>
+    </div>
+  </div>
+  <button class="play-btn" id="startBtn" onclick="startGame()">🚀 Start Quiz!</button>
+  <div style="margin-top:16px;width:100%;text-align:center"><div style="font-size:12px;color:var(--muted)">20 questions per session • 3 lives • Earn badges!</div></div>
+</div>
+
+<div id="screen-game" class="screen">
+  <div class="hud"><div class="hud-score"><span>SCORE</span><span id="scoreDisplay">0</span></div><div id="progressDots" class="progress-dots" style="flex:1;justify-content:center"></div><div><div class="hud-lives" id="livesDisplay"></div><div id="streakBadge" class="hud-streak" style="margin-top:4px;text-align:center;display:none">🔥 <span id="streakCount">0</span></div></div></div>
+  <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
+  <div class="q-card" id="questionCard"><div class="q-meta"><span class="q-subj-badge" id="qSubjBadge">Math</span><span class="level-badge" id="qLevel">⭐ Level 1</span><span class="q-num" id="qNum">1/20</span></div><div class="q-text" id="questionText">Loading...</div></div>
+  <div class="options-grid" id="optionsGrid"></div>
+  <div class="feedback" id="feedback"></div>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:8px;width:100%">
+    <button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Hint (<span id="hintsLeft">3</span>)</button>
+    <span id="pointsEarned" style="font-size:13px;color:var(--yellow);font-weight:700;margin-left:auto;display:none"></span>
+  </div>
+  <div class="hint-area" id="hintArea"></div>
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question ➜</button>
+</div>
+
+<div id="screen-results" class="screen">
+  <div id="confettiContainer"></div>
+  <div class="result-card">
+    <span id="resultTrophy" class="result-trophy">🏆</span>
+    <div class="result-grade" id="resultGrade" style="color:var(--yellow)">A+</div>
+    <div class="result-label" id="resultLabel">Outstanding Performance!</div>
+    <div id="resultName" style="font-size:16px;font-weight:700;margin-bottom:8px"></div>
+    <div class="result-stats"><div class="stat-box"><div class="stat-val" style="color:var(--yellow)" id="finalScore">0</div><div class="stat-lbl">Score</div></div><div class="stat-box"><div class="stat-val" style="color:var(--green)" id="finalCorrect">0</div><div class="stat-lbl">Correct</div></div><div class="stat-box"><div class="stat-val" style="color:var(--purple)" id="finalStreak">0</div><div class="stat-lbl">Best Streak</div></div></div>
+    <div id="subjectBreakdown" style="width:100%;margin:12px 0"></div>
+    <div class="badges-row" id="badgesRow"></div>
+    <div class="action-row"><button class="action-btn btn-retry" onclick="retryGame()">🔄 Play Again</button><button class="action-btn btn-home" onclick="goHome()">🏠 Home</button></div>
+  </div>
+</div>
+</div>
+
+<script>
+// ============ COMPLETE QUESTION BANK - 30 QUESTIONS PER SUBJECT WITH EASY/MIXED/HARD LEVELS ============
+const ALL_QUESTIONS = {
+math: [
+  {q:"What is 2 + 3?", o:["4","5","6","7"], a:1, hint:"Count on your fingers!", diff:"easy"},
+  {q:"What is 5 + 4?", o:["7","8","9","10"], a:2, hint:"Start at 5, count 4 more", diff:"easy"},
+  {q:"How many sides does a triangle have?", o:["2","3","4","5"], a:1, hint:"Tri means three!", diff:"easy"},
+  {q:"What is half of 10?", o:["4","5","6","3"], a:1, hint:"Share 10 equally between 2", diff:"easy"},
+  {q:"What shape has no corners?", o:["Square","Rectangle","Circle","Triangle"], a:2, hint:"It is round!", diff:"easy"},
+  {q:"What is 7 + 8?", o:["14","15","16","13"], a:1, hint:"7 + 8 = ?", diff:"mixed"},
+  {q:"What is 20 - 9?", o:["10","11","12","9"], a:1, hint:"Count back from 20", diff:"mixed"},
+  {q:"What is 4 × 2?", o:["6","8","10","12"], a:1, hint:"4 groups of 2", diff:"mixed"},
+  {q:"What is 3 × 4?", o:["10","11","12","13"], a:2, hint:"3 groups of 4", diff:"mixed"},
+  {q:"What is double 7?", o:["12","14","13","15"], a:1, hint:"7 + 7 = ?", diff:"mixed"},
+  {q:"Which is the largest: 34, 43, 27, 39?", o:["34","43","27","39"], a:1, hint:"Look at the tens first", diff:"mixed"},
+  {q:"What is 100 - 45?", o:["55","65","45","50"], a:0, hint:"100 take away 45", diff:"hard"},
+  {q:"What is 6 × 7?", o:["36","42","48","40"], a:1, hint:"6 groups of 7", diff:"hard"},
+  {q:"What is 81 ÷ 9?", o:["7","8","9","10"], a:2, hint:"How many 9s in 81?", diff:"hard"},
+  {q:"What is 15% of 200?", o:["20","25","30","35"], a:2, hint:"10% is 20, plus half", diff:"hard"},
+  {q:"What is the perimeter of a square with side 5cm?", o:["15cm","20cm","25cm","30cm"], a:1, hint:"Add all 4 sides", diff:"hard"},
+  {q:"What is 3/4 of 100?", o:["50","75","25","80"], a:1, hint:"Quarter is 25, times 3", diff:"hard"},
+  {q:"What is 2 × 2 × 2?", o:["4","6","8","10"], a:2, hint:"Multiply step by step", diff:"mixed"},
+  {q:"What is the square root of 64?", o:["6","7","8","9"], a:2, hint:"What number times itself = 64", diff:"hard"},
+  {q:"What comes after 99?", o:["98","100","101","110"], a:1, hint:"Add 1 to 99", diff:"easy"},
+  {q:"How many hours are in 2 days?", o:["24","36","48","72"], a:2, hint:"1 day = 24 hours", diff:"mixed"},
+  {q:"What is 5 + 5 + 5 + 5?", o:["15","20","25","30"], a:1, hint:"Four groups of 5", diff:"easy"},
+  {q:"What is 12 × 12?", o:["121","132","144","156"], a:2, hint:"12 groups of 12", diff:"hard"},
+  {q:"What is 0 × 15?", o:["0","15","1","10"], a:0, hint:"Anything times zero is zero", diff:"easy"},
+  {q:"What is 56 ÷ 7?", o:["6","7","8","9"], a:2, hint:"7 × 8 = 56", diff:"mixed"},
+  {q:"What is 9 × 11?", o:["90","99","100","108"], a:1, hint:"9 × 10 = 90, plus 9", diff:"hard"},
+  {q:"What is 40% of 50?", o:["15","20","25","30"], a:1, hint:"Half of 50 is 25, 40% is a bit less", diff:"hard"},
+  {q:"What is the area of a rectangle 4cm by 6cm?", o:["20cm²","24cm²","28cm²","30cm²"], a:1, hint:"Length × Width", diff:"mixed"},
+  {q:"Count in 5s: 5, 10, 15, ___", o:["18","20","25","30"], a:1, hint:"Add 5 each time", diff:"easy"},
+  {q:"What is 250 + 350?", o:["500","600","550","650"], a:1, hint:"25 + 35 = 60, add zero", diff:"mixed"},
+],
+english: [
+  {q:"Which word is a fruit?", o:["Chair","Apple","Book","Run"], a:1, hint:"You can eat it!", diff:"easy"},
+  {q:"Choose the correct sentence:", o:["She go to school","She goes to school","She going school","She went school"], a:1, hint:"She + goes", diff:"easy"},
+  {q:"What is the opposite of 'big'?", o:["Large","Huge","Small","Tall"], a:2, hint:"Think about size", diff:"easy"},
+  {q:"Which letter is a vowel?", o:["B","C","E","G"], a:2, hint:"A, E, I, O, U are vowels", diff:"easy"},
+  {q:"What punctuation ends a question?", o:[".","!","?",","], a:2, hint:"A question needs a...?", diff:"easy"},
+  {q:"The dog __ barking loudly.", o:["am","is","are","were"], a:1, hint:"Dog is singular", diff:"mixed"},
+  {q:"What is the past tense of 'eat'?", o:["Eated","Eaten","Ate","Eats"], a:2, hint:"Yesterday I...", diff:"mixed"},
+  {q:"Choose the correct spelling:", o:["Freind","Friend","Frend","Freiend"], a:1, hint:"I before E except after C?", diff:"mixed"},
+  {q:"What does 'enormous' mean?", o:["Very small","Very fast","Very big","Very old"], a:2, hint:"Elephants are enormous!", diff:"mixed"},
+  {q:"Which word has 3 syllables?", o:["Cat","Water","Beautiful","Go"], a:2, hint:"Beau-ti-ful", diff:"hard"},
+  {q:"What is the plural of 'tooth'?", o:["Tooths","Teeth","Toothes","Teeths"], a:1, hint:"Irregular! Like foot→feet", diff:"hard"},
+  {q:"A story that is made up (not real) is called:", o:["Non-fiction","Fiction","Biography","Report"], a:1, hint:"It is imaginary", diff:"hard"},
+  {q:"What is an antonym for 'ancient'?", o:["Old","Modern","Aged","Elderly"], a:1, hint:"Opposite of very old", diff:"hard"},
+  {q:"Which word is a synonym for 'happy'?", o:["Sad","Joyful","Angry","Tired"], a:1, hint:"Feeling good", diff:"mixed"},
+  {q:"What is the correct form? 'He ___ to school every day'", o:["go","goes","going","went"], a:1, hint:"He + goes", diff:"easy"},
+  {q:"What is the plural of 'child'?", o:["Childs","Children","Childrens","Child"], a:1, hint:"Irregular plural!", diff:"mixed"},
+  {q:"Which word rhymes with 'cat'?", o:["Car","Bat","Cup","Dog"], a:1, hint:"Listen for 'at' sound", diff:"easy"},
+  {q:"What does 'rapidly' mean?", o:["Slowly","Loudly","Quickly","Quietly"], a:2, hint:"The cheetah runs rapidly", diff:"mixed"},
+  {q:"Which is a proper noun?", o:["City","River","Kenya","Mountain"], a:2, hint:"It's a specific place", diff:"mixed"},
+  {q:"Complete: Once __ a time...", o:["in","at","upon","on"], a:2, hint:"Classic story opener!", diff:"easy"},
+  {q:"What is a synonym for 'intelligent'?", o:["Silly","Smart","Slow","Dull"], a:1, hint:"Clever person", diff:"hard"},
+  {q:"Which sentence has correct capitalization?", o:["my name is John","My name is john","my name is john","My name is John"], a:3, hint:"First letter and name", diff:"mixed"},
+  {q:"What is the opposite of 'brave'?", o:["Courageous","Fearless","Cowardly","Strong"], a:2, hint:"Not brave", diff:"mixed"},
+  {q:"Which word is a verb?", o:["Beautiful","Run","Happiness","Blue"], a:1, hint:"Action word", diff:"easy"},
+  {q:"What is the meaning of 'diligent'?", o:["Lazy","Careful and hardworking","Slow","Careless"], a:1, hint:"A good student is this", diff:"hard"},
+  {q:"What is the past tense of 'write'?", o:["Wrote","Writed","Written","Writes"], a:0, hint:"Yesterday I wrote", diff:"hard"},
+  {q:"What is a simile?", o:["A comparison using 'like' or 'as'","A type of poem","A rhyme scheme","A metaphor"], a:0, hint:"As brave as a lion", diff:"hard"},
+  {q:"Which word has the same vowel sound as 'seat'?", o:["Sit","Set","Sea","Sat"], a:2, hint:"Long E sound", diff:"mixed"},
+  {q:"What is the correct spelling for the number after eight?", o:["NINE","NIN","NINNE","NINEY"], a:0, hint:"N-I-N-E", diff:"easy"},
+  {q:"What is a prefix?", o:["Added to end of word","Added to beginning of word","A type of sentence","A punctuation mark"], a:1, hint:"'Un' in unhappy", diff:"hard"},
+],
+kiswahili: [
+  {q:"Neno 'mwanafunzi' linamaanisha nini?", o:["Mwalimu","Mtoto anayesoma","Rafiki","Mgeni"], a:1, hint:"Anayesoma shuleni", diff:"easy"},
+  {q:"'Asante' kwa Kiingereza ni nini?", o:["Hello","Thank you","Goodbye","Please"], a:1, hint:"Unasema hivi ukipewa kitu", diff:"easy"},
+  {q:"Neno 'chakula' linamaanisha nini?", o:["Water","Clothes","Food","House"], a:2, hint:"Tunakula...", diff:"easy"},
+  {q:"'Habari ya asubuhi' inamaanisha:", o:["Good afternoon","Good night","Good morning","Goodbye"], a:2, hint:"Wakati wa mapema", diff:"easy"},
+  {q:"'Mama' kwa Kiingereza ni:", o:["Father","Sister","Mother","Brother"], a:2, hint:"Mzazi wa kike", diff:"easy"},
+  {q:"Jibu sahihi: Yeye __ shuleni kila siku.", o:["kwenda","huenda","anaenda","alikwenda"], a:2, hint:"Wakati wa sasa", diff:"mixed"},
+  {q:"Wingi wa 'mtoto' ni nini?", o:["Mtoto","Watoto","Watoto wengi","Mtoto mmoja"], a:1, hint:"Watoto = many children", diff:"mixed"},
+  {q:"Siku ya kwanza ya juma ni:", o:["Jumapili","Jumatatu","Jumanne","Jumatano"], a:1, hint:"Baada ya Jumapili", diff:"mixed"},
+  {q:"'Ninasoma' wakati wa sasa. Wakati uliopita ni:", o:["Nilisoma","Nitasoma","Nasoma","Soma"], a:0, hint:"Nili- = past tense", diff:"mixed"},
+  {q:"Sentensi sahihi ni:", o:["Mimi kwenda shule","Mimi naenda shule","Mimi aenda shule","Mimi uenda shule"], a:1, hint:"Mimi + na-", diff:"easy"},
+  {q:"'Karibu' inamaanisha:", o:["Thank you","Goodbye","Welcome","Sorry"], a:2, hint:"Unasema hivi ukimkaribisha mgeni", diff:"easy"},
+  {q:"Tafsiri 'Water' kwa Kiswahili:", o:["Moto","Maji","Mvua","Mkate"], a:1, hint:"Tunakunywa...", diff:"easy"},
+  {q:"'Daktari' anafanya kazi wapi?", o:["Shuleni","Hospitalini","Kanisani","Nyumbani"], a:1, hint:"Anapoponya watu", diff:"easy"},
+  {q:"Tafsiri 'Good night' kwa Kiswahili:", o:["Habari za asubuhi","Usiku mwema","Lala salama","Habari za jioni"], a:1, hint:"Kabla ya kulala", diff:"mixed"},
+  {q:"Neno 'kubwa' kinyume chake ni:", o:["Kubwa","Kirefu","Ndogo","Nzito"], a:2, hint:"Opposite of big", diff:"mixed"},
+  {q:"'Mwalimu' anaandika ubaoni kwa:", o:["Kalamu","Rula","Chaki","Mkasi"], a:2, hint:"Whiteboard tool", diff:"hard"},
+  {q:"Herufi ngapi katika 'BABA'?", o:["2","3","4","5"], a:2, hint:"B-A-B-A", diff:"easy"},
+  {q:"Neno la Kiswahili la 'tomorrow' ni:", o:["Leo","Jana","Kesho","Sasa"], a:2, hint:"Siku ijayo", diff:"mixed"},
+  {q:"'Simba' ni mnyama wa aina gani?", o:["Tembo","Twiga","Chui","Nyati"], a:2, hint:"Mfalme wa wanyama", diff:"hard"},
+  {q:"Tafsiri 'I am eating' kwa Kiswahili:", o:["Ninakula","Ninacheza","Ninalala","Ninasoma"], a:0, hint:"Kula = eat", diff:"mixed"},
+  {q:"Wingi wa 'kitabu' ni:", o:["Vitabu","Matabu","Makabu","Vitabu vingi"], a:0, hint:"Ki-vi prefix", diff:"hard"},
+  {q:"'Mzee' anamaanisha:", o:["Kijana","Mtoto","Mtu mzee","Mgeni"], a:2, hint:"Older person", diff:"easy"},
+  {q:"Neno 'haraka' kinyume chake ni:", o:["Pole","Mpya","Kubwa","Nzuri"], a:0, hint:"Slowly slowly", diff:"mixed"},
+  {q:"Siku ya nne ya juma ni:", o:["Jumanne","Jumatano","Alhamisi","Ijumaa"], a:2, hint:"Baada ya Jumatano", diff:"hard"},
+  {q:"'Rafiki' inamaanisha:", o:["Adui","Mgeni","Mtu unayempenda","Mwalimu"], a:2, hint:"Friend", diff:"easy"},
+  {q:"Tafsiri 'mountain' kwa Kiswahili:", o:["Mto","Mlima","Bonde","Bahari"], a:1, hint:"Kilimanjaro is one", diff:"mixed"},
+  {q:"Mwanafunzi mzuri anapaswa:", o:["Cheza darasani","Soma kwa bidii","Lala darasani","Zungumza na mwenza"], a:1, hint:"Good student", diff:"hard"},
+  {q:"Neno la Kiswahili la 'government' ni:", o:["Jamhuri","Serikali","Taifa","Bunge"], a:1, hint:"Leaders who rule", diff:"hard"},
+  {q:"Tafsiri 'teacher' kwa Kiswahili:", o:["Mwanafunzi","Mwalimu","Mzazi","Daktari"], a:1, hint:"Anafundisha darasani", diff:"easy"},
+  {q:"'Pole pole' inamaanisha:", o:["Haraka sana","Kwa utulivu taratibu","Kwa nguvu","Kwa sauti"], a:1, hint:"Slowly slowly", diff:"mixed"},
+],
+science: [
+  {q:"What do plants need to make their own food?", o:["Water only","Sunlight, water, air","Soil only","Rain only"], a:1, hint:"Photosynthesis needs 3 things", diff:"easy"},
+  {q:"Which animal lays eggs?", o:["Dog","Cat","Hen","Cow"], a:2, hint:"It clucks!", diff:"easy"},
+  {q:"What gas do we breathe in to survive?", o:["Carbon dioxide","Hydrogen","Oxygen","Nitrogen"], a:2, hint:"O₂", diff:"easy"},
+  {q:"Which part of the plant absorbs water?", o:["Leaves","Stem","Roots","Flowers"], a:2, hint:"Underground part", diff:"easy"},
+  {q:"What do tadpoles grow into?", o:["Fish","Frogs","Snakes","Lizards"], a:1, hint:"They live near water", diff:"easy"},
+  {q:"What is the function of the heart?", o:["Digests food","Pumps blood","Filters air","Thinks"], a:1, hint:"It beats boom boom", diff:"mixed"},
+  {q:"Which animal is a mammal?", o:["Eagle","Crocodile","Whale","Lizard"], a:2, hint:"Breathes air, nurses young", diff:"mixed"},
+  {q:"What is the largest organ in the human body?", o:["Heart","Brain","Skin","Liver"], a:2, hint:"Covers your whole body", diff:"mixed"},
+  {q:"What do carnivores eat?", o:["Plants","Meat","Both","Fruits"], a:1, hint:"Carni = meat", diff:"easy"},
+  {q:"What causes day and night?", o:["The moon moving","The sun moving","Earth rotating","Clouds"], a:2, hint:"Earth spins on its axis", diff:"hard"},
+  {q:"What is the boiling point of water in Celsius?", o:["50°C","75°C","100°C","150°C"], a:2, hint:"Hot hot hot!", diff:"mixed"},
+  {q:"Which of these is a reptile?", o:["Frog","Eagle","Crocodile","Whale"], a:2, hint:"Scaly skin, cold-blooded", diff:"mixed"},
+  {q:"What is photosynthesis?", o:["Animals eating food","Plants making food using sunlight","Water evaporating","Seeds growing"], a:1, hint:"Plants are food factories!", diff:"hard"},
+  {q:"How many bones are in the adult human body?", o:["106","206","306","406"], a:1, hint:"Over 200!", diff:"hard"},
+  {q:"What is the closest star to Earth?", o:["The Moon","The Sun","Sirius","Alpha Centauri"], a:1, hint:"It shines every day!", diff:"mixed"},
+  {q:"Which sense organ detects light?", o:["Ear","Nose","Eye","Tongue"], a:2, hint:"For seeing", diff:"easy"},
+  {q:"What do we call a scientist who studies rocks?", o:["Biologist","Geologist","Astronomer","Chemist"], a:1, hint:"Geo = earth", diff:"hard"},
+  {q:"What is the hardest natural substance?", o:["Gold","Iron","Diamond","Platinum"], a:2, hint:"Used in rings", diff:"hard"},
+  {q:"Which planet is known as the Red Planet?", o:["Mars","Jupiter","Venus","Saturn"], a:0, hint:"Rusty colour", diff:"mixed"},
+  {q:"What do bees make?", o:["Milk","Honey","Butter","Jam"], a:1, hint:"Sweet and sticky", diff:"easy"},
+  {q:"What is the process of a caterpillar turning into a butterfly called?", o:["Growth","Germination","Metamorphosis","Reproduction"], a:2, hint:"Complete change", diff:"hard"},
+  {q:"Which type of animal has a backbone?", o:["Invertebrate","Vertebrate","Mollusk","Insect"], a:1, hint:"Has spine", diff:"mixed"},
+  {q:"What is the main function of the lungs?", o:["Pump blood","Digest food","Exchange oxygen","Store energy"], a:2, hint:"Breathing", diff:"mixed"},
+  {q:"What is the name of the galaxy we live in?", o:["Andromeda","Milky Way","Sombrero","Whirlpool"], a:1, hint:"Looks like milky band", diff:"hard"},
+  {q:"Which animal is known as the 'ship of the desert'?", o:["Horse","Camel","Donkey","Elephant"], a:1, hint:"Stores water", diff:"easy"},
+  {q:"What state of matter has a fixed shape?", o:["Solid","Liquid","Gas","Plasma"], a:0, hint:"Ice cube", diff:"easy"},
+  {q:"What do we call a baby cow?", o:["Calf","Puppy","Kitten","Foal"], a:0, hint:"Drinks milk from mother cow", diff:"easy"},
+  {q:"What is the main source of energy for Earth?", o:["The Moon","The Sun","Stars","Volcanoes"], a:1, hint:"Gives light and heat", diff:"easy"},
+  {q:"Which part of the plant conducts photosynthesis?", o:["Roots","Stem","Leaves","Flowers"], a:2, hint:"Green parts", diff:"mixed"},
+  {q:"What is the scientific name for the study of living things?", o:["Physics","Chemistry","Biology","Astronomy"], a:2, hint:"Life science", diff:"hard"},
+],
+social: [
+  {q:"What is the capital city of Kenya?", o:["Mombasa","Kisumu","Nairobi","Nakuru"], a:2, hint:"Where the President lives", diff:"easy"},
+  {q:"Kenya is in which continent?", o:["Asia","Europe","Africa","America"], a:2, hint:"Land of the safari!", diff:"easy"},
+  {q:"What is the name of Kenya's currency?", o:["Dollar","Shilling","Pound","Franc"], a:1, hint:"Kenyan ...", diff:"easy"},
+  {q:"The national animal of Kenya is?", o:["Elephant","Giraffe","Lion","Zebra"], a:2, hint:"King of the jungle!", diff:"mixed"},
+  {q:"How many counties does Kenya have?", o:["32","47","54","62"], a:1, hint:"Devolution gave us 47 counties", diff:"hard"},
+  {q:"Who is the head of government in Kenya?", o:["Governor","Senator","President","Prime Minister"], a:2, hint:"Lives in State House", diff:"easy"},
+  {q:"What do we call people who live in the same community?", o:["Foreigners","Neighbours","Tourists","Visitors"], a:1, hint:"They live near you", diff:"easy"},
+  {q:"Kenya borders which ocean to the east?", o:["Atlantic","Arctic","Indian","Pacific"], a:2, hint:"Near Mombasa", diff:"easy"},
+  {q:"The Maasai Mara Game Reserve is famous for?", o:["Mountains","Wildebeest migration","Lakes","Deserts"], a:1, hint:"Annual crossing", diff:"mixed"},
+  {q:"What does the black colour in Kenya's flag represent?", o:["The sea","The people of Kenya","The land","Peace"], a:1, hint:"Kenyan people", diff:"mixed"},
+  {q:"The red colour in Kenya's flag represents?", o:["Blood shed for independence","Love","Danger","The soil"], a:0, hint:"Uhuru ilikuja na damu", diff:"mixed"},
+  {q:"What is the largest lake in Kenya?", o:["Lake Nakuru","Lake Turkana","Lake Victoria","Lake Baringo"], a:2, hint:"Jade Sea", diff:"hard"},
+  {q:"The Equator passes through which part of Kenya?", o:["South","North","Through the middle","East"], a:2, hint:"Divides Kenya", diff:"hard"},
+  {q:"Which community in Kenya is famous for beadwork and jumping dance?", o:["Luo","Kikuyu","Maasai","Luhya"], a:2, hint:"Colourful jewellery and red blankets", diff:"mixed"},
+  {q:"What is the national language of Kenya?", o:["English only","Kiswahili only","Both English and Kiswahili","Kikuyu"], a:2, hint:"Kenya has two official languages", diff:"easy"},
+  {q:"Who is the patron saint of Kenya?", o:["St. Peter","St. Paul","No official patron","St. Francis"], a:2, hint:"Not applicable", diff:"hard"},
+  {q:"Which is NOT a method of transport in Kenya?", o:["Bus","Train","Spaceship","Matatu"], a:2, hint:"We haven't reached space yet!", diff:"easy"},
+  {q:"What is civic education about?", o:["Science topics","Rights and responsibilities","Mathematics","English grammar"], a:1, hint:"Being a good citizen", diff:"mixed"},
+  {q:"What does a map key (legend) show?", o:["Distance only","Symbols and meanings","Names of places","Only roads"], a:1, hint:"It explains the symbols", diff:"mixed"},
+  {q:"Which county is known as the 'City in the Sun'?", o:["Nairobi","Kisumu","Mombasa","Nakuru"], a:2, hint:"Coastal city", diff:"hard"},
+  {q:"Who is the current president of Kenya (as of 2025)?", o:["Uhuru Kenyatta","Mwai Kibaki","William Ruto","Daniel Moi"], a:2, hint:"Fifth president", diff:"mixed"},
+  {q:"What is the name of Kenya's national anthem?", o:["Bwana Ibariki Afrika","Ee Mungu Nguvu Yetu","Nchi ya Rehema","Wimbo wa Taifa"], a:1, hint:"Oh God of all creation", diff:"hard"},
+  {q:"Which mountain is the second highest in Africa and located in Kenya?", o:["Kilimanjaro","Mount Kenya","Mount Elgon","Mount Meru"], a:1, hint:"Named after the country", diff:"hard"},
+  {q:"What is the meaning of 'Harambee'?", o:["Hello","Peace","Let's pull together","Thank you"], a:2, hint:"Community effort", diff:"mixed"},
+  {q:"Which is the largest city in Kenya?", o:["Mombasa","Kisumu","Nairobi","Nakuru"], a:2, hint:"Capital", diff:"easy"},
+  {q:"What is the main economic activity in Kenya?", o:["Fishing","Agriculture","Mining","Tourism"], a:1, hint:"Tea and coffee", diff:"mixed"},
+  {q:"Lake Victoria is shared by Kenya, Uganda, and which other country?", o:["Rwanda","Burundi","Tanzania","Ethiopia"], a:2, hint:"South of Kenya", diff:"hard"},
+  {q:"What is the traditional Maasai house called?", o:["Manyatta","Rondavel","Hut","Boma"], a:0, hint:"Mud and sticks", diff:"hard"},
+  {q:"Which is the official currency symbol?", o:["$","€","KSh","£"], a:2, hint:"Kenyan Shilling", diff:"easy"},
+  {q:"What do you call the person who leads a county?", o:["President","Governor","Senator","Chief"], a:1, hint:"County boss", diff:"mixed"},
+],
+cre: [
+  {q:"Who created the world according to the Bible?", o:["Satan","Angels","God","Humans"], a:2, hint:"Genesis chapter 1", diff:"easy"},
+  {q:"How many days did God take to create the world?", o:["5","6","7","8"], a:1, hint:"Then He rested", diff:"easy"},
+  {q:"Jesus was born in which town?", o:["Jerusalem","Nazareth","Bethlehem","Jericho"], a:2, hint:"Little town of...", diff:"easy"},
+  {q:"Who were the first man and woman God created?", o:["Cain and Abel","Noah and Ruth","Adam and Eve","Abraham and Sarah"], a:2, hint:"The Garden of Eden", diff:"easy"},
+  {q:"What is the Golden Rule?", o:["Love money","Treat others as you want to be treated","Always pray","Go to church"], a:1, hint:"Matthew 7:12", diff:"easy"},
+  {q:"How many disciples did Jesus choose?", o:["10","11","12","13"], a:2, hint:"One for each tribe of Israel", diff:"mixed"},
+  {q:"Who betrayed Jesus?", o:["Peter","John","Judas","Thomas"], a:2, hint:"For 30 pieces of silver", diff:"mixed"},
+  {q:"Noah built an ark to survive:", o:["An earthquake","A flood","A storm","A fire"], a:1, hint:"It rained 40 days", diff:"easy"},
+  {q:"Jesus rose from the dead after how many days?", o:["1","2","3","4"], a:2, hint:"Three days later", diff:"easy"},
+  {q:"What is the first book of the Bible?", o:["Exodus","Psalms","Genesis","Matthew"], a:2, hint:"In the beginning...", diff:"mixed"},
+  {q:"Who was Jesus's mother?", o:["Ruth","Mary","Sarah","Martha"], a:1, hint:"The Virgin...", diff:"easy"},
+  {q:"What does 'Amen' mean?", o:["Thank you","Goodbye","So be it","Please"], a:2, hint:"End of a prayer", diff:"easy"},
+  {q:"The Lord's Prayer begins with:", o:["Forgive us","Our Father in heaven","Thank you Lord","Blessed are the poor"], a:1, hint:"Matthew 6:9", diff:"mixed"},
+  {q:"Where was Jesus baptised?", o:["Sea of Galilee","Dead Sea","Jordan River","Red Sea"], a:2, hint:"By John the Baptist", diff:"hard"},
+  {q:"What did God give Moses on Mount Sinai?", o:["A sword","The Ten Commandments","Gold","Food"], a:1, hint:"Stone tablets!", diff:"easy"},
+  {q:"Who was swallowed by a big fish?", o:["David","Moses","Jonah","Elijah"], a:2, hint:"Ran from God's mission", diff:"mixed"},
+  {q:"What is the Fruit of the Spirit?", o:["Money & Power","Love, joy, peace","Fast cars","Good food"], a:1, hint:"Galatians 5:22-23", diff:"hard"},
+  {q:"Which king built the temple in Jerusalem?", o:["David","Solomon","Saul","Hezekiah"], a:1, hint:"Wisest king", diff:"hard"},
+  {q:"What did Jesus turn water into at the wedding in Cana?", o:["Juice","Milk","Wine","Oil"], a:2, hint:"His first miracle", diff:"mixed"},
+  {q:"Who was thrown into the lions' den?", o:["David","Daniel","Joseph","Samuel"], a:1, hint:"Prayed to God daily", diff:"mixed"},
+  {q:"What is the name of the garden where Adam and Eve lived?", o:["Gethsemane","Eden","Paradise","Zion"], a:1, hint:"Perfect garden", diff:"easy"},
+  {q:"Who led the Israelites out of Egypt?", o:["Abraham","Moses","Joshua","David"], a:1, hint:"Parted the Red Sea", diff:"easy"},
+  {q:"What is the second commandment?", o:["No other gods","Love your neighbour","Do not steal","Honour parents"], a:0, hint:"Exodus 20", diff:"hard"},
+  {q:"Who was the first king of Israel?", o:["David","Solomon","Saul","Samuel"], a:2, hint:"Anointed by Samuel", diff:"hard"},
+  {q:"What does Christmas celebrate?", o:["Jesus' birth","Jesus' resurrection","Easter","Pentecost"], a:0, hint:"December 25", diff:"easy"},
+  {q:"What does Easter celebrate?", o:["Jesus' birth","Jesus' resurrection","Christmas","Good Friday"], a:1, hint:"He is risen!", diff:"easy"},
+  {q:"Who was the father of John the Baptist?", o:["Zacharias","Joseph","Elijah","Peter"], a:0, hint:"Priest in the temple", diff:"hard"},
+  {q:"Which disciple denied Jesus three times?", o:["Peter","John","James","Andrew"], a:0, hint:"Before the rooster crowed", diff:"mixed"},
+  {q:"What is the name of the hill where Jesus was crucified?", o:["Mount Sinai","Mount Olives","Calvary/Golgotha","Mount Zion"], a:2, hint:"Place of the skull", diff:"hard"},
+  {q:"What is grace?", o:["Money","God's free gift","Food","House"], a:1, hint:"Unmerited favour", diff:"hard"},
+],
+arts: [
+  {q:"The three primary colours are:", o:["Red, Green, Blue","Red, Yellow, Blue","Orange, Green, Purple","Pink, Brown, Grey"], a:1, hint:"Cannot be made from other colours", diff:"easy"},
+  {q:"What do you mix red and yellow to get?", o:["Green","Purple","Orange","Brown"], a:2, hint:"Like a sunset!", diff:"easy"},
+  {q:"What do you mix blue and yellow to get?", o:["Orange","Green","Purple","Brown"], a:1, hint:"Colour of leaves", diff:"easy"},
+  {q:"Which musical instrument has black and white keys?", o:["Guitar","Violin","Piano","Drum"], a:2, hint:"You find it in many churches", diff:"easy"},
+  {q:"What do you mix red and blue to get?", o:["Orange","Green","Purple","Brown"], a:2, hint:"Royal colour!", diff:"easy"},
+  {q:"Which art technique involves cutting and pasting pictures?", o:["Drawing","Painting","Collage","Sculpture"], a:2, hint:"Magazines and scissors!", diff:"mixed"},
+  {q:"What is the Kenyan traditional Maasai jumping dance called?", o:["Ohangla","Taarab","Adumu","Benga"], a:2, hint:"Maasai warriors jump high", diff:"mixed"},
+  {q:"A sculpture is made by:", o:["Drawing on paper","Shaping materials like clay","Singing songs","Taking photos"], a:1, hint:"3D art!", diff:"easy"},
+  {q:"What tool do artists use to apply paint on canvas?", o:["Pencil","Brush","Chalk","Pen"], a:1, hint:"Soft bristles", diff:"easy"},
+  {q:"What colour do you get when you mix all colours of paint?", o:["White","Black/Very dark","Rainbow","Grey"], a:1, hint:"All pigments together", diff:"hard"},
+  {q:"A painting made with tiny pieces of glass or stone is called:", o:["Collage","Mosaic","Mural","Sketch"], a:1, hint:"Like ancient church art", diff:"hard"},
+  {q:"Which instrument is plucked with fingers and has strings?", o:["Drum","Flute","Guitar","Trumpet"], a:2, hint:"Has strings and frets", diff:"mixed"},
+  {q:"What is a self-portrait?", o:["Drawing of another","Drawing of yourself","Drawing of a house","Drawing of an animal"], a:1, hint:"Artist paints themselves", diff:"mixed"},
+  {q:"What do we call the person who designs buildings?", o:["Artist","Sculptor","Architect","Painter"], a:2, hint:"Plans structures", diff:"hard"},
+  {q:"What is the national instrument of Kenya?", o:["Guitar","Nyatiti","Drum","Piano"], a:1, hint:"Luo string instrument", diff:"hard"},
+  {q:"Which colour is NOT in the rainbow?", o:["Red","Orange","Pink","Violet"], a:2, hint:"ROYGBIV", diff:"mixed"},
+  {q:"What is the art of making clay pots called?", o:["Weaving","Knitting","Pottery","Painting"], a:2, hint:"Using clay and a wheel", diff:"mixed"},
+  {q:"White + Black = ?", o:["Dark grey","Light grey","Still white","Still black"], a:1, hint:"Mix them together", diff:"easy"},
+  {q:"A person who draws and creates pictures is called an:", o:["Actor","Artist","Author","Athlete"], a:1, hint:"Starts with Art...", diff:"easy"},
+  {q:"What do we call a group of singers?", o:["Band","Choir","Orchestra","Duet"], a:1, hint:"Often sings in church", diff:"mixed"},
+  {q:"Which type of dance is traditional among the Kikuyu?", o:["Mugithi","Ohangla","Taarab","Isukuti"], a:0, hint:"Famous for guitar music", diff:"hard"},
+  {q:"What is a mural?", o:["Small painting","Wall painting","Clay pot","Bead necklace"], a:1, hint:"Large wall art", diff:"mixed"},
+  {q:"What does 'texture' mean in art?", o:["Colour","How surface feels","Shape","Size"], a:1, hint:"Smooth or rough", diff:"mixed"},
+  {q:"Which famous Kenyan artist is known for 'Batwing' paintings?", o:["El Anatsui","Wangechi Mutu","Sane Wadu","John Njenga"], a:2, hint:"Early Kenyan contemporary", diff:"hard"},
+  {q:"What is the main colour used for the Kenyan flag shield?", o:["Black","Red","Green","White"], a:0, hint:"Traditional Maasai shield", diff:"hard"},
+  {q:"What is a still life painting?", o:["Landscape","Objects like fruit/flowers","Portrait","Abstract"], a:1, hint:"Non-moving objects", diff:"mixed"},
+  {q:"Which dance is popular among the Luo community?", o:["Ohangla","Mugithi","Adumu","Isukuti"], a:0, hint:"Drums and traditional", diff:"hard"},
+  {q:"What is the meaning of 'improvisation' in music?", o:["Writing notes","Creating music on the spot","Repeating melody","Singing loudly"], a:1, hint:"Making up as you go", diff:"hard"},
+  {q:"What is the art of folding paper called?", o:["Origami","Calligraphy","Collage","Sculpture"], a:0, hint:"Japanese art", diff:"mixed"},
+  {q:"Which is a warm colour?", o:["Blue","Green","Red","Purple"], a:2, hint:"Fire and sun", diff:"easy"},
+]
+};
+
+const SUBJECT_META = {
+  math:{name:"Mathematics",icon:"🔢",badge:"s-math",color:"var(--blue)"},
+  english:{name:"English",icon:"📖",badge:"s-english",color:"var(--pink)"},
+  kiswahili:{name:"Kiswahili",icon:"🗣️",badge:"s-kiswahili",color:"var(--green)"},
+  science:{name:"Science",icon:"🔬",badge:"s-science",color:"var(--purple)"},
+  social:{name:"Social Studies",icon:"🌍",badge:"s-social",color:"var(--orange)"},
+  cre:{name:"C.R.E",icon:"✝️",badge:"s-cre",color:"var(--yellow)"},
+  arts:{name:"Creative Arts",icon:"🎨",badge:"s-arts",color:"var(--teal)"}
+};
+
+let state={};
+
+function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+function buildQuestions(subjects,difficulty){
+  let pool=[];
+  subjects.forEach(s=>{
+    let qs=ALL_QUESTIONS[s]||[];
+    if(difficulty!=='mixed') qs=qs.filter(q=>q.diff===difficulty);
+    if(qs.length>0) qs.forEach(q=>pool.push({...q,subject:s}));
+  });
+  if(pool.length===0) return [];
+  pool=shuffleArray(pool);
+  let result=[];
+  let usedIndices=new Set();
+  while(result.length<20 && result.length<pool.length){
+    let idx=Math.floor(Math.random()*pool.length);
+    if(!usedIndices.has(idx)){
+      usedIndices.add(idx);
+      result.push({...pool[idx]});
+    }
+  }
+  return result;
+}
+
+function getSelectedSubjects(){return [...document.querySelectorAll('.subj-btn.selected')].map(b=>b.dataset.subj);}
+
+document.querySelectorAll('.subj-btn').forEach(btn=>{btn.addEventListener('click',()=>{btn.classList.toggle('selected');checkStartBtn();});});
+
+let selectedDiff='mixed';
+document.querySelectorAll('.diff-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.diff-btn').forEach(b=>{b.style.opacity='0.5';b.classList.remove('selected');});
+    btn.style.opacity='1';btn.classList.add('selected');selectedDiff=btn.dataset.diff;
+  });
+});
+
+function checkStartBtn(){document.getElementById('startBtn').disabled=getSelectedSubjects().length===0;}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
+
+let timerInterval=null;
+
+function startGame(){
+  const name=document.getElementById('studentName').value.trim()||'Student';
+  const subjects=getSelectedSubjects();
+  if(subjects.length===0) return;
+  const questions=buildQuestions(subjects,selectedDiff);
+  if(questions.length===0){alert("No questions available for selected subjects/difficulty. Please try different options.");return;}
+  state={
+    name,subjects,questions,current:0,score:0,lives:3,streak:0,bestStreak:0,
+    hints:3,answered:false,correct:0,wrong:0,subjStats:{},timeLeft:20,dots:[]
+  };
+  subjects.forEach(s=>state.subjStats[s]={correct:0,total:0});
+  show('game');
+  buildDots();
+  renderQuestion();
+}
+
+function buildDots(){
+  const container=document.getElementById('progressDots');container.innerHTML='';state.dots=[];
+  state.questions.forEach((q,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' current':'');container.appendChild(d);state.dots.push(d);});
+}
+
+function updateDots(idx,ok){state.dots.forEach((d,i)=>{d.className='dot';if(i<idx)d.className+=' '+(state.questions[i]._correct?'done-ok':'done-wrong');else if(i===idx)d.className+=' current';});}
+
+function renderLives(){
+  const el=document.getElementById('livesDisplay');el.innerHTML='';
+  for(let i=0;i<3;i++){const h=document.createElement('span');h.className='heart'+(i>=state.lives?' lost':'');h.textContent='❤️';el.appendChild(h);}
+}
+
+function renderQuestion(){
+  clearInterval(timerInterval);
+  const q=state.questions[state.current];if(!q){endGame();return;}
+  state.answered=false;
+  document.getElementById('hintArea').className='hint-area';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('nextBtn').className='next-btn';
+  document.getElementById('pointsEarned').style.display='none';
+  document.getElementById('hintBtn').disabled=false;
+  document.getElementById('hintsLeft').textContent=state.hints;
+  const meta=SUBJECT_META[q.subject];
+  const badge=document.getElementById('qSubjBadge');badge.textContent=meta.icon+' '+meta.name;
+  badge.className='q-subj-badge '+meta.badge;
+  document.getElementById('qLevel').textContent='⭐ Q '+(state.current+1);
+  document.getElementById('qNum').textContent=(state.current+1)+'/'+state.questions.length;
+  document.getElementById('questionText').textContent=q.q;
+  document.getElementById('scoreDisplay').textContent=state.score;
+  const grid=document.getElementById('optionsGrid');grid.innerHTML='';
+  const letters=['A','B','C','D'];
+  q.o.forEach((opt,i)=>{const btn=document.createElement('button');btn.className='opt-btn';btn.innerHTML=`<span class="opt-letter">${letters[i]}</span>${opt}`;btn.addEventListener('click',()=>answer(i));grid.appendChild(btn);});
+  renderLives();updateDots(state.current,null);
+  const sb=document.getElementById('streakBadge');
+  if(state.streak>=2){sb.style.display='block';document.getElementById('streakCount').textContent=state.streak+'🔥';}else sb.style.display='none';
+  state.timeLeft=q.diff==='easy'?20:q.diff==='hard'?12:16;
+  startTimer();
+}
+
+function startTimer(){
+  const bar=document.getElementById('timerBar');const max=state.timeLeft;bar.style.width='100%';bar.className='timer-bar';
+  timerInterval=setInterval(()=>{state.timeLeft-=0.1;const pct=Math.max(0,(state.timeLeft/max)*100);bar.style.width=pct+'%';
+    if(pct<30)bar.className='timer-bar danger';else if(pct<60)bar.className='timer-bar warn';
+    if(state.timeLeft<=0&&!state.answered)timeUp();},100);
+}
+
+function timeUp(){
+  state.answered=true;
+  const q=state.questions[state.current];
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach((b,i)=>{if(i===q.a){b.className='opt-btn correct';}b.disabled=true;});
+  state.lives--;state.streak=0;q._correct=false;
+  showFeedback(false,"⏰ Time's up! Correct answer: "+q.o[q.a]);
+  if(q.subject in state.subjStats) state.subjStats[q.subject].total++;
+  if(state.lives<=0){setTimeout(endGame,1800);return;}
+  document.getElementById('nextBtn').className='next-btn show';
+  updateDots(state.current,false);renderLives();
+}
+
+function answer(idx){
+  if(state.answered) return;
+  state.answered=true;clearInterval(timerInterval);
+  const q=state.questions[state.current];
+  const btns=document.querySelectorAll('.opt-btn');btns.forEach(b=>b.disabled=true);
+  if(q.subject in state.subjStats) state.subjStats[q.subject].total++;
+  if(idx===q.a){
+    btns[idx].className='opt-btn correct';
+    const bonus=Math.ceil(state.timeLeft);const pts=10+Math.min(bonus,10)+(state.streak>=3?5:0);
+    state.score+=pts;state.correct++;state.streak++;
+    if(state.streak>state.bestStreak) state.bestStreak=state.streak;
+    q._correct=true;
+    if(q.subject in state.subjStats) state.subjStats[q.subject].correct++;
+    showFeedback(true,'✅ Correct! +'+pts+' points'+(state.streak>=3?' 🔥 COMBO!':''));
+    showPoints('+'+pts);
+    if(state.streak>=3) showCombo(state.streak+'x COMBO!');
+    document.getElementById('scoreDisplay').textContent=state.score;
+    if(state.streak>=2){document.getElementById('streakBadge').style.display='block';document.getElementById('streakCount').textContent=state.streak+'🔥';}
+  } else {
+    btns[idx].className='opt-btn wrong';btns[q.a].className='opt-btn correct';
+    state.lives--;state.streak=0;q._correct=false;
+    showFeedback(false,'❌ Wrong! Correct: '+q.o[q.a]);
+    renderLives();
+    if(state.lives<=0){setTimeout(endGame,1800);return;}
+  }
+  updateDots(state.current,q._correct);
+  document.getElementById('nextBtn').className='next-btn show';
+}
+
+function showFeedback(ok,msg){const el=document.getElementById('feedback');el.textContent=msg;el.className='feedback show '+(ok?'correct':'wrong');}
+function showPoints(txt){const el=document.getElementById('pointsEarned');el.textContent=txt;el.style.display='block';el.style.animation='pop .3s ease';setTimeout(()=>el.style.display='none',1000);}
+function showCombo(txt){const el=document.createElement('div');el.className='combo-popup';el.textContent=txt;document.body.appendChild(el);setTimeout(()=>el.remove(),2400);}
+function showHint(){
+  if(state.hints<=0||state.answered) return;
+  const q=state.questions[state.current];
+  const area=document.getElementById('hintArea');area.textContent='💡 '+q.hint;area.className='hint-area show';
+  state.hints--;document.getElementById('hintsLeft').textContent=state.hints;
+  if(state.hints===0) document.getElementById('hintBtn').disabled=true;
+}
+function nextQuestion(){state.current++;if(state.current>=state.questions.length){endGame();return;}renderQuestion();}
+function endGame(){
+  clearInterval(timerInterval);show('results');
+  const pct=Math.round((state.correct/state.questions.length)*100);
+  let grade,label,trophy,color;
+  if(pct>=90){grade='A+';label='Outstanding! You are a STAR!';trophy='🏆';color='var(--yellow)';spawnConfetti();}
+  else if(pct>=75){grade='A';label='Excellent work! Well done!';trophy='🥇';color='var(--yellow)';spawnConfetti();}
+  else if(pct>=60){grade='B';label='Good job! Keep practising!';trophy='🥈';color='var(--muted)';}
+  else if(pct>=40){grade='C';label='You can do better. Try again!';trophy='📚';color='var(--blue)';}
+  else{grade='D';label='Keep studying and you will improve!';trophy='💪';color='var(--red)';}
+  document.getElementById('resultTrophy').textContent=trophy;
+  document.getElementById('resultGrade').textContent=grade+'  '+pct+'%';
+  document.getElementById('resultGrade').style.color=color;
+  document.getElementById('resultLabel').textContent=label;
+  document.getElementById('resultName').textContent=state.name+"'s Report Card";
+  document.getElementById('finalScore').textContent=state.score;
+  document.getElementById('finalCorrect').textContent=state.correct+'/'+state.questions.length;
+  document.getElementById('finalStreak').textContent=state.bestStreak;
+  const bd=document.getElementById('subjectBreakdown');bd.innerHTML='';
+  state.subjects.forEach(s=>{const st=state.subjStats[s];if(!st||st.total===0)return;const pct2=Math.round((st.correct/st.total)*100);const meta=SUBJECT_META[s];
+    const bar=document.createElement('div');bar.style.cssText='margin-bottom:8px';
+    bar.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px"><span>${meta.icon} ${meta.name}</span><span>${st.correct}/${st.total}</span></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:20px;height:6px;overflow:hidden"><div style="width:${pct2}%;height:100%;background:${meta.color};border-radius:20px;transition:width 1s ease"></div></div>`;
+    bd.appendChild(bar);
+  });
+  const badges=[];
+  if(pct>=90) badges.push({t:'🌟 Star Scholar',c:'var(--yellow)'});
+  if(pct>=75) badges.push({t:'📚 Book Worm',c:'var(--blue)'});
+  if(state.bestStreak>=5) badges.push({t:'🔥 Hot Streak x'+state.bestStreak,c:'var(--orange)'});
+  if(state.bestStreak>=3) badges.push({t:'⚡ Combo Master',c:'var(--purple)'});
+  if(state.hints===3) badges.push({t:'🧠 No Hints Needed',c:'var(--green)'});
+  if(state.lives===3) badges.push({t:'💖 All Lives Saved',c:'var(--pink)'});
+  if(state.subjects.length>=5) badges.push({t:'🎯 All-Rounder',c:'var(--teal)'});
+  const br=document.getElementById('badgesRow');br.innerHTML='';
+  if(badges.length===0) badges.push({t:'🎓 Good Try!',c:'var(--muted)'});
+  badges.forEach(b=>{const el=document.createElement('div');el.className='badge';el.style.color=b.c;el.style.borderColor=b.c;el.textContent=b.t;br.appendChild(el);});
+}
+function spawnConfetti(){for(let i=0;i<40;i++){setTimeout(()=>{const el=document.createElement('div');el.className='confetti-piece';el.style.left=Math.random()*100+'vw';el.style.top='-20px';el.style.background=['#fbbf24','#f472b6','#60a5fa','#34d399','#a78bfa','#fb923c'][Math.floor(Math.random()*6)];el.style.width=(8+Math.random()*8)+'px';el.style.height=(8+Math.random()*8)+'px';el.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(el);setTimeout(()=>el.remove(),4000);},i*60);}}
+function retryGame(){startGame();}
+function goHome(){clearInterval(timerInterval);show('home');}
+checkStartBtn();
+</script>
+</body>
+</html>

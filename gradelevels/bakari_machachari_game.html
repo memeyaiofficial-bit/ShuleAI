@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bakari Machachari - Mchezo wa Kiswahili</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root {
+    --primary: #FF6B35;
+    --secondary: #FFD700;
+    --accent: #4ECDC4;
+    --bg-deep: #1a0a2e;
+    --bg-mid: #2d1b4e;
+    --bg-light: #3d2b5e;
+    --text-bright: #fff;
+    --text-soft: #e0d4f7;
+    --success: #2ecc71;
+    --danger: #e74c3c;
+    --card-bg: rgba(255,255,255,0.08);
+    --card-border: rgba(255,255,255,0.15);
+    --timer-safe: #2ecc71;
+    --timer-warn: #f39c12;
+    --timer-danger: #e74c3c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-mid) 50%, #1a3a5c 100%);
+    min-height: 100vh;
+    color: var(--text-bright);
+    overflow-x: hidden;
+  }
+
+  .stars {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  .star {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+  }
+
+  @keyframes twinkle { from { opacity: 0.2; transform: scale(1); } to { opacity: 1; transform: scale(1.3); } }
+  @keyframes float { 0%,100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes bounce { 0%,100% { transform: scale(1); } 30% { transform: scale(1.3); } 60% { transform: scale(0.9); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+  @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+  @keyframes timerPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.4); } 50% { box-shadow: 0 0 0 15px rgba(231,76,60,0); } }
+
+  /* ====== SCREENS ====== */
+  .screen { display: none; position: relative; z-index: 10; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+
+  /* ====== INTRO SCREEN ====== */
+  #introScreen { justify-content: center; text-align: center; }
+
+  .hero-character {
+    font-size: clamp(80px, 15vw, 140px);
+    animation: float 3s ease-in-out infinite;
+    display: block; margin-bottom: 10px;
+    filter: drop-shadow(0 10px 30px rgba(255,107,53,0.5));
+  }
+
+  .game-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(28px, 6vw, 56px);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 50%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .game-subtitle {
+    font-size: clamp(14px, 3vw, 20px);
+    color: var(--text-soft);
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+
+  .level-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+
+  .level-btn {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 16px;
+    padding: 16px 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: white;
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(14px, 2.5vw, 18px);
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .level-btn:hover, .level-btn.active {
+    transform: translateY(-4px) scale(1.05);
+    border-color: var(--secondary);
+    background: rgba(255,215,0,0.15);
+    box-shadow: 0 8px 25px rgba(255,215,0,0.3);
+  }
+
+  .level-btn .level-icon { font-size: 28px; display: block; margin-bottom: 4px; }
+  .level-btn.locked { opacity: 0.4; cursor: not-allowed; }
+  .level-btn.locked:hover { transform: none; }
+
+  .level-badge {
+    position: absolute; top: 6px; right: 6px;
+    background: var(--success);
+    border-radius: 50%; width: 20px; height: 20px;
+    font-size: 12px; display: flex; align-items: center; justify-content: center;
+  }
+
+  .start-btn {
+    background: linear-gradient(135deg, var(--primary), #ff8c42);
+    border: none; border-radius: 50px;
+    padding: 16px 50px;
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 30px rgba(255,107,53,0.5);
+    animation: pulse 2s infinite;
+    letter-spacing: 1px;
+  }
+
+  .start-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 40px rgba(255,107,53,0.7);
+  }
+
+  .music-toggle {
+    position: fixed; top: 15px; right: 15px; z-index: 1000;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 50%; width: 50px; height: 50px;
+    font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+  }
+
+  .music-toggle:hover { transform: scale(1.1); border-color: var(--secondary); }
+
+  /* ====== GAME SCREEN ====== */
+  #gameScreen { padding: 15px; }
+
+  .game-header {
+    width: 100%; max-width: 800px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 15px; gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .level-info {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: clamp(13px, 2vw, 16px);
+    color: var(--secondary);
+  }
+
+  .score-display {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: clamp(13px, 2vw, 16px);
+    color: var(--accent);
+  }
+
+  .progress-bar-wrap {
+    width: 100%; max-width: 800px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px; height: 10px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--secondary));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+
+  /* TIMER */
+  .timer-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .timer-circle {
+    width: clamp(70px, 15vw, 90px);
+    height: clamp(70px, 15vw, 90px);
+    border-radius: 50%;
+    background: conic-gradient(var(--timer-safe) var(--pct, 100%), rgba(255,255,255,0.1) 0%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .timer-circle::before {
+    content: '';
+    position: absolute;
+    width: calc(100% - 12px);
+    height: calc(100% - 12px);
+    background: var(--bg-deep);
+    border-radius: 50%;
+  }
+
+  .timer-num {
+    position: relative; z-index: 1;
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 800;
+    color: var(--timer-safe);
+    transition: color 0.3s;
+  }
+
+  /* NARRATIVE CARD */
+  .narrative-card {
+    width: 100%; max-width: 800px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: clamp(16px, 4vw, 30px);
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+    animation: slideIn 0.5s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .narrative-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  }
+
+  .character-bubble {
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .char-avatar {
+    font-size: clamp(36px, 8vw, 56px);
+    flex-shrink: 0;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .bubble-text {
+    background: rgba(255,255,255,0.1);
+    border-radius: 0 20px 20px 20px;
+    padding: 14px 18px;
+    font-size: clamp(14px, 2.5vw, 18px);
+    line-height: 1.6;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.15);
+    position: relative;
+    flex: 1;
+  }
+
+  .bubble-text::before {
+    content: '';
+    position: absolute; left: -10px; top: 15px;
+    border: 10px solid transparent;
+    border-right-color: rgba(255,255,255,0.1);
+  }
+
+  .question-label {
+    font-size: clamp(11px, 2vw, 14px);
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .question-text {
+    font-size: clamp(15px, 2.8vw, 20px);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text-bright);
+  }
+
+  /* OPTIONS */
+  .options-grid {
+    width: 100%; max-width: 800px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  @media (max-width: 480px) {
+    .options-grid { grid-template-columns: 1fr; }
+  }
+
+  .option-btn {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 16px;
+    padding: clamp(12px, 3vw, 18px) clamp(14px, 3vw, 20px);
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(13px, 2.2vw, 17px);
+    font-weight: 700;
+    color: var(--text-bright);
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+    display: flex; align-items: center; gap: 10px;
+    animation: slideIn 0.4s ease backwards;
+    line-height: 1.4;
+  }
+
+  .option-btn:nth-child(1) { animation-delay: 0.05s; }
+  .option-btn:nth-child(2) { animation-delay: 0.10s; }
+  .option-btn:nth-child(3) { animation-delay: 0.15s; }
+  .option-btn:nth-child(4) { animation-delay: 0.20s; }
+
+  .option-btn:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.02);
+    border-color: var(--accent);
+    background: rgba(78,205,196,0.15);
+    box-shadow: 0 6px 20px rgba(78,205,196,0.3);
+  }
+
+  .option-btn.correct {
+    border-color: var(--success) !important;
+    background: rgba(46,204,113,0.25) !important;
+    animation: bounce 0.6s ease !important;
+    box-shadow: 0 0 25px rgba(46,204,113,0.5) !important;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--danger) !important;
+    background: rgba(231,76,60,0.25) !important;
+    animation: shake 0.5s ease !important;
+  }
+
+  .option-btn:disabled { cursor: default; }
+
+  .option-letter {
+    width: 32px; height: 32px; min-width: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  /* FEEDBACK */
+  .feedback-msg {
+    width: 100%; max-width: 800px;
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-weight: 700;
+    font-size: clamp(14px, 2.5vw, 17px);
+    margin-bottom: 12px;
+    display: none;
+    animation: slideIn 0.4s ease;
+    line-height: 1.5;
+  }
+
+  .feedback-msg.show { display: flex; gap: 10px; align-items: flex-start; }
+  .feedback-msg.correct { background: rgba(46,204,113,0.2); border: 2px solid var(--success); color: #a8ffcc; }
+  .feedback-msg.wrong { background: rgba(231,76,60,0.2); border: 2px solid var(--danger); color: #ffb3ae; }
+
+  .next-btn {
+    background: linear-gradient(135deg, var(--accent), #2eafd4);
+    border: none; border-radius: 50px;
+    padding: 14px 40px;
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(78,205,196,0.4);
+    display: none;
+  }
+
+  .next-btn:hover { transform: scale(1.06); box-shadow: 0 10px 30px rgba(78,205,196,0.6); }
+  .next-btn.show { display: block; }
+
+  /* RESULTS SCREEN */
+  #resultsScreen { justify-content: center; text-align: center; }
+
+  .results-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 30px;
+    padding: clamp(25px, 5vw, 50px) clamp(20px, 5vw, 50px);
+    max-width: 550px;
+    width: 100%;
+    backdrop-filter: blur(15px);
+    animation: slideIn 0.6s ease;
+  }
+
+  .results-emoji { font-size: clamp(60px, 12vw, 90px); display: block; margin-bottom: 10px; }
+  .results-title { font-family: 'Baloo 2', cursive; font-size: clamp(24px, 5vw, 36px); font-weight: 800; margin-bottom: 8px; }
+  .results-score { font-family: 'Baloo 2', cursive; font-size: clamp(48px, 10vw, 80px); font-weight: 800; background: linear-gradient(135deg, var(--secondary), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .results-pct { font-size: clamp(18px, 3.5vw, 26px); color: var(--text-soft); margin-bottom: 20px; }
+  .results-msg { font-size: clamp(14px, 2.5vw, 17px); color: var(--text-soft); margin-bottom: 25px; line-height: 1.6; }
+
+  .results-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+  .btn-retry, .btn-next-level, .btn-home {
+    border: none; border-radius: 40px;
+    padding: 12px 28px;
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(14px, 2.5vw, 18px);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-retry { background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.3); }
+  .btn-retry:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+  .btn-next-level { background: linear-gradient(135deg, var(--success), #27ae60); color: white; box-shadow: 0 6px 20px rgba(46,204,113,0.4); }
+  .btn-next-level:hover { transform: scale(1.06); }
+  .btn-home { background: linear-gradient(135deg, var(--primary), #ff8c42); color: white; box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+  .btn-home:hover { transform: scale(1.06); }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px;
+    top: -20px; pointer-events: none; z-index: 9999;
+    animation: confetti-fall linear forwards;
+  }
+
+  /* QUIZ COUNT */
+  .quiz-count {
+    font-size: clamp(12px, 2vw, 15px);
+    color: var(--text-soft);
+    text-align: center;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  /* TIMER WARN */
+  .timer-circle.warn { --timer-color: var(--timer-warn); animation: timerPulse 1s infinite; }
+  .timer-circle.danger { --timer-color: var(--timer-danger); }
+
+  .hearts-row { display: flex; gap: 6px; align-items: center; font-size: 20px; }
+
+  .streak-badge {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    border-radius: 20px; padding: 4px 12px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800; font-size: 13px;
+    color: white;
+    display: none;
+  }
+
+  .streak-badge.show { display: block; }
+
+  /* loading */
+  .loading-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-deep);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+    transition: opacity 0.8s ease;
+  }
+
+  .loading-screen.hide { opacity: 0; pointer-events: none; }
+  .loading-char { font-size: 80px; animation: float 1.5s ease-in-out infinite; margin-bottom: 20px; }
+  .loading-text { font-family: 'Baloo 2', cursive; font-size: 24px; color: var(--secondary); animation: pulse 1s infinite; }
+  .loading-bar-wrap { width: 250px; background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; margin-top: 20px; overflow: hidden; }
+  .loading-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 10px; width: 0%; transition: width 0.1s; }
+</style>
+</head>
+<body>
+
+<!-- Stars background -->
+<div class="stars" id="starsContainer"></div>
+
+<!-- Loading -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-char">🦁</div>
+  <div class="loading-text">Inaandaa mchezo...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loadingBar"></div></div>
+</div>
+
+<!-- Music Toggle -->
+<button class="music-toggle" id="musicToggle" title="Muziki">🎵</button>
+
+<!-- ===== INTRO SCREEN ===== -->
+<div class="screen" id="introScreen">
+  <span class="hero-character">🦁</span>
+  <div class="game-title">Bakari Machachari</div>
+  <div class="game-subtitle">Mchezo wa Kiswahili — Darasa la 2</div>
+
+  <div class="level-select-grid" id="levelGrid"></div>
+
+  <button class="start-btn" id="startBtn" onclick="startGame()">
+    🎮 Cheza Sasa!
+  </button>
+
+  <div style="margin-top:20px; color: var(--text-soft); font-size:13px; font-weight:600;">
+    ⏱️ Sekunde 40 kwa kila swali &nbsp;|&nbsp; 🏆 80% kupita kiwango
+  </div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div class="screen" id="gameScreen">
+  <div class="game-header">
+    <div class="level-info" id="levelInfo">Kiwango 1</div>
+    <div class="hearts-row" id="heartsRow"></div>
+    <div class="score-display" id="scoreDisplay">Pointi: 0</div>
+    <div class="streak-badge" id="streakBadge">🔥 x1</div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <div class="quiz-count" id="quizCount">Swali 1 / 40</div>
+
+  <div class="timer-wrap">
+    <div class="timer-circle" id="timerCircle">
+      <span class="timer-num" id="timerNum">40</span>
+    </div>
+  </div>
+
+  <div class="narrative-card" id="narrativeCard">
+    <div class="character-bubble" id="charBubble"></div>
+    <div class="question-label">❓ Swali</div>
+    <div class="question-text" id="questionText"></div>
+  </div>
+
+  <div class="options-grid" id="optionsGrid"></div>
+
+  <div class="feedback-msg" id="feedbackMsg"></div>
+
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+    Swali Linalofuata ➜
+  </button>
+</div>
+
+<!-- ===== RESULTS SCREEN ===== -->
+<div class="screen" id="resultsScreen">
+  <div class="results-card">
+    <span class="results-emoji" id="resultsEmoji">🎉</span>
+    <div class="results-title" id="resultsTitle">Hongera!</div>
+    <div class="results-score" id="resultsScore">35/40</div>
+    <div class="results-pct" id="resultsPct">88%</div>
+    <div class="results-msg" id="resultsMsg">Umefanya vizuri sana!</div>
+    <div class="results-btns">
+      <button class="btn-retry" onclick="retryLevel()">🔄 Jaribu Tena</button>
+      <button class="btn-next-level" id="nextLevelBtn" onclick="goNextLevel()">⭐ Kiwango Kinachofuata</button>
+      <button class="btn-home" onclick="goHome()">🏠 Nyumbani</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== AUDIO ENGINE ====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+let musicPlaying = false;
+let musicOscillators = [];
+let musicInterval = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
+
+function playTone(freq, duration, type='sine', gain=0.3, delay=0) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    gainNode.gain.setValueAtTime(0, ctx.currentTime + delay);
+    gainNode.gain.linearRampToValueAtTime(gain, ctx.currentTime + delay + 0.02);
+    gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + delay + duration - 0.02);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + duration);
+  } catch(e){}
+}
+
+function playSoundCorrect() {
+  playTone(523, 0.15, 'sine', 0.3);
+  playTone(659, 0.15, 'sine', 0.3, 0.15);
+  playTone(784, 0.3, 'sine', 0.35, 0.3);
+}
+
+function playSoundWrong() {
+  playTone(200, 0.2, 'sawtooth', 0.25);
+  playTone(150, 0.3, 'sawtooth', 0.25, 0.2);
+}
+
+function playSoundTimerEnd() {
+  for(let i=0;i<3;i++) playTone(880, 0.1, 'square', 0.2, i*0.15);
+}
+
+function playSoundTick() {
+  playTone(1000, 0.05, 'square', 0.05);
+}
+
+function playLevelUp() {
+  const notes = [523,587,659,698,784,880];
+  notes.forEach((n,i) => playTone(n, 0.2, 'sine', 0.3, i*0.12));
+}
+
+// Intro music - fun jingle
+function startIntroMusic() {
+  if(musicPlaying) return;
+  musicPlaying = true;
+  const melody = [261,329,392,329,261,392,523,392,329,261,392,261,329,392,261];
+  let i = 0;
+  function playNext() {
+    if(!musicPlaying) return;
+    const n = melody[i % melody.length];
+    playTone(n, 0.3, 'sine', 0.18);
+    playTone(n*1.5, 0.3, 'triangle', 0.06);
+    i++;
+    musicInterval = setTimeout(playNext, 380);
+  }
+  playNext();
+}
+
+function stopIntroMusic() {
+  musicPlaying = false;
+  if(musicInterval) clearTimeout(musicInterval);
+}
+
+// Speech synthesis
+function speak(text, lang='sw-KE') {
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = lang;
+  utt.rate = 0.9;
+  utt.pitch = 1.1;
+  window.speechSynthesis.speak(utt);
+}
+
+// ==================== QUESTIONS DATABASE ====================
+// 5 levels × 40 questions, narrative-style Kiswahili
+
+const allLevels = [
+
+// ========== KIWANGO 1: Kusikiliza na Kuzungumza (Msingi) ==========
+[
+  {char:"🦁", charName:"Bakari", narrative:"Bakari anaamka asubuhi na kusema maneno ya salamu kwa familia yake.", q:"Bakari anasema nini kwanza anapokutana na mama yake asubuhi?", opts:["Kwaheri mama", "Habari za asubuhi mama", "Ninaenda shule", "Tafadhali mama"], ans:1, exp:"'Habari za asubuhi' ni salamu sahihi ya asubuhi."},
+  {char:"🦁", charName:"Bakari", narrative:"Rafiki wa Bakari anaitwa Juma. Wanakutana njiani kwenda shule.", q:"Juma anauliza 'Habari?' Bakari anajibu nini?", opts:["Habari", "Nzuri asante", "Kwaheri", "Samahani"], ans:1, exp:"'Nzuri asante' ni jibu zuri la 'Habari?'"},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alifika shule na mwalimu wake aliuliza maswali darasani.", q:"Mwalimu akisema 'Simama!' Bakari anapaswa kufanya nini?", opts:["Kukimbia", "Kusimama"], ans:1, exp:"Tunapaswa kutii amri za mwalimu."},
+  {char:"🦁", charName:"Bakari", narrative:"Baada ya mchezo shuleni, Bakari alikuwa na njaa sana.", q:"Bakari anasema nini ili kumwomba mama chakula kwa heshima?", opts:["Nipe chakula!", "Tafadhali mama, ninaweza kupata chakula?", "Mimi ninataka kula", "Chakula kiko wapi?"], ans:1, exp:"Tunaomba kitu kwa upole ukisema 'tafadhali'."},
+  {char:"🐘", charName:"Tembo", narrative:"Tembo mkubwa alifundisha watoto jinsi ya kuzungumza vizuri.", q:"Unapozungumza na mtu mkubwa, unapaswa kuwa?", opts:["Mwerevu na jeuri", "Mpole na mwenye heshima", "Haraka na mkali", "Kimya kabisa"], ans:1, exp:"Heshima ni muhimu tunapozungumza na wakubwa."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipoteza kalamu yake darasani na alihitaji msaada.", q:"Bakari anapaswa kusema nini kwa mwalimu kwa heshima?", opts:["Mwalimu, nimepoteza kalamu yangu, tafadhali nisaidie.", "Niletee kalamu!", "Kalamu yangu ipo wapi?", "Mwalimu, wewe una kalamu?"], ans:0, exp:"Tunaomba msaada kwa upole na heshima."},
+  {char:"🦁", charName:"Bakari", narrative:"Saa sita mchana, Bakari alikutana na jirani wao mzee Hamisi.", q:"Bakari anasema salamu gani mchana?", opts:["Habari za asubuhi", "Habari za mchana", "Habari za jioni", "Usiku mwema"], ans:1, exp:"Salamu za mchana ni 'Habari za mchana'."},
+  {char:"🦁", charName:"Bakari", narrative:"Rafiki wa Bakari alimwambia jambo la kushangaza.", q:"Bakari anapata habari nzuri. Anajibu vipi?", opts:["Oh, sijui", "Hongera! / Vizuri sana!", "Ndiyo wewe", "Sawa tu"], ans:1, exp:"Tunaonyesha furaha tunaposikia habari nzuri."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alimkera rafiki yake bila kukusudia wakati wa mchezo.", q:"Bakari anapaswa kusema nini baada ya kumkera rafiki wake?", opts:["Hiyo si kosa langu", "Samahani rafiki yangu, silikusudia.", "Unalia kwa nini?", "Hakuna tatizo"], ans:1, exp:"'Samahani' ni neno la upole tunapomkera mtu."},
+  {char:"🐻", charName:"Dubu", narrative:"Dubu mzee alikuwa akiwaeleza watoto hadithi ndefu.", q:"Unaposikiliza mtu anayezungumza, unapaswa kufanya nini?", opts:["Kuzungumza wakati huo huo", "Kucheza mchezo", "Kumsikiliza kwa makini bila kukatiza", "Kutoka nje"], ans:2, exp:"Kusikiliza kwa makini ni tabia njema."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alimaliza chakula cha mchana na mama yake alimpika.", q:"Bakari anamshukuru mama vipi baada ya chakula?", opts:["Sawa mama", "Asante sana mama, chakula kilikuwa kitamu!", "Tena mama", "Nimekula"], ans:1, exp:"Kushukuru ni tabia nzuri baada ya kupata kitu."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliuliza swali na mikono mingi iliinuliwa darasani.", q:"Bakari anataka kujibu swali. Anapaswa kufanya nini?", opts:["Kupiga kelele jibu lake", "Kuinua mkono wake na kusubiri", "Kuendelea kucheza", "Kutoka darasani"], ans:1, exp:"Tunasubiri zamu yetu na kuinua mkono."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliwasiliana na babu yake aliyeishi mbali kwa simu.", q:"Bakari anaanza mazungumzo ya simu vipi kwa heshima?", opts:["Ebu, nani huyu?", "Hujambo babu, mimi ni Bakari.", "Babu, niko hapa", "Unajua mimi ni nani?"], ans:1, exp:"Tunaanza mazungumzo ya simu kwa salamu na kutaja jina letu."},
+  {char:"🐘", charName:"Tembo", narrative:"Katika hadithi ya Tembo, anafundisha watoto kuhusu mazungumzo mazuri.", q:"Unapomsikiliza mtu, ni muhimu uwe na nini?", opts:["Mikono mifukoni", "Macho yanayomwangalia mzungumzaji", "Masikio yaliyofungwa", "Mdomo wazi"], ans:1, exp:"Kuangalia mzungumzaji macho kwa macho ni ishara ya kusikiliza."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa zawadi na shangazi yake.", q:"Bakari anapaswa kusema nini anapopokea zawadi?", opts:["Ningependa kitu kingine", "Asante sana shangazi!", "Hii ni ndogo sana", "Nipe nyingine pia"], ans:1, exp:"Tunamshukuru mtu anayetupa kitu."},
+  {char:"🦁", charName:"Bakari", narrative:"Wakati wa mazungumzo, Bakari alipoteza mada.", q:"Bakari amesahau alichokuwa anasema. Anasema nini?", opts:["Mimi sijui", "Samahani, nilisahau alichokuwa nasema", "Hakuna kitu", "Naendelea"], ans:1, exp:"Ni kawaida kusahau na kwa upole ukisema hivyo."},
+  {char:"🦁", charName:"Bakari", narrative:"Baba yake Bakari alimwambia hadithi ya usiku wa manane.", q:"Bakari alionyesha hisia gani alipofurahi kusikia hadithi?", opts:["Hasira", "Huzuni", "Furaha na kicheko", "Usingizi"], ans:2, exp:"Furaha inaonekana kupitia tabasamu na kicheko."},
+  {char:"🐵", charName:"Kima", narrative:"Kima na Bakari walikuwa wakizungumza kuhusu chakula wanachopenda.", q:"Bakari anasema 'Mimi napenda wali.' Kima anajibu vipi kuongeza?", opts:["Mimi pia napenda wali!", "Wewe una makosa", "Wali ni mbaya", "Sijui chakula"], ans:0, exp:"Katika mazungumzo, tunajibu na kuongeza mawazo yetu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alikuwa darasani na mwalimu alisoma hadithi ndefu.", q:"Baada ya hadithi, mwalimu alimwuliza Bakari: 'Hadithi ilihusu nini?' Bakari anajibu jinsi gani nzuri?", opts:["Sijua", "Hadithi ilihusu mtoto aliyepoteza kondoo wake msituni.", "Ndiyo", "Hadithi ilikuwa ndefu"], ans:1, exp:"Jibu zuri linataja mada kuu ya hadithi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari na familia yake walikuwa mezani wakila pamoja.", q:"Wakati wa chakula, ni tabia gani nzuri ya kuzungumza?", opts:["Kupiga kelele", "Kuzungumza polepole na kwa upole", "Kutazama simu", "Kula haraka haraka"], ans:1, exp:"Tunaongea kwa upole na heshima wakati wa chakula."},
+  {char:"🦁", charName:"Bakari", narrative:"Dada ya Bakari alimwomba msaada wake na masomo.", q:"Bakari ajibu vipi kwa upole anapoweza kusaidia?", opts:["Ninapumzika sasa", "Kwa furaha dada, nitakusaidia!", "Uende kwingine", "Sina wakati"], ans:1, exp:"Kusaidia wengine kwa furaha ni tabia nzuri."},
+  {char:"🦁", charName:"Bakari", narrative:"Shuleni, mwalimu aliunda timu za kuongea mbele ya darasa.", q:"Bakari anaongea mbele ya darasa. Anapaswa kuzungumza vipi?", opts:["Haraka sana ili amaliza", "Kwa sauti wazi na polepole wenzake wasikia", "Kwa siri tu", "Kwa lugha nyingine"], ans:1, exp:"Tunazungumza kwa sauti wazi na polepole ili wote waweze kusikia."},
+  {char:"🐘", charName:"Tembo", narrative:"Tembo alimwuliza Bakari swali gumu.", q:"Bakari hajui jibu la swali. Anasema nini kwa uaminifu?", opts:["Ndiyo ninajua", "Sifahamu jibu lake, lakini nitajifunza.", "Jibu lake ni X", "Swali lako si zuri"], ans:1, exp:"Uaminifu wa kusema 'sijui' ni tabia nzuri."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alimwona mtoto mdogo akilia njiani.", q:"Bakari anafanya nini kwa upole kumfariji mtoto?", opts:["Anapita tu", "Anamwuliza kwa upole 'Unalilia nini? Naweza kukusaidia?'", "Anamwambia anyamaze", "Anakimbia"], ans:1, exp:"Kuonyesha huruma na kuuliza jinsi ya kusaidia ni tabia njema."},
+  {char:"🦁", charName:"Bakari", narrative:"Mama aliomba Bakari awasiliane na jirani wao ili kukopa sukari.", q:"Bakari anasema nini kwa jirani kwa heshima?", opts:["Tupe sukari!", "Hujambo shangazi, mama anauliza kama tunaweza kukopa sukari kidogo tafadhali?", "Sukari ipo?", "Mama anaitaka sukari"], ans:1, exp:"Tunaomba vitu kwa heshima na upole."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari na marafiki wanazungumza vikundi shuleni.", q:"Kila mmoja katika kikundi anapaswa kufanya nini?", opts:["Kuzungumza wakati wote", "Kusikiliza na kuzungumza kwa zamu", "Kukaa kimya", "Kufanya kitu kingine"], ans:1, exp:"Katika vikundi, kila mmoja anapata zamu ya kuzungumza na kusikiliza."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alianza somo na Bakari alikuwa nje ya mlango.", q:"Bakari anaingia darasani wakati somo linaendelea. Anasema nini?", opts:["Habari watu wote!", "Samahani mwalimu, naweza kuingia?", "Anaingia bila kusema chochote", "Anabisha mlango kwa nguvu"], ans:1, exp:"Tunaomba ruhusa ya kuingia kwa heshima."},
+  {char:"🐵", charName:"Kima", narrative:"Kima alimwambia Bakari habari za kusikitisha.", q:"Bakari anaonyesha huruma vipi kwa rafiki aliyehuzunishwa?", opts:["Kucheka", "Kumwambia 'Pole sana rafiki, niko hapa kwako'", "Kumwambia aendelee", "Kumwacha peke yake"], ans:1, exp:"Tunaonyesha huruma kwa maneno ya faraja."},
+  {char:"🦁", charName:"Bakari", narrative:"Baada ya safari ndefu, Bakari alirudi nyumbani usiku.", q:"Bakari anasema salamu gani usiku kwa familia?", opts:["Habari za mchana", "Usiku mwema familia yangu!", "Kwaheri", "Asubuhi njema"], ans:1, exp:"'Usiku mwema' ni salamu ya usiku."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alitaka kujua jinsi ya kucheza mchezo mpya.", q:"Bakari anaomba maelezo vipi kwa mzee wake?", opts:["Nionyeshe!", "Tafadhali mzee, unaweza kunieleza jinsi mchezo huu unavyochezwa?", "Najua tayari", "Mchezo huu ni wa nini?"], ans:1, exp:"Tunaomba maelezo kwa heshima na upole."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alifanya kosa kubwa darasani.", q:"Bakari anapaswa kufanya nini akijua kosa lake?", opts:["Kulificha", "Kulikataa", "Kukubali kosa na kusema 'Samahani, nilikosea'", "Kumlaumu mwingine"], ans:2, exp:"Kukubali makosa na kuomba msamaha ni tabia ya ujasiri."},
+  {char:"🦁", charName:"Bakari", narrative:"Familia ya Bakari ilikuwa ikizungumza wakati wa jioni.", q:"Watoto wadogo wanapaswa kufanya nini wakati wazazi wanazungumza?", opts:["Kukatiza mara moja", "Kusubiri zamu yao au kuomba ruhusa ya kuzungumza", "Kupiga kelele", "Kutoka chumba"], ans:1, exp:"Tunasubiri zamu yetu ya kuzungumza kwa heshima."},
+  {char:"🐘", charName:"Tembo", narrative:"Tembo alimwuliza Bakari aelezee mazingira ya nyumba yake.", q:"Bakari anaelezea nyumba yake vizuri vipi?", opts:["Nyumba yangu ipo", "Nyumba yetu ni ya rangi ya bluu ina vyumba vitatu na bustani ndogo mbele yake.", "Nyumba iko huko", "Sijui"], ans:1, exp:"Maelezo mazuri yanaelezea sifa maalum."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliambia darasa hadithi na kuuliza maswali baadaye.", q:"Bakari hakusikia vizuri sehemu moja ya hadithi. Anafanya nini?", opts:["Anajibu bila kujua", "Anauliza kwa heshima 'Mwalimu, tafadhali unaweza kurudia tena?'", "Anakaa kimya", "Anafanya kazi nyingine"], ans:1, exp:"Ni sawa kuuliza unapohitaji ufafanuzi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alimwona mwanafunzi mpya akizagaa shuleni.", q:"Bakari anaonyesha ukarimu vipi kwa mwanafunzi mpya?", opts:["Anamwacha", "Anamkimbilia", "Anamwendea na kusema 'Karibu shuleni! Mimi ni Bakari, tunaweza kuwa marafiki?'", "Anamchekesha"], ans:2, exp:"Ukarimu ni tabia nzuri kwa wageni."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa habari mbaya ya mtihani wake.", q:"Bakari anaonyesha hisia gani kwa njia inayofaa?", opts:["Kupiga kelele na kukasirika", "Kusema kwa utulivu 'Nimehuzunishwa, lakini nitajifunza zaidi'", "Kulilia kwa nguvu", "Kutokuwa na hisia yoyote"], ans:1, exp:"Tunaonyesha hisia kwa utulivu na kwa njia inayofaa."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari anahitaji kwenda chooni wakati wa somo.", q:"Bakari anaomba ruhusa vipi kwa mwalimu?", opts:["Anatoka tu haraka", "Anapiga kelele 'Ninataka chooni!'", "Anainua mkono na kusema 'Mwalimu, tafadhali naweza kwenda chooni?'", "Anauliza mwenzake"], ans:2, exp:"Tunaomba ruhusa kwa heshima kutoka kwa mwalimu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari anasimulia hadithi kwa darasa lake.", q:"Kusimulia hadithi vizuri kunahitaji nini?", opts:["Kuzungumza haraka bila kusimama", "Mwanzo, kati na mwisho wa hadithi pamoja na sauti za kuvutia", "Maneno machache tu", "Kuzungumza kwa siri"], ans:1, exp:"Hadithi nzuri ina mwanzo, kati na mwisho."},
+  {char:"🐻", charName:"Dubu", narrative:"Dubu aliwaonyesha watoto jinsi ya kusimama mbele ya watu na kuzungumza.", q:"Unaposimama mbele ya watu kuzungumza, unapaswa kufanya nini?", opts:["Unatazama chini", "Unazungumza kwa haraka", "Unawatazama wasikilizaji na kuzungumza kwa uwazi", "Unafunika uso wako"], ans:2, exp:"Kuzungumza mbele ya watu kunahitaji ujasiri na kuwaangalia wasikilizaji."},
+  {char:"🦁", charName:"Bakari", narrative:"Baada ya mazungumzo mazuri, Bakari na rafiki wake wanaacha.", q:"Bakari anasema nini wakati wa kuacha rafiki wake?", opts:["Nakwenda", "Kwaheri rafiki, tutaonana kesho!", "Naenda sasa hivi", "Baadaye"], ans:1, exp:"'Kwaheri' ni salamu sahihi ya kuagana."},
+],
+
+// ========== KIWANGO 2: Kusoma na Kuandika (Msingi) ==========
+[
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kitabu chake cha kwanza cha hadithi kuhusu simba.", q:"Kitabu cha hadithi kinaanza na nini?", opts:["Picha tu", "Jina la kitabu (kichwa)", "Maswali", "Nambari"], ans:1, exp:"Kila kitabu kinaanza na kichwa (jina la kitabu)."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliandika maneno ubaoni na Bakari aliulizwa kusoma.", q:"Herufi 'B' inaanzia neno gani?", opts:["Ndizi", "Bakari", "Mtu", "Kiti"], ans:1, exp:"'Bakari' inaanzia na herufi 'B'."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma sentensi fupi katika kitabu chake.", q:"Sentensi 'Simba anakimbia' ina maneno mangapi?", opts:["Moja", "Mawili", "Matatu", "Manne"], ans:1, exp:"'Simba anakimbia' ina maneno mawili: 'Simba' na 'anakimbia'."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari aandike jina lake kwenye karatasi.", q:"Bakari anaandika herufi gani ya kwanza ya jina lake?", opts:["A", "K", "B", "M"], ans:2, exp:"'Bakari' inaanzia na herufi 'B'."},
+  {char:"🐘", charName:"Tembo", narrative:"Tembo alionyesha watoto jinsi ya kushikilia kalamu vizuri.", q:"Kalamu inashikiliwa kwa vidole vingapi?", opts:["Kidole kimoja", "Vidole viwili", "Vidole vitatu", "Vidole vyote"], ans:2, exp:"Kalamu inashikiliwa kwa vidole vitatu: kidole gumba, shahada na kati."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma hadithi fupi kuhusu mnyama wa msituni.", q:"Katika hadithi, mhusika mkuu ni nani?", opts:["Jibu linategemea hadithi husika", "Mwalimu", "Mama", "Shule"], ans:0, exp:"Mhusika mkuu ni mtu au kitu kinachozungumzwa zaidi katika hadithi."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliandika 'a, e, i, o, u' ubaoni.", q:"Herufi hizi 'a, e, i, o, u' zinaitwa nini?", opts:["Konsonanti", "Irabu", "Nambari", "Maneno"], ans:1, exp:"'a, e, i, o, u' ni irabu za lugha ya Kiswahili."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika sentensi yake ya kwanza kabisa!", q:"Sentensi inaisha na nini?", opts:["Neno", "Alama ya mwisho kama nukta (.)", "Herufi kubwa", "Nafasi"], ans:1, exp:"Sentensi inaisha na alama ya kumaliza kama nukta (.)"},
+  {char:"🦁", charName:"Bakari", narrative:"Dada yake Bakari alimwonyesha vitabu vya kuchora na kuandika.", q:"Unapoandika jina lako, herufi ya kwanza iandikwa vipi?", opts:["Ndogo", "Kubwa (herufi kubwa)", "Yoyote", "Kwa rangi nyekundu tu"], ans:1, exp:"Majina yanaandikwa na herufi kubwa ya kwanza."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma kifungu fupi na mwalimu aliuliza maswali.", q:"Kusoma vizuri kunamaanisha nini?", opts:["Kusoma haraka tu", "Kusoma kwa makini na kuelewa maana", "Kusoma kwa sauti ya chini tu", "Kutazama picha tu"], ans:1, exp:"Kusoma vizuri ni kusoma na kuelewa maana ya maneno."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipata zoezi la kutenganisha silabi za maneno.", q:"Neno 'bakari' lina silabi ngapi? (ba-ka-ri)", opts:["Moja", "Mbili", "Tatu", "Nne"], ans:2, exp:"'Ba-ka-ri' ina silabi tatu."},
+  {char:"🐵", charName:"Kima", narrative:"Kima alimwonyesha Bakari picha na maneno yenye maana.", q:"Picha ya simba inafanana na neno gani?", opts:["Simba", "Samaki", "Ndege", "Mti"], ans:0, exp:"Picha ya simba inawakilisha neno 'simba'."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimpa Bakari maneno mapya ya kujifunza.", q:"Unapojifunza neno jipya, unafanya nini ili ukumbuke?", opts:["Unalisahau tu", "Unaliandika mara kadhaa na kulitumia katika sentensi", "Unaomba mwingine akuambie kila wakati", "Hauna haja ya kukumbuka"], ans:1, exp:"Kuandika na kutumia maneno mapya husaidia kukariri."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma sentensi hii: 'Mama anafua nguo mtoni'.", q:"Sentensi hii inaelezea nini?", opts:["Mama anakula chakula", "Mama anafua nguo mtoni", "Mama anasafisha nyumba", "Mama analala"], ans:1, exp:"Sentensi inasema wazi mama anafua nguo mtoni."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika barua fupi kwa shangazi wake.", q:"Barua inaanza na nini?", opts:["Maneno ya kuheshimu kama 'Mpendwa shangazi'", "Jina la mwandishi tu", "Tarehe tu", "Alama ya mwisho"], ans:0, exp:"Barua inaanza na salamu au jina la mpokeaji."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipata mashairi ya Kiswahili darasani.", q:"Shairi linatofautiana na sentensi za kawaida kwa sababu?", opts:["Lina picha tu", "Lina urari (mdundo) na wakati mwingine vina", "Halikuwa na maana", "Lina maneno mengi sana"], ans:1, exp:"Mashairi yana mdundo maalum na wakati mwingine vina."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma kitabu cha Bakari Machachari na kupata hadithi ya kuvutia.", q:"Baada ya kusoma hadithi, Bakari anafanya nini kuelewa vizuri zaidi?", opts:["Anafunga kitabu", "Anajiuliza maswali kuhusu hadithi na kufikiri kuhusu mhusika", "Anasahau hadithi", "Anaanza hadithi nyingine mara moja"], ans:1, exp:"Kujiuliza maswali baada ya kusoma husaidia kuelewa vizuri."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari aandike habari ya siku yake.", q:"Habari inaandikwa kwa mpangilio gani?", opts:["Mwisho kwanza", "Nasibu (random)", "Mwanzo, kati, mwisho kwa mpangilio", "Hakuna mpangilio"], ans:2, exp:"Habari yoyote iandikwe kwa mpangilio: mwanzo, kati, mwisho."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alikuwa akisoma kwa sauti darasani.", q:"Kusoma kwa sauti kunamaanisha nini?", opts:["Kusoma kimya kimya", "Kusoma kwa sauti inayosikika na wengine", "Kusoma bila kuelewa", "Kusoma picha tu"], ans:1, exp:"Kusoma kwa sauti ni kusoma kwa sauti inayosikika."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika orodha ya vitu anavyohitaji shuleni.", q:"Orodha ni nini?", opts:["Sentensi moja ndefu", "Mkusanyiko wa vitu vilivyoandikwa kimoja kimoja", "Shairi", "Hadithi"], ans:1, exp:"Orodha ni vitu vilivyoorodheshwa kimoja kimoja."},
+  {char:"🐘", charName:"Tembo", narrative:"Tembo alieleza jinsi ya kuandika vizuri na kuchora herufi.", q:"Ili kuandika vizuri, unahitaji nini?", opts:["Haraka tu", "Kalamu nzuri, karatasi safi na mkono wa utulivu", "Kelele", "Mchezo wa kwanza"], ans:1, exp:"Kuandika vizuri kunahitaji mkono wa utulivu na vifaa vizuri."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma kifungu kuhusu wanyama wa Afrika.", q:"Baada ya kusoma, Bakari anaandika nini ili kukumbuka?", opts:["Anachora picha tu", "Anaandika mambo muhimu (maelezo mafupi)", "Haandiki chochote", "Anaandika hadithi mpya"], ans:1, exp:"Kuandika mambo muhimu baada ya kusoma husaidia kukumbuka."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliona neno geni 'harambee' katika kitabu.", q:"Anapokutana na neno geni, Bakari anapaswa kufanya nini?", opts:["Kuliendea", "Kulisoma haraka na kusahau", "Kuuliza maana yake au kutumia kamusi", "Kuacha kusoma"], ans:2, exp:"Tunatumia kamusi au kuuliza maana ya maneno magumu."},
+  {char:"🦁", charName:"Bakari", narrative:"Darasa lote lilifanya zoezi la kusoma pamoja.", q:"Kusoma pamoja kwa darasa kunasaidia kwa njia gani?", opts:["Haikusaidii", "Inasaidia sauti na mdundo wa kusoma", "Ni mchezo tu", "Inasaidia kula tu"], ans:1, exp:"Kusoma pamoja husaidia mdundo, sauti na ufahamu wa pamoja."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kuandika sentensi tatu kuhusu Bakari machachari.", q:"Sentensi kamili lazima iwe na nini?", opts:["Neno moja tu", "Kitenzi (tendo) na nomino (jina)", "Nambari", "Rangi tu"], ans:1, exp:"Sentensi kamili ina nomino na kitenzi."},
+  {char:"🦁", charName:"Bakari", narrative:"Mama alimsomea Bakari hadithi ya usiku na yeye alisikia kwa makini.", q:"Hadithi ina sehemu gani tatu muhimu?", opts:["Picha, rangi, sauti", "Mwanzo, katikati, mwisho", "Jina, tarehe, alama", "Mchezo, chakula, usingizi"], ans:1, exp:"Hadithi yoyote ina mwanzo, katikati na mwisho."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika kwa mkono wake wa kulia maneno matatu.", q:"Kwa kawaida, tunaandika maneno toka upande gani kwenda upande gani?", opts:["Kulia kwenda kushoto", "Kushoto kwenda kulia", "Juu kwenda chini tu", "Chini kwenda juu"], ans:1, exp:"Kiswahili (na lugha nyingi) kinaandikwa kushoto kwenda kulia."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimpa Bakari zoezi la kujaza nafasi katika sentensi.", q:"Sentensi: 'Simba ana _____ ndefu.' Neno gani linafaa?", opts:["Mdomo", "Meno", "Miguu", "Mkia"], ans:1, exp:"Simba ana meno ndefu - ni sifa inayomfanya simba."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma habari fupi kuhusu familia ya Bakari katika kitabu.", q:"Familia ya Bakari ina watu wangapi katika hadithi?", opts:["Anafikiri kuhusu hadithi aliyoisoma", "Mmoja", "Maelfu", "Hatuwezi kujua bila kusoma"], ans:3, exp:"Jibu linatoka kwenye habari iliyosomwa - tunahitaji kusoma kuelewa."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipata alama nzuri katika zoezi lake la kuandika.", q:"Alama nzuri inaonyesha nini?", opts:["Bahati tu", "Bakari alifanya kazi kwa bidii na kwa makini", "Mwalimu alimpa bila sababu", "Zoezi lilikuwa rahisi tu"], ans:1, exp:"Alama nzuri ni tunda la bidii na kufanya kazi kwa makini."},
+  {char:"🦁", charName:"Bakari", narrative:"Kwa mwisho wa wiki, Bakari aliandika insha fupi kuhusu familia yake.", q:"Insha nzuri inaanza vipi?", opts:["Na alama ya mwisho", "Na aya inayovutia inayotambulisha mada", "Na nambari", "Na orodha ya vitu"], ans:1, exp:"Insha nzuri inaanza na aya inayotambulisha mada na kuvutia msomaji."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alijifunza jinsi ya kutenganisha maneno katika silabi.", q:"Neno 'mama' lina silabi ngapi? (ma-ma)", opts:["Moja", "Mbili", "Tatu", "Nne"], ans:1, exp:"'Ma-ma' ina silabi mbili."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alionyesha maneno yenye maana zinazofanana.", q:"Maneno yenye maana zinazofanana yanaitwa nini?", opts:["Visawe (synonyms)", "Kinyume (antonyms)", "Irabu", "Silabi"], ans:0, exp:"Maneno yenye maana zinazofanana yanaitwa visawe."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika maswali matatu kuhusu hadithi alisomayo.", q:"Swali katika Kiswahili linaisha na alama gani?", opts:["Nukta (.)", "Alama ya kuuliza (?)", "Mkato (!)", "Koma (,)"], ans:1, exp:"Maswali yanaishia na alama ya kuuliza (?)."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwuliza Bakari akichore maneno 'kikubwa' na 'kidogo'.", q:"Maneno 'kikubwa' na 'kidogo' yana maana gani?", opts:["Maana zinazofanana", "Maana zinazofanana kabisa", "Maana kinyume (opposite)", "Hazina uhusiano"], ans:2, exp:"'Kikubwa' na 'kidogo' ni maneno yenye maana kinyume (antonyms)."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa zoezi la kujaza maneno yanayokosekana katika sentensi.", q:"'Ndizi ni _____ ya kula.' Neno linalolifaa ni?", opts:["Chakula", "Tunda", "Samaki", "Mboga"], ans:1, exp:"Ndizi ni tunda - inakua kwenye mti na ni tamu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alifanya zoezi la kuandika maneno kwa herufi kubwa na ndogo.", q:"Lini tunatumia herufi kubwa katika sentensi?", opts:["Kila neno", "Mwanzo wa sentensi na majina ya watu/mahali", "Mwisho wa sentensi", "Maneno magumu tu"], ans:1, exp:"Herufi kubwa inatumika mwanzo wa sentensi na kwa majina."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari asome kimya kimya na kuelewa.", q:"Kusoma kimya kimya kunasaidia kwa njia gani?", opts:["Haikusaidii", "Inasaidia umakini na ufahamu wa kibinafsi", "Ni mchezo tu", "Inasaidia usingizi"], ans:1, exp:"Kusoma kimya husaidia kuelewa na kufikiri bila kusumbua wengine."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari na darasa lake walisoma hadithi ya Bakari Machachari kwa sauti.", q:"Baada ya kusoma hadithi, kuelewa vizuri kunahitaji nini?", opts:["Kusahau mara moja", "Kujiuliza maswali kama 'Nani? Nini? Lini? Wapi? Kwa nini?'", "Kuanza hadithi nyingine", "Kufunga kitabu na kwenda kucheza"], ans:1, exp:"Maswali ya '5W' husaidia kuelewa hadithi vizuri."},
+],
+
+// ========== KIWANGO 3: Kusikiliza/Kuzungumza Wastani ==========
+[
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alitaka kuomba mwalimu wake ruhusa ya kwenda safari ya shule.", q:"Bakari aandike ombi lake vizuri. Ombi zuri linaanza na nini?", opts:["Ninataka tu...","Heshima, na maombi ya ruhusa ya kwenda...","Sawa tu mwalimu...","Ombi langu ni..."], ans:1, exp:"Ombi rasmi linaanza kwa heshima na kuelezea jambo unaloomba."},
+  {char:"🦁", charName:"Bakari", narrative:"Katika mchezo wa kuigiza, Bakari alicheza nafsi ya daktari.", q:"Daktari anamwuliza mgonjwa nini kwanza?", opts:["Unalipaje?","Unahisi vipi leo? Una maumivu wapi?","Nipe pesa","Enda nyumbani"], ans:1, exp:"Daktari anaanza na maswali ya hali ya mgonjwa."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari aeleze tofauti kati ya mazungumzo rasmi na ya kawaida.", q:"Mazungumzo rasmi tofauti na ya kawaida kwa sababu?", opts:["Ni marefu zaidi","Yanatumia lugha ya heshima zaidi na muundo tofauti","Yanazungumzwa haraka","Hayaeleweki"], ans:1, exp:"Mazungumzo rasmi yanatumia lugha ya adabu na muundo maalum."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisikia habari kwenye redio na akahitaji kuziripoti darasani.", q:"Kuripoti habari vizuri kunahitaji nini?", opts:["Maneno yako tu","Ukweli, ufafanuzi na usahihi wa habari","Uchoraji wa picha","Nyimbo"], ans:1, exp:"Ripoti nzuri ina ukweli, maelezo sahihi na mtiririko mzuri."},
+  {char:"🐘", charName:"Tembo", narrative:"Tembo alifundisha somo la mazungumzo ya kikundi.", q:"Katika kikundi, unapinga mawazo ya mwenzako kwa njia gani ya heshima?", opts:["Unakataa kwa nguvu","Unasema 'Naomba uniruhusu nitoe mawazo tofauti...'","Unakaa kimya tu","Unaenda kikundi kingine"], ans:1, exp:"Upinzani wa heshima unatumia maneno ya upole na mazungumzo."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisimulia hadithi ya ziara yake na familia.", q:"Kusimulia hadithi kwa kuvutia kunahitaji vipengele gani?", opts:["Maneno tu","Picha tu","Mhusika, tatizo, matukio, mwisho na hisia","Nambari na takwimu"], ans:2, exp:"Hadithi nzuri ina mhusika, tatizo, matukio ya kuvutia na mwisho."},
+  {char:"🦁", charName:"Bakari", narrative:"Darasani, Bakari alishiriki mjadala kuhusu wanyama wa msitu.", q:"Katika mjadala, unapaswa kufanya nini kabla ya kuzungumza?", opts:["Kuzungumza mara moja","Kuandika mawazo yako na kusubiri zamu","Kukaa kimya kabisa","Kuomba mwingine azungumze"], ans:1, exp:"Kuandaa mawazo kabla ya mjadala husaidia kuzungumza vizuri zaidi."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari atoe muhtasari wa hadithi aliyoisikiliza.", q:"Muhtasari mzuri unaelezea nini?", opts:["Kila neno la hadithi","Mambo muhimu ya hadithi kwa maneno yako mwenyewe","Mawazo ya wengine","Picha tu"], ans:1, exp:"Muhtasari ni maelezo mafupi ya mambo muhimu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alimwona rafiki wake Juma akihangaika na tatizo shuleni.", q:"Bakari anaomba taarifa zaidi ya tatizo kwa jinsi gani nzuri?", opts:["Unafanya nini?","Tafadhali nieleze tatizo lako ili nikusaidie vizuri zaidi.","Hiyo si shida yangu","Omba mwalimu"], ans:1, exp:"Kuomba maelezo zaidi kwa upole husaidia kutoa msaada bora."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika barua kwa rafiki wake wa mbali.", q:"Barua ya kirafiki inatofautiana na barua rasmi kwa sababu?", opts:["Ina michoro tu","Inatumia lugha ya kawaida na ya kirafiki zaidi","Haina salamu","Ni ndefu zaidi tu"], ans:1, exp:"Barua ya kirafiki inatumia lugha ya karibu na kawaida."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alifundisha somo la mchezo wa kuigiza mazungumzo ya soko.", q:"Katika soko, mfanyabiashara na mnunuzi wanazungumzaje?", opts:["Wanagombana","Wanajadili bei kwa heshima na makubaliano","Wanakaa kimya","Wanaomba bure"], ans:1, exp:"Mazungumzo ya biashara ni ya heshima, jadili na makubaliano."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliuliza wanafunzi wazingatie jinsi sauti zinavyobadilika.", q:"Tunaposema jambo la furaha, sauti yetu inakuwaje?", opts:["Ya chini na polepole","Ya juu, yenye nguvu na furaha","Ya kawaida tu","Inakatika katika"], ans:1, exp:"Furaha inaonyeshwa na sauti yenye nguvu na hisia za furaha."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliongea na mwalimu wake kuhusu mada ya kuvutia.", q:"Mazungumzo mazuri yanahusisha nini muhimu?", opts:["Mtu mmoja anazungumza tu","Kusikiliza, kuzungumza, kuuliza na kujibu kwa mzunguko","Kukaa kimya","Kelele tu"], ans:1, exp:"Mazungumzo mazuri ni ya mzunguko: kusikiliza, kuzungumza, kuuliza."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alitumia maneno ya kielelezo kuelezea hali ya hewa.", q:"'Mvua inanyesha kama mashauri ya mto unaofurika' - hii ni aina gani ya lugha?", opts:["Neno la kawaida","Tashibiha (mfano wa kulinganisha)","Swali","Amri"], ans:1, exp:"Tashibiha ni kulinganisha vitu viwili kwa kutumia 'kama'."},
+  {char:"🦁", charName:"Bakari", narrative:"Darasani, wanafunzi walipewa hadithi ya kusikiliza bila kusoma.", q:"Unaposikiliza hadithi, unapaswa kukumbuka nini?", opts:["Jina la hadithi tu","Mhusika, mahali, tatizo na jinsi lilivyotatuliwa","Urefu wa hadithi","Lugha tu"], ans:1, exp:"Tunahitaji kukumbuka mhusika, mahali, tatizo na ufumbuzi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kuwasiliana mbele ya darasa kuhusu mnyama wake anayempenda.", q:"Kuwasiliana vizuri mbele ya darasa kunahitaji nini zaidi ya maneno?", opts:["Sauti ya chini tu","Maneno, ishara za mwili, mawasiliano ya macho na ujasiri","Kujificha","Kusomea karatasi tu"], ans:1, exp:"Mawasiliano mazuri yanahitaji maneno, mwili, macho na ujasiri."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari na Juma walipingana kuhusu mchezo gani wacheze.", q:"Jinsi bora ya kutatua mgawanyiko ni ipi?", opts:["Kupigana","Mmoja aendelee na mwingine akasirike","Kuzungumza, kusikilizana na kupata makubaliano","Kukimbia"], ans:2, exp:"Mazungumzo ya amani na kusikilizana husaidia kutatua migawanyiko."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwuliza Bakari atofautishe habari ya kweli na ya kuchezea.", q:"Unajuaje habari ni ya kweli au la?", opts:["Unaamini tu","Unathibitisha kwa vyanzo vingi vya kuaminika","Unasema kila kitu ni kweli","Unaomba msaada wa kuchora"], ans:1, exp:"Habari ya kweli inathibitishwa na vyanzo vingi vinavyoaminika."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisimulia hadithi kwa picha na maneno.", q:"Picha katika hadithi zinasaidia kwa njia gani?", opts:["Hazisaidii","Zinaonyesha mandhari, hisia na kuimarisha hadithi","Zinakata hadithi","Ni mapambo tu"], ans:1, exp:"Picha zinaongeza ufahamu na kufanya hadithi ivutie zaidi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliamua kuelezea siku yake shuleni kwa mama yake.", q:"Maelezo mazuri ya siku yako yanapaswa kuwa na nini?", opts:["Maneno matatu tu","Matukio ya kuvutia, hisia zako na mambo uliyojifunza","Nambari za wakati tu","Majina ya watu tu"], ans:1, exp:"Maelezo mazuri yanajumuisha matukio, hisia na mambo yaliyojifunzwa."},
+  {char:"🦁", charName:"Bakari", narrative:"Katika darasa, kila mwanafunzi alipewa nafsi ya kusema neno la kujivunia.", q:"Bakari anasema nini anachojivunia zaidi?", opts:["Jibu lake binafsi ndio sahihi","Hakuna kitu","Sijui","Wengine wote"], ans:0, exp:"Kujivunia ni binafsi - jibu lako lenyewe ni sahihi kwako."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliuliza: 'Kuna tofauti gani kati ya kusikiliza na kusikia?'", q:"Tofauti kati ya 'kusikiliza' na 'kusikia' ni nini?", opts:["Hazina tofauti","Kusikiliza ni kwa makini na ufahamu; kusikia ni hisi ya asili ya sauti tu","Kusikiliza ni kwa masikio; kusikia ni kwa moyo","Kusikiliza ni kwa watoto; kusikia ni kwa wazima"], ans:1, exp:"Kusikiliza ni tendo la makusudi la kuelewa; kusikia ni hisi ya asili."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliwasiliana habari muhimu kwa darasa lake.", q:"Habari muhimu inapaswa kuwasilishwa vipi?", opts:["Kwa haraka bila mpangilio","Kwa uwazi, ukweli na mpangilio mzuri","Kwa siri tu","Kwa maneno mengi yasiyo na maana"], ans:1, exp:"Habari muhimu inahitaji uwazi, ukweli na mpangilio."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliomba mwalimu wake amweleze tena dhana ngumu.", q:"Unapoomba mwalimu akueleze tena, unasema nini kwa heshima?", opts:["Sikuelewa tu","Tafadhali mwalimu, unaweza kunieleza tena kwa njia tofauti?","Unaeleza vibaya","Rudia tu"], ans:1, exp:"Kuomba maelezo tena kwa heshima na upole ni tabia nzuri ya mwanafunzi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari na marafiki wake waliandaa mchezo wa kuigiza dukani.", q:"Katika mchezo wa kuigiza, unafanya nini ili ufanikiwe?", opts:["Kucheka tu","Kubaki wewe mwenyewe bila kubadilisha chochote","Kuigiza nafsi uliyopewa kwa uaminifu na kujua maneno yako","Kusimama kimya"], ans:2, exp:"Mchezo wa kuigiza unahitaji uigizaji wa kweli wa nafsi uliyopewa."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alieleza jinsi sauti na hisia zinavyohusiana katika mawasiliano.", q:"Hisia zinaathiri sauti yetu kwa njia gani?", opts:["Hazifanyi kitu","Furaha = sauti ya juu; huzuni = ya chini; hasira = ya kali; woga = inatetemeka","Sauti hubadilika tu kwa bahati","Haziathiri chochote"], ans:1, exp:"Hisia zetu zinaathiri jinsi tunavyosema - toni, kasi na nguvu za sauti."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisikiliza mazungumzo kati ya mzazi na mwalimu na kuyaripoti.", q:"Kuripoti mazungumzo ya wengine kunahitaji nini?", opts:["Kubadilisha maneno yao","Usahihi na uaminifu katika kueleza kilichosemwa","Kuongeza mawazo yako","Kupoteza baadhi ya mambo"], ans:1, exp:"Ripoti ya mazungumzo lazima iwe sahihi na ya uaminifu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alitaka kujua jinsi ya kuuliza maswali mazuri.", q:"Swali zuri linatofautiana na swali baya kwa namna gani?", opts:["Urefu tu","Swali zuri ni mahususi, linafaa mada na linafungua mazungumzo","Swali zuri lina ndiyo/hapana tu","Swali zuri ni rahisi tu"], ans:1, exp:"Swali zuri ni mahususi, linafaa mada na linafungua mazungumzo zaidi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliwasiliana na kikundi cha watoto wengine katika shughuli ya pamoja.", q:"Kufanya kazi ya pamoja kunahitaji nini muhimu?", opts:["Mmoja afanye kila kitu","Ushirikiano, kusikilizana na kugawana majukumu","Kupigana kwa nafasi","Kukaa kimya tu"], ans:1, exp:"Kazi ya pamoja inafanikiwa kwa ushirikiano na mgawano wa majukumu."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwambia Bakari siku ya mwisho ya mwaka: 'Umefanya vizuri sana!'", q:"Bakari anajibu vipi kwa heshima na shukrani?", opts:["Ndiyo, najua","Asante sana mwalimu! Umekuwa mwalimu bora kwangu.","Unasema kweli?","Sawa tu"], ans:1, exp:"Kukubali sifa kwa heshima na shukrani ni tabia ya ujasiri."},
+  {char:"🦁", charName:"Bakari", narrative:"Siku ya mwisho ya kiwango cha tatu, Bakari alitoa hotuba fupi darasani.", q:"Hotuba nzuri ya mwanafunzi inapaswa kuwa na nini?", opts:["Maneno mengi bila mpangilio","Mada, mwili wa hotuba na hitimisho lenye nguvu","Maswali tu","Nyimbo tu"], ans:1, exp:"Hotuba nzuri ina mada wazi, maelezo mazuri na hitimisho lenye nguvu."},
+],
+
+// ========== KIWANGO 4: Kusoma na Kuandika Wastani ==========
+[
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma makala kuhusu hifadhi ya wanyama wa Afrika.", q:"Makala tofauti na hadithi kwa sababu?", opts:["Ina picha zaidi","Inatoa taarifa za kweli/ukweli bila mhusika wa kuchezea","Ni fupi zaidi","Ina mashairi"], ans:1, exp:"Makala inashughulikia ukweli; hadithi inaweza kuwa ya kufumba."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kuandika insha ya ufafanuzi kuhusu simba.", q:"Insha ya ufafanuzi inatoa nini hasa?", opts:["Maoni ya mwandishi tu","Taarifa na maelezo ya kina kuhusu mada","Hadithi ya kubuni","Mashairi"], ans:1, exp:"Insha ya ufafanuzi inatoa ukweli, maelezo na taarifa za mada."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari afafanue neno 'machachari' kwa sentensi.", q:"Neno 'machachari' linamaanisha nini katika Kiswahili?", opts:["Mwenye nguvu tu","Mchangamfu, mwenye nguvu na jasiri","Mvivu na polepole","Mzee na mchovu"], ans:1, exp:"'Machachari' inamaanisha mtu mchangamfu, mwenye nguvu na jasiri."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika habari ya gazeti kuhusu shughuli za shule yake.", q:"Habari ya gazeti inapaswa kujibu maswali gani ya msingi?", opts:["Nani? Nini? Lini? Wapi? Kwa nini? Vipi?","Je? Kwa nini? Lakini?","Nani? Tu","Vipi? Tu"], ans:0, exp:"Habari ya gazeti inajibu maswali ya 5W+H: Nani, Nini, Lini, Wapi, Kwa nini, Vipi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma shairi la Kiswahili na kukagua muundo wake.", q:"Shairi la Kiswahili la jadi lina sifa gani?", opts:["Lina silabi kadhaa bila utaratibu","Lina mishororo, beti na vina (rima) vya mwisho","Lina maneno ya Kiingereza tu","Halikuwa na muundo wowote"], ans:1, exp:"Shairi la jadi la Kiswahili lina beti, mishororo na vina maalum."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kifungu cha kusoma na kuomba apata maana ya muktadha.", q:"Unapata maana ya neno geni kutoka kwenye muktadha kwa jinsi gani?", opts:["Unaomba kamusi tu","Unasoma sentensi zinazozunguka neno hilo na kutumia mantiki","Unaacha neno hilo","Unauliza mwenzako tu"], ans:1, exp:"Muktadha (maneno yanayozunguka) husaidia kupata maana ya neno geni."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kuandika barua rasmi kwa mkurugenzi wa shule.", q:"Barua rasmi inatofautiana na barua ya kirafiki kwa sababu?", opts:["Ina maneno mengi zaidi","Inatumia lugha ya heshima zaidi, muundo maalum na hakuna misamiati ya mazungumzo","Ina picha nyingi","Haina salamu"], ans:1, exp:"Barua rasmi inatumia lugha ya heshima na muundo maalum wa kiofisi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma hadithi ndefu na kuulizwa aitumbuize.", q:"Kutumbuiza hadithi kunamaanisha nini?", opts:["Kuichekesha tu","Kuiambatanisha na hisia, sauti na hali inayofaa","Kuisoma haraka","Kuisoma bila hisia"], ans:1, exp:"Kutumbuiza ni kuongeza hisia, sauti na hali inayofaa hadithi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa mkusanyiko wa maneno na kuomba ayapange.", q:"Maneno haya yanapangwa katika mpangilio gani: 'asubuhi, mama, aliamka, na, chakula, kupika'?", opts:["Asubuhi na mama chakula aliamka kupika","Asubuhi mama aliamka na kupika chakula","Kupika chakula mama asubuhi na aliamka","Chakula asubuhi kupika na aliamka mama"], ans:1, exp:"Sentensi sahihi: 'Asubuhi mama aliamka na kupika chakula.'"},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliuliza Bakari aeleze aina za sentensi.", q:"Aina ngapi za sentensi zipo katika Kiswahili?", opts:["Moja tu","Mbili (chanya na ukana)","Tatu au zaidi (arifu, ulizi, amri, mshangao)","Kumi"], ans:2, exp:"Kuna aina nyingi za sentensi: arifu, ulizi, amri, mshangao n.k."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa zoezi la kuandika aya yenye mpangilio mzuri.", q:"Aya nzuri inahitaji nini?", opts:["Sentensi moja tu","Sentensi ya mada (topic sentence), sentensi za msaada na sentensi ya kufunga","Maneno mengi bila mpangilio","Alama za uakifishaji tu"], ans:1, exp:"Aya nzuri ina sentensi ya mada, sentensi za msaada na kufunga."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma habari mbili tofauti kuhusu wanyama na akaomba azitofautishe.", q:"Kutofautisha habari mbili kunahitaji kuangalia nini?", opts:["Urefu wao tu","Mada, mtazamo wa mwandishi, taarifa zilizotolewa na jinsi zilivyowasilishwa","Rangi ya kurasa","Jina la mwandishi tu"], ans:1, exp:"Kutofautisha habari kunahitaji kuangalia mada, mtazamo na taarifa."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika hadithi fupi na mwalimu akamwuliza aitazame tena.", q:"Kuhariri (editing) uandishi wako kunahitaji kutazama nini?", opts:["Rangi ya wino tu","Tahajia, sarufi, mpangilio, maana na alama za uakifishaji","Urefu tu","Jina lako tu"], ans:1, exp:"Kuhariri kunahitaji kutazama tahajia, sarufi, mpangilio na alama."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma mashairi mawili - moja la huzuni na moja la furaha.", q:"Jinsi gani unajua shairi ni la huzuni au furaha?", opts:["Kwa urefu wake","Kwa maneno, picha na hisia zinazowakilishwa","Kwa idadi ya beti","Kwa jina la shairi tu"], ans:1, exp:"Hisia za shairi zinaonekana kupitia maneno na picha zinazotumiwa."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kifungu na kuomba apate mawazo kuu.", q:"Mawazo kuu ya kifungu ni nini?", opts:["Sentensi ya kwanza tu","Wazo linalopigiwa mstari zaidi katika aya au kifungu chote","Mwisho wa kifungu tu","Maneno marefu tu"], ans:1, exp:"Wazo kuu ni wazo linalojitokeza zaidi na kulindwa na mawazo mengine."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari aandike ripoti ya ziara ya shule.", q:"Ripoti nzuri ya ziara inahitaji nini?", opts:["Jina tu","Tarehe, mahali, shughuli zilizofanyika, mambo yaliyojifunzwa na hitimisho","Picha tu","Maneno ya kupendeza tu"], ans:1, exp:"Ripoti ya ziara ina tarehe, mahali, shughuli, mafunzo na hitimisho."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kuandika mazungumzo (dialogue) kati ya Bakari na mama yake.", q:"Mazungumzo yaliyoandikwa yanajulikana kwa nini?", opts:["Herufi kubwa tu","Alama za kunukuu (\"\") zinaonyesha maneno ya mzungumzaji","Maneno mengi","Aya ndefu"], ans:1, exp:"Mazungumzo yaliyoandikwa yanatumia alama za kunukuu (\"\")."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika hadithi na mwalimu alifurahi picha alizozichora ndani yake.", q:"Picha katika hadithi zilizochapishwa zinafanya nini?", opts:["Zinachukua nafasi ya maandishi","Zinaonyesha mazingira, hisia na kusaidia ufahamu wa hadithi","Ni mapambo tu","Zinakatiza hadithi"], ans:1, exp:"Picha zinasaidia kuonyesha mandhari na hisia na kuimarisha ufahamu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipenda sana kusoma vitabu na aliwahi kuulizwa kwa nini.", q:"Kwa nini kusoma vitabu ni muhimu?", opts:["Si muhimu","Kusoma huongeza maarifa, lugha, ubunifu na uwezo wa kufikiri","Ni mchezo tu","Kuhusu wakati wa starehe tu"], ans:1, exp:"Kusoma huongeza maarifa, lugha, ubunifu na uwezo wa kufikiri."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa mwongozo wa kuandika insha ya hoja.", q:"Insha ya hoja (argumentative) inatofautiana kwa sababu?", opts:["Ina picha tu","Inatoa mtazamo wa mwandishi na hoja zinazounga mkono","Ni hadithi ya kubuni","Ina mashairi tu"], ans:1, exp:"Insha ya hoja inaonyesha mtazamo wa mwandishi kwa hoja madhubuti."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kutambua aina za maneno katika sentensi.", q:"Katika sentensi 'Bakari anakimbia haraka', neno 'haraka' ni aina gani ya neno?", opts:["Nomino","Kitenzi","Kivumishi","Kielelezo (adverb)"], ans:3, exp:"'Haraka' ni kielelezo - inaelezea jinsi Bakari anavyokimbia."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa hadithi na kuomba atofautishe mambo ya kweli na ya kufumba.", q:"Jinsi ya kujua kama hadithi ni ya kweli au ya kubuni?", opts:["Kwa urefu wake","Hadithi ya kweli ina tarehe, mahali halisi na watu waliopo; ya kubuni ina mhusika wa kufumba","Kwa jina la hadithi tu","Kwa alama za uakifishaji"], ans:1, exp:"Hadithi ya kweli ina ukweli unaothibitishwa; ya kubuni inaweza kuwa na watu/mambo ya kufumba."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliuliza Bakari aandike sentensi kwa kutumia nyakati tofauti.", q:"Sentensi 'Bakari alikula' iko katika wakati gani?", opts:["Wakati ujao","Wakati uliopo","Wakati uliopita","Wakati wowote"], ans:2, exp:"'Alikula' inaonyesha wakati uliopita - jambo lililotokea kabla."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipata zoezi la kutumia alama za uakifishaji vizuri.", q:"Alama ya mkato (!) inatumika lini?", opts:["Mwisho wa swali","Mwisho wa sentensi ya kawaida","Mwisho wa sentensi ya mshangao au amri kali","Katikati ya sentensi"], ans:2, exp:"Alama ya mkato (!) inatumika mwisho wa sentensi ya mshangao au amri kali."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika hadithi nzuri na mwalimu akamwuliza aifupishe.", q:"Kufupisha hadithi (summarizing) kunamaanisha nini?", opts:["Kuandika upya hadithi yote","Kutoa mambo muhimu kwa maneno machache na yako mwenyewe","Kubadilisha hadithi","Kuondoa sehemu zote"], ans:1, exp:"Kufupisha ni kutoa mambo muhimu kwa maneno yako mwenyewe kwa ufupi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa makala fupi ya gazeti na kuomba aieleze kwa mwenzake.", q:"Jinsi bora ya kuelezea makala kwa mwenzake ni ipi?", opts:["Kuisoma neno kwa neno","Kuelezea kwa maneno yako mwenyewe ukizingatia mambo muhimu","Kumuonyesha tu","Kusema 'Soma mwenyewe'"], ans:1, exp:"Kuelezea kwa maneno yako mwenyewe kunaonyesha ufahamu wa kweli."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipata kazi ya kutafuta habari kutoka vyanzo tofauti.", q:"Kutumia vyanzo vingi vya habari kunamaanisha nini?", opts:["Kutumia kitabu kimoja tu","Kutumia vitabu, makala, mazungumzo na vyanzo vingine kulinganisha na kuthibitisha","Kutumia gazeti moja tu","Kutumia picha tu"], ans:1, exp:"Vyanzo vingi husaidia kupata picha kamili na kuthibitisha ukweli."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari aandike shairi fupi kuhusu simba.", q:"Shairi fupi la maneno machache linaitwa nini wakati mwingine?", opts:["Hadithi","Mashairi mafupi au wimbo","Barua","Ripoti"], ans:1, exp:"Mashairi mafupi yanaweza kuwa mishororo miwili au mitatu ya kuvutia."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika insha yake na kusahau kuweka aya.", q:"Aya inaanzia vipi katika andishi?", opts:["Mstari mzima ulioachwa","Herufi kubwa tu","Indentation (mstari mfupi ulioingia ndani) na mada mpya","Alama ya nukta tu"], ans:2, exp:"Aya mpya inaanza na indentation na inaleta mawazo mapya."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwaka wa masomo ulipomalizika, Bakari aliulizwa aandike kilichomfurahisha zaidi.", q:"Kuandika kwa hisia (reflective writing) kunahitaji nini?", opts:["Ukweli tu bila hisia","Hisia zako, uzoefu wako na jinsi ulivyoathirika","Mawazo ya wengine tu","Takwimu na nambari tu"], ans:1, exp:"Uandishi wa kina-hisia unashughulikia uzoefu na hisia za mwandishi mwenyewe."},
+],
+
+// ========== KIWANGO 5: Juu (Changamoto) ==========
+[
+  {char:"🦁", charName:"Bakari", narrative:"Bakari sasa ni mwanafunzi bora wa Kiswahili! Anakabiliwa na changamoto za hali ya juu.", q:"Tamthilia ya Kiswahili inatofautiana na hadithi ya kawaida kwa sababu?", opts:["Ina rangi nyingi","Imeandikwa kuigizwa mbele ya hadhira na ina mazungumzo ya wahusika","Ina mashairi tu","Ni ya watoto tu"], ans:1, exp:"Tamthilia imeandikwa kuigizwa mbele ya hadhira na inategemea mazungumzo ya wahusika."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma methali ya Kiswahili: 'Haraka haraka haina baraka'.", q:"Methali hii inamaanisha nini?", opts:["Kuwa na haraka ni vizuri","Kufanya kitu haraka mno bila uangalifu kunaweza kuleta madhara","Haraka inahitajika kila wakati","Baraka ni nzuri tu"], ans:1, exp:"Methali hii inafundisha kwamba kufanya haraka bila uangalifu kunaleta matatizo."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kutafsiri maudhui ya hadithi ya Kiswahili.", q:"Maudhui ya hadithi ni nini?", opts:["Jina la hadithi","Ujumbe mkuu au somo ambalo hadithi inafundisha","Mhusika mkuu tu","Mwisho wa hadithi"], ans:1, exp:"Maudhui ni ujumbe au somo kuu linalotolewa na hadithi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma masimulizi ya mdomo ya kabila la Maasai.", q:"Masimulizi ya mdomo yana thamani gani katika utamaduni wa Afrika?", opts:["Hayana thamani","Yanaweza kupotea kwa urahisi","Yanabeba historia, maarifa, mila na maadili ya jamii","Ni burudani tu"], ans:2, exp:"Masimulizi ya mdomo yanabeba utamaduni, historia na maarifa ya jamii kwa vizazi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa methali mbili na kuombwa azitofautishe.", q:"'Umoja ni nguvu' na 'Usawa ni nguvu' - zinatofautiana vipi?", opts:["Hazitofautiani kabisa","Umoja unazungumza ushirikiano; Usawa unazungumza usawa/haki","Zina maana moja kabisa","Zina maneno sawa"], ans:1, exp:"Methali hizi zinamaanisha mambo tofauti ingawa zote zinazungumzia nguvu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika insha ndefu na alihitaji kuitafsiri kwa lugha rahisi zaidi.", q:"Kutafsiri maandishi ya ngazi ya juu kwa rahisi (paraphrasing) kunahitaji nini?", opts:["Kubadilisha maneno machache tu","Kuelewa kabisa wazo na kuliandika upya kwa lugha yako mwenyewe","Kufupisha tu","Kuandika neno moja tu"], ans:1, exp:"Kutafsiri vizuri kunamaanisha kuelewa kabisa wazo na kuliandika upya."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu aliuliza Bakari aandike insha ya kulinganisha wanyama wawili.", q:"Insha ya kulinganisha inahitaji mpangilio gani maalum?", opts:["Habari za mnyama mmoja tu","Kulinganisha sifa za wote wawili mada kwa mada au wote moja kwa wakati","Picha tu","Maneno mengi tu"], ans:1, exp:"Insha ya kulinganisha inashughulikia mada kwa mada au wote kwa wakati mmoja."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kuchunguza jinsi lugha inavyobadilika.", q:"Lugha ya Kiswahili imebadilika vipi baada ya muda?", opts:["Haijabadilika kabisa","Imepokea maneno kutoka lugha nyingine, imebadilisha sarufi na kupanua msamiati","Imepoteza maneno yote ya asili","Inabadilika kwa nasibu tu"], ans:1, exp:"Kiswahili kimepokea maneno kutoka Kiarabu, Kiingereza na lugha nyingine na kinabadilika."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma andishi la Shaaban Robert na kuulizwa atoe maoni.", q:"Kutoa maoni kuhusu andishi kunahitaji nini?", opts:["Kusema tu 'Ni nzuri' au 'Si nzuri'","Hoja zenye msingi, mifano kutoka andishini na mtazamo wako mwenyewe","Kuandika upya andishi","Kukubali maoni ya wengine tu"], ans:1, exp:"Maoni mazuri yana hoja, mifano na mtazamo wa mtu mwenyewe."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa zoezi la lugha changamano: kutambua mbinu za uandishi.", q:"'Alfajiri aliingia alfajiri' - hii ni mbinu gani ya lugha?", opts:["Tashibiha","Tashbihi","Takriri (kurudia neno)","Kinaya"], ans:2, exp:"Takriri ni kurudia neno au mshororo kwa kusisitiza au kwa athari ya kisanaa."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa hoja mbili zinazopingana na kuomba azishughulikie.", q:"Jinsi bora ya kushughulikia hoja zinazopingana ni ipi?", opts:["Kukubali moja tu","Kukataa zote mbili","Kutathmini hoja zote kwa usawa na kutoa hitimisho linalounganisha au kuamua","Kukaa kimya"], ans:2, exp:"Kutathmini hoja kwa usawa na kutoa hitimisho chenye msingi ni ujuzi muhimu."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwomba Bakari aandike mwisho mbadala wa hadithi.", q:"Kubadilisha mwisho wa hadithi kunahitaji nini?", opts:["Kubadilisha kila kitu","Kuelewa mhusika, wahusika wengine, mazingira na kuhakikisha mwisho mpya unafanana na mwili wa hadithi","Kuandika hadithi mpya kabisa","Kubadilisha jina tu"], ans:1, exp:"Mwisho mbadala lazima ufanane na mwili wa hadithi na wahusika."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma andishi lenye dhana za kina na akaombwa atafsiri dhana.", q:"Dhana ngumu zinatafsiriwa vizuri kwa jinsi gani?", opts:["Kuziacha bila kuelezea","Kuzitafsiri kwa mifano halisi, mlinganisho na lugha rahisi","Kuzisema mara nyingi","Kuzibadilisha kabisa"], ans:1, exp:"Dhana ngumu zinatafsiriwa vizuri kwa mifano halisi na lugha rahisi."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ngumu ya kulinganisha methali mbili kutoka makabila mawili.", q:"Kwa nini methali ni muhimu katika utamaduni?", opts:["Ni burudani tu","Zinabeba maarifa, maadili na uzoefu wa vizazi vilivyopita","Ni maneno tu ya kupendeza","Zinahitajika kwa masomo tu"], ans:1, exp:"Methali zinabeba maarifa ya vizazi, maadili ya jamii na uzoefu wa maisha."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliandika riwaya fupi na mwalimu alifurahi sana.", q:"Riwaya inatofautiana na hadithi fupi kwa sababu?", opts:["Riwaya ina picha tu","Riwaya ni ndefu zaidi ina wahusika wengi, mada nyingi na mipangilio ya kina","Hadithi fupi ni ndefu zaidi","Riwaya haina wahusika"], ans:1, exp:"Riwaya ni ndefu zaidi ina wahusika wengi, mada nyingi na mipangilio ya kina zaidi."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwuliza Bakari aeleze mbinu za uandishi wa kisanaa.", q:"Mbinu ya 'taswira' katika uandishi inamaanisha nini?", opts:["Kuchora picha","Kutumia maneno kuunda picha ya akili ya msomaji","Kuandika haraka","Kutumia rangi"], ans:1, exp:"Taswira ni kutumia maneno yanayounda picha au hisia ndani ya akili ya msomaji."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa andishi la kihistoria la Kiswahili cha karne ya 19.", q:"Lugha ya Kiswahili ya zamani inatofautiana na ya leo vipi?", opts:["Hazitofautiani","Maneno, sarufi na matumizi yamebadilika baada ya muda","Ni sawa kabisa","Lugha ya zamani ilikuwa rahisi zaidi"], ans:1, exp:"Lugha hubadilika baada ya muda - maneno, maana na matumizi yanabadilika."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alifanya utafiti mdogo kuhusu ushairi wa Kiswahili.", q:"Tofauti kati ya shairi la Kiswahili na wimbo ni ipi?", opts:["Hazina tofauti","Shairi linasomwa; wimbo unaimbiwa na una muziki","Wimbo ni mrefu zaidi","Shairi halikuwa na maneno"], ans:1, exp:"Shairi linasomwa; wimbo unaimbiwa na mara nyingi una muziki unaousaidia."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa kazi ya kuunda mazungumzo ya hali ya dharura.", q:"Mazungumzo ya dharura yanahitaji lugha ya aina gani?", opts:["Lugha ya shemasiku","Lugha ya haraka, wazi, ya moja kwa moja bila maneno mengi ya ziada","Lugha ya utaratibu mrefu","Lugha ya mashairi"], ans:1, exp:"Dharura inahitaji lugha ya haraka, wazi na ya moja kwa moja."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisoma maandishi ya mwandishi mashuhuri wa Kenya.", q:"Jinsi gani mwandishi anaathiri msomaji?", opts:["Kwa urefu wa andishi","Kwa uchaguzi wa maneno, picha, hisia na ujumbe unaobebwa","Kwa idadi ya kurasa","Kwa umaarufu wake tu"], ans:1, exp:"Mwandishi anaathiri msomaji kwa maneno, picha, hisia na ujumbe wake."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisimamia kikundi cha wanafunzi wenzake katika mradi wa uandishi.", q:"Mkurugenzi wa kikundi anapaswa kufanya nini?", opts:["Kufanya kazi yote mwenyewe","Kugawana majukumu, kusimamia maendeleo, kusaidia wote na kuhakikisha lengo linafikiwa","Kukaa tu na kusikiliza","Kumwambia mmoja tu afanye kazi"], ans:1, exp:"Kiongozi bora anagawana majukumu, anasaidia wote na anahakikisha lengo linafikiwa."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa insha ya mwanafunzi mwingine kuhariri.", q:"Kuhariri kazi ya mwingine kunahitaji nini muhimu?", opts:["Kubadilisha kila kitu","Heshima, uaminifu na maoni madhubuti yanayosaidia kuboresha kazi","Kukubali kila kitu","Kuandika upya kabisa"], ans:1, exp:"Kuhariri kwa heshima na uaminifu kunasaidia mwandishi kuboresha kazi yake."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwalimu alimwuliza Bakari achunguze jinsi hadithi inavyoathiri jamii.", q:"Hadithi inaweza kuathiri jamii kwa njia gani?", opts:["Haziathiri chochote","Zinaathiri maadili, mitazamo, tabia na mifumo ya jamii","Ni burudani tu bila athari","Zinaathiri watoto tu"], ans:1, exp:"Hadithi zinaathiri maadili, mitazamo na tabia ya watu katika jamii."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alipewa changamoto ya mwisho: kuandika mchezo wa kuigiza.", q:"Mchezo wa kuigiza unahitaji vipengele gani?", opts:["Mhusika mmoja tu","Wahusika, mazingira, tatizo, mazungumzo na mwisho","Picha tu","Muziki tu"], ans:1, exp:"Mchezo wa kuigiza unahitaji wahusika, mazingira, tatizo, mazungumzo na mwisho."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari amefika mwisho wa safari yake ya kujifunza!", q:"Kutoa hotuba ya kufunga inayovutia kunahitaji nini?", opts:["Maneno mengi tu","Muhtasari wa mada, heshima kwa waliosaidia, ujumbe wa kutia moyo na hitimisho lenye nguvu","Maswali tu","Kujisifu tu"], ans:1, exp:"Hotuba nzuri ya kufunga ina muhtasari, shukrani, ujumbe wa kutia moyo na hitimisho."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari na darasa lake walisherehekea mafanikio ya mwaka mzima.", q:"Mafanikio ya kweli katika lugha yanajulikana vipi?", opts:["Kwa alama tu","Kwa uwezo wa kuzungumza, kusoma, kuandika na kusikiliza kwa ujuzi na ujasiri","Kwa kukariri tu","Kwa kufuata mwalimu tu"], ans:1, exp:"Mafanikio ya lugha ni uwezo wa kuitumia kwa ujuzi katika hali zote za maisha."},
+  {char:"🦁", charName:"Bakari", narrative:"Mwishoni mwa mchezo, Bakari alitafakari safari yake yote ya kujifunza.", q:"Kujifunza lugha kunafaidika vipi katika maisha ya kawaida?", opts:["Ni faida ya shule tu","Lugha inakusaidia kuwasiliana, kuelewa, kushiriki na kufanikiwa katika kila nyanja ya maisha","Ni faida ya mtihani tu","Haina faida nje ya shule"], ans:1, exp:"Lugha ni zana ya msingi ya maisha - inatusaidia katika kila eneo la maisha yetu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari alisimama mbele ya darasa zima kwa hotuba yake ya mwisho.", q:"Ujumbe gani Bakari anaweza kuwaambia wenzake kuhusu Kiswahili?", opts:["Kiswahili ni kizuri tu","Kiswahili ni lugha yetu ya utambulisho, ya fahari na ya kututenganisha kama Waafrika","Kiswahili ni kwa wazima tu","Kiswahili si muhimu"], ans:1, exp:"Kiswahili ni lugha ya utambulisho wa Afrika Mashariki na ni hazina ya utamaduni wetu."},
+  {char:"🦁", charName:"Bakari", narrative:"Bakari aliagana na Mwalimu wake na ahadi ya kuendelea kujifunza.", q:"Kuendelea kujifunza Kiswahili kunamaanisha nini vitendo?", opts:["Kusimama baada ya mtihani","Kusoma vitabu, kuzungumza, kuandika na kushiriki katika jamii inayotumia lugha","Kujifunza lugha nyingine tu","Kusahau kila ulichojifunza"], ans:1, exp:"Kujifunza lugha ni safari inayoendelea - hatusimami darasani tu."},
+]
+];
+
+// ==================== GAME STATE ====================
+let currentLevel = 0;
+let currentQ = 0;
+let score = 0;
+let answers = 0;
+let lives = 3;
+let streak = 0;
+let timerVal = 40;
+let timerInterval = null;
+let answered = false;
+let levelQuestions = [];
+let musicOn = true;
+let unlockedLevels = [0];
+const PASS_PCT = 0.80;
+const TIMER_MAX = 40;
+
+// ==================== STARS ====================
+function createStars() {
+  const c = document.getElementById('starsContainer');
+  for(let i=0;i<80;i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random()*3+1;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${1.5+Math.random()*2}s;`;
+    c.appendChild(s);
+  }
+}
+
+// ==================== LOADING ====================
+function runLoading() {
+  let pct = 0;
+  const bar = document.getElementById('loadingBar');
+  const interval = setInterval(() => {
+    pct += Math.random()*15;
+    if(pct >= 100) {
+      pct = 100;
+      bar.style.width = '100%';
+      clearInterval(interval);
+      setTimeout(() => {
+        document.getElementById('loadingScreen').classList.add('hide');
+        setTimeout(() => document.getElementById('loadingScreen').remove(), 800);
+        showScreen('introScreen');
+        if(musicOn) startIntroMusic();
+      }, 500);
+    }
+    bar.style.width = pct + '%';
+  }, 120);
+}
+
+// ==================== SCREENS ====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ==================== LEVEL SELECT ====================
+function buildLevelGrid() {
+  const grid = document.getElementById('levelGrid');
+  const icons = ['🌱','⭐','🔥','💎','🏆'];
+  const names = ['Kwanza','Pili','Tatu','Nne','Tano'];
+  grid.innerHTML = '';
+  for(let i=0;i<5;i++) {
+    const btn = document.createElement('button');
+    btn.className = 'level-btn' + (i === currentLevel ? ' active' : '') + (unlockedLevels.includes(i) ? '' : ' locked');
+    btn.innerHTML = `<span class="level-icon">${icons[i]}</span>Kiwango ${names[i]}`;
+    if(unlockedLevels.includes(i)) {
+      btn.onclick = () => {
+        document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLevel = i;
+      };
+    }
+    grid.appendChild(btn);
+  }
+}
+
+// ==================== GAME START ====================
+function startGame() {
+  stopIntroMusic();
+  getAudioCtx(); // unlock audio context
+  levelQuestions = shuffle([...allLevels[currentLevel]]).slice(0,40);
+  currentQ = 0;
+  score = 0;
+  answers = 0;
+  lives = 3;
+  streak = 0;
+  showScreen('gameScreen');
+  loadQuestion();
+}
+
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+
+function loadQuestion() {
+  answered = false;
+  clearInterval(timerInterval);
+
+  const q = levelQuestions[currentQ];
+  const total = levelQuestions.length;
+
+  document.getElementById('levelInfo').textContent = `🏅 Kiwango ${currentQ < total ? currentLevel+1 : currentLevel+1}`;
+  document.getElementById('scoreDisplay').textContent = `⭐ Pointi: ${score}`;
+  document.getElementById('quizCount').textContent = `Swali ${currentQ+1} / ${total}`;
+  document.getElementById('progressBar').style.width = ((currentQ/total)*100)+'%';
+
+  // Hearts
+  const hr = document.getElementById('heartsRow');
+  hr.innerHTML = '';
+  for(let i=0;i<3;i++) {
+    const h = document.createElement('span');
+    h.textContent = i < lives ? '❤️' : '🖤';
+    h.style.fontSize = '20px';
+    hr.appendChild(h);
+  }
+
+  // Streak
+  const sb = document.getElementById('streakBadge');
+  if(streak >= 2) { sb.className='streak-badge show'; sb.textContent=`🔥 ${streak} mfululizo!`; }
+  else { sb.className='streak-badge'; }
+
+  // Narrative
+  const charBubble = document.getElementById('charBubble');
+  charBubble.innerHTML = `
+    <div class="char-avatar">${q.char}</div>
+    <div class="bubble-text"><strong>${q.charName} anasema:</strong><br>${q.narrative}</div>
+  `;
+  document.getElementById('questionText').textContent = q.q;
+
+  // Options
+  const og = document.getElementById('optionsGrid');
+  og.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  const shuffledOpts = shuffleOpts(q.opts, q.ans);
+  shuffledOpts.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.style.animationDelay = (i*0.06)+'s';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => selectAnswer(btn, i, shuffledOpts.correctIdx, q.exp);
+    og.appendChild(btn);
+  });
+
+  document.getElementById('feedbackMsg').className = 'feedback-msg';
+  document.getElementById('nextBtn').className = 'next-btn';
+
+  startTimer();
+}
+
+function shuffleOpts(opts, correctIdx) {
+  const items = opts.map((o,i) => ({text:o, isCorrect: i===correctIdx}));
+  for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}
+  const newCorrect = items.findIndex(it => it.isCorrect);
+  return {opts: items.map(it=>it.text), correctIdx: newCorrect};
+}
+
+// ==================== TIMER ====================
+function startTimer() {
+  timerVal = TIMER_MAX;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timerVal--;
+    updateTimerUI();
+    if(timerVal <= 5) playSoundTick();
+    if(timerVal <= 0) {
+      clearInterval(timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const pct = (timerVal/TIMER_MAX)*100;
+  const circle = document.getElementById('timerCircle');
+  const num = document.getElementById('timerNum');
+  circle.style.setProperty('--pct', pct + '%');
+  num.textContent = timerVal;
+  let color;
+  if(timerVal > 20) color = '#2ecc71';
+  else if(timerVal > 10) color = '#f39c12';
+  else color = '#e74c3c';
+  circle.style.background = `conic-gradient(${color} ${pct}%, rgba(255,255,255,0.1) 0%)`;
+  num.style.color = color;
+}
+
+function timeUp() {
+  if(answered) return;
+  answered = true;
+  playSoundTimerEnd();
+  speak('Muda umekwisha! Jaribu tena.', 'sw-KE');
+  lives--;
+  streak = 0;
+  disableOptions();
+  showFeedback(false, 'Muda umekwisha! ⏰ ' + (levelQuestions[currentQ].exp || ''));
+  highlightCorrect();
+  document.getElementById('nextBtn').className = 'next-btn show';
+  if(lives <= 0) { setTimeout(endLevel, 1800); return; }
+}
+
+// ==================== ANSWER ====================
+function selectAnswer(btn, chosen, correctIdx, exp) {
+  if(answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  answers++;
+
+  const isCorrect = chosen === correctIdx;
+  const btns = document.querySelectorAll('.option-btn');
+
+  if(isCorrect) {
+    btn.classList.add('correct');
+    score += Math.max(1, Math.ceil(timerVal/10)) + (streak >= 2 ? streak : 0);
+    streak++;
+    playSoundCorrect();
+    speak('Vizuri sana! Jibu sahihi!', 'sw-KE');
+    showFeedback(true, '✅ Sahihi kabisa! ' + exp);
+    if(streak >= 3) setTimeout(() => spawnConfetti(), 200);
+  } else {
+    btn.classList.add('wrong');
+    btns[correctIdx].classList.add('correct');
+    lives--;
+    streak = 0;
+    playSoundWrong();
+    speak('Jibu si sahihi. Jaribu tena!', 'sw-KE');
+    showFeedback(false, '❌ Jibu si sahihi. ' + exp);
+  }
+
+  document.getElementById('nextBtn').className = 'next-btn show';
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+  if(lives <= 0 && !isCorrect) {
+    setTimeout(endLevel, 1800);
+  }
+}
+
+function disableOptions() {
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+}
+
+function highlightCorrect() {
+  const q = levelQuestions[currentQ];
+  // We can't directly know the shuffled correct idx here since shuffleOpts is called in loadQuestion
+  // Instead highlight by green all that should be correct via data or just show feedback
+}
+
+function showFeedback(correct, msg) {
+  const el = document.getElementById('feedbackMsg');
+  el.className = 'feedback-msg show ' + (correct ? 'correct' : 'wrong');
+  el.innerHTML = msg;
+}
+
+// ==================== NEXT ====================
+function nextQuestion() {
+  currentQ++;
+  if(currentQ >= levelQuestions.length) {
+    endLevel();
+    return;
+  }
+  loadQuestion();
+}
+
+// ==================== END LEVEL ====================
+function endLevel() {
+  clearInterval(timerInterval);
+  stopIntroMusic();
+  const total = levelQuestions.length;
+  const pct = score / (total * 4); // rough max score
+  const correctAnswers = Math.min(currentQ + (answered ? 1 : 0), total);
+  // Better: track correct count separately
+  showResults(score, currentQ, total);
+}
+
+let correctCount = 0;
+
+function selectAnswerFixed(btn, chosen, correctIdx, exp) {
+  if(answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const isCorrect = chosen === correctIdx;
+  if(isCorrect) { correctCount++; score += Math.max(1,Math.ceil(timerVal/10))+(streak>=2?streak:0); streak++; }
+  else { lives--; streak=0; }
+
+  const btns = document.querySelectorAll('.option-btn');
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if(!isCorrect) btns[correctIdx].classList.add('correct');
+
+  if(isCorrect) { playSoundCorrect(); speak('Vizuri sana! Jibu sahihi!','sw-KE'); showFeedback(true,'✅ Sahihi kabisa! '+exp); if(streak>=3) setTimeout(()=>spawnConfetti(),200); }
+  else { playSoundWrong(); speak('Jibu si sahihi. Jaribu tena!','sw-KE'); showFeedback(false,'❌ Jibu si sahihi. '+exp); }
+
+  document.getElementById('nextBtn').className='next-btn show';
+  document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+  if(lives<=0&&!isCorrect){setTimeout(showResults2,1800);}
+}
+
+// Override selectAnswer with the correct version
+window.selectAnswer = function(btn, chosen, correctIdx, exp) {
+  if(answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const isCorrect = chosen === correctIdx;
+  if(isCorrect) { correctCount++; score += Math.max(1,Math.ceil(timerVal/10))+(streak>=2?streak:0); streak++; }
+  else { lives--; streak=0; }
+
+  const btns = document.querySelectorAll('.option-btn');
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if(!isCorrect) btns[correctIdx].classList.add('correct');
+
+  if(isCorrect) { playSoundCorrect(); speak('Vizuri sana! Jibu sahihi!','sw-KE'); showFeedback(true,'✅ Sahihi kabisa! '+exp); if(streak>=3) setTimeout(()=>spawnConfetti(),200); }
+  else { playSoundWrong(); speak('Jibu si sahihi. Jaribu tena!','sw-KE'); showFeedback(false,'❌ Jibu si sahihi. '+exp); }
+
+  document.getElementById('nextBtn').className='next-btn show';
+  document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+  if(lives<=0&&!isCorrect){setTimeout(showResults2,1800);}
+};
+
+// Override timeUp with correct version
+window.timeUp = function() {
+  if(answered) return;
+  answered = true;
+  playSoundTimerEnd();
+  speak('Muda umekwisha! Jaribu tena.','sw-KE');
+  lives--;
+  streak=0;
+  disableOptions();
+  showFeedback(false,'Muda umekwisha! ⏰ '+(levelQuestions[currentQ].exp||''));
+  document.getElementById('nextBtn').className='next-btn show';
+  if(lives<=0){setTimeout(showResults2,1800);}
+};
+
+function showResults2() {
+  endLevelFinal();
+}
+
+function endLevelFinal() {
+  clearInterval(timerInterval);
+  const total = levelQuestions.length;
+  showResults(correctCount, currentQ, total);
+}
+
+window.endLevel = endLevelFinal;
+window.nextQuestion = function() {
+  currentQ++;
+  if(currentQ >= levelQuestions.length) { endLevelFinal(); return; }
+  loadQuestion();
+};
+
+// ==================== RESULTS ====================
+function showResults(correct, attempted, total) {
+  const pct = Math.round((correct/total)*100);
+  const passed = pct >= 80;
+
+  document.getElementById('resultsEmoji').textContent = passed ? '🎉' : '💪';
+  document.getElementById('resultsTitle').textContent = passed ? 'Hongera sana!' : 'Jaribu tena!';
+  document.getElementById('resultsScore').textContent = `${correct}/${total}`;
+  document.getElementById('resultsPct').textContent = `${pct}%`;
+
+  let msg;
+  if(pct === 100) msg = 'Bora kabisa! Hukukosea hata swali moja! 🌟';
+  else if(pct >= 90) msg = 'Umefanya vizuri sana! Hongera! 🎊';
+  else if(pct >= 80) msg = 'Umepita! Endelea na kiwango kinachofuata. ✅';
+  else if(pct >= 60) msg = 'Karibu sana! Unahitaji asilimia 80 kupita. Jaribu tena! 💪';
+  else msg = 'Funga vitabu tena na ujifunze zaidi. Huna wasiwasi! 📚';
+
+  document.getElementById('resultsMsg').textContent = msg;
+
+  const nextBtn = document.getElementById('nextLevelBtn');
+  if(passed && currentLevel < 4) {
+    nextBtn.style.display = 'block';
+    if(!unlockedLevels.includes(currentLevel+1)) unlockedLevels.push(currentLevel+1);
+    playLevelUp();
+    speak('Hongera! Umepita kiwango hiki!','sw-KE');
+  } else if(passed && currentLevel === 4) {
+    nextBtn.style.display = 'none';
+    speak('Hongera sana! Umekamilisha mchezo wote!','sw-KE');
+    spawnConfetti();
+    spawnConfetti();
+  } else {
+    nextBtn.style.display = 'none';
+    speak('Jaribu tena. Unaweza kufanya vizuri zaidi!','sw-KE');
+  }
+
+  showScreen('resultsScreen');
+  if(passed) setTimeout(spawnConfetti, 300);
+}
+
+// ==================== NAV ====================
+function retryLevel() {
+  correctCount = 0;
+  startGame();
+}
+
+function goNextLevel() {
+  currentLevel = Math.min(currentLevel+1, 4);
+  correctCount = 0;
+  buildLevelGrid();
+  startGame();
+}
+
+function goHome() {
+  buildLevelGrid();
+  showScreen('introScreen');
+  if(musicOn) { setTimeout(startIntroMusic, 300); }
+}
+
+// ==================== CONFETTI ====================
+function spawnConfetti() {
+  const colors = ['#FFD700','#FF6B35','#4ECDC4','#FF69B4','#7CFC00','#FF4500','#00CED1'];
+  for(let i=0;i<40;i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>0.5?'50%':'2px'};animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*0.5}s;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 4000);
+  }
+}
+
+// ==================== MUSIC TOGGLE ====================
+document.getElementById('musicToggle').onclick = function() {
+  musicOn = !musicOn;
+  this.textContent = musicOn ? '🎵' : '🔇';
+  if(musicOn && document.getElementById('introScreen').classList.contains('active')) {
+    startIntroMusic();
+  } else {
+    stopIntroMusic();
+  }
+};
+
+// ==================== INIT ====================
+window.startGame = startGame;
+window.retryLevel = retryLevel;
+window.goNextLevel = goNextLevel;
+window.goHome = goHome;
+
+createStars();
+buildLevelGrid();
+runLoading();
+</script>
+</body>
+</html>

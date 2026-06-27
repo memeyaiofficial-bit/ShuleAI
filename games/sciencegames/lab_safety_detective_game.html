@@ -1,0 +1,981 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab Safety Detective - Science Safety Adventure</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #f093fb 100%
+        );
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .game-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+
+      .lab-container {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        border: 2px solid #e9ecef;
+        min-height: 400px;
+        position: relative;
+      }
+
+      .lab-scene {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: flex-end;
+        min-height: 300px;
+        background: linear-gradient(to bottom, #e3f2fd 0%, #f5f5f5 100%);
+        border-radius: 10px;
+        margin: 20px 0;
+        position: relative;
+        padding: 20px;
+      }
+
+      .lab-item {
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px;
+      }
+
+      .lab-item:hover {
+        transform: scale(1.1);
+      }
+
+      .lab-item.safe {
+        filter: drop-shadow(0 0 10px #4caf50);
+      }
+
+      .lab-item.unsafe {
+        filter: drop-shadow(0 0 10px #f44336);
+        animation: danger-pulse 2s infinite;
+      }
+
+      .lab-item.identified {
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      @keyframes danger-pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .scientist {
+        width: 80px;
+        height: 120px;
+        background: linear-gradient(
+          to bottom,
+          #ffd54f 0%,
+          #ffd54f 30%,
+          #2196f3 30%,
+          #2196f3 70%,
+          #424242 70%
+        );
+        border-radius: 10px 10px 0 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .scientist::before {
+        content: "🥽";
+        font-size: 20px;
+        position: absolute;
+        top: 5px;
+      }
+
+      .scientist::after {
+        content: "🧪";
+        font-size: 24px;
+        position: absolute;
+        bottom: 20px;
+      }
+
+      .equipment {
+        font-size: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+      }
+
+      .hazard-sign {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 20px;
+        height: 20px;
+        background: #f44336;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .score-board {
+        display: flex;
+        justify-content: space-around;
+        background: #34495e;
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .score-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .safety-meter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      .safety-icon {
+        font-size: 2rem;
+      }
+
+      .progress-bar {
+        width: 200px;
+        height: 20px;
+        background: #ecf0f1;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f44336, #ff9800, #4caf50);
+        transition: width 0.3s ease;
+        border-radius: 10px;
+      }
+
+      .scenario-card {
+        background: white;
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .scenario-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .scenario-text {
+        color: #34495e;
+        margin-bottom: 15px;
+        line-height: 1.5;
+      }
+
+      .safety-tips {
+        background: #e8f5e8;
+        border-left: 4px solid #4caf50;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 0 5px 5px 0;
+      }
+
+      .safety-tips h4 {
+        color: #2e7d32;
+        margin-bottom: 10px;
+      }
+
+      .safety-tips ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .safety-tips li {
+        color: #388e3c;
+        margin: 5px 0;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .safety-tips li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #4caf50;
+        font-weight: bold;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+      }
+
+      .btn-primary {
+        background: #3498db;
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .btn-success {
+        background: #27ae60;
+        color: white;
+      }
+
+      .btn-warning {
+        background: #f39c12;
+        color: white;
+      }
+
+      .btn-danger {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .info-panel {
+        background: #ecf0f1;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+      }
+
+      .info-title {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+      }
+
+      .info-text {
+        color: #34495e;
+        line-height: 1.6;
+      }
+
+      .feedback {
+        padding: 15px;
+        border-radius: 10px;
+        margin: 15px 0;
+        text-align: center;
+        font-weight: bold;
+        display: none;
+      }
+
+      .feedback.success {
+        background: #d5f4e6;
+        color: #27ae60;
+        border: 2px solid #27ae60;
+      }
+
+      .feedback.error {
+        background: #fadbd8;
+        color: #e74c3c;
+        border: 2px solid #e74c3c;
+      }
+
+      .feedback.warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 2px solid #ffc107;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+      }
+
+      .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .modal-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
+
+      .modal-body {
+        margin-bottom: 20px;
+        line-height: 1.6;
+        color: #34495e;
+      }
+
+      .close-btn {
+        background: #95a5a6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        float: right;
+      }
+
+      .emergency-button {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        animation: emergency-blink 2s infinite;
+        margin: 20px;
+      }
+
+      @keyframes emergency-blink {
+        0%,
+        50% {
+          background: #e74c3c;
+        }
+        51%,
+        100% {
+          background: #c0392b;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="header">
+        <h1 class="title">🔬 Lab Safety Detective</h1>
+        <p class="subtitle">Identify hazards and keep the laboratory safe!</p>
+      </div>
+
+      <div class="score-board">
+        <div class="score-item">
+          <div class="score-value" id="hazardsFound">0</div>
+          <div class="score-label">Hazards Found</div>
+        </div>
+        <div class="score-item">
+          <div class="score-value" id="safetyScore">100</div>
+          <div class="score-label">Safety Score</div>
+        </div>
+        <div class="score-item">
+          <div class="score-value" id="detectorLevel">1</div>
+          <div class="score-label">Detective Level</div>
+        </div>
+      </div>
+
+      <div class="safety-meter">
+        <span class="safety-icon" id="safetyIcon">🔬</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="safetyFill" style="width: 100%"></div>
+        </div>
+        <span id="safetyStatus">Safe Laboratory</span>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-title" id="scenarioTitle">
+          Chemistry Lab Safety Inspection
+        </div>
+        <div class="scenario-text" id="scenarioText">
+          You are the lab safety detective! Inspect the laboratory and identify
+          all safety hazards. Click on unsafe items to report them and improve
+          laboratory safety.
+        </div>
+      </div>
+
+      <div class="lab-container">
+        <div class="lab-scene" id="labScene">
+          <!-- Lab items will be generated here -->
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="btn btn-primary" onclick="generateNewLab()">
+          New Lab Inspection
+        </button>
+        <button class="btn btn-secondary" onclick="resetGame()">
+          Reset Game
+        </button>
+        <button class="btn btn-success" onclick="showSafetyTips()">
+          Safety Guide
+        </button>
+        <button class="btn btn-warning" onclick="showEmergencyProcedures()">
+          Emergency Info
+        </button>
+        <button class="emergency-button" onclick="activateEmergency()">
+          🚨 EMERGENCY
+        </button>
+      </div>
+
+      <div class="safety-tips">
+        <h4>🛡️ Essential Lab Safety Rules:</h4>
+        <ul>
+          <li>Always wear safety goggles when handling chemicals</li>
+          <li>Keep long hair tied back and avoid loose clothing</li>
+          <li>Never eat or drink in the laboratory</li>
+          <li>Wash hands thoroughly after experiments</li>
+          <li>
+            Know the location of safety equipment (fire extinguisher, eyewash
+            station)
+          </li>
+          <li>Report all accidents immediately to the instructor</li>
+          <li>Read chemical labels carefully before use</li>
+          <li>Never work alone in the laboratory</li>
+        </ul>
+      </div>
+
+      <div class="info-panel">
+        <h3 class="info-title">🔍 Detective Mission:</h3>
+        <div class="info-text">
+          <strong>Find Hazards:</strong> Click on unsafe lab practices and
+          equipment<br />
+          <strong>Learn Safety:</strong> Each hazard teaches important safety
+          concepts<br />
+          <strong>Improve Score:</strong> Higher accuracy increases your safety
+          score<br />
+          <strong>Level Up:</strong> Advance to become a certified Lab Safety
+          Detective!
+        </div>
+      </div>
+    </div>
+
+    <!-- Safety Tips Modal -->
+    <div class="modal" id="safetyModal">
+      <div class="modal-content">
+        <div class="modal-header">Lab Safety Guidelines</div>
+        <div class="modal-body" id="modalBody"></div>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+
+    <script>
+      // Global functions for onclick events
+      function checkLabItem(itemId) {
+        if (window.safetyGame) {
+          window.safetyGame.checkLabItem(itemId);
+        }
+      }
+
+      function generateNewLab() {
+        if (window.safetyGame) {
+          window.safetyGame.generateNewLab();
+        }
+      }
+
+      function resetGame() {
+        if (window.safetyGame) {
+          window.safetyGame.resetGame();
+        }
+      }
+
+      function showSafetyTips() {
+        if (window.safetyGame) {
+          window.safetyGame.showSafetyTips();
+        }
+      }
+
+      function showEmergencyProcedures() {
+        if (window.safetyGame) {
+          window.safetyGame.showEmergencyProcedures();
+        }
+      }
+
+      function activateEmergency() {
+        if (window.safetyGame) {
+          window.safetyGame.activateEmergency();
+        }
+      }
+
+      function closeModal() {
+        if (window.safetyGame) {
+          window.safetyGame.closeModal();
+        }
+      }
+
+      class LabSafetyDetective {
+        constructor() {
+          this.hazardsFound = 0;
+          this.safetyScore = 100;
+          this.detectorLevel = 1;
+          this.currentHazards = [];
+          this.identifiedItems = new Set();
+
+          this.labItems = [
+            // Safe items
+            {
+              id: "scientist1",
+              type: "safe",
+              icon: "👨‍🔬",
+              name: "Scientist with PPE",
+              message: "Great! Proper safety equipment!",
+            },
+            {
+              id: "scientist2",
+              type: "safe",
+              icon: "👩‍🔬",
+              name: "Scientist with Goggles",
+              message: "Excellent safety practices!",
+            },
+            {
+              id: "extinguisher",
+              type: "safe",
+              icon: "🧯",
+              name: "Fire Extinguisher",
+              message: "Essential safety equipment in place!",
+            },
+            {
+              id: "eyewash",
+              type: "safe",
+              icon: "🚿",
+              name: "Eyewash Station",
+              message: "Critical safety equipment available!",
+            },
+            {
+              id: "fume_hood",
+              type: "safe",
+              icon: "🏠",
+              name: "Fume Hood",
+              message: "Proper ventilation equipment!",
+            },
+
+            // Unsafe items
+            {
+              id: "no_goggles",
+              type: "unsafe",
+              icon: "🧑‍🔬",
+              name: "Scientist Without Goggles",
+              message: "HAZARD: Always wear safety goggles!",
+              severity: "high",
+            },
+            {
+              id: "food",
+              type: "unsafe",
+              icon: "🍔",
+              name: "Food in Lab",
+              message: "HAZARD: Never eat in the laboratory!",
+              severity: "high",
+            },
+            {
+              id: "open_chemical",
+              type: "unsafe",
+              icon: "🧪",
+              name: "Uncapped Chemical",
+              message: "HAZARD: Keep chemical containers capped!",
+              severity: "medium",
+            },
+            {
+              id: "spill",
+              type: "unsafe",
+              icon: "💧",
+              name: "Chemical Spill",
+              message: "HAZARD: Clean spills immediately!",
+              severity: "high",
+            },
+            {
+              id: "broken_glass",
+              type: "unsafe",
+              icon: "🗂️",
+              name: "Broken Glass",
+              message: "HAZARD: Dispose of broken glass properly!",
+              severity: "medium",
+            },
+            {
+              id: "long_hair",
+              type: "unsafe",
+              icon: "👩",
+              name: "Loose Long Hair",
+              message: "HAZARD: Tie back long hair!",
+              severity: "medium",
+            },
+            {
+              id: "loose_clothes",
+              type: "unsafe",
+              icon: "👕",
+              name: "Loose Clothing",
+              message: "HAZARD: Avoid loose clothing near flames!",
+              severity: "medium",
+            },
+            {
+              id: "hot_surface",
+              type: "unsafe",
+              icon: "🔥",
+              name: "Unmarked Hot Surface",
+              message: "HAZARD: Mark hot surfaces clearly!",
+              severity: "high",
+            },
+            {
+              id: "crowded_exit",
+              type: "unsafe",
+              icon: "📦",
+              name: "Blocked Emergency Exit",
+              message: "HAZARD: Keep emergency exits clear!",
+              severity: "critical",
+            },
+            {
+              id: "mixed_chemicals",
+              type: "unsafe",
+              icon: "⚗️",
+              name: "Mixed Unknown Chemicals",
+              message: "HAZARD: Never mix unknown chemicals!",
+              severity: "critical",
+            },
+          ];
+
+          this.scenarios = [
+            {
+              title: "Chemistry Lab Safety Inspection",
+              description:
+                "Inspect the chemistry lab for potential hazards and unsafe practices.",
+            },
+            {
+              title: "Biology Lab Assessment",
+              description:
+                "Review biological safety protocols and identify contamination risks.",
+            },
+            {
+              title: "Physics Lab Evaluation",
+              description:
+                "Check for electrical hazards and equipment safety violations.",
+            },
+          ];
+
+          this.init();
+        }
+
+        init() {
+          this.generateNewLab();
+          this.updateDisplay();
+        }
+
+        generateNewLab() {
+          this.currentHazards = [];
+          this.identifiedItems.clear();
+
+          const labScene = document.getElementById("labScene");
+          labScene.innerHTML = "";
+
+          // Select random scenario
+          const scenario =
+            this.scenarios[Math.floor(Math.random() * this.scenarios.length)];
+          document.getElementById("scenarioTitle").textContent = scenario.title;
+          document.getElementById("scenarioText").textContent =
+            scenario.description;
+
+          // Randomly select 8-12 items (mix of safe and unsafe)
+          const shuffledItems = [...this.labItems].sort(
+            () => Math.random() - 0.5,
+          );
+          const selectedItems = shuffledItems.slice(
+            0,
+            8 + Math.floor(Math.random() * 5),
+          );
+
+          selectedItems.forEach((item) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = `lab-item equipment ${item.type}`;
+            itemDiv.id = item.id;
+            itemDiv.onclick = () => this.checkLabItem(item.id);
+
+            itemDiv.innerHTML = item.icon;
+            itemDiv.title = item.name;
+
+            // Add hazard indicator for unsafe items
+            if (item.type === "unsafe") {
+              this.currentHazards.push(item);
+              const hazardSign = document.createElement("div");
+              hazardSign.className = "hazard-sign";
+              hazardSign.textContent = "!";
+              itemDiv.appendChild(hazardSign);
+            }
+
+            labScene.appendChild(itemDiv);
+          });
+
+          this.showFeedback(
+            `New lab inspection started! Find ${this.currentHazards.length} safety hazards.`,
+            "success",
+          );
+        }
+
+        checkLabItem(itemId) {
+          if (this.identifiedItems.has(itemId)) return;
+
+          const item = this.labItems.find((i) => i.id === itemId);
+          if (!item) return;
+
+          this.identifiedItems.add(itemId);
+          const itemElement = document.getElementById(itemId);
+          itemElement.classList.add("identified");
+
+          if (item.type === "unsafe") {
+            this.hazardsFound++;
+            this.showFeedback(item.message, "error");
+
+            // Adjust safety score based on severity
+            const scoreDeduction = {
+              low: 2,
+              medium: 5,
+              high: 10,
+              critical: 15,
+            };
+
+            this.safetyScore = Math.max(
+              0,
+              this.safetyScore - scoreDeduction[item.severity || "medium"],
+            );
+          } else {
+            this.showFeedback(item.message, "success");
+            this.safetyScore = Math.max(0, this.safetyScore - 3); // Small penalty for false positive
+          }
+
+          this.updateDisplay();
+          this.checkCompletion();
+
+          if (this.hazardsFound % 5 === 0 && this.hazardsFound > 0) {
+            this.detectorLevel++;
+            this.showFeedback(
+              `Level Up! You are now a Level ${this.detectorLevel} Safety Detective!`,
+              "success",
+            );
+          }
+        }
+
+        checkCompletion() {
+          const foundHazards = this.currentHazards.filter((h) =>
+            this.identifiedItems.has(h.id),
+          ).length;
+
+          if (foundHazards === this.currentHazards.length) {
+            setTimeout(() => {
+              this.showFeedback(
+                "🎉 Lab inspection complete! All hazards identified!",
+                "success",
+              );
+            }, 1000);
+          }
+        }
+
+        resetGame() {
+          this.hazardsFound = 0;
+          this.safetyScore = 100;
+          this.detectorLevel = 1;
+          this.generateNewLab();
+          this.updateDisplay();
+          this.showFeedback(
+            "Game reset! Start your safety detective career again!",
+            "success",
+          );
+        }
+
+        showSafetyTips() {
+          const tips = `
+                    <h4>Laboratory Safety Guidelines:</h4>
+                    <ul>
+                        <li><strong>Personal Protective Equipment (PPE):</strong> Always wear safety goggles, lab coats, and closed-toe shoes</li>
+                        <li><strong>Chemical Handling:</strong> Read labels, use fume hoods, and never mix unknown chemicals</li>
+                        <li><strong>Equipment Safety:</strong> Inspect equipment before use and report damaged items</li>
+                        <li><strong>Emergency Procedures:</strong> Know locations of safety showers, eyewash stations, and fire exits</li>
+                        <li><strong>Housekeeping:</strong> Keep work areas clean and emergency exits clear</li>
+                        <li><strong>Food Policy:</strong> Never eat, drink, or store food in laboratory areas</li>
+                    </ul>
+                `;
+
+          this.showModal("Laboratory Safety Tips", tips);
+        }
+
+        showEmergencyProcedures() {
+          const procedures = `
+                    <h4>Emergency Response Procedures:</h4>
+                    <ul>
+                        <li><strong>Fire:</strong> Activate fire alarm, evacuate immediately, meet at designated area</li>
+                        <li><strong>Chemical Spill:</strong> Alert others, contain if safe, use spill kit, ventilate area</li>
+                        <li><strong>Personal Injury:</strong> Seek immediate help, use first aid if trained, document incident</li>
+                        <li><strong>Eye Contact:</strong> Use eyewash station for 15 minutes, seek medical attention</li>
+                        <li><strong>Skin Contact:</strong> Remove contaminated clothing, rinse with water for 15 minutes</li>
+                        <li><strong>Evacuation:</strong> Follow posted evacuation routes, do not use elevators</li>
+                    </ul>
+                    <p><strong>Emergency Numbers:</strong> Campus Security: 911, Lab Supervisor: Extension 2345</p>
+                `;
+
+          this.showModal("Emergency Procedures", procedures);
+        }
+
+        activateEmergency() {
+          this.showModal(
+            "Emergency Activated!",
+            `<div style="color: #e74c3c; font-weight: bold; text-align: center;">
+                        <h3>🚨 EMERGENCY PROTOCOL ACTIVATED 🚨</h3>
+                        <p>1. Stay calm and assess the situation</p>
+                        <p>2. Alert all personnel in the area</p>
+                        <p>3. Follow established emergency procedures</p>
+                        <p>4. Contact emergency services if needed</p>
+                        <p>5. Evacuate if instructed to do so</p>
+                        <br>
+                        <p><em>This is a safety training simulation</em></p>
+                    </div>`,
+          );
+        }
+
+        showModal(title, content) {
+          document.getElementById("modalBody").innerHTML = content;
+          document.querySelector(".modal-header").textContent = title;
+          document.getElementById("safetyModal").style.display = "block";
+        }
+
+        closeModal() {
+          document.getElementById("safetyModal").style.display = "none";
+        }
+
+        updateDisplay() {
+          document.getElementById("hazardsFound").textContent =
+            this.hazardsFound;
+          document.getElementById("safetyScore").textContent = this.safetyScore;
+          document.getElementById("detectorLevel").textContent =
+            this.detectorLevel;
+
+          // Update safety meter
+          const safetyFill = document.getElementById("safetyFill");
+          const safetyIcon = document.getElementById("safetyIcon");
+          const safetyStatus = document.getElementById("safetyStatus");
+
+          safetyFill.style.width = `${this.safetyScore}%`;
+
+          if (this.safetyScore >= 80) {
+            safetyIcon.textContent = "🛡️";
+            safetyStatus.textContent = "Excellent Safety";
+            safetyFill.style.background =
+              "linear-gradient(90deg, #4caf50, #8bc34a)";
+          } else if (this.safetyScore >= 60) {
+            safetyIcon.textContent = "⚠️";
+            safetyStatus.textContent = "Good Safety";
+            safetyFill.style.background =
+              "linear-gradient(90deg, #ff9800, #ffc107)";
+          } else if (this.safetyScore >= 40) {
+            safetyIcon.textContent = "🚨";
+            safetyStatus.textContent = "Safety Concerns";
+            safetyFill.style.background =
+              "linear-gradient(90deg, #ff5722, #ff9800)";
+          } else {
+            safetyIcon.textContent = "💀";
+            safetyStatus.textContent = "Critical Hazards";
+            safetyFill.style.background =
+              "linear-gradient(90deg, #f44336, #d32f2f)";
+          }
+        }
+
+        showFeedback(message, type) {
+          const feedback = document.getElementById("feedback");
+          feedback.textContent = message;
+          feedback.className = `feedback ${type}`;
+          feedback.style.display = "block";
+
+          setTimeout(() => {
+            feedback.style.display = "none";
+          }, 4000);
+        }
+      }
+
+      // Initialize game when page loads
+      window.addEventListener("load", () => {
+        window.safetyGame = new LabSafetyDetective();
+      });
+    </script>
+  </body>
+</html>

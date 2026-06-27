@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Mikono Safi - Darasa la 2 CBC | Kusikiliza, Kuzungumza, Kusoma na Kuandika</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2c7a47 0%, #1e5a35 100%);
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 70px 70px 80px 80px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #ffb84d;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 5px solid #e09d32;
+        }
+
+        .level-badge, .score-badge, .timer-box {
+            background: #2e241f;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #ffecb3;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 #5a3e2e, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            background: #9b4b1f;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .story-area {
+            background: #fff1df;
+            padding: 25px 20px 15px 20px;
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #2c7a47;
+            border-bottom: 3px dashed #f7d98c;
+            min-height: 130px;
+        }
+
+        .question-area {
+            padding: 25px 20px 20px;
+            background: #fff9ef;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .speaker-btn {
+            background: #2c7a47;
+            border: none;
+            font-size: 1.6rem;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #1a5a34;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speaker-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1a5a34;
+        }
+
+        .narrative-question {
+            background: #f5ebd2;
+            border-radius: 60px;
+            padding: 20px 18px;
+            font-size: 1.6rem;
+            text-align: center;
+            color: #2c4727;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.05);
+            font-weight: bold;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .answer-input-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            flex: 3;
+            min-width: 180px;
+            padding: 16px 20px;
+            font-size: 1.3rem;
+            font-family: inherit;
+            border-radius: 60px;
+            border: 3px solid #c8b27a;
+            background: white;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        #answerInput:focus {
+            border-color: #f3a712;
+            box-shadow: 0 0 0 3px rgba(243,167,18,0.3);
+        }
+
+        .btn-check {
+            background: #f3a712;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c2416;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b4621a;
+        }
+
+        .btn-check:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b4621a;
+        }
+
+        .feedback {
+            background: #e9e0cb;
+            border-radius: 50px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            min-height: 85px;
+            font-weight: bold;
+        }
+
+        .next-level-msg {
+            background: #cae3b5;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 550px) {
+            .narrative-question { font-size: 1.3rem; }
+            .story-area { font-size: 1.2rem; }
+            .level-badge, .score-badge, .timer-box { font-size: 0.9rem; padding: 5px 12px; }
+            .btn-check { padding: 10px 18px; font-size: 1.1rem; }
+            .speaker-btn { font-size: 1.3rem; padding: 6px 12px; }
+            #answerInput { font-size: 1rem; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Ngazi: 1</div>
+        <div class="score-badge" id="scoreDisplay">Alama: 0 / 40</div>
+        <div class="timer-box" id="timerDisplay">⏱️ 40s</div>
+    </div>
+    <div class="story-area" id="storyArea">
+        🧼🧴 Mikono Safi! Jifunze kusikiliza, kuzungumza, kusoma na kuandika kuhusu usafi wa mikono.
+    </div>
+    <div class="question-area">
+        <div class="question-header">
+            <div class="narrative-question" id="questionText">
+                Swali litakuja hapa...
+            </div>
+            <button class="speaker-btn" id="speakQuestionBtn">🔊 Soma Swali</button>
+        </div>
+        <div class="answer-input-area">
+            <input type="text" id="answerInput" placeholder="Andika jibu lako hapa..." autocomplete="off">
+            <button class="btn-check" id="submitBtn">✅ Angalia</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">
+            🎤 Bobo atakusaidia! Andika jibu sahihi. Bonyeza kitufe cha sauti kusikia swali.
+        </div>
+        <div id="nextLevelMsg" class="next-level-msg"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- SAUTI KWA KISWAHILI ----------
+    function speakKiswahili(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'sw-KE';
+        utterance.rate = 0.85;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function readCurrentQuestion() {
+        if (!allowAnswer) {
+            speakKiswahili("Subiri, swali hili tayari limejibiwa. Swali linalofuata linakuja.");
+            return;
+        }
+        const qData = currentQuestions[currentQuestionIndex];
+        if (qData) speakKiswahili(qData.text);
+        else speakKiswahili("Hakuna swali kwa sasa.");
+    }
+
+    // ---------- MASWALI: Mikono Safi (Kusikiliza, Kuzungumza, Kusoma, Kuandika) ----------
+    function generateQuestionsForLevel(level) {
+        const questions = [];
+        
+        // KUSIKILIZA - Kusikiliza kuhusu usafi wa mikono
+        const kusikiliza = [
+            { q: "Tunaposikiliza mwalimu akifundisha kuhusu usafi wa mikono, tunapaswa kuwa ______.", a: "makini" },
+            { q: "Kusikiliza kwa makini kunatusaidia kujua jinsi ya kuosha mikono kwa ______.", a: "usahihi" },
+            { q: "Mwalimu anaposema 'osha mikono yako', tunapaswa ______.", a: "kumsikiliza" },
+            { q: "Kusikiliza sheria za usafi wa mikono kunazuia ______.", a: "magonjwa" },
+            { q: "Tunapaswa kusikiliza kwa ______ wakati wa somo la afya.", a: "umakini" },
+            { q: "Bobo alimsikiliza mama akimfundisha jinsi ya kuosha mikono kwa ______.", a: "sabuni" },
+            { q: "Kusikiliza maelekezo kuhusu mikono safi hutusaidia kuwa ______.", a: "wema" },
+            { q: "Tunapaswa kusikiliza kwa ______ ili tujue wakati wa kuosha mikono.", a: "makini" },
+            { q: "Kusikiliza hadithi kuhusu mikono safi ni jambo la ______.", a: "kufurahisha" },
+            { q: "Bobo alisikiliza mwalimu akisema, 'Osha mikono yako kabla ya ______.'", a: "kula" }
+        ];
+        
+        // KUZUNGUMZA - Kuzungumza kuhusu usafi wa mikono
+        const kuzungumza = [
+            { q: "Tunapozungumza kuhusu usafi wa mikono, tunapaswa kutumia maneno ya ______.", a: "heshima" },
+            { q: "Bobo alimwambia rafiki yake, 'Osha mikono yako kwa sabuni na ______.'", a: "maji" },
+            { q: "Kuzungumza kwa ______ kunasaidia kueneza ujumbe wa usafi.", a: "upole" },
+            { q: "Tunapaswa kuwa ______ tunapozungumza na wengine kuhusu mikono safi.", a: "wakarimu" },
+            { q: "Bobo aliuliza, 'Je, unaosha mikono yako kabla ya ______?'", a: "chakula" },
+            { q: "Kuzungumza kwa ukweli kuhusu usafi wa mikono ni jambo la ______.", a: "adabu" },
+            { q: "Talia alisema, 'Mikono safi huondoa ______ hatari.'", a: "vijidudu" },
+            { q: "Tunapaswa kuzungumza kwa ______ tunapofundisha wengine kuhusu usafi.", a: "upole" },
+            { q: "Bobo aliwaambia wanafunzi wenzake, 'Tunapaswa kuosha mikono baada ya ______.'", a: "chooni" },
+            { q: "Kuzungumza kuhusu mikono safi kunasaidia kuzuia kuenea kwa ______.", a: "maradhi" }
+        ];
+        
+        // KUSOMA - Kusoma kuhusu usafi wa mikono
+        const kusoma = [
+            { q: "Tunaposoma kitabu kuhusu usafi wa mikono, tunapata ______ mpya.", a: "maarifa" },
+            { q: "Bobo alisoma hadithi ya 'Mikono ______ na Afya'.", a: "Safi" },
+            { q: "Kusoma maelekezo ya kuosha mikono kunatusaidia kufanya ______.", a: "usahihi" },
+            { q: "Talia alisoma kwamba tunapaswa kuosha mikono kwa sekunde ______.", a: "ishirini" },
+            { q: "Kusoma kwa ______ kunatusaidia kuelewa umuhimu wa mikono safi.", a: "umakini" },
+            { q: "Bobo alisoma ubaoni, 'Osha mikono yako kwa sabuni na maji ______.'", a: "safi" },
+            { q: "Kusoma hadithi kuhusu usafi ni jambo la ______.", a: "kujifunza" },
+            { q: "Talia alisoma kuwa mikono michafu husababisha ______.", a: "ugonjwa" },
+            { q: "Kusoma sheria za usafi kunatusaidia kukaa ______.", a: "safi" },
+            { q: "Bobo alisoma kitabu chake na kujifunza jinsi ya kuosha mikono kwa ______.", a: "hatua" }
+        ];
+        
+        // KUANDIKA - Kuandika kuhusu usafi wa mikono
+        const kuandika = [
+            { q: "Bobo aliandika orodha ya nyakati za kuosha mikono: kabla ya kula na baada ya ______.", a: "chooni" },
+            { q: "Kuandika kwa ______ kunasaidia kuwasilisha ujumbe wa usafi vizuri.", a: "maridadi" },
+            { q: "Talia aliandika sentensi: 'Mikono ______ huondoa vijidudu.'", a: "Safi" },
+            { q: "Tunapaswa kuandika kwa ______ ili watu wengine wasome kwa urahisi.", a: "usafi" },
+            { q: "Bobo aliandika katika shajara yake: 'Leo nimejifunza kuosha mikono kwa ______.'", a: "sabuni" },
+            { q: "Kuandika sheria za usafi wa mikono kunatusaidia kuzikumbuka ______.", a: "kwa urahisi" },
+            { q: "Talia aliandika barua kwa rafiki yake akimtia moyo kuosha ______.", a: "mikono" },
+            { q: "Bobo aliandika hatua za kuosha mikono: 1) Lowesha mikono, 2) Weka ______, 3) Sugua.", a: "sabuni" },
+            { q: "Kuandika kwa ustadi ni alama ya mwanafunzi ______.", a: "mwema" },
+            { q: "Talia aliandika ubaoni: 'Usafi wa mikono huanza ______.'", a: "nyumbani" }
+        ];
+        
+        const allTopics = [...kusikiliza, ...kuzungumza, ...kusoma, ...kuandika];
+        
+        for (let i = 1; i <= 40; i++) {
+            let idx = (i * level + i * 2) % allTopics.length;
+            let item = allTopics[idx];
+            let qText = item.q;
+            let correctAnswer = item.a;
+            
+            // Narrative variety based on level
+            if (level >= 2 && i % 5 === 0) {
+                qText = "Bobo anamsikiliza mama akimfundisha jinsi ya kuosha mikono. Anapaswa kuwa ______.";
+                correctAnswer = "makini";
+            }
+            if (level >= 3 && i % 6 === 0) {
+                qText = "Bobo anamwambia rafiki yake, 'Osha mikono yako kabla ya kula kwa kutumia sabuni na ______.'";
+                correctAnswer = "maji";
+            }
+            if (level >= 4 && i % 7 === 0) {
+                qText = "Bobo anasoma kitabu cha 'Mikono Safi' na anapata ______ mpya kuhusu usafi.";
+                correctAnswer = "maarifa";
+            }
+            if (i % 8 === 0) {
+                qText = "Bobo anaandika katika shajara yake: 'Nitaosha mikono yangu kila ______.'";
+                correctAnswer = "siku";
+            }
+            if (i % 9 === 0) {
+                qText = "Kusikiliza kwa makini kunasaidia kuzuia kuenea kwa ______ hatari.";
+                correctAnswer = "magonjwa";
+            }
+            if (i % 11 === 0) {
+                qText = "Bobo anawauliza wanafunzi wenzake, 'Je, mnaosha mikono yenu baada ya ______?'";
+                correctAnswer = "chooni";
+            }
+            questions.push({ text: qText, answer: correctAnswer.trim().toLowerCase() });
+        }
+        return questions.slice(0, 40);
+    }
+    
+    // Preload 5 levels
+    const levelsData = {
+        1: generateQuestionsForLevel(1),
+        2: generateQuestionsForLevel(2),
+        3: generateQuestionsForLevel(3),
+        4: generateQuestionsForLevel(4),
+        5: generateQuestionsForLevel(5)
+    };
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let currentQuestions = [...levelsData[1]];
+    let scoreCorrect = 0;
+    let totalQuestionsInLevel = 40;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let isWaitingForNext = false;
+    let allowAnswer = true;
+    let nextLevelUnlocked = false;
+    
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const storyAreaDiv = document.getElementById('storyArea');
+    const questionTextDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextLevelMsgDiv = document.getElementById('nextLevelMsg');
+    const speakBtn = document.getElementById('speakQuestionBtn');
+    
+    function updateScoreUI() {
+        scoreDisplay.innerText = `Alama: ${scoreCorrect} / ${totalQuestionsInLevel}`;
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        stopTimer();
+        if (!allowAnswer) return;
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+        timerInterval = setInterval(() => {
+            if (!allowAnswer) return;
+            if (timeLeft <= 1) {
+                stopTimer();
+                if (allowAnswer) {
+                    allowAnswer = false;
+                    timerDisplaySpan.innerText = `⏱️ 0s`;
+                    const correctAns = currentQuestions[currentQuestionIndex].answer;
+                    speakKiswahili(`Wakati umekwisha! Jibu sahihi ni ${correctAns}. Kumbuka kuosha mikono kwa sabuni na maji safi!`);
+                    feedbackMsgDiv.innerHTML = `⏰ Wakati umekwisha! Jibu sahihi: <strong>${correctAns}</strong>. Tunasonga kwenye swali linalofuata.`;
+                    moveToNextQuestionAfterDelay();
+                }
+            } else {
+                timeLeft--;
+                timerDisplaySpan.innerText = `⏱️ ${timeLeft}s`;
+            }
+        }, 1000);
+    }
+    
+    function moveToNextQuestionAfterDelay() {
+        if (isWaitingForNext) return;
+        isWaitingForNext = true;
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestionsInLevel) {
+                resetForNewQuestion();
+            } else {
+                endOfLevel();
+            }
+        }, 2000);
+    }
+    
+    function resetForNewQuestion() {
+        isWaitingForNext = false;
+        allowAnswer = true;
+        stopTimer();
+        const qData = currentQuestions[currentQuestionIndex];
+        questionTextDiv.innerText = qData.text;
+        answerInput.value = '';
+        feedbackMsgDiv.innerHTML = "🎤 Andika jibu lako! Bonyeza kitufe cha sauti kusikia swali tena. Kumbuka kuosha mikono kwa usafi!";
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        answerInput.focus();
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        startTimer();
+        updateStoryNarrative();
+    }
+    
+    function updateStoryNarrative() {
+        let levelDesc = "";
+        if (currentLevel === 1) levelDesc = "Ngazi 1: Kusikiliza kuhusu Mikono Safi! Jifunze kusikiliza maelekezo ya usafi.";
+        else if (currentLevel === 2) levelDesc = "Ngazi 2: Kuzungumza kuhusu Mikono Safi! Zungumza kwa heshima kuhusu usafi wa mikono.";
+        else if (currentLevel === 3) levelDesc = "Ngazi 3: Kusoma kuhusu Mikono Safi! Soma na uelewe umuhimu wa mikono safi.";
+        else if (currentLevel === 4) levelDesc = "Ngazi 4: Kuandika kuhusu Mikono Safi! Andika sheria za usafi wa mikono kwa maridadi.";
+        else levelDesc = "Ngazi 5: Ngazi ya mwisho! Kuwa Bingwa wa Usafi wa Mikono Darasa la 2!";
+        const reqPass = Math.ceil(totalQuestionsInLevel * 0.8);
+        storyAreaDiv.innerHTML = `📘 ${levelDesc} | Swali ${currentQuestionIndex+1}/${totalQuestionsInLevel}. Unahitaji angalau ${reqPass} sahihi kusonga mbele. ⏱️ 40s/swali. Osha mikono kwa sabuni na maji safi! 🧼🧴`;
+    }
+    
+    function endOfLevel() {
+        stopTimer();
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        const required = Math.ceil(totalQuestionsInLevel * 0.8);
+        const passed = (scoreCorrect >= required);
+        
+        if (passed) {
+            if (currentLevel === 5) {
+                feedbackMsgDiv.innerHTML = "🎉🏆 HONGERA SANA! Umemaliza ngazi zote 5! Wewe ni Bingwa wa Usafi wa Mikono Darasa la 2! 🏆🎉";
+                speakKiswahili("Hongera! Umemaliza ngazi zote tano. Wewe ni bingwa wa usafi wa mikono! Endelea kuosha mikono yako kwa sabuni na maji safi ili kuwa na afya bora!");
+                storyAreaDiv.innerHTML = "🏁 MCHEZO UMEMALIZIKA! Sasa unajua umuhimu wa mikono safi. Endelea kusikiliza, kuzungumza, kusoma na kuandika kuhusu usafi wa mikono! 🧼🧴✨";
+                nextLevelMsgDiv.innerHTML = "✨ UMESHINDA! Bonyeza Refresh kucheza tena ✨";
+                return;
+            } else {
+                nextLevelUnlocked = true;
+                feedbackMsgDiv.innerHTML = `🎉 Umefuzu! Alama: ${scoreCorrect}/${totalQuestionsInLevel} (≥${required}). Unaenda Ngazi ${currentLevel+1}! 🎉`;
+                speakKiswahili(`Hongera! Umepita ngazi ${currentLevel}. Sasa unaenda ngazi ${currentLevel+1}. Endelea kujifunza kuhusu usafi wa mikono!`);
+                nextLevelMsgDiv.innerHTML = "";
+                const nextBtn = document.createElement('button');
+                nextBtn.innerText = `🔓 Nenda Ngazi ${currentLevel+1}`;
+                nextBtn.className = "btn-check";
+                nextBtn.style.background = "#4caf50";
+                nextBtn.style.marginTop = "10px";
+                nextBtn.onclick = () => {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                };
+                nextLevelMsgDiv.appendChild(nextBtn);
+                return;
+            }
+        } else {
+            feedbackMsgDiv.innerHTML = `😭 Pole! Hukufika 80%. Alama: ${scoreCorrect}/${totalQuestionsInLevel}. Unahitaji ${required}. Jaribu Ngazi ${currentLevel} tena.`;
+            speakKiswahili(`Pole! Unahitaji angalau asilimia themanini kupita. Una alama ${scoreCorrect} kati ya ${totalQuestionsInLevel}. Tafadhali jaribu ngazi ${currentLevel} tena. Kumbuka kuosha mikono kwa sabuni na maji safi!`);
+            nextLevelMsgDiv.innerHTML = "";
+            const retryBtn = document.createElement('button');
+            retryBtn.innerText = `🔄 Jaribu Ngazi ${currentLevel} Tena`;
+            retryBtn.className = "btn-check";
+            retryBtn.style.background = "#ff9800";
+            retryBtn.onclick = () => {
+                loadLevel(currentLevel);
+            };
+            nextLevelMsgDiv.appendChild(retryBtn);
+            return;
+        }
+    }
+    
+    function loadLevel(level) {
+        currentLevel = level;
+        currentQuestions = [...levelsData[level]];
+        currentQuestionIndex = 0;
+        scoreCorrect = 0;
+        totalQuestionsInLevel = 40;
+        allowAnswer = true;
+        nextLevelUnlocked = false;
+        isWaitingForNext = false;
+        stopTimer();
+        levelDisplay.innerText = `Ngazi: ${currentLevel}`;
+        updateScoreUI();
+        const firstQ = currentQuestions[0];
+        questionTextDiv.innerText = firstQ.text;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitBtn.disabled = false;
+        feedbackMsgDiv.innerHTML = "🎤 Jifunze kuhusu Mikono Safi! Andika jibu lako. Bonyeza kitufe cha sauti kusikia swali.";
+        nextLevelMsgDiv.innerHTML = "";
+        timeLeft = 40;
+        timerDisplaySpan.innerText = `⏱️ 40s`;
+        updateStoryNarrative();
+        startTimer();
+    }
+    
+    function checkAnswer() {
+        if (!allowAnswer) return;
+        const userAnswerRaw = answerInput.value.trim().toLowerCase();
+        if (userAnswerRaw === "") {
+            feedbackMsgDiv.innerHTML = "🔊 Tafadhali andika jibu! Kumbuka kuosha mikono yako kwa sabuni na maji safi.";
+            speakKiswahili("Tafadhali andika jibu.");
+            return;
+        }
+        const currentQ = currentQuestions[currentQuestionIndex];
+        const correctAns = currentQ.answer.toLowerCase();
+        const normalizedUser = userAnswerRaw.replace(/\s+/g, ' ').trim();
+        const normalizedCorrect = correctAns.replace(/\s+/g, ' ').trim();
+        let isCorrect = (normalizedUser === normalizedCorrect);
+        
+        // Forgiving variations for Kiswahili answers
+        if (!isCorrect) {
+            const forgiving = {
+                "makini": ["kwa makini", "umakini", "mwangalifu"],
+                "usahihi": ["sahihi", "vizuri", "sawa"],
+                "kumsikiliza": ["msikilize", "sikiliza", "kumsikia"],
+                "magonjwa": ["maradhi", "ugonjwa", "majonzi"],
+                "umakini": ["makini", "uzingatiaji"],
+                "sabuni": ["sabuni ya mikono", "sabuni ya kuoshea"],
+                "wema": ["wazuri", "wenye adabu", "watakatifu"],
+                "kufurahisha": ["furahisha", "kuvutia", "kupendeza"],
+                "kula": ["kula chakula", "kula mlo"],
+                "heshima": ["adabu", "staha", "taadhima"],
+                "maji": ["maji safi", "maji ya bomba"],
+                "upole": ["laini", "taratibu", "utulivu"],
+                "wakarimu": ["karimu", "wema", "wafadhili"],
+                "chakula": ["mlo", "kula", "kiamsha kinywa"],
+                "adabu": ["heshima", "staha"],
+                "vijidudu": ["vidudu", "mikorobo", "bakteria"],
+                "chooni": ["choo", "msalani"],
+                "maradhi": ["magonjwa", "maumivu"],
+                "maarifa": ["elimu", "ujuzi", "mazingatio"],
+                "safi": ["safi kabisa", "nadhifu"],
+                "ishirini": ["20", "kumi na mbili?"],
+                "ugonjwa": ["maradhi", "jonzi"],
+                "safi": ["nadhifu", "takatifu"],
+                "hatua": ["mbinu", "njia", "taratibu"],
+                "maridadi": ["uzuri", "nzuri", "safi"],
+                "usafi": ["usafi wa maandishi", "safi"],
+                "siku": ["kila siku", "mchana", "lelo"],
+                "nyumbani": ["shuleni", "mtaani"]
+            };
+            for (let key in forgiving) {
+                if (normalizedCorrect === key && forgiving[key].includes(normalizedUser)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            scoreCorrect++;
+            updateScoreUI();
+            feedbackMsgDiv.innerHTML = `✅ Sahihi kabisa! "${currentQ.answer}" ni jibu zuri! +1 alama ✅`;
+            speakKiswahili(`Sahihi! Jibu ni ${currentQ.answer}. Umepata alama! Endelea kuosha mikono yako kwa sabuni na maji safi!`);
+        } else {
+            feedbackMsgDiv.innerHTML = `❌ Si sahihi. Jibu sahihi ni: "${currentQ.answer}". Kumbuka kuosha mikono kwa sabuni na maji safi ili kuepuka magonjwa! ❌`;
+            speakKiswahili(`Sio sahihi. Jibu sahihi ni ${currentQ.answer}. Usikate tamaa! Kumbuka kuosha mikono kila wakati!`);
+        }
+        allowAnswer = false;
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+        moveToNextQuestionAfterDelay();
+    }
+    
+    submitBtn.addEventListener('click', checkAnswer);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && allowAnswer) {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    loadLevel(1);
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            speakKiswahili("Karibu kwenye mchezo wa Mikono Safi! Jifunze kusikiliza, kuzungumza, kusoma na kuandika kuhusu usafi wa mikono. Una sekunde arobaini kwa kila swali. Bonyeza kitufe cha sauti kusikia swali. Andika jibu lako. Kumbuka: Osha mikono yako kwa sabuni na maji safi kabla ya kula na baada ya choo!");
+        }, 500);
+    });
+</script>
+</body>
+</html>

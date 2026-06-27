@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 7 English Mastery: Penmanship & Grammar | Nouns & Trickster Tales</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* better for quiz tapping, but text can be copied if needed */
+        }
+
+        body {
+            background: linear-gradient(145deg, #1f3b4c 0%, #0e2a36 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* MAIN GAME WRAPPER */
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fffef5;
+            border-radius: 64px 56px 64px 56px;
+            box-shadow: 0 35px 55px rgba(0, 0, 0, 0.45), inset 0 1px 3px rgba(255, 250, 210, 0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* HEADER with dynamic gradient (depends on active subject) */
+        .game-header {
+            padding: 18px 28px;
+            color: white;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 14px;
+            border-bottom: 4px solid #f9c74f;
+            transition: background 0.25s ease;
+        }
+
+        /* subject-specific header styles */
+        .game-header.handwriting {
+            background: linear-gradient(120deg, #4a8b8f, #2c5a5e);
+        }
+        .game-header.grammar {
+            background: linear-gradient(120deg, #e0943e, #a05f20);
+        }
+
+        .level-badge {
+            background: #1f2a36;
+            padding: 6px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -1px 0 #5a6072, 0 5px 12px rgba(0,0,0,0.2);
+        }
+
+        .score-board {
+            background: #1f2a36;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            backdrop-filter: blur(2px);
+        }
+
+        .timer-area {
+            background: #000000aa;
+            backdrop-filter: blur(6px);
+            border-radius: 60px;
+            padding: 5px 22px;
+            font-family: monospace;
+            font-size: 1.7rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* SUBJECT SWITCHER (Tab Bar) */
+        .subject-tabs {
+            display: flex;
+            background: #e8ddc8;
+            border-bottom: 2px solid #c0aa7a;
+        }
+        .tab-btn {
+            flex: 1;
+            text-align: center;
+            padding: 14px 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #f5ecdf;
+            border: none;
+            cursor: pointer;
+            transition: 0.1s linear;
+            color: #4a3a2a;
+            font-family: inherit;
+            letter-spacing: 1px;
+            border-radius: 40px 40px 0 0;
+        }
+        .tab-btn.active {
+            background: #fffef5;
+            color: #2c5a5e;
+            border-bottom: 3px solid #f9c74f;
+            font-weight: 800;
+        }
+        .tab-btn:first-child.active { background: #fffef5; color: #2c5a5e; }
+        .tab-btn:last-child.active { background: #fffef5; color: #c27b36; }
+
+        .question-panel {
+            padding: 28px 28px 20px;
+            background: #fffbf0;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #2c5a5e;
+            margin-bottom: 24px;
+            background: #fef5e2;
+            padding: 22px;
+            border-radius: 42px;
+            box-shadow: inset 0 0 0 2px #ffe2ae, 0 8px 14px rgba(0,0,0,0.05);
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #5a6e9c;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 3px 0 #2a3a5a;
+        }
+        .voice-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2a3a5a;}
+
+        .hint-box {
+            background: #f1e6d4;
+            border-radius: 36px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #bb6b2e;
+            border-left: 5px solid #ff914d;
+            max-width: 60%;
+        }
+
+        .answer-area {
+            margin: 15px 0 20px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 1.2rem;
+            font-family: 'Segoe UI', 'Poppins', monospace;
+            background: #fff7ea;
+            border: 3px solid #d4a373;
+            border-radius: 60px;
+            outline: none;
+            transition: 0.1s;
+            text-align: center;
+            font-weight: 500;
+            color: #5a3a2a;
+        }
+        .answer-input:focus {
+            border-color: #3c6e71;
+            background: #fffff5;
+            box-shadow: 0 0 0 3px #aed4d6;
+        }
+        .grammar-mode .answer-input:focus {
+            border-color: #c27b36;
+            box-shadow: 0 0 0 3px #ffe0b0;
+        }
+
+        .submit-btn {
+            background: #3c6e71;
+            width: 100%;
+            border: none;
+            padding: 16px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 12px;
+            box-shadow: 0 5px 0 #2c4e51;
+        }
+        .submit-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2c4e51;}
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.05rem;
+            text-align: center;
+            background: #e9dfcf;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .level-result {
+            background: #2c5f7a;
+            color: #fff7cf;
+            text-align: center;
+            padding: 18px;
+            margin: 12px 28px 28px;
+            border-radius: 48px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        button:disabled, .disabled-btn {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 700px) {
+            .question-text { font-size: 1.2rem; padding: 16px; }
+            .action-row { flex-direction: column; align-items: stretch; }
+            .hint-box { max-width: 100%; text-align: center; }
+            .timer-area { font-size: 1.3rem; }
+            .game-header { padding: 14px; }
+            .tab-btn { font-size: 0.9rem; padding: 10px 5px; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #e2d5bc;
+            padding: 12px;
+            color: #3e5d48;
+            font-weight: 500;
+        }
+        .handwriting-tip {
+            font-family: 'Segoe Script', 'Comic Sans MS', cursive;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="subject-tabs">
+        <button class="tab-btn active" id="tabHandwriting">✍️ HANDWRITING MASTERY<br><span style="font-size:0.7rem;">Penmanship & Letter Formation</span></button>
+        <button class="tab-btn" id="tabGrammar">📖 NOUNS & TRICKSTER TALES<br><span style="font-size:0.7rem;">Grammar & Narratives</span></button>
+    </div>
+    <div class="game-header" id="gameHeader">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="score-board">🏆 Score: <span id="scoreSpan">0</span> / <span id="maxScoreSpan">0</span></div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span>s</div>
+    </div>
+    <div class="question-panel">
+        <div class="question-text" id="questionText">📚 Loading English Challenge...</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-box" id="hintBox">💡 HINT: Review key terms and writing rules.</div>
+        </div>
+        <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="✏️ Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✓ CHECK & SUBMIT</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">📚 Welcome! Master Handwriting, Nouns & Trickster Stories. 80% to level up!</div>
+    </div>
+    <div id="levelMessageArea"></div>
+    <footer>✨ CBC Grade 7 English • Penmanship • Cursive vs Print • Nouns (Common, Proper, Abstract, Collective) • Trickster Narratives ✨</footer>
+</div>
+
+<script>
+    // ======================= MERGED QUESTION BANKS =======================
+    // ----- Handwriting Pool (from first game) -----
+    const handwritingQuestionsRaw = [
+        { text: "What type of handwriting has letters that are connected together?", answer: "cursive" },
+        { text: "What type of handwriting has separate, unconnected letters?", answer: "print" },
+        { text: "What is the imaginary line that letters sit on called?", answer: "baseline" },
+        { text: "Letters that go above the midline (like 'b', 'd', 'h') are called ? letters.", answer: "ascenders" },
+        { text: "Letters that go below the baseline (like 'g', 'j', 'p') are called ? letters.", answer: "descenders" },
+        { text: "The space between two words in a sentence is called word ?", answer: "spacing" },
+        { text: "What do you call the style of writing where all letters are the same height (no ascenders/descenders)?", answer: "uppercase" },
+        { text: "Which letter is formed by a straight line down and a clockwise curve at the bottom: 'r', 'n', or 'u'?", answer: "u" },
+        { text: "What tool is traditionally used for handwriting practice in schools?", answer: "pen" },
+        { text: "What is the name of the small line at the beginning or end of a letter in cursive?", answer: "stroke" },
+        { text: "Handwriting that is easy to read is called ?", answer: "legible" },
+        { text: "The opposite of legible is ?", answer: "illegible" },
+        { text: "What aspect of handwriting refers to how letters sit on the line (straight or tilted)?", answer: "alignment" },
+        { text: "The degree of tilt in cursive writing is called ?", answer: "slant" },
+        { text: "All letters should be roughly the same ? for neatness.", answer: "size" },
+        { text: "What word describes writing that is too messy to understand?", answer: "illegible" },
+        { text: "Proper ? between letters prevents them from touching or being too far apart.", answer: "kerning" },
+        { text: "What do you call the space between lines of text?", answer: "line spacing" },
+        { text: "Writing that is clear and readable has good ?", answer: "legibility" },
+        { text: "In handwriting, the first word of a sentence always begins with a ? letter.", answer: "capital" },
+        { text: "What punctuation mark ends a sentence that states a fact?", answer: "period" },
+        { text: "Proper nouns (like names) should always start with a ? letter.", answer: "capital" },
+        { text: "In handwriting practice, what kind of paper has two lines to guide letter size?", answer: "lined" },
+        { text: "What should you do after finishing a sentence in handwriting?", answer: "leave space" },
+        { text: "The margin on the left side of the page should be ?", answer: "straight" },
+        { text: "When writing cursive, what direction should the slant be?", answer: "right" },
+        { text: "What is the recommended grip for holding a pen correctly?", answer: "tripod" },
+        { text: "In cursive, the lowercase 'e' is made with what shape?", answer: "loop" },
+        { text: "The cursive lowercase 'r' has a small ? at the top.", answer: "hump" },
+        { text: "Cursive writing helps improve writing ? because letters flow together.", answer: "speed" },
+        { text: "What cursive letter looks like a printed 'r' but with a loop?", answer: "r" },
+        { text: "What do you call the habit of pressing too hard with a pen?", answer: "heavy pressure" },
+        { text: "Which hand should left-handed writers use for handwriting?", answer: "left" },
+        { text: "What is the best posture for handwriting? (sitting ?)", answer: "upright" },
+        { text: "A handwriting style where letters are slanted to the right is called ?", answer: "italic" }
+    ];
+    
+    // ----- Grammar (Nouns & Trickster Narratives) Pool -----
+    const grammarQuestionsRaw = [
+        { text: "In 'The boy ran to school', the word 'boy' is what type of noun? (common or proper)", answer: "common" },
+        { text: "The word 'Kenya' is an example of a ? noun.", answer: "proper" },
+        { text: "Is 'mountain' a common or proper noun?", answer: "common" },
+        { text: "Is 'Mount Kenya' a common or proper noun?", answer: "proper" },
+        { text: "Which type of noun names a specific person, place, or thing?", answer: "proper" },
+        { text: "Which type of noun names any general person, place, or thing?", answer: "common" },
+        { text: "A noun that names something you can see, touch, or feel physically is called a ? noun.", answer: "concrete" },
+        { text: "A noun that names an idea, feeling, or quality (like love, honesty) is called an ? noun.", answer: "abstract" },
+        { text: "Is 'happiness' an abstract or concrete noun?", answer: "abstract" },
+        { text: "Identify the abstract noun: 'Her kindness was inspiring.'", answer: "kindness" },
+        { text: "A group of lions is called a ?", answer: "pride" },
+        { text: "A group of fish is called a ?", answer: "school" },
+        { text: "A group of cattle is called a ?", answer: "herd" },
+        { text: "A group of birds is called a ?", answer: "flock" },
+        { text: "A group of bees is called a ?", answer: "swarm" },
+        { text: "A group of students is called a ?", answer: "class" },
+        { text: "What is the collective noun for a group of wolves?", answer: "pack" },
+        { text: "What is the name of the clever spider trickster from West African and Caribbean folktales?", answer: "anansi" },
+        { text: "In African folktales, which animal often plays the trickster role (known for being clever and fast)?", answer: "hare" },
+        { text: "What is the name of the trickster coyote from Native American stories?", answer: "coyote" },
+        { text: "Which trickster bird from Pacific Northwest stories is known for stealing light?", answer: "raven" },
+        { text: "What is the main character in a trickster narrative usually like? (clever or foolish)", answer: "clever" },
+        { text: "Do trickster tales usually teach a lesson or moral? (yes or no)", answer: "yes" },
+        { text: "What is the name of the trickster rabbit from African American folktales?", answer: "brer rabbit" },
+        { text: "In 'Anansi and the Pot of Wisdom', what does Anansi try to keep all for himself?", answer: "wisdom" },
+        { text: "What is the moral of many trickster tales? (e.g., 'Don't be too ?')", answer: "greedy" },
+        { text: "What part of speech names a person, place, thing, or idea?", answer: "noun" },
+        { text: "In 'The team won the match', the word 'team' is a ? noun.", answer: "collective" },
+        { text: "Is 'London' a common or proper noun?", answer: "proper" },
+        { text: "A proper noun always begins with a ? letter.", answer: "capital" },
+        { text: "What is the collective noun for a group of ships?", answer: "fleet" },
+        { text: "What animal is a common trickster in West African stories besides Anansi?", answer: "tortoise" },
+        { text: "Trickster characters often use what to outsmart others? (one word)", answer: "cunning" }
+    ];
+    
+    // Helper: normalize & match (supports synonyms, plurals, etc.)
+    function normalizeAnswer(ans) {
+        return ans.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    
+    function answersMatch(user, correct) {
+        const u = normalizeAnswer(user);
+        const c = normalizeAnswer(correct);
+        if (u === c) return true;
+        if (c.length > 3 && u.includes(c)) return true;
+        if (u.length > 3 && c.includes(u)) return true;
+        const synonyms = {
+            "cursive": "script", "print": "manuscript", "legible": "readable", "illegible": "unreadable",
+            "baseline": "base line", "ascenders": "upper zone", "descenders": "lower zone",
+            "spacing": "space", "alignment": "position", "slant": "tilt", "capital": "uppercase",
+            "period": "full stop", "tripod": "tripod grip", "anansi": "anansi the spider", "hare": "rabbit",
+            "clever": "cunning", "coyote": "wolf", "raven": "crow", "greedy": "selfish",
+            "abstract": "abstract noun", "concrete": "concrete noun", "collective": "collective noun",
+            "pride": "lion pride", "school": "shoal", "fleet": "navy"
+        };
+        for (let [key, val] of Object.entries(synonyms)) {
+            if ((u === key && c === val) || (u === val && c === key)) return true;
+        }
+        if (u + "s" === c || c + "s" === u) return true;
+        return false;
+    }
+    
+    function getQuestionsForSubject(subjectId, levelSeed) {
+        let baseArray = subjectId === 'handwriting' ? [...handwritingQuestionsRaw] : [...grammarQuestionsRaw];
+        // shuffle deterministic based on level
+        const shuffleArray = (arr, seed) => {
+            let a = [...arr];
+            let s = seed * 131071 + levelSeed * 173;
+            for (let i = a.length - 1; i > 0; i--) {
+                s = (s * 9301 + 49297) % 233280;
+                let j = s % (i + 1);
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        };
+        let shuffled = shuffleArray(baseArray, levelSeed * 311);
+        let unique = [];
+        let seen = new Set();
+        for (let q of shuffled) {
+            let key = q.text.substring(0, 55);
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push({ text: q.text, answer: q.answer.toLowerCase().trim() });
+            }
+            if (unique.length === 30) break;
+        }
+        while (unique.length < 30) {
+            unique.push({ text: "What is a key element of good handwriting/grammar?", answer: "practice" });
+        }
+        return unique.slice(0, 30);
+    }
+    
+    // ---------- GLOBAL GAME STATE ----------
+    let activeSubject = "handwriting"; // 'handwriting' or 'grammar'
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let questions = [];
+    let score = 0;
+    let totalQuestionsInLevel = 30;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let canAnswer = true;
+    let waitingForNext = false;
+    
+    // DOM elements
+    const questionTextEl = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreSpan = document.getElementById('scoreSpan');
+    const maxScoreSpan = document.getElementById('maxScoreSpan');
+    const timerSecondsSpan = document.getElementById('timerSeconds');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintBox = document.getElementById('hintBox');
+    const levelMessageArea = document.getElementById('levelMessageArea');
+    const gameHeader = document.getElementById('gameHeader');
+    const tabHandwriting = document.getElementById('tabHandwriting');
+    const tabGrammar = document.getElementById('tabGrammar');
+    
+    function updateSubjectUI() {
+        if (activeSubject === 'handwriting') {
+            gameHeader.classList.remove('grammar-mode');
+            gameHeader.classList.add('handwriting');
+            document.querySelector('.submit-btn').style.background = "#3c6e71";
+            document.querySelector('.submit-btn').style.boxShadow = "0 5px 0 #2c4e51";
+        } else {
+            gameHeader.classList.remove('handwriting');
+            gameHeader.classList.add('grammar-mode');
+            gameHeader.style.background = "linear-gradient(120deg, #e0943e, #a05f20)";
+            document.querySelector('.submit-btn').style.background = "#2c7a4d";
+            document.querySelector('.submit-btn').style.boxShadow = "0 5px 0 #1a5a3a";
+        }
+        if (activeSubject === 'handwriting') gameHeader.style.background = "linear-gradient(120deg, #4a8b8f, #2c5a5e)";
+        else gameHeader.style.background = "linear-gradient(120deg, #e0943e, #a05f20)";
+    }
+    
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timeLeft = 40;
+        timerSecondsSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if (!canAnswer || waitingForNext) return;
+            if (timeLeft <= 1) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (canAnswer && !waitingForNext) {
+                    canAnswer = false;
+                    disableInputs(true);
+                    feedbackMsg.innerHTML = "⏰ TIME'S UP! ❌ Moving to next question...";
+                    speakText("Time is up! Moving to next question.");
+                    setTimeout(() => { proceedToNextOrLevel(); }, 1600);
+                }
+            } else {
+                timeLeft--;
+                timerSecondsSpan.innerText = timeLeft;
+                if (timeLeft === 32) {
+                    if (activeSubject === 'handwriting') hintBox.innerHTML = "✍️ HINT: Letter formation, ascenders, descenders, spacing, legibility.";
+                    else hintBox.innerHTML = "📚 HINT: Nouns (common/proper/abstract/collective) & Trickster characters.";
+                } else if (timeLeft === 20) {
+                    hintBox.innerHTML = activeSubject === 'handwriting' ? "📝 Think about baseline, slant, cursive vs print!" : "🕷️ Anansi, Hare, Coyote — clever heroes!";
+                } else if (timeLeft === 8) {
+                    hintBox.innerHTML = "⚡ 8 seconds! Quick answer about handwriting or grammar!";
+                }
+            }
+        }, 1000);
+    }
+    
+    function disableInputs(disabled) {
+        answerInput.disabled = disabled;
+        submitBtn.disabled = disabled;
+        if (disabled) {
+            submitBtn.style.opacity = "0.5";
+            answerInput.style.backgroundColor = "#f3efdf";
+        } else {
+            submitBtn.style.opacity = "1";
+            answerInput.style.backgroundColor = "#fff7ea";
+        }
+    }
+    
+    function loadCurrentQuestion() {
+        if (!questions.length) return;
+        const q = questions[currentQuestionIndex];
+        questionTextEl.innerText = q.text;
+        answerInput.value = '';
+        feedbackMsg.innerHTML = "🔊 Click speaker to hear question. Type your answer.";
+        const initialHint = activeSubject === 'handwriting' ? "💡 HINT: Penmanship, legibility, cursive, spacing, letter parts." : "💡 HINT: Noun types (common, proper, abstract, collective) & tricksters.";
+        hintBox.innerHTML = initialHint;
+        canAnswer = true;
+        waitingForNext = false;
+        disableInputs(false);
+        answerInput.focus();
+        stopTimer();
+        startTimer();
+    }
+    
+    function proceedToNextOrLevel() {
+        const nextIndex = currentQuestionIndex + 1;
+        const completedAll = (nextIndex >= totalQuestionsInLevel);
+        const percentage = (score / totalQuestionsInLevel) * 100;
+        if (completedAll) {
+            if (percentage >= 80) {
+                if (currentLevel === 5) {
+                    levelMessageArea.innerHTML = `<div class="level-result">🏆✨ ${activeSubject === 'handwriting' ? 'HANDWRITING MASTER' : 'ENGLISH GRAMMAR MASTER'}! ✨🏆<br>All 5 levels completed! Score: ${score}/${totalQuestionsInLevel}<br>🌟 EXCELLENT! 🌟</div>`;
+                    feedbackMsg.innerHTML = "🎉 CONGRATULATIONS! You mastered this subject! Switch topics for more!";
+                    disableInputs(true);
+                    stopTimer();
+                    canAnswer = false;
+                    return;
+                } else {
+                    levelMessageArea.innerHTML = `<div class="level-result">📈 LEVEL UP! Passed Level ${currentLevel} (${percentage.toFixed(0)}%) → Advancing to Level ${currentLevel+1}</div>`;
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                    return;
+                }
+            } else {
+                levelMessageArea.innerHTML = `<div class="level-result">⚠️ LEVEL ${currentLevel} FAILED ⚠️ (${percentage.toFixed(0)}% < 80%). Restarting Level... Review concepts! ⚠️</div>`;
+                resetCurrentLevel();
+                return;
+            }
+        } else {
+            currentQuestionIndex++;
+            loadCurrentQuestion();
+            waitingForNext = false;
+        }
+    }
+    
+    function resetCurrentLevel() {
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        questions = getQuestionsForSubject(activeSubject, currentLevel);
+        totalQuestionsInLevel = questions.length;
+        loadCurrentQuestion();
+        setTimeout(() => { if (levelMessageArea.innerHTML.includes("FAILED")) levelMessageArea.innerHTML = ""; }, 2800);
+    }
+    
+    function loadLevel(level) {
+        if (level > 5) {
+            levelMessageArea.innerHTML = `<div class="level-result">🏁 GRAND CHAMPION! Ultimate English Scholar 🏆</div>`;
+            disableInputs(true);
+            stopTimer();
+            return;
+        }
+        currentLevel = level;
+        levelDisplay.innerText = `Level ${level}`;
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        questions = getQuestionsForSubject(activeSubject, currentLevel);
+        totalQuestionsInLevel = questions.length;
+        loadCurrentQuestion();
+        levelMessageArea.innerHTML = "";
+        canAnswer = true;
+        waitingForNext = false;
+    }
+    
+    function updateScoreUI() {
+        scoreSpan.innerText = score;
+        maxScoreSpan.innerText = totalQuestionsInLevel;
+    }
+    
+    function speakText(text) {
+        if (!window.speechSynthesis) { feedbackMsg.innerText = "⚠️ Voice not supported."; return; }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9; utterance.pitch = 1.05; utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    function checkAnswerHandler() {
+        if (!canAnswer || waitingForNext) { feedbackMsg.innerHTML = "⏳ Please wait..."; return; }
+        const userRaw = answerInput.value;
+        if (!userRaw.trim()) { feedbackMsg.innerHTML = "📢 Type your answer before submitting!"; return; }
+        const correctAns = questions[currentQuestionIndex].answer;
+        const isCorrect = answersMatch(userRaw, correctAns);
+        stopTimer();
+        if (isCorrect) {
+            score++;
+            updateScoreUI();
+            feedbackMsg.innerHTML = `✅ CORRECT! +1 point (${score}/${totalQuestionsInLevel}) Great!`;
+            speakText("Correct! Excellent work.");
+        } else {
+            feedbackMsg.innerHTML = `❌ INCORRECT. Correct answer: "${questions[currentQuestionIndex].answer}". You wrote: "${userRaw}". Review the topic!`;
+            speakText(`Wrong. The correct answer is ${questions[currentQuestionIndex].answer}. Keep practicing.`);
+        }
+        canAnswer = false;
+        disableInputs(true);
+        waitingForNext = true;
+        setTimeout(() => { proceedToNextOrLevel(); }, 2000);
+    }
+    
+    function readCurrentQuestion() {
+        if (questionTextEl.innerText && !questionTextEl.innerText.includes("Loading")) {
+            speakText(questionTextEl.innerText);
+        } else { speakText("No question loaded yet."); }
+    }
+    
+    function switchSubject(subject) {
+        if (subject === activeSubject) return;
+        stopTimer();
+        activeSubject = subject;
+        currentLevel = 1;
+        currentQuestionIndex = 0;
+        score = 0;
+        canAnswer = true;
+        waitingForNext = false;
+        updateSubjectUI();
+        if (activeSubject === 'handwriting') {
+            tabHandwriting.classList.add('active');
+            tabGrammar.classList.remove('active');
+        } else {
+            tabGrammar.classList.add('active');
+            tabHandwriting.classList.remove('active');
+        }
+        loadLevel(1);
+    }
+    
+    // Event bindings
+    submitBtn.addEventListener('click', checkAnswerHandler);
+    speakBtn.addEventListener('click', readCurrentQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !submitBtn.disabled && canAnswer && !waitingForNext) {
+            e.preventDefault();
+            checkAnswerHandler();
+        }
+    });
+    tabHandwriting.addEventListener('click', () => switchSubject('handwriting'));
+    tabGrammar.addEventListener('click', () => switchSubject('grammar'));
+    
+    // initialize with handwriting
+    function initMergedGame() {
+        activeSubject = "handwriting";
+        tabHandwriting.classList.add('active');
+        tabGrammar.classList.remove('active');
+        updateSubjectUI();
+        loadLevel(1);
+    }
+    initMergedGame();
+</script>
+</body>
+</html>

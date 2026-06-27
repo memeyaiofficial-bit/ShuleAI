@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grade 2 CBC Bible Heroes Quiz | Samuel · Daniel · Widow of Zarephath · The Holy Bible</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* keeps tapping clean for kids */
+        }
+
+        body {
+            background: linear-gradient(145deg, #2c3e5c 0%, #1a2a44 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI Emoji', 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fff7e8;
+            border-radius: 75px 75px 65px 65px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), inset 0 1px 4px rgba(255, 250, 210, 0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: #f4c542;
+            padding: 18px 22px 14px;
+            text-align: center;
+            border-bottom: 5px solid #da8e1c;
+        }
+
+        .level-badge {
+            background: #2b3b2c;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 60px;
+            color: #ffeaac;
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .stars {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .star {
+            font-size: 28px;
+            color: #ffc107;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .score-progress {
+            background: #ffefcf;
+            margin: 12px 16px 0;
+            border-radius: 40px;
+            padding: 6px 18px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #4e3b26;
+        }
+
+        .quiz-card {
+            padding: 22px 24px 24px;
+        }
+
+        .question-text {
+            background: #fef6e5;
+            padding: 22px 18px;
+            border-radius: 55px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: inset 0 0 0 3px white, 0 8px 12px rgba(0,0,0,0.05);
+            border: 1px solid #ffda9e;
+            word-break: break-word;
+            color: #2a4b2f;
+            margin-bottom: 22px;
+        }
+
+        .timer-area {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-circle {
+            background: #2d5a2e;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+            font-family: monospace;
+            box-shadow: 0 5px 0 #1a3a1c;
+            transition: 0.1s;
+        }
+
+        .warning {
+            background: #c0392b;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); background-color: #c0392b; }
+            100% { transform: scale(1.05); background-color: #e67e22; }
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 20px 0 18px;
+        }
+
+        .option-btn {
+            background: #efe0ca;
+            border: 3px solid #ffb346;
+            border-radius: 50px;
+            padding: 12px 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.08s linear;
+            text-align: center;
+            color: #2c4b1e;
+            font-family: inherit;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .option-btn:active {
+            transform: scale(0.96);
+        }
+
+        .voice-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 10px 0 12px;
+        }
+
+        .voice-btn {
+            background: #4c9faf;
+            border: none;
+            padding: 12px 12px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        .voice-btn.mic {
+            background: #2e7d64;
+        }
+
+        .voice-btn.speaker {
+            background: #e67e22;
+        }
+
+        .voice-btn:active {
+            transform: scale(0.96);
+        }
+
+        .status-msg {
+            background: #e8e0cf;
+            border-radius: 40px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .next-btn {
+            background: #f3a638;
+            width: 100%;
+            border: none;
+            padding: 14px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2e2c1f;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.1s;
+            font-family: inherit;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .reset-area {
+            text-align: center;
+            margin: 14px 20px 18px;
+        }
+
+        .reset-btn {
+            background: #b4813c;
+            border: none;
+            padding: 8px 26px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.2rem; }
+            .option-btn { font-size: 0.9rem; padding: 10px 4px; }
+            .voice-btn { font-size: 0.8rem; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #ebd5b3;
+            padding: 8px;
+            color: #4a3720;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">📖 LEVEL 1 / 5</div>
+        <div class="stars" id="starRating">⭐⭐⭐</div>
+        <div class="score-progress">
+            <span>✝️ SCORE: <span id="currentScore">0</span></span>
+            <span>✅ NEED 80% ➡️ <span id="requiredInfo">0/24</span></span>
+        </div>
+    </div>
+    <div class="quiz-card">
+        <div class="question-text" id="questionText">🌟 God's word is amazing! Get ready 🌟</div>
+        <div class="timer-area"><div class="timer-circle" id="timerCircle">40</div></div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="voice-actions">
+            <button class="voice-btn speaker" id="speakBtn">🔊 READ QUESTION</button>
+            <button class="voice-btn mic" id="micBtn">🎤 VOICE ANSWER</button>
+        </div>
+        <div class="status-msg" id="statusMsg">✨ Tap or speak your answer! 40 seconds. ✨</div>
+        <button class="next-btn" id="nextBtn" disabled>➡️ NEXT QUESTION</button>
+        <div class="reset-area"><button class="reset-btn" id="resetGameBtn">🔄 RESTART GAME</button></div>
+    </div>
+    <footer>📜 The Holy Bible as a guide · Divisions of the Bible · Call of Samuel · Daniel in Lion's Den · Widow of Zarephath 📜</footer>
+</div>
+
+<script>
+    // ---------- TOPICS (5 main Bible topics) ----------
+    const bibleTopics = [
+        "The Holy Bible as a Guide",
+        "Divisions of the Bible",
+        "The Call of Samuel",
+        "Daniel in the Den of Lions",
+        "The Widow of Zarephath"
+    ];
+    
+    // Generate 30 unique questions per level covering all topics evenly
+    function generateQuestionByTopic(topic, id, level) {
+        if (topic === "The Holy Bible as a Guide") {
+            const bank = [
+                { q: "The Bible teaches us how to live a good life. What is the Bible also called?", opts: ["God's Word", "Storybook", "Dictionary", "Atlas"], ans: "God's Word" },
+                { q: "One way the Bible guides us daily is by teaching us to:", opts: ["Be kind and truthful", "Fight others", "Be selfish", "Ignore parents"], ans: "Be kind and truthful" },
+                { q: "Which verse says 'Your word is a lamp to my feet'?", opts: ["Psalm 119:105", "Genesis 1:1", "Exodus 20", "Matthew 5"], ans: "Psalm 119:105" },
+                { q: "The Bible helps us make good choices because it is:", opts: ["God's instruction", "A fairy tale", "A song", "A history only"], ans: "God's instruction" },
+                { q: "What should we do daily with the Bible?", opts: ["Read and obey", "Hide it", "Draw on it", "Forget it"], ans: "Read and obey" },
+                { q: "The Bible gives us wisdom to know right from _____.", opts: ["Wrong", "Left", "Up", "Down"], ans: "Wrong" }
+            ];
+            let pick = bank[(id + level) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+        else if (topic === "Divisions of the Bible") {
+            const bank = [
+                { q: "How many main parts is the Bible divided into?", opts: ["Two (Old and New Testament)", "Three", "Five", "Ten"], ans: "Two (Old and New Testament)" },
+                { q: "Which part of the Bible tells about Jesus' birth?", opts: ["New Testament", "Old Testament", "Psalms", "Proverbs"], ans: "New Testament" },
+                { q: "The first five books of the Bible are called:", opts: ["The Torah/Pentateuch", "Gospels", "Letters", "Prophets"], ans: "The Torah/Pentateuch" },
+                { q: "The book of Psalms is found in which division?", opts: ["Old Testament", "New Testament", "Gospels", "Acts"], ans: "Old Testament" },
+                { q: "Which division contains the Gospels (Matthew, Mark, Luke, John)?", opts: ["New Testament", "Old Testament", "History", "Law"], ans: "New Testament" },
+                { q: "The Bible has 66 books in total. How many books in the Old Testament?", opts: ["39", "27", "30", "40"], ans: "39" }
+            ];
+            let pick = bank[(id + level*2) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+        else if (topic === "The Call of Samuel") {
+            const bank = [
+                { q: "Who called Samuel when he was a boy sleeping in the temple?", opts: ["God", "Eli", "David", "Moses"], ans: "God" },
+                { q: "What did Samuel reply when God called him?", opts: ["Speak, Lord, your servant hears", "Go away", "Not now", "I'm busy"], ans: "Speak, Lord, your servant hears" },
+                { q: "Who was the priest that helped Samuel understand God's voice?", opts: ["Eli", "Samuel's father", "Nathan", "Jeremiah"], ans: "Eli" },
+                { q: "Samuel grew up to become a great:", opts: ["Prophet and judge", "King", "Soldier", "Farmer"], ans: "Prophet and judge" },
+                { q: "God called Samuel how many times before Eli understood?", opts: ["Three times", "Once", "Five times", "Ten times"], ans: "Three times" },
+                { q: "The call of Samuel teaches us to:", opts: ["Listen to God", "Ignore others", "Run away", "Sleep all day"], ans: "Listen to God" }
+            ];
+            let pick = bank[(id + level*3) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+        else if (topic === "Daniel in the Den of Lions") {
+            const bank = [
+                { q: "Why was Daniel thrown into the lions' den?", opts: ["He prayed to God", "He stole", "He lied", "He ran away"], ans: "He prayed to God" },
+                { q: "Who was the king that threw Daniel into the lions' den?", opts: ["King Darius", "King Nebuchadnezzar", "King Herod", "King Saul"], ans: "King Darius" },
+                { q: "What happened to Daniel inside the lions' den?", opts: ["God sent an angel to shut the lions' mouths", "The lions ate him", "He escaped alone", "He slept"], ans: "God sent an angel to shut the lions' mouths" },
+                { q: "The next morning, King Darius was very happy because:", opts: ["Daniel was alive and unhurt", "Lions were gone", "Daniel ran away", "The den was empty"], ans: "Daniel was alive and unhurt" },
+                { q: "What did the king do to the men who accused Daniel?", opts: ["They were thrown to the lions", "They were forgiven", "They became rulers", "They ran away"], ans: "They were thrown to the lions" },
+                { q: "Daniel's story teaches us to be faithful to God even when:", opts: ["There is danger", "We are happy", "We sleep", "We play"], ans: "There is danger" }
+            ];
+            let pick = bank[(id + level*4) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+        else { // The Widow of Zarephath
+            const bank = [
+                { q: "Who did God send to the widow of Zarephath during a famine?", opts: ["Elijah", "Elisha", "Moses", "Samuel"], ans: "Elijah" },
+                { q: "What did the widow have only a handful of?", opts: ["Flour and a little oil", "Bread and water", "Meat and wine", "Fruit and honey"], ans: "Flour and a little oil" },
+                { q: "Elijah asked the widow for:", opts: ["A piece of bread first", "Water only", "Money", "Shelter"], ans: "A piece of bread first" },
+                { q: "Because the widow shared with Elijah, God made her flour and oil:", opts: ["Never run out", "Double each day", "Turn to gold", "Multiply once"], ans: "Never run out" },
+                { q: "What happened to the widow's son later?", opts: ["He became sick and Elijah prayed him back to life", "He became a king", "He ran away", "He disappeared"], ans: "He became sick and Elijah prayed him back to life" },
+                { q: "The widow of Zarephath teaches us about:", opts: ["Trusting God and giving even when we have little", "Being rich", "Fighting enemies", "Building a house"], ans: "Trusting God and giving even when we have little" }
+            ];
+            let pick = bank[(id + level*5) % bank.length];
+            return { text: pick.q, options: shuffleArray([...pick.opts]), correct: pick.ans, topic: topic };
+        }
+    }
+    
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    
+    function buildQuestionsForLevel(level) {
+        let qs = [];
+        for (let i = 1; i <= 30; i++) {
+            let topicIdx = (i + level) % bibleTopics.length;
+            let topic = bibleTopics[topicIdx];
+            qs.push(generateQuestionByTopic(topic, i, level));
+        }
+        return qs;
+    }
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let questions = [];
+    let score = 0;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let waitingForNext = false;
+    let lockAnswer = false;
+    let currentQuestionObj = null;
+    
+    // Speech synthesis
+    let speechUtterance = null;
+    function speakNow(text) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        speechUtterance = new SpeechSynthesisUtterance(text);
+        speechUtterance.lang = "en-US";
+        speechUtterance.rate = 0.9;
+        speechUtterance.pitch = 1.05;
+        window.speechSynthesis.speak(speechUtterance);
+    }
+    
+    function readQuestionOutLoud() {
+        if (currentQuestionObj) {
+            speakNow(`Question: ${currentQuestionObj.text}`);
+            statusMsg.innerText = "🔊 Reading question aloud...";
+            setTimeout(() => {
+                if (statusMsg.innerText.includes("Reading")) statusMsg.innerText = "✅ Now answer using voice or tap!";
+            }, 1500);
+        }
+    }
+    
+    // Voice recognition
+    let recognition = null;
+    function initSpeechRecognition() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            micBtn.disabled = true;
+            micBtn.style.opacity = 0.5;
+            statusMsg.innerText = "⚠️ Voice input not supported in this browser. Use click.";
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        recognition.onresult = (event) => {
+            let spoken = event.results[0][0].transcript.trim().toLowerCase();
+            statusMsg.innerText = `🎙️ You said: "${spoken}" — checking...`;
+            checkVoiceMatch(spoken);
+        };
+        recognition.onerror = (ev) => {
+            statusMsg.innerText = `Voice error: ${ev.error}. Please tap an answer.`;
+        };
+    }
+    
+    function checkVoiceMatch(spoken) {
+        if (lockAnswer || waitingForNext) {
+            statusMsg.innerText = "Wait, this question is already finished!";
+            return;
+        }
+        if (!currentQuestionObj) return;
+        const correctAns = currentQuestionObj.correct.toLowerCase();
+        let matched = false;
+        if (spoken === correctAns) matched = true;
+        else if (correctAns.includes(spoken) && spoken.length > 3) matched = true;
+        else if (spoken.includes(correctAns)) matched = true;
+        else {
+            for (let opt of currentQuestionObj.options) {
+                if (opt.toLowerCase() === spoken && opt === currentQuestionObj.correct) {
+                    matched = true;
+                    break;
+                }
+            }
+        }
+        if (matched) handleCorrect();
+        else handleWrong();
+    }
+    
+    function handleCorrect() {
+        if (lockAnswer) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        score++;
+        updateUI();
+        speakNow(`Excellent! Correct! ${currentQuestionObj.correct} is right. +1 point.`);
+        statusMsg.innerText = "🎉 CORRECT! 🎉 +1 point!";
+        highlightCorrectOption();
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+    
+    function handleWrong() {
+        if (lockAnswer) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        speakNow(`Oh no! The correct answer is ${currentQuestionObj.correct}. Keep trusting God and learning!`);
+        statusMsg.innerText = `😓 WRONG! Correct: "${currentQuestionObj.correct}".`;
+        highlightCorrectOption();
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+    
+    function handleTimeout() {
+        if (lockAnswer || waitingForNext) return;
+        lockAnswer = true;
+        if (timerInterval) clearInterval(timerInterval);
+        speakNow(`Time is up! The correct answer was ${currentQuestionObj.correct}. Let's go to the next question.`);
+        statusMsg.innerText = `⏰ TIME'S UP! Answer: ${currentQuestionObj.correct}`;
+        highlightCorrectOption();
+        disableOptions();
+        waitingForNext = true;
+        nextBtn.disabled = false;
+    }
+    
+    function highlightCorrectOption() {
+        const btns = document.querySelectorAll('.option-btn');
+        for (let btn of btns) {
+            if (btn.innerText === currentQuestionObj.correct) {
+                btn.style.background = "#b9f6ca";
+                btn.style.border = "3px solid #2e7d32";
+            } else {
+                btn.style.background = "#ffe0b0";
+            }
+        }
+    }
+    
+    function disableOptions() {
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+    }
+    
+    function updateUI() {
+        document.getElementById("currentScore").innerText = score;
+        let needed = Math.ceil(questions.length * 0.8);
+        document.getElementById("requiredInfo").innerText = `${score}/${needed}`;
+        let percent = (score / questions.length) * 100;
+        let starCount = Math.min(5, Math.floor(percent / 20));
+        let starHtml = "⭐".repeat(starCount) + "☆".repeat(5 - starCount);
+        document.getElementById("starRating").innerHTML = starHtml;
+    }
+    
+    function startTimerForQuestion() {
+        if (timerInterval) clearInterval(timerInterval);
+        timeLeft = 40;
+        timerCircle.innerText = timeLeft;
+        timerCircle.classList.remove("warning");
+        timerInterval = setInterval(() => {
+            if (lockAnswer || waitingForNext) return;
+            if (timeLeft <= 1) {
+                clearInterval(timerInterval);
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerCircle.innerText = timeLeft;
+                if (timeLeft <= 10) timerCircle.classList.add("warning");
+            }
+        }, 1000);
+    }
+    
+    function loadQuestion() {
+        if (timerInterval) clearInterval(timerInterval);
+        lockAnswer = false;
+        waitingForNext = false;
+        nextBtn.disabled = true;
+        
+        if (currentQuestionIndex >= questions.length) {
+            let requiredPass = Math.ceil(questions.length * 0.8);
+            if (score >= requiredPass) {
+                if (currentLevel === 5) {
+                    statusMsg.innerText = "🏆🏆 AMAZING! YOU COMPLETED ALL BIBLE LEVELS! GOD BLESS YOU! 🏆🏆";
+                    speakNow("Congratulations! You completed all 5 levels! You know God's word so well!");
+                    questionTextEl.innerText = "🎉 VICTORY IN CHRIST! 🎉 You are a Bible Champion!";
+                    optionsContainer.innerHTML = "";
+                    nextBtn.disabled = true;
+                    return;
+                } else {
+                    currentLevel++;
+                    currentQuestionIndex = 0;
+                    score = 0;
+                    loadLevel();
+                    updateLevelDisplay();
+                    updateUI();
+                    loadQuestion();
+                    return;
+                }
+            } else {
+                statusMsg.innerText = `❌ You got ${score}/${questions.length} (need ${requiredPass}%). Restarting level ${currentLevel}. Read your Bible and try again! ❌`;
+                speakNow(`You need more practice. Let's restart level ${currentLevel}. Keep learning God's word!`);
+                resetCurrentLevel();
+                return;
+            }
+        }
+        
+        currentQuestionObj = questions[currentQuestionIndex];
+        questionTextEl.innerText = currentQuestionObj.text;
+        optionsContainer.innerHTML = "";
+        currentQuestionObj.options.forEach(opt => {
+            let btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.classList.add("option-btn");
+            btn.addEventListener("click", () => {
+                if (lockAnswer || waitingForNext) return;
+                if (opt === currentQuestionObj.correct) handleCorrect();
+                else handleWrong();
+            });
+            optionsContainer.appendChild(btn);
+        });
+        startTimerForQuestion();
+        updateUI();
+        statusMsg.innerText = "✝️ Listen: God's word is fun! Tap or speak your answer.";
+        // AUTO READ QUESTION OUT LOUD each time (voice output)
+        speakNow(currentQuestionObj.text);
+    }
+    
+    function loadLevel() {
+        questions = buildQuestionsForLevel(currentLevel);
+        score = 0;
+        currentQuestionIndex = 0;
+    }
+    
+    function updateLevelDisplay() {
+        document.getElementById("levelDisplay").innerHTML = `📖 LEVEL ${currentLevel} / 5 📖`;
+        let need = Math.ceil(30 * 0.8);
+        document.getElementById("requiredInfo").innerText = `0/${need}`;
+    }
+    
+    function resetCurrentLevel() {
+        if (timerInterval) clearInterval(timerInterval);
+        loadLevel();
+        currentQuestionIndex = 0;
+        score = 0;
+        lockAnswer = false;
+        waitingForNext = false;
+        updateLevelDisplay();
+        updateUI();
+        loadQuestion();
+    }
+    
+    function fullReset() {
+        if (timerInterval) clearInterval(timerInterval);
+        currentLevel = 1;
+        loadLevel();
+        currentQuestionIndex = 0;
+        score = 0;
+        updateLevelDisplay();
+        updateUI();
+        loadQuestion();
+    }
+    
+    // DOM elements
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetGameBtn");
+    const speakBtn = document.getElementById("speakBtn");
+    const micBtn = document.getElementById("micBtn");
+    const timerCircle = document.getElementById("timerCircle");
+    const questionTextEl = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const statusMsg = document.getElementById("statusMsg");
+    
+    nextBtn.addEventListener("click", () => {
+        if (!waitingForNext && !lockAnswer) {
+            statusMsg.innerText = "👉 Please answer the question first!";
+            speakNow("Please answer the question before moving to the next.");
+            return;
+        }
+        if (waitingForNext) {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+    });
+    
+    resetBtn.addEventListener("click", () => fullReset());
+    speakBtn.addEventListener("click", () => readQuestionOutLoud());
+    micBtn.addEventListener("click", () => {
+        if (lockAnswer || waitingForNext) {
+            statusMsg.innerText = "Finish current question first!";
+            speakNow("Complete this question first.");
+            return;
+        }
+        if (recognition) {
+            try {
+                recognition.start();
+                statusMsg.innerText = "🎤 Listening... say your answer clearly!";
+            } catch(e) { statusMsg.innerText = "Voice start failed. Tap answer instead."; }
+        } else statusMsg.innerText = "Voice input not ready.";
+    });
+    
+    // Initialize
+    initSpeechRecognition();
+    loadLevel();
+    updateLevelDisplay();
+    updateUI();
+    loadQuestion();
+</script>
+</body>
+</html>

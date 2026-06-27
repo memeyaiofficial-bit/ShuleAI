@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+  <title>CBC Grade 4 English – Complete Language Arts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1b5e20 0%, #0d3b0f 100%);
+      min-height: 100vh;
+      font-family: 'Poppins', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+      padding: 16px;
+    }
+
+    /* Main Container */
+    .master-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Module Navigation */
+    .module-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .module-btn {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.3);
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: inherit;
+    }
+
+    .module-btn.active {
+      background: linear-gradient(135deg, #ff8f00, #e65100);
+      border-color: #ffd966;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transform: translateY(-2px);
+    }
+
+    .module-btn:hover:not(.active) {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Shared Game Container Style */
+    .game-container {
+      background: #fffef7;
+      border-radius: 64px 64px 48px 48px;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+      overflow: hidden;
+      display: none;
+      animation: fadeSlide 0.4s ease;
+    }
+
+    .game-container.active-module {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header Styles (unified) */
+    .game-header {
+      background: #ff8f00;
+      padding: 18px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 5px solid #e65100;
+    }
+
+    .level-badge {
+      background: #1b5e20;
+      padding: 8px 20px;
+      border-radius: 60px;
+      color: #ffefb9;
+      font-weight: bold;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .timer-box {
+      background: #1f3120;
+      padding: 8px 20px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: bold;
+      font-size: 1.5rem;
+      font-family: monospace;
+      color: #fce384;
+    }
+
+    .score-panel {
+      background: #2b6e48;
+      padding: 8px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: bold;
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+
+    .quiz-core {
+      padding: 30px 35px;
+      background: #fffbf0;
+    }
+
+    /* Banner */
+    .module-banner {
+      background: linear-gradient(135deg, #2e7d32, #43a047);
+      border-radius: 48px;
+      padding: 15px 20px;
+      margin-bottom: 25px;
+      text-align: center;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    /* Module 1 Styles */
+    .question-card {
+      background: #e8f5e9;
+      border-radius: 48px;
+      padding: 25px;
+      margin-bottom: 25px;
+      text-align: center;
+      border-left: 12px solid #ff8f00;
+    }
+
+    .question-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .question-text { font-size: 1.4rem; font-weight: 600; color: #1b5e20; margin-bottom: 15px; }
+    .hint-text { font-size: 1rem; color: #e65100; background: #fff8e1; padding: 10px; border-radius: 40px; margin-top: 10px; }
+    .voice-area {
+      background: #fff3e0;
+      border-radius: 60px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    .mic-btn {
+      background: #ff8f00;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: 0.2s;
+      color: white;
+    }
+    .mic-btn.listening { background: #c62828; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    .voice-input-display {
+      background: white;
+      padding: 10px 18px;
+      border-radius: 60px;
+      flex: 1;
+      font-size: 0.9rem;
+      border: 2px solid #d4c9a8;
+    }
+    .pronunciation-tip { background: #e3f2fd; padding: 10px; border-radius: 30px; font-size: 0.85rem; color: #0d47a1; margin-top: 10px; }
+
+    /* Module 2 Styles (Content Box) */
+    .content-box {
+      background: #e8f5e9;
+      border-radius: 48px;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-left: 12px solid #ff8f00;
+    }
+    .content-type {
+      display: inline-block;
+      background: #ff8f00;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    .content-title { font-size: 1.5rem; font-weight: 700; color: #1b5e20; margin-bottom: 15px; text-align: center; }
+    .content-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      background: white;
+      padding: 20px;
+      border-radius: 32px;
+    }
+    .poem-text, .song-text { font-family: 'Georgia', serif; text-align: center; }
+    .proverb-text { font-size: 1.3rem; font-weight: 500; text-align: center; color: #e65100; }
+    .diary-text { font-family: 'Courier New', monospace; border-left: 4px solid #ff8f00; text-align: left; }
+
+    /* Module 3 Styles (Grammar) */
+    .narrative-box {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      border-left: 5px solid #ff8f00;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .blank { display: inline-block; min-width: 80px; border-bottom: 2px dashed #ff8f00; padding: 2px 6px; font-weight: 600; color: #e65100; text-align: center; }
+    .timer-wrap { height: 10px; background: #e2e8f0; border-radius: 5px; margin: 10px 0; overflow: hidden; }
+    .timer-fill { height: 100%; background: linear-gradient(90deg, #2e7d32, #81c784); width: 100%; transition: width 0.3s linear; }
+    .timer-text { text-align: center; font-weight: 700; margin-bottom: 6px; font-size: 1.1rem; }
+    .timer-text.urgent { color: #ef4444; animation: pulse 0.6s infinite; }
+
+    /* Shared Answer Area */
+    .answer-area {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .answer-input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 1.1rem;
+      border: 3px solid #d4c9a8;
+      border-radius: 60px;
+      font-family: monospace;
+      background: white;
+      text-align: center;
+    }
+    .answer-input:focus { outline: none; border-color: #ff8f00; }
+    .button-group { display: flex; gap: 15px; flex-wrap: wrap; }
+    .submit-btn, .skip-btn {
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+    .submit-btn { background: #2e7d32; color: white; }
+    .skip-btn { background: #795548; color: white; }
+    .submit-btn:hover:not(:disabled), .skip-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.05); }
+    .submit-btn:disabled, .skip-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .feedback-area {
+      margin-top: 15px;
+      padding: 12px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      display: none;
+    }
+    .feedback-correct { background: #c8e6d9; color: #1e5a3a; display: block; }
+    .feedback-wrong { background: #ffcdd2; color: #c62828; display: block; }
+
+    .next-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .next-btn {
+      background: #ff8f00;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      color: white;
+    }
+    .next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .progress-text { font-size: 0.9rem; color: #5a6e5a; font-weight: bold; }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+    .modal-card {
+      background: #fff8ec;
+      max-width: 450px;
+      width: 85%;
+      padding: 35px 25px;
+      border-radius: 60px;
+      text-align: center;
+      border: 5px solid gold;
+    }
+    .btn-restart { background: #2e7d4a; color: white; border: none; padding: 12px 28px; margin-top: 20px; border-radius: 40px; font-weight: bold; cursor: pointer; }
+
+    /* Responsive */
+    @media (max-width: 750px) {
+      body { padding: 12px; }
+      .game-header { flex-direction: column; text-align: center; }
+      .quiz-core { padding: 20px; }
+      .question-text { font-size: 1.1rem; }
+      .content-title { font-size: 1.2rem; }
+      .content-text { font-size: 0.95rem; }
+      .button-group { flex-direction: column; width: 100%; }
+      .submit-btn, .skip-btn { width: 100%; }
+      .module-btn { padding: 10px 18px; font-size: 0.85rem; }
+    }
+    @media (max-width: 480px) {
+      .score-panel { gap: 12px; font-size: 0.8rem; }
+      .timer-box { font-size: 1.2rem; padding: 5px 12px; }
+      .level-badge { font-size: 0.7rem; padding: 6px 12px; }
+    }
+  </style>
+</head>
+<body>
+<div class="master-container">
+  <!-- Module Navigation -->
+  <div class="module-nav">
+    <button class="module-btn active" data-module="module1">🎤 Pronunciation & Vocabulary</button>
+    <button class="module-btn" data-module="module2">📖 Poems, Songs & Proverbs</button>
+    <button class="module-btn" data-module="module3">📝 Grammar: Perfect Tenses</button>
+  </div>
+
+  <!-- MODULE 1: Pronunciation & Vocabulary -->
+  <div id="module1" class="game-container active-module">
+    <div class="game-header">
+      <div class="level-badge" id="m1_levelDisplay">🗣️ LEVEL 1 / 5 • PRONUNCIATION</div>
+      <div class="timer-box"><span>⏱️</span><span id="m1_timerDisplay">10:00</span></div>
+      <div class="score-panel"><span>🏆 TOTAL: <span id="m1_totalScore">0</span></span><span>✅ LEVEL: <span id="m1_levelScore">0</span>/<span id="m1_levelTotal">40</span></span></div>
+    </div>
+    <div class="quiz-core">
+      <div class="module-banner"><span>🌍🗣️🌱</span><span>Clean Environment - Say It Clearly!</span><span>📢💚</span></div>
+      <div class="question-card">
+        <div class="question-icon" id="m1_questionIcon">🌳</div>
+        <div class="question-text" id="m1_questionText">What is the word for a large area covered with trees?</div>
+        <div class="hint-text" id="m1_hintText">💡 Hint: It starts with 'F' and rhymes with 'orrest'</div>
+      </div>
+      <div class="voice-area">
+        <button class="mic-btn" id="m1_micBtn">🎤 SPEAK YOUR ANSWER</button>
+        <div class="voice-input-display" id="m1_voiceTextDisplay">💬 Click mic & say the word clearly</div>
+        <div class="voice-status" id="m1_voiceStatus">⚡ Voice ready</div>
+      </div>
+      <div class="answer-area">
+        <input type="text" class="answer-input" id="m1_answerInput" placeholder="Or type your answer here..." autocomplete="off">
+        <div class="button-group">
+          <button class="submit-btn" id="m1_submitBtn">✓ CHECK ANSWER</button>
+          <button class="skip-btn" id="m1_skipBtn">⏩ SKIP TO NEXT</button>
+        </div>
+      </div>
+      <div class="feedback-area" id="m1_feedbackArea"></div>
+      <div class="pronunciation-tip" id="m1_pronunciationTip">🔊 Pronunciation Tip: Say it slowly - break the word into syllables.</div>
+      <div class="next-area">
+        <div class="progress-text" id="m1_progressText">Question 0 / 40</div>
+        <button class="next-btn" id="m1_nextBtn" disabled>➡ NEXT WORD</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 2: Poems, Songs, Proverbs & Diary -->
+  <div id="module2" class="game-container">
+    <div class="game-header">
+      <div class="level-badge" id="m2_levelDisplay">🌿 LEVEL 1 / 5 • LITERATURE</div>
+      <div class="timer-box"><span>⏱️</span><span id="m2_timerDisplay">10:00</span></div>
+      <div class="score-panel"><span>🏆 TOTAL: <span id="m2_totalScore">0</span></span><span>✅ LEVEL: <span id="m2_levelScore">0</span>/<span id="m2_levelTotal">40</span></span></div>
+    </div>
+    <div class="quiz-core">
+      <div class="module-banner"><span>🌍🌱📖</span><span>Clean Environment - Poems, Songs & Proverbs</span><span>🎵📝</span></div>
+      <div class="content-box">
+        <span class="content-type" id="m2_contentType">🌿 POEM</span>
+        <div class="content-title" id="m2_contentTitle">The Clean Earth</div>
+        <div class="content-text" id="m2_contentText">The earth is our home, so clean and so green...</div>
+      </div>
+      <div class="question-text" style="background:#fff0dd; padding:15px; border-radius:40px; margin-bottom:15px;" id="m2_questionText">What should we plant to keep the earth clean?</div>
+      <div class="answer-area">
+        <input type="text" class="answer-input" id="m2_answerInput" placeholder="Type your answer here...">
+        <div class="button-group">
+          <button class="submit-btn" id="m2_submitBtn">✓ CHECK ANSWER</button>
+          <button class="skip-btn" id="m2_skipBtn">⏩ SKIP TO NEXT</button>
+        </div>
+      </div>
+      <div class="feedback-area" id="m2_feedbackArea"></div>
+      <div class="next-area">
+        <div class="progress-text" id="m2_progressText">Question 0 / 40</div>
+        <button class="next-btn" id="m2_nextBtn" disabled>➡ NEXT READING</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 3: Grammar – Present & Past Perfect Aspects -->
+  <div id="module3" class="game-container">
+    <div class="game-header">
+      <div class="level-badge" id="m3_levelDisplay">📘 LEVEL 1 / 5 • GRAMMAR</div>
+      <div class="timer-box"><span>⏱️</span><span id="m3_timerDisplay">10:00</span></div>
+      <div class="score-panel"><span>🏆 TOTAL: <span id="m3_totalScore">0</span></span><span>✅ LEVEL: <span id="m3_levelScore">0</span>/<span id="m3_levelTotal">40</span></span></div>
+    </div>
+    <div class="quiz-core">
+      <div class="module-banner"><span>💧📘✨</span><span>Perfect Hygiene Grammar - Present & Past Perfect</span><span>⏰📝</span></div>
+      <div class="timer-text" id="m3_timerText">⏱️ 20s</div>
+      <div class="timer-wrap"><div class="timer-fill" id="m3_timerBar"></div></div>
+      <div class="narrative-box" id="m3_narrative">Loading story...</div>
+      <div class="hint-text" id="m3_hintText">💡 Read carefully. Think about time clues to choose present or past perfect.</div>
+      <div class="answer-area">
+        <input type="text" class="answer-input" id="m3_answerInput" placeholder="Type the missing verb phrase (e.g., has washed, had cleaned)...">
+      </div>
+      <div class="button-group">
+        <button class="submit-btn" id="m3_submitBtn">📝 SUBMIT</button>
+        <button class="skip-btn" id="m3_skipBtn">⏩ SKIP</button>
+      </div>
+      <div class="feedback-area" id="m3_feedbackArea"></div>
+      <div class="next-area">
+        <div class="progress-text" id="m3_progressText">Question 0 / 40</div>
+        <button class="next-btn" id="m3_nextBtn" disabled>➡ NEXT QUESTION</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== MODULE 1: Pronunciation & Vocabulary (Clean Environment) ==========
+  (function() {
+    const VOCAB_QUESTIONS = [];
+    function addQ(icon, q, hint, answer, tip, def) {
+      VOCAB_QUESTIONS.push({ icon, question: q, hint, answer: answer.toLowerCase().trim(), pronunciationTip: tip, definition: def });
+    }
+    addQ("🌳", "What is the word for a large area covered with trees?", "Starts with 'F'", "forest", "Say 'FOR-est'", "A forest is a large area of land covered with trees.");
+    addQ("💧", "What is the clear liquid that falls as rain?", "Starts with 'W'", "water", "Say 'WA-ter'", "Water is essential for all living things.");
+    addQ("🌬️", "What invisible mixture of gases do we breathe?", "Starts with 'A'", "air", "Say 'AIR'", "Clean air is important for human health.");
+    addQ("🌍", "What is the name of our planet?", "Starts with 'E'", "earth", "Say 'URTH'", "Earth is our home planet.");
+    for (let i = VOCAB_QUESTIONS.length; i < 40; i++) addQ("🌿", "What is the word for the natural world?", "Starts with 'N'", "nature", "Say 'NA-ture'", "Nature gives us food and clean air.");
+    const LEVEL1_VOCAB = [...VOCAB_QUESTIONS];
+    while (LEVEL1_VOCAB.length < 40) LEVEL1_VOCAB.push({ icon: "🌿", question: "What is the word for protecting the environment?", hint: "Starts with 'C'", answer: "conservation", pronunciationTip: "Say 'con-ser-VA-tion'", definition: "Conservation means using resources wisely." });
+    const LEVELS_VOCAB = [[...LEVEL1_VOCAB]];
+    for (let l = 1; l < 5; l++) LEVELS_VOCAB.push(LEVELS_VOCAB[0].map(q => ({ ...q, answer: q.answer })));
+
+    let state = { level: 0, idx: 0, answers: [], levelScore: 0, totalScore: 0, timeLeft: 600, timer: null, gameActive: true, hasAnswered: false, recognition: null, isListening: false };
+    const els = {};
+    function getEl(id) { return document.getElementById(id); }
+    function initModule1() {
+      Object.assign(els, {
+        levelDisplay: getEl("m1_levelDisplay"), timerDisplay: getEl("m1_timerDisplay"), totalScore: getEl("m1_totalScore"), levelScore: getEl("m1_levelScore"), levelTotal: getEl("m1_levelTotal"),
+        questionIcon: getEl("m1_questionIcon"), questionText: getEl("m1_questionText"), hintText: getEl("m1_hintText"), pronunciationTip: getEl("m1_pronunciationTip"),
+        answerInput: getEl("m1_answerInput"), submitBtn: getEl("m1_submitBtn"), skipBtn: getEl("m1_skipBtn"), micBtn: getEl("m1_micBtn"), voiceTextDisplay: getEl("m1_voiceTextDisplay"),
+        voiceStatus: getEl("m1_voiceStatus"), feedbackArea: getEl("m1_feedbackArea"), nextBtn: getEl("m1_nextBtn"), progressText: getEl("m1_progressText")
+      });
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRec) { state.recognition = new SpeechRec(); state.recognition.continuous = false; state.recognition.lang = 'en-US'; state.recognition.onresult = (e) => { const spoken = e.results[0][0].transcript.toLowerCase().trim(); els.voiceTextDisplay.textContent = `🗣️ You said: "${spoken}"`; if (!state.hasAnswered && state.gameActive) checkAnswerVocab(spoken); }; state.recognition.onstart = () => { state.isListening = true; els.micBtn.classList.add("listening"); els.voiceStatus.textContent = "🎙️ LISTENING..."; }; state.recognition.onend = () => { state.isListening = false; els.micBtn.classList.remove("listening"); }; els.micBtn.onclick = () => { if (!state.hasAnswered && state.recognition && !state.isListening) state.recognition.start(); }; }
+      loadLevelVocab(0);
+      els.submitBtn.onclick = () => { if (!state.hasAnswered && state.gameActive) checkAnswerVocab(els.answerInput.value.trim()); };
+      els.skipBtn.onclick = () => { if (!state.hasAnswered) skipVocab(); else moveToNextVocab(); };
+      els.nextBtn.onclick = () => { if (state.hasAnswered) moveToNextVocab(); };
+      els.answerInput.onkeypress = (e) => { if (e.key === "Enter" && !state.hasAnswered) checkAnswerVocab(els.answerInput.value.trim()); };
+    }
+    function checkAnswerVocab(userAns) { if (!userAns) return; const q = LEVELS_VOCAB[state.level][state.idx]; const isCorrect = userAns.toLowerCase().trim() === q.answer; if (isCorrect && !state.answers[state.idx]) { state.answers[state.idx] = true; state.levelScore++; state.totalScore++; updateUIVocab(); } els.feedbackArea.className = `feedback-area ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`; els.feedbackArea.style.display = "block"; els.feedbackArea.innerHTML = isCorrect ? `✅ CORRECT! "${userAns}" is right!<br>📚 ${q.definition}<br>🔊 ${q.pronunciationTip}` : `❌ Correct: "${q.answer}".<br>📚 ${q.definition}`; state.hasAnswered = true; disableInputsVocab(true); }
+    function skipVocab() { if (!state.answers[state.idx]) state.answers[state.idx] = false; const q = LEVELS_VOCAB[state.level][state.idx]; els.feedbackArea.className = "feedback-area feedback-wrong"; els.feedbackArea.style.display = "block"; els.feedbackArea.innerHTML = `⏩ Skipped! Answer: "${q.answer}".<br>📚 ${q.definition}`; state.hasAnswered = true; disableInputsVocab(true); }
+    function moveToNextVocab() { if (state.idx + 1 < LEVELS_VOCAB[state.level].length) { state.idx++; loadCurrentVocab(); } else { const required = Math.ceil(40 * 0.8); if (state.levelScore >= required) { if (state.level + 1 < 5) showModalMessage(true, `Level ${state.level+1} Complete!`, `Score: ${state.levelScore}/40`, () => { state.level++; loadLevelVocab(state.level); }); else showModalMessage(true, "🏆 VOCAB MASTER!", `Final: ${state.totalScore}/200`, () => location.reload()); } else { showModalMessage(false, `Level ${state.level+1} Failed`, `Score: ${state.levelScore}/40. Need 80%`, () => loadLevelVocab(state.level)); } } }
+    function loadLevelVocab(lvl) { state.level = lvl; state.idx = 0; state.answers = new Array(40).fill(false); state.levelScore = 0; if (lvl===0) state.totalScore = 0; state.gameActive = true; state.hasAnswered = false; state.timeLeft = 600; updateUIVocab(); loadCurrentVocab(); startTimerVocab(); }
+    function loadCurrentVocab() { const q = LEVELS_VOCAB[state.level][state.idx]; els.questionIcon.textContent = q.icon; els.questionText.textContent = q.question; els.hintText.textContent = `💡 Hint: ${q.hint}`; els.pronunciationTip.textContent = `🔊 ${q.pronunciationTip}`; els.answerInput.value = ""; disableInputsVocab(false); state.hasAnswered = false; els.feedbackArea.style.display = "none"; els.nextBtn.disabled = true; updateUIVocab(); }
+    function disableInputsVocab(disabled) { els.answerInput.disabled = disabled; els.submitBtn.disabled = disabled; els.skipBtn.disabled = disabled; if (els.micBtn) els.micBtn.disabled = disabled; els.nextBtn.disabled = !disabled; }
+    function updateUIVocab() { els.levelDisplay.textContent = `🗣️ LEVEL ${state.level+1}/5 • PRONUNCIATION`; els.totalScore.textContent = state.totalScore; els.levelScore.textContent = state.levelScore; els.levelTotal.textContent = 40; els.progressText.textContent = `Question ${state.idx+1} / 40`; }
+    function startTimerVocab() { if (state.timer) clearInterval(state.timer); state.timer = setInterval(() => { if (!state.gameActive) return; if (state.timeLeft <= 0) { clearInterval(state.timer); state.gameActive = false; alert("Time's up!"); location.reload(); } else { state.timeLeft--; const mins = Math.floor(state.timeLeft/60), secs = state.timeLeft%60; els.timerDisplay.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`; } }, 1000); }
+    initModule1();
+
+    // ========== MODULE 2: Poems, Songs, Proverbs, Diary ==========
+    const READINGS = [];
+    function addReading(type, title, content, question, answer, explanation) { READINGS.push({ type, title, content, question, answer: answer.toLowerCase().trim(), explanation }); }
+    addReading("poem", "Our Beautiful Earth", "The earth is our home, so precious and rare.\nLet's show the whole world how much we care.\nPick up the litter, plant a seed,\nA clean environment is what we need.", "What should we pick up to keep the earth clean?", "litter", "Litter means trash or garbage left on the ground.");
+    addReading("song", "Clean Up Song", "Clean up, clean up, everywhere.\nPick up paper, show you care.\nThrow the trash into the bin,\nThat's the way to let it win.", "Where should we throw the trash?", "bin", "A bin is a container for trash.");
+    addReading("proverb", "Cleanliness is next to godliness", "This proverb teaches that keeping clean is a very good and sacred habit.", "What virtue is 'next to godliness'?", "cleanliness", "Cleanliness means keeping yourself and your surroundings clean.");
+    addReading("diary", "Monday - A Clean Start", "Dear Diary, today I decided to clean up my neighbourhood. I picked up plastic bottles and put them in the recycling bin. I felt so proud of myself!", "What did the writer pick up?", "plastic bottles", "Picking up plastic bottles helps reduce pollution.");
+    for (let i = READINGS.length; i < 40; i++) addReading("poem", "Clean Community", "Our community is clean,\nThe nicest you have seen.", "What do we keep clean?", "community", "Keeping the community clean is everyone's responsibility.");
+    const LEVELS_READ = [[...READINGS]];
+    for (let l = 1; l < 5; l++) LEVELS_READ.push(LEVELS_READ[0].map(r => ({ ...r, answer: r.answer })));
+
+    let state2 = { level: 0, idx: 0, answers: [], levelScore: 0, totalScore: 0, timeLeft: 600, timer: null, gameActive: true, hasAnswered: false };
+    const els2 = {};
+    function initModule2() {
+      Object.assign(els2, {
+        levelDisplay: getEl("m2_levelDisplay"), timerDisplay: getEl("m2_timerDisplay"), totalScore: getEl("m2_totalScore"), levelScore: getEl("m2_levelScore"), levelTotal: getEl("m2_levelTotal"),
+        contentType: getEl("m2_contentType"), contentTitle: getEl("m2_contentTitle"), contentText: getEl("m2_contentText"), questionText: getEl("m2_questionText"),
+        answerInput: getEl("m2_answerInput"), submitBtn: getEl("m2_submitBtn"), skipBtn: getEl("m2_skipBtn"), feedbackArea: getEl("m2_feedbackArea"), nextBtn: getEl("m2_nextBtn"), progressText: getEl("m2_progressText")
+      });
+      loadLevelRead(0);
+      els2.submitBtn.onclick = () => checkAnswerRead();
+      els2.skipBtn.onclick = () => { if (!state2.hasAnswered) skipRead(); else moveToNextRead(); };
+      els2.nextBtn.onclick = () => { if (state2.hasAnswered) moveToNextRead(); };
+      els2.answerInput.onkeypress = (e) => { if (e.key === "Enter" && !state2.hasAnswered) checkAnswerRead(); };
+    }
+    function checkAnswerRead() { const user = els2.answerInput.value.trim(); if (!user) return; const q = LEVELS_READ[state2.level][state2.idx]; const isCorrect = user.toLowerCase().trim() === q.answer; if (isCorrect && !state2.answers[state2.idx]) { state2.answers[state2.idx] = true; state2.levelScore++; state2.totalScore++; updateUIRead(); } els2.feedbackArea.className = `feedback-area ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`; els2.feedbackArea.style.display = "block"; els2.feedbackArea.innerHTML = isCorrect ? `✅ CORRECT! "${user}" is right!<br>📚 ${q.explanation}` : `❌ Correct: "${q.answer}".<br>📚 ${q.explanation}`; state2.hasAnswered = true; disableInputsRead(true); }
+    function skipRead() { if (!state2.answers[state2.idx]) state2.answers[state2.idx] = false; const q = LEVELS_READ[state2.level][state2.idx]; els2.feedbackArea.className = "feedback-area feedback-wrong"; els2.feedbackArea.style.display = "block"; els2.feedbackArea.innerHTML = `⏩ Skipped! Answer: "${q.answer}".<br>📚 ${q.explanation}`; state2.hasAnswered = true; disableInputsRead(true); }
+    function moveToNextRead() { if (state2.idx + 1 < 40) { state2.idx++; loadCurrentRead(); } else { const required = Math.ceil(40 * 0.8); if (state2.levelScore >= required) { if (state2.level + 1 < 5) showModalMessage(true, `Level ${state2.level+1} Complete!`, `Score: ${state2.levelScore}/40`, () => { state2.level++; loadLevelRead(state2.level); }); else showModalMessage(true, "🏆 LITERATURE MASTER!", `Final: ${state2.totalScore}/200`, () => location.reload()); } else { showModalMessage(false, `Level ${state2.level+1} Failed`, `Score: ${state2.levelScore}/40. Need 80%`, () => loadLevelRead(state2.level)); } } }
+    function loadLevelRead(lvl) { state2.level = lvl; state2.idx = 0; state2.answers = new Array(40).fill(false); state2.levelScore = 0; if (lvl===0) state2.totalScore = 0; state2.gameActive = true; state2.hasAnswered = false; state2.timeLeft = 600; updateUIRead(); loadCurrentRead(); startTimerRead(); }
+    function loadCurrentRead() { const q = LEVELS_READ[state2.level][state2.idx]; let typeIcon = ""; if (q.type === "poem") typeIcon = "📖 POEM"; else if (q.type === "song") typeIcon = "🎵 SONG"; else if (q.type === "proverb") typeIcon = "💡 PROVERB"; else typeIcon = "📔 DIARY ENTRY"; els2.contentType.textContent = `🌿 ${typeIcon}`; els2.contentTitle.textContent = q.title; els2.contentText.innerHTML = q.content.replace(/\n/g, '<br>'); els2.questionText.textContent = q.question; els2.answerInput.value = ""; disableInputsRead(false); state2.hasAnswered = false; els2.feedbackArea.style.display = "none"; els2.nextBtn.disabled = true; updateUIRead(); }
+    function disableInputsRead(disabled) { els2.answerInput.disabled = disabled; els2.submitBtn.disabled = disabled; els2.skipBtn.disabled = disabled; els2.nextBtn.disabled = !disabled; }
+    function updateUIRead() { els2.levelDisplay.textContent = `🌿 LEVEL ${state2.level+1}/5 • LITERATURE`; els2.totalScore.textContent = state2.totalScore; els2.levelScore.textContent = state2.levelScore; els2.levelTotal.textContent = 40; els2.progressText.textContent = `Question ${state2.idx+1} / 40`; }
+    function startTimerRead() { if (state2.timer) clearInterval(state2.timer); state2.timer = setInterval(() => { if (!state2.gameActive) return; if (state2.timeLeft <= 0) { clearInterval(state2.timer); alert("Time's up!"); location.reload(); } else { state2.timeLeft--; const mins = Math.floor(state2.timeLeft/60), secs = state2.timeLeft%60; els2.timerDisplay.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`; } }, 1000); }
+    initModule2();
+
+    // ========== MODULE 3: Grammar (Present & Past Perfect) ==========
+    const GRAMMAR_DATA = [];
+    function addGrammar(narrative, answer, hint) { GRAMMAR_DATA.push({ narrative, answer: answer.toLowerCase().trim(), hint }); }
+    addGrammar("Amina _______ her hands with soap before eating lunch today.", "has washed", "Present perfect: has/have + past participle");
+    addGrammar("By the time the inspector arrived, the students _______ the toilets.", "had cleaned", "Past perfect: had + past participle");
+    addGrammar("Since Monday, the class _______ extra attention to desk cleanliness.", "has paid", "Present perfect with 'since'");
+    for (let i = GRAMMAR_DATA.length; i < 40; i++) addGrammar("The school _______ new waste bins.", "has installed", "Present perfect for recent action");
+    const LEVELS_GRAM = [[...GRAMMAR_DATA]];
+    for (let l = 1; l < 5; l++) LEVELS_GRAM.push(LEVELS_GRAM[0].map(g => ({ ...g, answer: g.answer })));
+
+    let state3 = { level: 0, idx: 0, answers: [], levelScore: 0, totalScore: 0, timerSec: 20, timerInterval: null, gameActive: true, hasAnswered: false };
+    const els3 = {};
+    function initModule3() {
+      Object.assign(els3, {
+        levelDisplay: getEl("m3_levelDisplay"), timerDisplay: getEl("m3_timerDisplay"), totalScore: getEl("m3_totalScore"), levelScore: getEl("m3_levelScore"), levelTotal: getEl("m3_levelTotal"),
+        timerText: getEl("m3_timerText"), timerBar: getEl("m3_timerBar"), narrative: getEl("m3_narrative"), hintText: getEl("m3_hintText"),
+        answerInput: getEl("m3_answerInput"), submitBtn: getEl("m3_submitBtn"), skipBtn: getEl("m3_skipBtn"), feedbackArea: getEl("m3_feedbackArea"), nextBtn: getEl("m3_nextBtn"), progressText: getEl("m3_progressText")
+      });
+      loadLevelGram(0);
+      els3.submitBtn.onclick = () => checkAnswerGram();
+      els3.skipBtn.onclick = () => { if (!state3.hasAnswered) skipGram(); else moveToNextGram(); };
+      els3.nextBtn.onclick = () => { if (state3.hasAnswered) moveToNextGram(); };
+      els3.answerInput.onkeypress = (e) => { if (e.key === "Enter" && !state3.hasAnswered) checkAnswerGram(); };
+    }
+    function checkAnswerGram() { const user = els3.answerInput.value.trim(); if (!user) return; const q = LEVELS_GRAM[state3.level][state3.idx]; const isCorrect = user.toLowerCase().trim() === q.answer; if (isCorrect && !state3.answers[state3.idx]) { state3.answers[state3.idx] = true; state3.levelScore++; state3.totalScore++; updateUIGram(); } els3.feedbackArea.className = `feedback-area ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`; els3.feedbackArea.style.display = "block"; els3.feedbackArea.innerHTML = isCorrect ? `✅ Correct! "${user}" is right!<br>💡 ${q.hint}` : `❌ Correct answer: "${q.answer}".<br>💡 ${q.hint}`; state3.hasAnswered = true; disableInputsGram(true); stopTimerGram(); }
+    function skipGram() { if (!state3.answers[state3.idx]) state3.answers[state3.idx] = false; const q = LEVELS_GRAM[state3.level][state3.idx]; els3.feedbackArea.className = "feedback-area feedback-wrong"; els3.feedbackArea.style.display = "block"; els3.feedbackArea.innerHTML = `⏩ Skipped! Answer: "${q.answer}".<br>💡 ${q.hint}`; state3.hasAnswered = true; disableInputsGram(true); stopTimerGram(); }
+    function moveToNextGram() { if (state3.idx + 1 < 40) { state3.idx++; loadCurrentGram(); } else { const required = Math.ceil(40 * 0.8); if (state3.levelScore >= required) { if (state3.level + 1 < 5) showModalMessage(true, `Level ${state3.level+1} Complete!`, `Score: ${state3.levelScore}/40`, () => { state3.level++; loadLevelGram(state3.level); }); else showModalMessage(true, "🏆 GRAMMAR MASTER!", `Final: ${state3.totalScore}/200`, () => location.reload()); } else { showModalMessage(false, `Level ${state3.level+1} Failed`, `Score: ${state3.levelScore}/40. Need 80%`, () => loadLevelGram(state3.level)); } } }
+    function loadLevelGram(lvl) { state3.level = lvl; state3.idx = 0; state3.answers = new Array(40).fill(false); state3.levelScore = 0; if (lvl===0) state3.totalScore = 0; state3.gameActive = true; state3.hasAnswered = false; updateUIGram(); loadCurrentGram(); startTimerGram(); }
+    function loadCurrentGram() { const q = LEVELS_GRAM[state3.level][state3.idx]; els3.narrative.innerHTML = q.narrative.replace('_______', '<span class="blank">_______</span>'); els3.hintText.textContent = `💡 ${q.hint}`; els3.answerInput.value = ""; disableInputsGram(false); state3.hasAnswered = false; state3.timerSec = 20; els3.feedbackArea.style.display = "none"; els3.nextBtn.disabled = true; updateUIGram(); }
+    function disableInputsGram(disabled) { els3.answerInput.disabled = disabled; els3.submitBtn.disabled = disabled; els3.skipBtn.disabled = disabled; els3.nextBtn.disabled = !disabled; }
+    function updateUIGram() { els3.levelDisplay.textContent = `📘 LEVEL ${state3.level+1}/5 • GRAMMAR`; els3.totalScore.textContent = state3.totalScore; els3.levelScore.textContent = state3.levelScore; els3.levelTotal.textContent = 40; els3.progressText.textContent = `Question ${state3.idx+1} / 40`; }
+    function startTimerGram() { if (state3.timerInterval) clearInterval(state3.timerInterval); state3.timerSec = 20; els3.timerText.textContent = "⏱️ 20s"; els3.timerBar.style.width = "100%"; state3.timerInterval = setInterval(() => { if (state3.hasAnswered || !state3.gameActive) return; state3.timerSec--; els3.timerText.textContent = `⏱️ ${state3.timerSec}s`; els3.timerBar.style.width = `${(state3.timerSec/20)*100}%`; if (state3.timerSec <= 5) els3.timerText.classList.add("urgent"); if (state3.timerSec <= 0) { clearInterval(state3.timerInterval); if (!state3.hasAnswered) skipGram(); } }, 1000); }
+    function stopTimerGram() { if (state3.timerInterval) { clearInterval(state3.timerInterval); state3.timerInterval = null; } }
+    initModule3();
+
+    // Shared Modal & Navigation
+    function showModalMessage(success, title, msg, onClose) {
+      const modal = document.createElement("div"); modal.className = "modal";
+      modal.innerHTML = `<div class="modal-card"><h2>${title}</h2><p style="white-space:pre-line">${msg}</p><button class="btn-restart">${success ? "CONTINUE ➡️" : "TRY AGAIN"}</button></div>`;
+      document.body.appendChild(modal);
+      modal.querySelector(".btn-restart").onclick = () => { modal.remove(); onClose(); };
+    }
+    document.querySelectorAll(".module-btn").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll(".module-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelectorAll(".game-container").forEach(c => c.classList.remove("active-module"));
+        document.getElementById(btn.dataset.module).classList.add("active-module");
+      };
+    });
+  })();
+</script>
+</body>
+</html>

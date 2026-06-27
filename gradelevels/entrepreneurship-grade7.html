@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CBC Grade 7 Quest: Pre-Technical Studies | Entrepreneurship & Production</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* better for kiosk/focus, but text can be selected if needed */
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a472a 0%, #0e2a1a 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* main game container */
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255,248,225,0.95);
+            border-radius: 64px 48px 64px 48px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,200,0.6);
+            overflow: hidden;
+            backdrop-filter: blur(1px);
+            transition: all 0.2s;
+        }
+
+        /* header area with level & progress */
+        .game-header {
+            background: #ffb347;
+            background: linear-gradient(135deg, #ff9a3c, #ff6f3c);
+            padding: 18px 24px;
+            color: white;
+            text-shadow: 2px 2px 0 #b45116;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            border-bottom: 4px solid #ffdd99;
+        }
+
+        .level-badge {
+            background: #2d2f36;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -1px 0 #5a5f6e, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .score-board {
+            background: #2c2e3a;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .timer-area {
+            background: #000000aa;
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 6px 18px;
+            font-family: monospace;
+            font-size: 1.7rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* question panel */
+        .question-panel {
+            padding: 30px 28px 20px 28px;
+            background: #fff9ef;
+        }
+
+        .question-text {
+            font-size: 1.65rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #2d3e2b;
+            margin-bottom: 24px;
+            background: #fef3da;
+            padding: 20px;
+            border-radius: 40px;
+            box-shadow: inset 0 0 0 2px #ffe3aa, 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        /* voice + hint row */
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .voice-btn {
+            background: #4a6fa5;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 3px 0 #1e3a5f;
+        }
+        .voice-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e3a5f;}
+
+        .hint-box {
+            background: #f5e5c8;
+            border-radius: 32px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #ab6f3c;
+            border-left: 5px solid #ff914d;
+            max-width: 60%;
+        }
+
+        /* answer input */
+        .answer-area {
+            margin: 15px 0 20px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 1.3rem;
+            font-family: monospace;
+            background: #fff2e0;
+            border: 3px solid #ffb668;
+            border-radius: 60px;
+            outline: none;
+            transition: 0.1s;
+            text-align: center;
+            font-weight: 600;
+            color: #2c4722;
+        }
+        .answer-input:focus {
+            border-color: #ff6f3c;
+            background: #fffff2;
+            box-shadow: 0 0 0 3px #ffb68b80;
+        }
+
+        .submit-btn {
+            background: #3ba53b;
+            width: 100%;
+            border: none;
+            padding: 16px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 12px;
+            box-shadow: 0 5px 0 #1f6b1f;
+        }
+        .submit-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1f6b1f;}
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            text-align: center;
+            background: #e9e0cf;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        /* level transition / result modals */
+        .level-result {
+            background: #2e5c2e;
+            color: #fff3c9;
+            text-align: center;
+            padding: 20px;
+            margin: 12px 28px 28px;
+            border-radius: 48px;
+            font-weight: bold;
+        }
+
+        button:disabled, .disabled-btn {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.2rem; }
+            .action-row { flex-direction: column; align-items: stretch; }
+            .hint-box { max-width: 100%; text-align: center; }
+            .timer-area { font-size: 1.3rem; }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #ecd9b4;
+            padding: 8px;
+            color: #4b3a22;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="score-board">⭐ Score: <span id="scoreSpan">0</span> / <span id="maxScoreSpan">0</span></div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span>s</div>
+    </div>
+    <div class="question-panel">
+        <div class="question-text" id="questionText">Loading adventure...</div>
+        <div class="action-row">
+            <button class="voice-btn" id="speakBtn">🔊 READ QUESTION</button>
+            <div class="hint-box" id="hintBox">💡 HINT: Type your answer carefully</div>
+        </div>
+        <div class="answer-area">
+            <input type="text" id="answerInput" class="answer-input" placeholder="✏️ Type your answer here..." autocomplete="off">
+            <button id="submitBtn" class="submit-btn">✓ CHECK & SUBMIT</button>
+        </div>
+        <div class="feedback" id="feedbackMsg">✨ Welcome, Entrepreneur! Answer each question. 80% needed to level up.</div>
+    </div>
+    <div id="levelMessageArea"></div>
+    <footer>🎓 CBC Pre-Technical Studies • Entrepreneurship • Production Unit • Financial Goals</footer>
+</div>
+
+<script>
+    // ---------------------------- QUESTION BANK (5 LEVELS, 30 QUESTIONS PER LEVEL) ---------------------------------
+    // topics: introduction to entrepreneurship, production unit, financial goals (pre-technical studies)
+    // each question object: { text: "question string", answer: "normalized answer keyword" }
+    // We'll generate realistic dynamic variations but ensure 30 per level, grade7 friendly.
+    // Use robust answer normalization (lowercase, trim, remove punctuation)
+    
+    const generateLevelQuestions = (level) => {
+        const baseEntre = [
+            { text: "What is the name of the process of starting and running a business while taking financial risks?", answer: "entrepreneurship" },
+            { text: "A person who creates a new business, bearing most of the risks and enjoying rewards is called an?", answer: "entrepreneur" },
+            { text: "What term describes the money used to start or operate a business?", answer: "capital" },
+            { text: "List one key characteristic of an entrepreneur: being creative or ability to see opportunities? (single word)", answer: "creativity" },
+            { text: "The place where production takes place and resources are converted into goods is known as the?", answer: "production unit" },
+            { text: "What is the main goal of setting financial targets for a business? (two words: financial ____)", answer: "financial goals" },
+            { text: "What do we call items that are bought and sold after being produced, like shoes or phones?", answer: "goods" },
+            { text: "Services such as teaching or hairdressing are intangible; what is the term for actions done for others?", answer: "services" },
+            { text: "In a production unit, what are the three main factors of production? (land, labor and ____)", answer: "capital" },
+            { text: "A business plan helps an entrepreneur to define what? (two words: business ____)", answer: "business goals" },
+        ];
+        const prodUnit = [
+            { text: "The process of combining raw materials to create finished products is called?", answer: "production" },
+            { text: "Name one example of a production unit in a school (woodwork, metalwork or ?)", answer: "workshop" },
+            { text: "What is the term for the raw materials waiting to be used in production?", answer: "inventory" },
+            { text: "A business that produces goods on a large scale using machines is known as a?", answer: "factory" },
+            { text: "Which type of production involves making one-of-a-kind items like custom furniture?", answer: "job production" },
+            { text: "The person in charge of overseeing the production process and workers is called a?", answer: "supervisor" },
+            { text: "What do we call the cost of renting a building for a production unit?", answer: "rent" },
+            { text: "Quality control ensures products meet certain what?", answer: "standards" },
+            { text: "The stage where raw materials are turned into finished goods is the ? (two words: production ____)", answer: "production stage" },
+            { text: "Name one type of waste in production that should be minimized.", answer: "scrap" },
+        ];
+        const finGoals = [
+            { text: "The amount of money a business earns after subtracting expenses is called?", answer: "profit" },
+            { text: "What is the term for money that flows into a business from sales?", answer: "revenue" },
+            { text: "A financial goal to save for new machinery is an example of a ______ term goal? (short/long)", answer: "long" },
+            { text: "What is the name of the document that shows expected income and expenses over a period?", answer: "budget" },
+            { text: "When a business sets a target to increase sales by 10% this is a financial what?", answer: "goal" },
+            { text: "If expenses are higher than revenue, a business makes a?", answer: "loss" },
+            { text: "What is the term for the money borrowed from a bank that must be repaid with interest?", answer: "loan" },
+            { text: "The part of profit that is put back into the business for growth is called?", answer: "reinvestment" },
+            { text: "A financial goal to pay off debts within 6 months is a ?-term goal (short/long)", answer: "short" },
+            { text: "Name one fixed cost for a production unit, e.g. rent or ?", answer: "salaries" },
+        ];
+        // combine and extend to 30 per level (mix all topics)
+        let combined = [...baseEntre, ...prodUnit, ...finGoals];
+        // create extra questions to ensure 30 unique-ish but consistent answers grade7
+        const extraPool = [
+            { text: "What is the first step in starting a business (idea or opportunity)?", answer: "opportunity" },
+            { text: "The reward for taking a business risk is called ?", answer: "profit" },
+            { text: "Name one raw material used in a bakery production unit.", answer: "flour" },
+            { text: "Which Kenyan law promotes saving and investment? (answer: SACCO or Bank)", answer: "sacco" },
+            { text: "A financial goal that is specific and has a deadline is called a SMART goal. What does 'M' stand for?", answer: "measurable" },
+            { text: "In production, the workers' skills and effort is which factor?", answer: "labor" },
+            { text: "The price at which a product is sold must cover costs and generate ?", answer: "profit" },
+            { text: "What is the name for the group of customers a business aims to sell to?", answer: "target market" },
+            { text: "A production unit that converts milk into cheese is adding what?", answer: "value" },
+            { text: "The money set aside for unexpected business expenses is called a ? fund", answer: "emergency" },
+        ];
+        while(combined.length < 30) {
+            combined = combined.concat(extraPool);
+        }
+        combined = combined.slice(0,30);
+        // Shuffle based on level to make variety but fixed per level for consistency
+        // we want deterministic but interesting: shuffle using level seed
+        const shuffleArray = (arr, seed) => {
+            let a = [...arr];
+            let s = seed;
+            for(let i = a.length - 1; i > 0; i--) {
+                s = (s * 9301 + 49297) % 233280;
+                let j = s % (i+1);
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        };
+        let seeded = shuffleArray(combined, level * 131);
+        // normalize all answers lowercase trim
+        return seeded.map(q => ({ text: q.text, answer: q.answer.toString().toLowerCase().trim() }));
+    };
+
+    // Game state
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let questions = []; // current level questions
+    let score = 0; // correct answers in current level
+    let totalQuestionsInLevel = 30;
+    let timerInterval = null;
+    let timeLeft = 40;
+    let canAnswer = true; // block after submit until next
+    let waitingForNext = false; // after answer, brief wait before next question
+    let levelCompletedFlag = false;
+    
+    // DOM elements
+    const questionTextEl = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreSpan = document.getElementById('scoreSpan');
+    const maxScoreSpan = document.getElementById('maxScoreSpan');
+    const timerSecondsSpan = document.getElementById('timerSeconds');
+    const speakBtn = document.getElementById('speakBtn');
+    const hintBox = document.getElementById('hintBox');
+    const levelMessageArea = document.getElementById('levelMessageArea');
+    
+    // voice synthesis
+    function speakText(text) {
+        if (!window.speechSynthesis) {
+            feedbackMsg.innerText = "⚠️ Voice not supported on this browser";
+            return;
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.lang = 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    // Helper: normalize answer (trim, lower, remove extra spaces and punctuation)
+    function normalizeAnswer(ans) {
+        return ans.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    
+    // update score UI
+    function updateScoreUI() {
+        scoreSpan.innerText = score;
+        maxScoreSpan.innerText = totalQuestionsInLevel;
+    }
+    
+    // stop timer if running
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    // start timer for current question
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timeLeft = 40;
+        timerSecondsSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if (!canAnswer || waitingForNext) return; // if frozen, don't reduce further
+            if (timeLeft <= 1) {
+                // time's up!
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (canAnswer && !waitingForNext) {
+                    canAnswer = false;
+                    feedbackMsg.innerHTML = "⏰ TIME'S UP! ❌ No answer recorded. Moving to next question...";
+                    disableInputs(true);
+                    // after timeout load next automatically
+                    setTimeout(() => {
+                        loadNextQuestion();
+                    }, 1800);
+                }
+            } else {
+                timeLeft--;
+                timerSecondsSpan.innerText = timeLeft;
+                // dynamic hint: as seconds decrease, give hints
+                if (timeLeft === 20) {
+                    hintBox.innerHTML = "💡 HINT: Read the question carefully. Think about entrepreneurship vocabulary!";
+                } else if (timeLeft === 10) {
+                    hintBox.innerHTML = "🔥 Last 10 seconds! Focus on key terms: capital, production, goals...";
+                } else if (timeLeft === 5) {
+                    hintBox.innerHTML = "🚨 5 seconds! Try typing a single keyword from the topic.";
+                }
+            }
+        }, 1000);
+    }
+    
+    function disableInputs(disabled) {
+        answerInput.disabled = disabled;
+        submitBtn.disabled = disabled;
+        if (disabled) {
+            submitBtn.style.opacity = "0.5";
+        } else {
+            submitBtn.style.opacity = "1";
+        }
+    }
+    
+    // load current question and reset timer
+    function loadQuestion() {
+        if (!questions.length) return;
+        const qData = questions[currentQuestionIndex];
+        questionTextEl.innerText = qData.text;
+        answerInput.value = '';
+        feedbackMsg.innerHTML = "🎤 Type your answer & submit. Use 🔊 to hear again.";
+        hintBox.innerHTML = "💡 HINT: Answer in 1-3 words. Spelling matters but close enough is accepted.";
+        canAnswer = true;
+        waitingForNext = false;
+        disableInputs(false);
+        answerInput.focus();
+        stopTimer();
+        startTimer();
+        // reset voice active
+    }
+    
+    // check answer
+    function checkAnswer() {
+        if (!canAnswer || waitingForNext) {
+            feedbackMsg.innerHTML = "⏳ Please wait, loading next question...";
+            return;
+        }
+        const userRaw = answerInput.value;
+        if (!userRaw.trim()) {
+            feedbackMsg.innerHTML = "📢 Please type an answer before submitting!";
+            return;
+        }
+        const normalizedUser = normalizeAnswer(userRaw);
+        const correctAnswerRaw = questions[currentQuestionIndex].answer;
+        const normalizedCorrect = normalizeAnswer(correctAnswerRaw);
+        
+        let isCorrect = false;
+        // check exact match or major synonym tolerance (allow slight variations)
+        if (normalizedUser === normalizedCorrect) {
+            isCorrect = true;
+        } else {
+            // additional flexibility: check if correct answer is within user answer or vice versa (for multiword)
+            if (normalizedCorrect.includes(normalizedUser) && normalizedUser.length > 2) isCorrect = true;
+            else if (normalizedUser.includes(normalizedCorrect)) isCorrect = true;
+            // common synonyms
+            const synonyms = { "entrepreneurship": "entrepreneur", "factory":"plant", "profit":"earnings","revenue":"income","capital":"money","goals":"targets"};
+            if (synonyms[normalizedUser] === normalizedCorrect) isCorrect = true;
+            if (synonyms[normalizedCorrect] === normalizedUser) isCorrect = true;
+        }
+        
+        stopTimer();
+        if (isCorrect) {
+            score++;
+            updateScoreUI();
+            feedbackMsg.innerHTML = `✅ CORRECT! +1 point (${score}/${totalQuestionsInLevel}) Great job!`;
+            speakText("Correct! Well done.");
+        } else {
+            feedbackMsg.innerHTML = `❌ WRONG! The correct answer was: "${questions[currentQuestionIndex].answer}". You typed: "${userRaw}". Don't give up!`;
+            speakText(`Wrong answer. The correct answer is ${questions[currentQuestionIndex].answer}. Keep trying!`);
+        }
+        
+        canAnswer = false;
+        disableInputs(true);
+        waitingForNext = true;
+        // move to next question after delay
+        setTimeout(() => {
+            const nextIdx = currentQuestionIndex + 1;
+            const reachedEnd = (nextIdx >= totalQuestionsInLevel);
+            const percentage = (score / totalQuestionsInLevel) * 100;
+            if (reachedEnd) {
+                // level finished, check progression
+                if (percentage >= 80) {
+                    if (currentLevel === 5) {
+                        // game completed
+                        levelMessageArea.innerHTML = `<div class="level-result">🏆 VICTORY! You completed all levels with mastery! 🏆<br>FINAL SCORE: ${score}/${totalQuestionsInLevel}<br>🌟 YOU ARE A PRE-TECH CHAMPION! 🌟</div>`;
+                        feedbackMsg.innerHTML = "🎉 CONGRATULATIONS! You beat the game. Refresh to replay.";
+                        disableInputs(true);
+                        stopTimer();
+                        canAnswer = false;
+                        return;
+                    } else {
+                        // advance level
+                        levelMessageArea.innerHTML = `<div class="level-result">🎉 LEVEL UP! 🎉 You passed level ${currentLevel} with ${percentage.toFixed(0)}%! Moving to Level ${currentLevel+1}...</div>`;
+                        currentLevel++;
+                        loadLevel(currentLevel);
+                        return;
+                    }
+                } else {
+                    // fail level, restart same level
+                    levelMessageArea.innerHTML = `<div class="level-result">⚠️ LEVEL FAILED ⚠️ You got ${percentage.toFixed(0)}% (need 80%). Restarting Level ${currentLevel}... Try again! ⚠️</div>`;
+                    // reset score and reload same level
+                    resetLevelAndReload(currentLevel);
+                    return;
+                }
+            } else {
+                // just move to next question within level
+                currentQuestionIndex++;
+                loadQuestion();
+                waitingForNext = false;
+            }
+        }, 2000);
+    }
+    
+    function resetLevelAndReload(level) {
+        // reset state for same level
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        loadLevelData(level);
+        levelMessageArea.innerHTML = ""; // clear after 2 secs but message shown, then load triggers fresh.
+    }
+    
+    function loadLevelData(level) {
+        questions = generateLevelQuestions(level);
+        totalQuestionsInLevel = questions.length;
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        levelDisplay.innerText = `Level ${level}`;
+        canAnswer = true;
+        waitingForNext = false;
+        levelCompletedFlag = false;
+        stopTimer();
+        loadQuestion();
+    }
+    
+    function loadLevel(level) {
+        if (level > 5) {
+            levelMessageArea.innerHTML = `<div class="level-result">🏅 GRAND MASTER! You finished all levels! 🏅</div>`;
+            disableInputs(true);
+            stopTimer();
+            return;
+        }
+        currentLevel = level;
+        loadLevelData(level);
+    }
+    
+    // load next question after correct/wrong
+    function loadNextQuestion() {
+        if (!waitingForNext && !canAnswer) {
+            // forced from timeout?
+            const nextIdx = currentQuestionIndex + 1;
+            if (nextIdx < totalQuestionsInLevel) {
+                currentQuestionIndex = nextIdx;
+                loadQuestion();
+            } else {
+                // recalc level completion
+                const percentage = (score / totalQuestionsInLevel) * 100;
+                if (percentage >= 80 && currentLevel < 5) {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                } else if (percentage >= 80 && currentLevel === 5) {
+                    levelMessageArea.innerHTML = `<div class="level-result">🏁 ULTIMATE WINNER! Perfect Entrepreneur 🏁</div>`;
+                } else {
+                    resetLevelAndReload(currentLevel);
+                }
+            }
+            waitingForNext = false;
+            canAnswer = true;
+        }
+    }
+    
+    // Voice read current question
+    function readQuestion() {
+        if (questionTextEl.innerText && questionTextEl.innerText !== "Loading adventure...") {
+            speakText(questionTextEl.innerText);
+        } else {
+            speakText("No question available right now");
+        }
+    }
+    
+    // Event listeners
+    submitBtn.addEventListener('click', checkAnswer);
+    speakBtn.addEventListener('click', readQuestion);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !submitBtn.disabled && canAnswer && !waitingForNext) {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    // initialize game level 1
+    function initGame() {
+        currentLevel = 1;
+        loadLevel(1);
+    }
+    
+    initGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Shujaa wa Sarufi, Afya na Mazungumzo – CBC Darasa la 5</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a472a 0%, #0e3a2f 50%, #0c2e44 100%);
+      font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, 'Noto Sans', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .game-container {
+      max-width: 1000px;
+      width: 100%;
+      background: #fffef5;
+      background-image: radial-gradient(circle at 10% 20%, rgba(230, 255, 230, 0.7) 2%, #fafff0 90%);
+      border-radius: 72px 56px 72px 56px;
+      box-shadow: 0 30px 45px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,250,200,0.9);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .game-header {
+      background: linear-gradient(105deg, #2c7a4d, #3e9e65);
+      padding: 1.2rem 1.8rem;
+      color: white;
+      text-shadow: 2px 2px 0 #0a3a22;
+      border-bottom: 5px solid #d8ffa8;
+    }
+
+    .level-badge {
+      font-size: 1.4rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .timer-area {
+      background: #1e3a2f;
+      padding: 6px 18px;
+      border-radius: 60px;
+      font-family: monospace;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #e1ffb0;
+      box-shadow: inset 0 0 5px gold, 0 2px 6px black;
+    }
+
+    .score-progress {
+      background: #2a5e44;
+      padding: 6px 15px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .question-card {
+      padding: 1.8rem 2rem;
+      background: #fffffe;
+      margin: 20px 25px;
+      border-radius: 52px;
+      box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+      border: 1px solid #e2daa0;
+    }
+
+    .story-narrative {
+      font-size: 1.28rem;
+      line-height: 1.5;
+      background: #fefae0;
+      padding: 20px 24px;
+      border-radius: 40px;
+      margin-bottom: 22px;
+      color: #2d4a2a;
+      font-weight: 500;
+      border-left: 12px solid #2c7a4d;
+      box-shadow: inset 0 0 0 1px #fff7e0, 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .question-text {
+      font-size: 1.55rem;
+      font-weight: 700;
+      margin: 20px 0 15px;
+      color: #2d2b26;
+      word-break: break-word;
+    }
+
+    .answer-area {
+      margin: 20px 0 10px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 1.2rem;
+      border: 3px solid #e2ba70;
+      border-radius: 60px;
+      background: #fffff5;
+      font-family: inherit;
+      transition: 0.2s;
+      outline: none;
+    }
+
+    .answer-input:focus {
+      border-color: #2c7a4d;
+      box-shadow: 0 0 0 3px rgba(44,122,77,0.3);
+    }
+
+    button {
+      background: #2c7a4d;
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 12px 28px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      margin-top: 12px;
+      box-shadow: 0 3px 0 #154e32;
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #154e32;
+    }
+
+    button:disabled {
+      background: #c2ad80;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      background: #f2ecd9;
+      padding: 14px;
+      border-radius: 36px;
+      text-align: center;
+    }
+
+    .level-complete {
+      text-align: center;
+      background: #ffe0a3;
+      padding: 24px;
+      border-radius: 56px;
+      margin: 20px;
+      font-weight: bold;
+    }
+
+    /* Tabs za kuchagua mada kuu */
+    .topic-tabs {
+      display: flex;
+      background: #2c5a3e;
+      border-bottom: 3px solid #d8ffa8;
+      border-radius: 60px 60px 0 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: #1f4a33;
+      color: #f9eec1;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 14px 8px;
+      font-size: 1rem;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .tab-btn.active {
+      background: #3e9e65;
+      color: white;
+      text-shadow: 1px 1px 0 #0a3a22;
+      box-shadow: inset 0 -3px 0 #ffde9e;
+    }
+
+    .tab-btn:active {
+      transform: none;
+    }
+
+    @media (max-width: 560px) {
+      .game-container {
+        border-radius: 36px;
+      }
+      .question-card {
+        padding: 1rem 1.2rem;
+        margin: 12px;
+      }
+      .story-narrative {
+        font-size: 0.98rem;
+        padding: 14px;
+      }
+      .question-text {
+        font-size: 1.2rem;
+      }
+      .timer-area {
+        font-size: 1.3rem;
+        padding: 4px 12px;
+      }
+      .level-badge {
+        font-size: 1rem;
+      }
+      .tab-btn {
+        font-size: 0.75rem;
+        padding: 10px 4px;
+      }
+      .topic-tabs {
+        border-radius: 40px 40px 0 0;
+      }
+    }
+
+    .badge-correct {
+      background: #2b7a3e;
+      color: white;
+    }
+    .badge-wrong {
+      background: #b34e3a;
+      color: white;
+    }
+    .flex-icon {
+      display: inline-block;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+  <div class="topic-tabs">
+    <button class="tab-btn active" id="tabSarufi">📘 Sarufi & Vinyume ✍️</button>
+    <button class="tab-btn" id="TabMazungumzo">💬 Mazungumzo & Matini 🏥</button>
+  </div>
+  <div class="game-header">
+    <div class="level-badge">
+      <span>⭐<strong id="levelName">Ngazi ya 1: Insha ya Maelezo na Vinyume vya Vitenzi</strong></span>
+      <span class="timer-area">⏱️ <span id="timerDisplay">00:00</span></span>
+      <span class="score-progress">🏆 <span id="scoreSpan">0</span> / <span id="totalQSpan">40</span></span>
+    </div>
+  </div>
+  <div id="dynamicContent"></div>
+</div>
+
+<script>
+  // --------------------------------------------------------------
+  // MERGED GAME - CBC DARASA LA 5
+  // MADA KUU: 1) Sarufi, Vinyume vya Vitenzi, Insha ya Maelezo, Magonjwa
+  //           2) Mazungumzo Rasmi, Kusoma kwa Mapana, Matini za Magonjwa
+  // Vipengele: Timer (35 sec), Sauti (muda umekwisha, sahihi/si sahihi)
+  // Levels 5 kwa kila mada, maswali 40/level, 80% kupita. Jibu la maandishi.
+  // --------------------------------------------------------------
+  const QUESTIONS_PER_LEVEL = 40;
+  const PASS_PERCENT = 80;        
+  const TIME_PER_QUESTION = 35;
+
+  // ---------- Sauti (Speech Synthesis) ----------
+  const synth = window.speechSynthesis;
+
+  function speakKiswahili(text, onEnd = null) {
+    if (!synth) return;
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'sw-TZ';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    if (onEnd) utterance.onend = onEnd;
+    synth.speak(utterance);
+  }
+
+  function speakTimeUp() {
+    speakKiswahili("Muda umekwisha! Jibu sahihi limeonyeshwa. Endelea kujifunza.");
+  }
+  function speakCorrect() {
+    speakKiswahili("Jibu sahihi! Hongera, unaweza vizuri.");
+  }
+  function speakWrong(correctAnswer) {
+    speakKiswahili(`Jibu si sahihi. Jibu sahihi ni ${correctAnswer}. Soma zaidi.`);
+  }
+
+  // ---------- MAKUSANYO YA MASAVALI KWA MODE ----------
+  // Mode 1 = Sarufi & Afya (kutoka game ya kwanza)
+  // Mode 2 = Mazungumzo & Matini (kutoka game ya pili)
+  
+  function buildQuestionsForLevelSarufi(level) {
+    const qList = [];
+    for (let i = 1; i <= QUESTIONS_PER_LEVEL; i++) {
+      let narrative = "", question = "", correctAnswer = "";
+      if (level === 1) {
+        const base = [
+          { narr: "Insha ya maelezo huelezea sifa za kitu au mtu. Mfano: 'Hospitali yetu ni safi na ina madaktari wabingwa.'", q: "Aina ya insha inayoelezea kitu kwa kina inaitwaje?", ans: "insha ya maelezo" },
+          { narr: "Vinyume vya vitenzi: Kitenzi 'kuja' kinyume chake ni 'kwenda'. Taja kinyume cha 'kuja'.", q: "Kinyume cha kitenzi 'kuja' ni nini?", ans: "kwenda" },
+          { narr: "Kitenzi 'kula' kinyume chake ni 'toa' au 'kutema'. Taja kinyume cha 'kula'.", q: "Kinyume cha kitenzi 'kula' (kunyonya) ni nini?", ans: "toa" }
+        ];
+        let p = base[i % base.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 5 === 2) { correctAnswer = "kufungua"; narrative = "Kitenzi 'funga' (lock) kinyume chake ni ..."; question = "Taja kinyume cha kitenzi 'funga'."; }
+        if (i % 7 === 0) { correctAnswer = "kupanda"; narrative = "Kitenzi 'shuka' (descend) kinyume chake ni ..."; question = "Kinyume cha kitenzi 'shuka'."; }
+      } else if (level === 2) {
+        const vinyume = [
+          { narr: "Kitenzi 'kuishi' kinyume chake ni 'kufa'. Ugonjwa wa UKIMWI unaweza kusababisha kifo.", q: "Kinyume cha kitenzi 'kuishi' ni nini?", ans: "kufa" },
+          { narr: "Kitenzi 'penda' kinyume chake ni 'chukia'. Usichukie wagonjwa.", q: "Kinyume cha kitenzi 'penda' ni nini?", ans: "chukia" },
+          { narr: "Malaria inaweza kuzuiwa. Kitenzi 'zuia' kinyume chake ni 'ruhusu'.", q: "Kinyume cha kitenzi 'zuia'.", ans: "ruhusu" }
+        ];
+        let p = vinyume[i % vinyume.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 6 === 3) { correctAnswer = "kuponya"; narrative = "Kitenzi 'ugua' kinyume chake ni ... (kuwa mzima)"; question = "Kinyume cha kitenzi 'ugua'."; }
+      } else if (level === 3) {
+        const magonjwa = [
+          { narr: "Insha: 'Kipindupindu ni ugonjwa wa maji machafu. Dalili: kuhara.'", q: "Ugonjwa gani unasababishwa na maji machafu?", ans: "kipindupindu" },
+          { narr: "Kitenzi 'pona' kinyume chake ni 'ugua'.", q: "Kinyume cha kitenzi 'pona'.", ans: "ugua" },
+          { narr: "Kitenzi 'shambulia' kinyume chake ni 'linda'.", q: "Kinyume cha kitenzi 'shambulia' (attack).", ans: "linda" }
+        ];
+        let p = magonjwa[i % magonjwa.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 5 === 1) { correctAnswer = "pona"; narrative = "Kinyume cha 'ugua' ni 'pona'.", question = "Taja kinyume cha 'ugua'."; }
+      } else if (level === 4) {
+        const combo = [
+          { narr: "Kitenzi 'shauri' kinyume chake ni 'kataza'.", q: "Kinyume cha kitenzi 'shauri' (advise).", ans: "kataza" },
+          { narr: "Kitenzi 'furahia' kinyume chake ni 'huzunika'.", q: "Kinyume cha 'furahia'.", ans: "huzunika" },
+          { narr: "Kitenzi 'nawa' kinyume chake ni 'chafua'.", q: "Kinyume cha kitenzi 'nawa' (to wash).", ans: "chafua" }
+        ];
+        let p = combo[i % combo.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 8 === 2) { correctAnswer = "kupanda"; narrative = "Kitenzi 'teremka' kinyume chake ni ..."; question = "Kinyume cha 'teremka'."; }
+      } else {
+        const expert = [
+          { narr: "Kitenzi 'athiri' kinyume chake ni 'nusuru'.", q: "Kinyume cha 'athiri' (affect negatively).", ans: "nusuru" },
+          { narr: "Kitenzi 'choka' kinyume chake ni 'pumzika'.", q: "Kinyume cha kitenzi 'choka'.", ans: "pumzika" },
+          { narr: "Kitenzi 'ongeza' kinyume chake ni 'punguza'.", q: "Kinyume cha 'ongeza' (increase).", ans: "punguza" }
+        ];
+        let p = expert[i % expert.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 4 === 0) { correctAnswer = "kuua"; narrative = "Kinyume cha kitenzi 'tibu' (heal).", question = "Kinyume cha kitenzi 'tibu'.", ans = "ua"; correctAnswer = ans; }
+      }
+      if (!narrative) narrative = "Mazoezi ya vinyume: kuja → kwenda, kula → toa.";
+      if (!question) question = "Kinyume cha kitenzi 'kuja' ni nini?";
+      if (!correctAnswer) correctAnswer = "kwenda";
+      qList.push({ id: level * 1000 + i, narrative: narrative.trim(), question: question.trim(), correctAnswer: correctAnswer.trim().toLowerCase() });
+    }
+    while(qList.length < QUESTIONS_PER_LEVEL) qList.push({ narrative: "Vinyume: 'penda' → 'chukia'.", question: "Kinyume cha 'penda'?", correctAnswer: "chukia" });
+    return qList.slice(0, QUESTIONS_PER_LEVEL);
+  }
+
+  function buildQuestionsForLevelMazungumzo(level) {
+    const qList = [];
+    for (let i = 1; i <= QUESTIONS_PER_LEVEL; i++) {
+      let narrative = "", question = "", correctAnswer = "";
+      if (level === 1) {
+        const rasmi = [
+          { narr: "Mazungumzo na daktari: 'Nina homa na kikohozi.' Daktari anauliza: 'Una dalili gani?' Neno 'dalili' linamaanisha nini?", q: "Neno la Kiswahili la 'symptoms' ni?", ans: "dalili" },
+          { narr: "Kipindupindu husababishwa na nini? (maji machafu)", q: "Ugonjwa wa kipindupindu unasababishwa na nini?", ans: "maji machafu" },
+          { narr: "Dawa ya kujikinga malaria inayotolewa kwa kunywa? (jina maarufu)", q: "Dawa ya kining'inia ni ya ugonjwa gani?", ans: "kining'inia" }
+        ];
+        let p = rasmi[i % rasmi.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 5 === 2) { correctAnswer = "heshima"; narrative = "Mazungumzo rasmi yanahitaji lugha ya ..."; question = "Lugha ya heshima inaitwaje?"; }
+        if (i % 7 === 0) { correctAnswer = "malaria"; narrative = "Ugonjwa wa mbu anopheles.", question = "Ugonjwa huu ni nini?"; }
+      } else if (level === 2) {
+        const matini = [
+          { narr: "UKIMWI unasababishwa na virusi vya HIV.", q: "UKIMWI unasababishwa na nini?", ans: "virusi" },
+          { narr: "Kipindupindu: Tibu kwa maji ya kuchemsha.", q: "Dawa ya nyumbani kwa kipindupindu?", ans: "maji ya kuchemsha" },
+          { narr: "Kusoma kwa mapana kunamaanisha kusoma vyanzo vingi.", q: "Neno la kusoma vitabu na makala nyingi.", ans: "kusoma kwa mapana" }
+        ];
+        let p = matini[i % matini.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 6 === 3) { correctAnswer = "pumzi"; narrative = "Corona huathiri mfumo wa ...", question = "Ugumu wa kupumua ni dalili ya ugonjwa gani?"; }
+      } else if (level === 3) {
+        const kinga = [
+          { narr: "Daktari: 'Tumia viuatilifu kuzuia mbu.'", q: "Neno la Kiswahili la 'insecticide'.", ans: "viuatilifu" },
+          { narr: "Homa ya matumbo husababishwa na bakteria.", q: "Taja ugonjwa unaosababisha kuhara na homa.", ans: "homa ya matumbo" },
+          { narr: "Chanjo ni kinga dhidi ya magonjwa.", q: "Dawa ya kuzuia kabla ya kuambukizwa inaitwaje?", ans: "chanjo" }
+        ];
+        let p = kinga[i % kinga.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 5 === 1) { correctAnswer = "ugonjwa wa tumbili"; narrative = "Ugonjwa wa monkeypox kwa Kiswahili.", question = "Taja ugonjwa wa monkeypox."; }
+      } else if (level === 4) {
+        const combo = [
+          { narr: "Ili kuzuia mafua, vaa barakoa.", q: "Ala ya kuzuia virusi mdomoni?", ans: "barakoa" },
+          { narr: "Kifua kikuu huathiri mapafu.", q: "Ugonjwa unaoathiri mapafu na kikohozi cha damu.", ans: "kifua kikuu" },
+          { narr: "Kisukari unahusiana na sukari nyingi.", q: "Ugonjwa wa kisukari unahusiana na nini?", ans: "sukari" }
+        ];
+        let p = combo[i % combo.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 8 === 2) { correctAnswer = "wasiwasi"; narrative = "Mazungumzo: 'Nina wasiwasi kuhusu afya.'", question = "Taja kisawe cha 'wasiwasi'."; }
+      } else {
+        const expert = [
+          { narr: "Mafua ya ndege huenezwa na ndege.", q: "Ugonjwa wa mafua ya ndege kwa Kiswahili.", ans: "mafua ya ndege" },
+          { narr: "Kinga ya corona ni karantini.", q: "Hatua ya kujitenga wagonjwa inaitwaje?", ans: "karantini" },
+          { narr: "Kitenzi 'gundua' kina maana ya 'tambua'.", q: "Kisawe cha 'gundua'.", ans: "tambua" }
+        ];
+        let p = expert[i % expert.length];
+        narrative = p.narr; question = p.q; correctAnswer = p.ans;
+        if (i % 4 === 0) { correctAnswer = "kinga"; narrative = "Neno la kuzuia magonjwa kabla.", question = "Taja neno la 'prevention'."; }
+      }
+      if (!narrative) narrative = "Mazungumzo rasmi hospitalini: magonjwa na kinga.";
+      if (!question) question = "Ugonjwa unaosababishwa na mbu?";
+      if (!correctAnswer) correctAnswer = "malaria";
+      qList.push({ id: level * 2000 + i, narrative: narrative.trim(), question: question.trim(), correctAnswer: correctAnswer.trim().toLowerCase() });
+    }
+    while(qList.length < QUESTIONS_PER_LEVEL) qList.push({ narrative: "Mazungumzo: Mikono safi huzuia magonjwa.", question: "Neno la kisafishaji mikono?", correctAnswer: "sabuni" });
+    return qList.slice(0, QUESTIONS_PER_LEVEL);
+  }
+
+  // ---------- GLOBAL STATE ----------
+  let currentMode = "sarufi";    // "sarufi" au "mazungumzo"
+  let currentLevel = 1;
+  let currentQIndex = 0;
+  let levelQuestions = [];
+  let levelScore = 0;
+  let totalAnswered = 0;
+  let timerInterval = null;
+  let timeLeft = TIME_PER_QUESTION;
+  let answeringLock = false;
+  let waitingForNext = false;
+
+  const dynamicDiv = document.getElementById("dynamicContent");
+  const levelNameSpan = document.getElementById("levelName");
+  const timerDisplaySpan = document.getElementById("timerDisplay");
+  const scoreSpan = document.getElementById("scoreSpan");
+  const totalQSpan = document.getElementById("totalQSpan");
+
+  function stopTimer() { if(timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+  function updateTimerDisplay() { let secs = timeLeft; let mins = Math.floor(secs/60); let remainSec = secs%60; timerDisplaySpan.innerText = `${mins.toString().padStart(2,'0')}:${remainSec.toString().padStart(2,'0')}`; }
+  
+  function startTimer() {
+    if(timerInterval) stopTimer();
+    timeLeft = TIME_PER_QUESTION;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if(answeringLock || waitingForNext) return;
+      if(timeLeft <= 1) { if(!waitingForNext && !answeringLock) { stopTimer(); handleTimeout(); } }
+      else { timeLeft--; updateTimerDisplay(); }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    if(waitingForNext) return;
+    const currentQ = getCurrentQuestion();
+    speakTimeUp();
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    if(feedbackDiv) { feedbackDiv.innerHTML = `⏰ MUDA UMESHA! Jibu sahihi: "${currentQ.correctAnswer}". Tafadhali soma tena.`; feedbackDiv.className = "feedback badge-wrong"; }
+    totalAnswered++;
+    lockAndMoveAfterDelay(true);
+  }
+  
+  function getCurrentQuestion() { return levelQuestions[currentQIndex]; }
+  
+  function lockAndMoveAfterDelay() {
+    if(waitingForNext) return;
+    const inputElem = document.getElementById("answerInput"); if(inputElem) inputElem.disabled = true;
+    const submitBtn = document.getElementById("submitBtn"); if(submitBtn) submitBtn.disabled = true;
+    setTimeout(() => { goToNextQuestion(); }, 1800);
+  }
+
+  function checkAnswer() {
+    if(waitingForNext || answeringLock) return;
+    const inputElem = document.getElementById("answerInput");
+    if(!inputElem) return;
+    let userAnswer = inputElem.value.trim().toLowerCase();
+    const currentQ = getCurrentQuestion();
+    const isCorrect = (userAnswer === currentQ.correctAnswer);
+    answeringLock = true;
+    stopTimer();
+    const feedbackDiv = document.getElementById("feedbackMsg");
+    if(isCorrect) {
+      levelScore++; scoreSpan.innerText = levelScore;
+      feedbackDiv.innerHTML = `✅ Jibu zuri! "${inputElem.value}" ni sahihi. Hongera!`;
+      feedbackDiv.className = "feedback badge-correct";
+      speakCorrect();
+    } else {
+      feedbackDiv.innerHTML = `❌ Jibu "${inputElem.value}" si sahihi. Sahihi: ${currentQ.correctAnswer}. Endelea kujifunza.`;
+      feedbackDiv.className = "feedback badge-wrong";
+      speakWrong(currentQ.correctAnswer);
+    }
+    totalAnswered++;
+    const inputField = document.getElementById("answerInput"); if(inputField) inputField.disabled = true;
+    const submitBtn = document.getElementById("submitBtn"); if(submitBtn) submitBtn.disabled = true;
+    setTimeout(() => { goToNextQuestion(); }, 2100);
+  }
+
+  function goToNextQuestion() {
+    if(waitingForNext) return;
+    waitingForNext = true;
+    const isLast = (currentQIndex + 1 >= QUESTIONS_PER_LEVEL);
+    if(isLast) {
+      const required = Math.ceil(QUESTIONS_PER_LEVEL * PASS_PERCENT / 100);
+      if(levelScore >= required) {
+        if(currentLevel === 5) showGameComplete(true);
+        else showLevelComplete(true);
+      } else { showLevelComplete(false); }
+    } else {
+      currentQIndex++;
+      loadCurrentQuestion();
+      waitingForNext = false;
+    }
+  }
+
+  function showLevelComplete(passed) {
+    stopTimer();
+    const required = Math.ceil(QUESTIONS_PER_LEVEL * PASS_PERCENT / 100);
+    if(passed) {
+      synth.cancel();
+      speakKiswahili("Hongera! Umefanikiwa ngazi hii.");
+      dynamicDiv.innerHTML = `<div class="level-complete">🎉 HONGERA! Ngazi ${currentLevel} imepita. Ulipata ${levelScore}/${QUESTIONS_PER_LEVEL} (inahitajika ${required}+).<br><button id="nextLevelBtn">🔓 Nenda Ngazi ${currentLevel+1}</button></div>`;
+      const nextBtn = document.getElementById("nextLevelBtn");
+      if(nextBtn) nextBtn.onclick = () => { currentLevel++; initCurrentMode(); };
+    } else {
+      speakKiswahili("Samahani, hukupata asilimia 80%. Jaribu tena.");
+      dynamicDiv.innerHTML = `<div class="level-complete" style="background:#e6d4aa;">😔 Pole, ulipata ${levelScore}/${QUESTIONS_PER_LEVEL}. Inahitajika ${required}+ sahihi.<br><button id="retryLevelBtn">🔄 Jaribu tena Ngazi ${currentLevel}</button></div>`;
+      const retry = document.getElementById("retryLevelBtn");
+      if(retry) retry.onclick = () => initCurrentMode();
+    }
+  }
+
+  function showGameComplete(win) {
+    stopTimer(); synth.cancel();
+    speakKiswahili("Hongera sana! Umekamilisha mchezo wote! Wewe ni bingwa wa Kiswahili, Afya na Mazungumzo!");
+    dynamicDiv.innerHTML = `<div class="level-complete" style="background:#c8f0d8;">🏆🏆 UMESHINDA! BINGWA WA SARUFI NA AFYA 🏆🏆<br><button id="restartGameBtn">✨ Cheza Tena ✨</button></div>`;
+    const restart = document.getElementById("restartGameBtn");
+    if(restart) restart.onclick = () => { currentMode = "sarufi"; currentLevel=1; initCurrentMode(); };
+  }
+
+  function loadCurrentQuestion() {
+    const q = getCurrentQuestion();
+    dynamicDiv.innerHTML = `
+      <div class="question-card">
+        <div class="story-narrative">📖 ${q.narrative}</div>
+        <div class="question-text">❓ ${q.question}</div>
+        <div class="answer-area"><input type="text" id="answerInput" class="answer-input" placeholder="Andika jibu kwa Kiswahili..." autocomplete="off"></div>
+        <button id="submitBtn">🔍 Jibu Swali</button>
+        <div id="feedbackMsg" class="feedback">⏳ Sekunde ${TIME_PER_QUESTION}. Jibu kwa usahihi.</div>
+      </div>`;
+    const inputField = document.getElementById("answerInput"); const submitBtn = document.getElementById("submitBtn");
+    if(inputField) { inputField.disabled = false; inputField.value = ""; inputField.focus(); }
+    if(submitBtn) submitBtn.disabled = false;
+    answeringLock = false; waitingForNext = false;
+    if(submitBtn) submitBtn.onclick = () => checkAnswer();
+    if(inputField) inputField.onkeypress = (e) => { if(e.key === 'Enter') checkAnswer(); };
+    startTimer();
+  }
+
+  function initCurrentMode() {
+    stopTimer(); if(synth) synth.cancel();
+    currentQIndex = 0; levelScore = 0; totalAnswered = 0; answeringLock = false; waitingForNext = false;
+    if(currentMode === "sarufi") {
+      levelQuestions = buildQuestionsForLevelSarufi(currentLevel);
+      let levelTitle = "";
+      if(currentLevel===1) levelTitle = "Sarufi Ngazi 1: Insha na Vinyume Msingi";
+      else if(currentLevel===2) levelTitle = "Sarufi Ngazi 2: Vinyume na Magonjwa";
+      else if(currentLevel===3) levelTitle = "Sarufi Ngazi 3: Magonjwa na Afya";
+      else if(currentLevel===4) levelTitle = "Sarufi Ngazi 4: Mchanganyiko - Vinyume, Afya";
+      else levelTitle = "Sarufi Ngazi 5: Ubingwa wa Sarufi na Afya";
+      levelNameSpan.innerText = levelTitle;
+    } else {
+      levelQuestions = buildQuestionsForLevelMazungumzo(currentLevel);
+      let levelTitle = "";
+      if(currentLevel===1) levelTitle = "Mazungumzo Ngazi 1: Rasmi na Magonjwa";
+      else if(currentLevel===2) levelTitle = "Mazungumzo Ngazi 2: Kusoma kwa Mapana";
+      else if(currentLevel===3) levelTitle = "Mazungumzo Ngazi 3: Kinga na Matini";
+      else if(currentLevel===4) levelTitle = "Mazungumzo Ngazi 4: Mchanganyiko wa Afya";
+      else levelTitle = "Mazungumzo Ngazi 5: Ubingwa wa Majadiliano";
+      levelNameSpan.innerText = levelTitle;
+    }
+    scoreSpan.innerText = "0";
+    totalQSpan.innerText = QUESTIONS_PER_LEVEL;
+    loadCurrentQuestion();
+  }
+
+  function switchMode(mode) {
+    if(mode === currentMode) return;
+    stopTimer(); if(synth) synth.cancel();
+    currentMode = mode;
+    currentLevel = 1;
+    initCurrentMode();
+    // Update active tab style
+    document.getElementById("tabSarufi").classList.toggle("active", mode === "sarufi");
+    document.getElementById("TabMazungumzo").classList.toggle("active", mode === "mazungumzo");
+  }
+
+  // Event Listeners for tabs
+  document.getElementById("tabSarufi").addEventListener("click", () => switchMode("sarufi"));
+  document.getElementById("TabMazungumzo").addEventListener("click", () => switchMode("mazungumzo"));
+  
+  // ANZA!
+  initCurrentMode();
+</script>
+</body>
+</html>

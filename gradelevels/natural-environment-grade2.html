@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grade 2 Environmental Activities | Weather, Soil, Light & Natural Environment | See What You Say!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1B5E20 0%, #0D3B0F 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Comic Neue', 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: #FFF8F0;
+            background-image: radial-gradient(circle at 10% 30%, rgba(100,180,80,0.1) 2%, transparent 2.5%);
+            background-size: 28px 28px;
+            border-radius: 70px 70px 70px 50px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #0288D1;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 6px solid #01579B;
+        }
+
+        .level-badge, .score-badge, .progress-badge {
+            background: #2c2b28;
+            color: #FFD966;
+            font-weight: bold;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-family: monospace;
+            box-shadow: inset 0 -2px 0 #4b3a1e, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .timer-area {
+            background: #1f2c0e;
+            padding: 5px 15px;
+            border-radius: 50px;
+            color: #FFD966;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .story-card {
+            background: #FFFDE7;
+            margin: 20px 25px;
+            padding: 20px 25px;
+            border-radius: 55px;
+            box-shadow: inset 0 0 0 3px white, 0 12px 18px rgba(0,0,0,0.1);
+        }
+
+        .voice-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .voice-btn {
+            background: #4CAF50;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 3px 0 #2E7D32;
+            transition: 0.05s linear;
+        }
+        .voice-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2E7D32; }
+        .voice-input-active { background: #FF5722; animation: pulse 0.8s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        .transcript-box {
+            background: #E8EAF6;
+            border-radius: 60px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            text-align: center;
+            border: 3px solid #1A237E;
+        }
+        .transcript-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #1A237E;
+            margin-bottom: 5px;
+        }
+        .transcript-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #BF360C;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            min-width: 200px;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+        .listening-animation {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+            font-size: 1.5rem;
+        }
+
+        .narrative-text {
+            font-size: 1.3rem;
+            line-height: 1.4;
+            font-weight: 600;
+            color: #01579B;
+            background: #E1F5FE;
+            padding: 15px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.7rem;
+            font-weight: bold;
+            background: #B3E5FC;
+            padding: 20px;
+            border-radius: 60px;
+            text-align: center;
+            color: #01579B;
+            margin: 15px 0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background: #B3E5FC;
+            border: 4px solid #0288D1;
+            font-size: 1.1rem;
+            padding: 12px 8px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: #01579B;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 0 #0277BD;
+        }
+        .option-prefix {
+            background: #0288D1;
+            color: white;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+        .option-text { flex: 1; }
+        .option-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0277BD; }
+        .disabled-opt { pointer-events: none; opacity: 0.6; }
+        .next-area { text-align: center; margin: 15px 0 5px; }
+        .next-btn {
+            background: #0288D1;
+            border: none;
+            font-size: 1.4rem;
+            padding: 10px 35px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #01579B;
+        }
+        .next-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #01579B; }
+        .info-message {
+            text-align: center;
+            font-size: 1rem;
+            background: #B3E5FC;
+            display: inline-block;
+            width: auto;
+            padding: 5px 18px;
+            border-radius: 30px;
+        }
+        footer { background: #81D4FA; padding: 10px; text-align: center; font-weight: bold; font-size: 0.8rem; color: #01579B; }
+        @media (max-width: 650px) {
+            .question-text { font-size: 1.2rem; }
+            .option-btn { font-size: 0.85rem; padding: 8px 5px; }
+            .option-prefix { width: 30px; height: 30px; font-size: 0.9rem; }
+            .voice-btn { font-size: 0.8rem; padding: 6px 12px; }
+            .transcript-text { font-size: 1.1rem; padding: 8px 15px; }
+        }
+        .correct-fx { background: #A5D6A7 !important; border-color: #2E7D32 !important; }
+        .wrong-fx { background: #EF9A9A !important; border-color: #C62828 !important; }
+        .mic-status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #01579B;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="level-badge" id="levelDisplay">Level 1</div>
+        <div class="score-badge" id="scoreDisplay">Score: 0 / 0</div>
+        <div class="progress-badge" id="progressDisplay">Question: 1 / 30</div>
+        <div class="timer-area">⏱️ <span id="timerSeconds">40</span> s</div>
+    </div>
+    <div class="story-card">
+        <div class="voice-controls">
+            <button id="readQuestionBtn" class="voice-btn">🔊 Read Question</button>
+            <button id="voiceInputBtn" class="voice-btn">🎤 Speak Your Answer</button>
+        </div>
+        
+        <!-- Voice Transcript Display - Shows what the microphone hears -->
+        <div class="transcript-box">
+            <div class="transcript-label">🎙️ WHAT THE MICROPHONE HEARS:</div>
+            <div class="transcript-text" id="transcriptDisplay">— Waiting for speech —</div>
+        </div>
+        
+        <div class="narrative-text" id="storyNarrative">🌤️ Weather | 🏜️ Soil | ☀️ Light | 🌿 Natural Environment | Speak the answer clearly!</div>
+        <div class="question-text" id="questionText">Loading...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div class="next-area"><button class="next-btn" id="nextButton">➡️ Next Question</button></div>
+        <div style="text-align: center;"><span id="feedbackMsg" class="info-message">✨ Click mic button and speak your answer clearly</span></div>
+        <div class="mic-status" id="micStatus">🎤 Microphone ready. Click "Speak Your Answer" and say the answer (e.g., "sun" or "rain").</div>
+    </div>
+    <footer>🎤 Click "Speak Your Answer" → speak your answer → you will see what the mic heard → answer is matched automatically!</footer>
+</div>
+
+<script>
+    // ---------- SPEECH OUTPUT ----------
+    function speakText(text) {
+        if (!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) { console.warn(e); }
+    }
+
+    function speakEnglish(text, type = "info") {
+        if (!window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            utterance.rate = 0.9;
+            utterance.pitch = (type === "correct") ? 1.15 : (type === "wrong" ? 0.85 : 1.0);
+            window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+    }
+
+    // ---------- VOICE INPUT (Speech Recognition) with LIVE TRANSCRIPT ----------
+    let recognition = null;
+    let isListening = false;
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    const readBtn = document.getElementById('readQuestionBtn');
+    const micStatusSpan = document.getElementById('micStatus');
+    const transcriptDisplay = document.getElementById('transcriptDisplay');
+    let interimTranscript = "";
+
+    function updateTranscript(text, isFinal = true) {
+        if (isFinal) {
+            transcriptDisplay.innerHTML = text || "— Waiting for speech —";
+        } else {
+            transcriptDisplay.innerHTML = text + " <span class='listening-animation'>🎤</span>";
+        }
+    }
+
+    function updateMicStatus(message, isError = false) {
+        micStatusSpan.innerHTML = message;
+        micStatusSpan.style.color = isError ? "#C62828" : "#01579B";
+        setTimeout(() => {
+            if (!isListening) micStatusSpan.style.color = "#01579B";
+        }, 3000);
+    }
+
+    function initSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            voiceBtn.disabled = true;
+            voiceBtn.title = "Voice input not supported";
+            updateTranscript("❌ Voice input not supported", true);
+            updateMicStatus("❌ Voice input not supported. Please use Chrome, Edge, or Safari.", true);
+            return;
+        }
+        
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = true;  // Enable interim results for live typing
+        recognition.maxAlternatives = 5;
+
+        recognition.onstart = () => {
+            isListening = true;
+            voiceBtn.classList.add('voice-input-active');
+            voiceBtn.innerText = "🎤 Listening... speak answer";
+            updateTranscript("🎤 Listening... speak now", false);
+            updateMicStatus("🎤 Listening... Please speak your answer clearly.");
+        };
+        
+        recognition.onend = () => {
+            isListening = false;
+            voiceBtn.classList.remove('voice-input-active');
+            voiceBtn.innerText = "🎤 Speak Your Answer";
+            if (!interimTranscript) {
+                updateTranscript("— Waiting for speech —", true);
+            }
+        };
+        
+        recognition.onerror = (event) => {
+            console.warn("Speech error:", event.error);
+            isListening = false;
+            voiceBtn.classList.remove('voice-input-active');
+            voiceBtn.innerText = "🎤 Speak Your Answer";
+            
+            let errorMsg = "";
+            if (event.error === 'not-allowed') errorMsg = "Microphone access denied. Please allow microphone.";
+            else if (event.error === 'no-speech') errorMsg = "No speech detected. Click and speak clearly.";
+            else if (event.error === 'audio-capture') errorMsg = "No microphone found.";
+            else errorMsg = "Please try again. Speak your answer clearly.";
+            
+            updateTranscript(`❌ ${errorMsg}`, true);
+            updateMicStatus("❌ " + errorMsg, true);
+            speakEnglish("I couldn't hear you. Please click the mic button and speak your answer clearly.", "info");
+        };
+        
+        recognition.onresult = (event) => {
+            let finalTranscript = "";
+            let interimTranscriptTemp = "";
+            
+            for (let i = 0; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscriptTemp += transcript;
+                }
+            }
+            
+            // Show interim results (what the mic is hearing in real-time)
+            if (interimTranscriptTemp) {
+                updateTranscript(interimTranscriptTemp, false);
+                interimTranscript = interimTranscriptTemp;
+            }
+            
+            // Process final result
+            if (finalTranscript) {
+                const spoken = finalTranscript.toLowerCase().trim();
+                updateTranscript(`"${spoken}"`, true);
+                updateMicStatus(`🎤 You said: "${spoken}"`);
+                processVoiceAnswer(spoken);
+                interimTranscript = "";
+            }
+        };
+    }
+
+    function processVoiceAnswer(spoken) {
+        if (!gameActive || answered || waitingForNext) {
+            speakEnglish("Please wait for the next question.", "info");
+            return;
+        }
+        
+        if (!currentQuestionObj) return;
+        
+        // Get all option texts (the actual answers)
+        const optionBtns = document.querySelectorAll('.option-btn');
+        let matchedBtn = null;
+        let bestMatchScore = 0;
+        
+        // Try to match spoken answer with option texts
+        for (let btn of optionBtns) {
+            const optionText = btn.querySelector('.option-text')?.innerText.toLowerCase() || '';
+            if (!optionText) continue;
+            
+            // Check for exact match
+            if (optionText === spoken) {
+                matchedBtn = btn;
+                break;
+            }
+            
+            // Check if spoken contains the option or option contains spoken (partial match)
+            if (optionText.includes(spoken) || spoken.includes(optionText)) {
+                const score = Math.max(optionText.length, spoken.length);
+                if (score > bestMatchScore) {
+                    bestMatchScore = score;
+                    matchedBtn = btn;
+                }
+            }
+            
+            // Check for common variations (remove 'a', 'an', 'the')
+            const cleanSpoken = spoken.replace(/^(a|an|the)\s+/i, '').trim();
+            const cleanOption = optionText.replace(/^(a|an|the)\s+/i, '').trim();
+            if (cleanSpoken === cleanOption) {
+                matchedBtn = btn;
+                break;
+            }
+            
+            // Check for singular/plural variations
+            if (cleanSpoken + 's' === cleanOption || cleanSpoken === cleanOption + 's') {
+                matchedBtn = btn;
+                break;
+            }
+        }
+        
+        // Also check against the correct answer directly
+        if (!matchedBtn && currentQuestionObj.correctAnswer.toLowerCase() === spoken) {
+            for (let btn of optionBtns) {
+                if (btn.getAttribute('data-value') === currentQuestionObj.correctAnswer) {
+                    matchedBtn = btn;
+                    break;
+                }
+            }
+        }
+        
+        if (!matchedBtn) {
+            speakEnglish(`I didn't understand "${spoken}". Please try again with one of the options shown.`, "info");
+            updateMicStatus(`❌ Could not match "${spoken}" with any option. Try saying the answer exactly as shown.`, true);
+            updateTranscript(`❌ Not recognized: "${spoken}"`, true);
+            return;
+        }
+        
+        if (!answered && gameActive && !waitingForNext) {
+            const matchedAnswer = matchedBtn.querySelector('.option-text')?.innerText;
+            updateTranscript(`✅ Matched: "${matchedAnswer}"`, true);
+            updateMicStatus(`✅ Answering: "${matchedAnswer}"`);
+            matchedBtn.click();
+        }
+    }
+
+    // ---------- QUESTION BANK: Weather, Soil, Light, Natural Environment (30 per level, 5 levels = 150 unique) ----------
+    const topics = [
+        { cat: "Weather", q: "What do we call the condition of the air outside?", correct: "Weather", wrongs: ["Climate", "Temperature", "Season", "Atmosphere"] },
+        { cat: "Weather", q: "Which of these gives us light and warmth during the day?", correct: "Sun", wrongs: ["Moon", "Stars", "Clouds", "Wind"] },
+        { cat: "Weather", q: "When water falls from clouds, it is called?", correct: "Rain", wrongs: ["Snow", "Hail", "Fog", "Dew"] },
+        { cat: "Weather", q: "What instrument measures temperature?", correct: "Thermometer", wrongs: ["Barometer", "Rain gauge", "Wind vane", "Compass"] },
+        { cat: "Weather", q: "What is a very strong wind with rain called?", correct: "Storm", wrongs: ["Breeze", "Gale", "Hurricane", "Tornado"] },
+        { cat: "Soil", q: "What is the top layer of the earth where plants grow?", correct: "Soil", wrongs: ["Rock", "Sand", "Clay", "Mud"] },
+        { cat: "Soil", q: "Which type of soil holds the most water?", correct: "Clay", wrongs: ["Sandy", "Loamy", "Rocky", "Gravel"] },
+        { cat: "Soil", q: "What do farmers add to soil to help plants grow?", correct: "Fertilizer", wrongs: ["Plastic", "Metal", "Glass", "Paper"] },
+        { cat: "Soil", q: "What is it called when soil is washed away by water?", correct: "Erosion", wrongs: ["Weathering", "Pollution", "Drought", "Flood"] },
+        { cat: "Soil", q: "What lives in soil and helps make it healthy?", correct: "Worms", wrongs: ["Birds", "Fish", "Butterflies", "Bees"] },
+        { cat: "Light", q: "What is the natural source of light during the day?", correct: "Sun", wrongs: ["Moon", "Stars", "Fire", "Light bulb"] },
+        { cat: "Light", q: "What do we call a man-made source of light?", correct: "Electric bulb", wrongs: ["Sunlight", "Moonlight", "Starlight", "Firefly"] },
+        { cat: "Light", q: "What happens when you block light from passing through?", correct: "Shadow", wrongs: ["Reflection", "Rainbow", "Color", "Brightness"] },
+        { cat: "Light", q: "Which of these can light pass through easily?", correct: "Glass", wrongs: ["Wood", "Metal", "Brick", "Cardboard"] },
+        { cat: "Light", q: "What do we call the bouncing back of light from a surface?", correct: "Reflection", wrongs: ["Refraction", "Absorption", "Diffusion", "Transmission"] },
+        { cat: "Natural Environment", q: "What is the natural home of an animal called?", correct: "Habitat", wrongs: ["Zoo", "Cage", "House", "Farm"] },
+        { cat: "Natural Environment", q: "Which of these is a natural resource?", correct: "Water", wrongs: ["Plastic", "Metal can", "Glass bottle", "Paper bag"] },
+        { cat: "Natural Environment", q: "What do we call planting trees to protect the environment?", correct: "Afforestation", wrongs: ["Deforestation", "Pollution", "Erosion", "Conservation"] },
+        { cat: "Natural Environment", q: "Which gas do trees take in from the air?", correct: "Carbon dioxide", wrongs: ["Oxygen", "Nitrogen", "Hydrogen", "Helium"] },
+        { cat: "Natural Environment", q: "What do we call the layer of air surrounding the Earth?", correct: "Atmosphere", wrongs: ["Lithosphere", "Hydrosphere", "Biosphere", "Crust"] },
+        { cat: "Natural Environment", q: "Which of these is a renewable energy source?", correct: "Solar", wrongs: ["Coal", "Oil", "Natural gas", "Diesel"] }
+    ];
+
+    function generateQuestion(level, idx) {
+        const seed = (level * 131 + idx * 257) % topics.length;
+        let base = topics[seed];
+        let narrative = `🌍 Topic: ${base.cat}. `;
+        let question = base.q;
+        let correct = base.correct;
+        let wrongs = [...base.wrongs];
+        if (level > 2) question = question + " (Advanced)";
+        if (idx % 5 === 2) narrative = "🌱 " + narrative;
+        let allOptions = [correct, ...wrongs.slice(0,3)];
+        for (let i = allOptions.length-1; i > 0; i--) {
+            const j = Math.floor(Math.random()*(i+1));
+            [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
+        }
+        return { narrative, question, options: allOptions, correctAnswer: correct };
+    }
+
+    // Build 5 levels x 30 questions = 150 unique
+    let questionBank = [];
+    const usedSet = new Set();
+    for (let lvl = 1; lvl <= 5; lvl++) {
+        let levelArr = [];
+        for (let i = 0; i < 30; i++) {
+            let q = generateQuestion(lvl, i);
+            let key = q.question + q.narrative;
+            let tries = 0;
+            while (usedSet.has(key) && tries < 20) {
+                q = generateQuestion(lvl, i + tries * 19);
+                key = q.question + q.narrative;
+                tries++;
+            }
+            usedSet.add(key);
+            levelArr.push(q);
+        }
+        questionBank.push(levelArr);
+    }
+
+    // Game state
+    let currentLevel = 1, currentQIndex = 0, scoreInLevel = 0;
+    const totalPerLevel = 30, requiredPass = 24;
+    let answered = false, timerInterval = null, timeLeft = 40, waitingForNext = false, gameActive = true;
+    let currentQuestionObj = null;
+
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const progressDisplay = document.getElementById('progressDisplay');
+    const timerSpan = document.getElementById('timerSeconds');
+    const storyDiv = document.getElementById('storyNarrative');
+    const questionDiv = document.getElementById('questionText');
+    const optionsDiv = document.getElementById('optionsContainer');
+    const nextBtn = document.getElementById('nextButton');
+    const feedbackSpan = document.getElementById('feedbackMsg');
+
+    function stopTimer() { if(timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+    
+    function startTimer() {
+        stopTimer();
+        if(!gameActive || waitingForNext || answered) return;
+        timeLeft = 40;
+        timerSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if(!gameActive || waitingForNext || answered) return;
+            if(timeLeft <= 1) {
+                if(!answered) { clearInterval(timerInterval); timerInterval=null; handleTimeout(); }
+                else stopTimer();
+            } else { timeLeft--; timerSpan.innerText = timeLeft; }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if(answered) return;
+        answered = true; gameActive = false;
+        speakEnglish("Time is up! The correct answer was: " + currentQuestionObj.correctAnswer, "timeout");
+        feedbackSpan.innerHTML = `⏰ Time is up! Correct answer: ${currentQuestionObj.correctAnswer}`;
+        highlightCorrectAnswer();
+        disableOptions(true);
+        waitingForNext = true;
+        setTimeout(() => { if(waitingForNext) moveToNextQuestion(); }, 2000);
+    }
+
+    function highlightCorrectAnswer() {
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            if(btn.getAttribute('data-value') === currentQuestionObj.correctAnswer)
+                btn.style.backgroundColor = "#A5D6A7";
+        });
+    }
+    function disableOptions(disabled) {
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            if(disabled) btn.classList.add('disabled-opt');
+            else btn.classList.remove('disabled-opt');
+        });
+    }
+
+    function handleAnswer(selectedValue, btnElem) {
+        if(!gameActive || answered || waitingForNext) return;
+        stopTimer();
+        answered = true;
+        const isCorrect = (selectedValue === currentQuestionObj.correctAnswer);
+        if(isCorrect) {
+            scoreInLevel++;
+            speakEnglish("Correct answer! Great job! You understand our environment well!", "correct");
+            feedbackSpan.innerHTML = "✅ Correct! +1 point!";
+            btnElem.classList.add('correct-fx');
+            updateMicStatus("✅ Correct! Well done!");
+            updateTranscript(`✅ Correct! "${selectedValue}" is right!`, true);
+        } else {
+            speakEnglish("Wrong answer! The correct answer was: " + currentQuestionObj.correctAnswer, "wrong");
+            feedbackSpan.innerHTML = `❌ Wrong! Correct: ${currentQuestionObj.correctAnswer}`;
+            btnElem.classList.add('wrong-fx');
+            highlightCorrectAnswer();
+            updateMicStatus(`❌ Wrong! Correct answer: ${currentQuestionObj.correctAnswer}`, true);
+            updateTranscript(`❌ Wrong. Correct: "${currentQuestionObj.correctAnswer}"`, true);
+        }
+        disableOptions(true);
+        updateUI();
+        waitingForNext = true;
+        setTimeout(() => { if(waitingForNext) moveToNextQuestion(); }, 2000);
+    }
+
+    function moveToNextQuestion() {
+        waitingForNext = false;
+        if(currentQIndex+1 >= totalPerLevel) {
+            let percent = (scoreInLevel / totalPerLevel)*100;
+            if(percent >= 80) {
+                if(currentLevel === 5) {
+                    feedbackSpan.innerHTML = "🏆🏆 YOU COMPLETED ALL LEVELS! ENVIRONMENTAL CHAMPION! 🏆🏆";
+                    speakEnglish("Congratulations! You finished all levels. You are an environmental champion! Keep protecting our planet!", "correct");
+                    gameActive = false; disableOptions(true); nextBtn.disabled = true; stopTimer();
+                    updateMicStatus("🎉 CONGRATULATIONS! Environmental Champion! 🎉");
+                    updateTranscript("🏆 YOU ARE A CHAMPION! 🏆", true);
+                    return;
+                } else {
+                    currentLevel++; currentQIndex=0; scoreInLevel=0;
+                    resetForNextLevel();
+                    loadQuestion();
+                    speakEnglish(`Congratulations! You reached Level ${currentLevel}!`, "correct");
+                    feedbackSpan.innerHTML = `🎉 You passed! Now Level ${currentLevel} 🎉`;
+                    updateMicStatus(`🎉 Great! Moving to Level ${currentLevel}!`);
+                    return;
+                }
+            } else {
+                feedbackSpan.innerHTML = `😭 You didn't reach 80%. Restarting Level ${currentLevel}. Try again!`;
+                speakEnglish("Sorry, you didn't get enough points. Restarting this level. Keep learning about our environment!", "wrong");
+                scoreInLevel=0; currentQIndex=0;
+                resetForNextLevel();
+                loadQuestion();
+                updateMicStatus(`⚠️ Restarting Level ${currentLevel}. You need 80% to pass.`, true);
+                return;
+            }
+        } else {
+            currentQIndex++;
+            loadQuestion();
+        }
+    }
+
+    function resetForNextLevel() {
+        stopTimer(); answered=false; waitingForNext=false; gameActive=true;
+        if(nextBtn) nextBtn.disabled = false;
+        updateUI();
+    }
+
+    function updateUI() {
+        levelDisplay.innerText = `Level ${currentLevel}`;
+        scoreDisplay.innerText = `Score: ${scoreInLevel} / ${totalPerLevel}`;
+        progressDisplay.innerText = `Question: ${currentQIndex+1} / ${totalPerLevel}`;
+    }
+
+    function loadQuestion() {
+        currentQuestionObj = questionBank[currentLevel-1][currentQIndex];
+        storyDiv.innerHTML = `🌍 ${currentQuestionObj.narrative}`;
+        questionDiv.innerHTML = `❓ ${currentQuestionObj.question}`;
+        optionsDiv.innerHTML = "";
+        const letters = ['A','B','C','D'];
+        currentQuestionObj.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.setAttribute('data-value', opt);
+            btn.setAttribute('data-letter', letters[idx]);
+            const prefix = document.createElement('span'); prefix.className='option-prefix'; prefix.innerText=letters[idx];
+            const textSpan = document.createElement('span'); textSpan.className='option-text'; textSpan.innerText=opt;
+            btn.appendChild(prefix); btn.appendChild(textSpan);
+            btn.onclick = () => { if(!answered && gameActive && !waitingForNext) handleAnswer(opt, btn); };
+            optionsDiv.appendChild(btn);
+        });
+        updateUI();
+        answered=false; gameActive=true; waitingForNext=false;
+        disableOptions(false);
+        stopTimer(); startTimer();
+        feedbackSpan.innerHTML = "🗣️ Click mic button and speak your answer clearly!";
+        updateMicStatus("🎤 Click 'Speak Your Answer' and say the answer (e.g., 'sun', 'rain', 'soil').");
+        updateTranscript("— New question — Speak your answer", true);
+    }
+
+    // Event listeners
+    readBtn.addEventListener('click', () => {
+        if(currentQuestionObj) {
+            speakText(currentQuestionObj.question);
+            updateMicStatus("🔊 Reading question aloud...");
+        }
+    });
+
+    // Initialize speech recognition
+    initSpeechRecognition();
+    
+    voiceBtn.addEventListener('click', () => {
+        if(!gameActive || answered || waitingForNext) {
+            speakEnglish("Please wait for the next question.", "info");
+            updateMicStatus("⏳ Please wait for the next question.", true);
+            return;
+        }
+        if(!recognition) {
+            updateMicStatus("❌ Voice recognition not available.", true);
+            return;
+        }
+        if(isListening) {
+            recognition.stop();
+        } else {
+            try {
+                recognition.start();
+            } catch(e) {
+                updateMicStatus("❌ Could not start microphone. Check permissions.", true);
+                speakEnglish("Please allow microphone access and try again.", "info");
+            }
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if(!answered && gameActive && !waitingForNext) {
+            speakEnglish("Please answer the question first!", "info");
+            feedbackSpan.innerHTML = "⚠️ Answer before continuing!";
+            updateMicStatus("⚠️ Please answer the current question first.", true);
+            return;
+        }
+        if(waitingForNext) { if(timerInterval) stopTimer(); moveToNextQuestion(); }
+    });
+
+    // Start game
+    function init() { loadQuestion(); }
+    init();
+</script>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Light Explorer | Grade 4 Science | Reflection, Shadows, Eclipses & More</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            font-family: 'Poppins', 'Segoe UI', 'Comic Neue', system-ui, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 950px;
+            width: 100%;
+            background: #fffef7;
+            border-radius: 68px 68px 56px 56px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255,255,220,0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .game-header {
+            background: linear-gradient(145deg, #f9d976, #f39f86);
+            padding: 20px 28px;
+            text-align: center;
+            border-bottom: 6px solid #c16f3a;
+        }
+
+        .game-header h1 {
+            margin: 0;
+            font-size: 1.9rem;
+            color: #2c2b2a;
+            text-shadow: 2px 2px 0 #fff0b5;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            gap: 12px;
+            background: #fff2df;
+            padding: 12px 20px;
+            border-radius: 60px;
+        }
+
+        .level-box, .score-box, .timer-box {
+            background: #2d4a6e;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #ffefc0;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: inset 0 -2px 0 #15334d, 0 5px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            background: #b64926;
+            font-family: monospace;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+        }
+
+        .question-area {
+            padding: 30px 28px 20px;
+            background: #ffffffea;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: #1c5d7c;
+            background: #eef5ff;
+            padding: 22px;
+            border-radius: 48px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 3px white, 0 10px 15px rgba(0,0,0,0.05);
+            line-height: 1.4;
+        }
+
+        .answer-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin: 18px 0;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 16px 22px;
+            font-size: 1.2rem;
+            border: 3px solid #f3b391;
+            border-radius: 60px;
+            background: white;
+            font-weight: 500;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .answer-input:focus {
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243,156,18,0.3);
+        }
+
+        .submit-btn {
+            background: #3b8db0;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: 0.08s;
+            box-shadow: 0 7px 0 #235e7a;
+        }
+
+        .submit-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 #235e7a;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 14px;
+            text-align: center;
+            border-radius: 48px;
+            background: #e0f0e8;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #1f5437;
+        }
+
+        .progress {
+            background: #faeac6;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-top: 3px solid #e0a15b;
+            border-radius: 0 0 32px 32px;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        @media (max-width: 640px) {
+            .question-text {
+                font-size: 1.2rem;
+                padding: 16px;
+            }
+            .badge-area {
+                justify-content: center;
+            }
+            .level-box, .score-box, .timer-box {
+                font-size: 0.8rem;
+                padding: 5px 12px;
+            }
+            .answer-input {
+                font-size: 1rem;
+                padding: 12px 16px;
+            }
+        }
+
+        .restart-btn {
+            background: #7f5539;
+            border: none;
+            margin-top: 18px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 40px;
+            color: #ffeaac;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        footer {
+            background: #fef3cf;
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 10px;
+            color: #5c3b1f;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot">
+    <div class="game-header">
+        <h1>🌈 LIGHT EXPLORER 🔦</h1>
+        <div class="badge-area">
+            <div class="level-box">🌟 LEVEL <span id="levelNum">1</span>/5</div>
+            <div class="score-box">💡 SCORE: <span id="scoreSpan">0</span> / <span id="qPerLevel">40</span></div>
+            <div class="timer-box">⏱️ <span id="timerSec">25</span> s</div>
+        </div>
+    </div>
+    <div class="question-area">
+        <div class="question-text" id="questionText">Loading light wonders...</div>
+        <div class="answer-row">
+            <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here..." autocomplete="off">
+        </div>
+        <button id="submitAnswer" class="submit-btn">✅ SUBMIT ANSWER</button>
+        <div id="feedbackMsg" class="feedback">🔆 Type your answer! Timer: 25 seconds. Need 80% to pass each level. Learn about light, shadows, rainbows, eclipses & mirrors!</div>
+        <div class="progress">
+            📊 Level Progress: <span id="progressCount">0</span>/40 &nbsp;| 🎯 Need 80% (32/40) to advance
+        </div>
+        <button id="restartGameBtn" class="restart-btn">🔄 RESTART GAME</button>
+    </div>
+    <footer>✨ Grade 4 Science: Movement of light, transparent/opaque objects, reflection, shadows, rainbows, eclipses, plane mirrors, ray diagrams & applications.</footer>
+</div>
+
+<script>
+    // ---------- GRADE 4: LIGHT TOPICS ----------
+    // Topics: Movement of light (straight line), materials (transparent, translucent, opaque), reflection on plane mirrors, shadows, rainbows, eclipses, image formation, ray diagrams, applications (force & energy)
+    
+    const TIMER_DURATION = 25; // seconds per question
+    
+    function generateQuestionsForLevel(level) {
+        const baseBank = [
+            { text: "Light travels in a straight line. What is this property called?", answer: "rectilinear propagation" },
+            { text: "Which type of material allows all light to pass through? (glass)", answer: "transparent" },
+            { text: "What do we call a material that allows some light but not clear image? (e.g., frosted glass)", answer: "translucent" },
+            { text: "Name a material that does NOT allow any light to pass through.", answer: "opaque" },
+            { text: "What happens when light hits a smooth, shiny surface like a plane mirror?", answer: "reflection" },
+            { text: "The law of reflection says angle of incidence equals angle of ______.", answer: "reflection" },
+            { text: "What do we call the dark area formed when light is blocked by an object?", answer: "shadow" },
+            { text: "When the sun is overhead, your shadow is ______ (long/short).", answer: "short" },
+            { text: "What natural phenomenon displays seven colors after rain?", answer: "rainbow" },
+            { text: "Name the seven colors of a rainbow in order (first color).", answer: "red" },
+            { text: "What type of eclipse happens when the Moon passes between Earth and the Sun?", answer: "solar eclipse" },
+            { text: "During a lunar eclipse, the ______ casts a shadow on the moon.", answer: "earth" },
+            { text: "In a plane mirror, the image is upright and the same size. True or false?", answer: "true" },
+            { text: "The image formed by a plane mirror is ______ (virtual/real).", answer: "virtual" },
+            { text: "In a ray diagram, what do we call the incoming light ray?", answer: "incident ray" },
+            { text: "What do we call the ray that bounces off a mirror?", answer: "reflected ray" },
+            { text: "The perpendicular line drawn to a mirror at the point of incidence is called the ______.", answer: "normal" },
+            { text: "What type of surface gives a clear reflection?", answer: "smooth" },
+            { text: "Shadows are formed because light cannot pass through ______ objects.", answer: "opaque" },
+            { text: "When you move closer to a plane mirror, your image appears to ______.", answer: "move closer" },
+            { text: "Name one application of light reflection in daily life.", answer: "mirror" },
+            { text: "What energy transformation occurs in a solar panel using light?", answer: "light to electrical" },
+            { text: "A periscope uses two plane mirrors to see over walls. This uses the principle of ______.", answer: "reflection" },
+            { text: "What causes a rainbow to form?", answer: "refraction dispersion" },
+            { text: "During a solar eclipse, the Moon's shadow falls on ______.", answer: "earth" },
+            { text: "What safety device uses reflection in vehicles?", answer: "rearview mirror" },
+            { text: "The image in a plane mirror is laterally inverted. What does that mean?", answer: "left and right swapped" },
+            { text: "A smooth lake surface shows reflection. This is because water is ______.", answer: "smooth" },
+            { text: "What is the darkest part of a shadow called?", answer: "umbra" },
+            { text: "The partial shadow region around the umbra is called ______.", answer: "penumbra" },
+            { text: "Light travels in a straight line. What happens when it hits a rough surface?", answer: "diffuse reflection" },
+            { text: "Name an object that is transparent.", answer: "glass" },
+            { text: "What do you call an instrument that uses mirrors to view objects above you?", answer: "periscope" },
+            { text: "In a ray diagram for a plane mirror, the image appears ______ the mirror.", answer: "behind" },
+            { text: "What natural event happens when the Earth's shadow covers the Moon?", answer: "lunar eclipse" },
+            { text: "Why is the sky blue? (due to scattering of light)", answer: "scattering" },
+            { text: "Which color of light bends the most in a rainbow?", answer: "violet" },
+            { text: "What happens to light when it passes from air to water?", answer: "bends" },
+            { text: "A convex mirror is used in car side mirrors because it gives a ______ view.", answer: "wider" },
+            { text: "The study of light is called ______.", answer: "optics" }
+        ];
+        
+        // ensure 40 questions
+        let finalQ = [...baseBank];
+        const extras = [
+            { text: "What word describes a mirror that is flat?", answer: "plane" },
+            { text: "In a plane mirror, the image distance is ______ to object distance.", answer: "equal" },
+            { text: "Name a device that uses reflection to show a virtual image.", answer: "mirror" },
+            { text: "What type of energy do we get from the sun's light?", answer: "solar energy" },
+            { text: "When light bounces off a mirror, we see an ______.", answer: "image" },
+            { text: "What do we call a natural light source?", answer: "sun" }
+        ];
+        while(finalQ.length < 40) finalQ.push(...extras);
+        finalQ = finalQ.slice(0,40);
+        
+        // shuffle for variety
+        for(let i=finalQ.length-1; i>0; i--) {
+            const j = Math.floor(Math.random()*(i+1));
+            [finalQ[i], finalQ[j]] = [finalQ[j], finalQ[i]];
+        }
+        
+        // Level-specific tuning
+        if(level === 2) {
+            finalQ[5] = { text: "Angle of incidence = Angle of ______.", answer: "reflection" };
+            finalQ[12] = { text: "The image in a plane mirror is always ______ (virtual/real).", answer: "virtual" };
+        } else if(level === 3) {
+            finalQ[18] = { text: "Which part of a shadow is completely dark?", answer: "umbra" };
+            finalQ[24] = { text: "During a lunar eclipse, the Earth's shadow covers the ______.", answer: "moon" };
+        } else if(level === 4) {
+            finalQ[30] = { text: "What happens to the size of your shadow when the sun is low on the horizon?", answer: "longer" };
+            finalQ[35] = { text: "Which type of mirror shows a virtual, upright and same-sized image?", answer: "plane mirror" };
+        } else if(level === 5) {
+            finalQ[38] = { text: "What is the line perpendicular to a mirror called?", answer: "normal" };
+            finalQ[39] = { text: "Name one application of light in renewable energy.", answer: "solar panel" };
+        }
+        return finalQ;
+    }
+    
+    // ---------- GAME STATE ----------
+    let currentLevel = 1;
+    let currentQIndex = 0;
+    let questions = [];
+    let levelScore = 0;
+    let timerInterval = null;
+    let timeLeft = TIMER_DURATION;
+    let gameActive = true;
+    
+    // DOM elements
+    const levelNumSpan = document.getElementById('levelNum');
+    const scoreSpan = document.getElementById('scoreSpan');
+    const timerSecSpan = document.getElementById('timerSec');
+    const questionTextDiv = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitAnswer');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+    const progressCountSpan = document.getElementById('progressCount');
+    const restartBtn = document.getElementById('restartGameBtn');
+    
+    function updateUI() {
+        levelNumSpan.innerText = currentLevel;
+        scoreSpan.innerText = levelScore;
+        const answered = currentQIndex;
+        progressCountSpan.innerText = `${levelScore} correct / ${answered} answered`;
+        
+        if(!gameActive) return;
+        if(currentQIndex >= 40 && gameActive) {
+            const percent = (levelScore / 40) * 100;
+            if(percent >= 80) {
+                if(currentLevel === 5) {
+                    feedbackDiv.innerHTML = "🏆✨ AMAZING! You mastered LIGHT, SHADOWS, ECLIPSES & MIRRORS! ✨🏆";
+                    gameActive = false;
+                    clearTimer();
+                    disableGameInputs(true);
+                } else {
+                    feedbackDiv.innerHTML = `🎉 LEVEL UP! ${percent.toFixed(1)}% correct! Moving to Level ${currentLevel+1} 🎉`;
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                }
+            } else {
+                feedbackDiv.innerHTML = `😭 FAILED! ${percent.toFixed(1)}% (need 80%). Press RESTART to try again.`;
+                gameActive = false;
+                clearTimer();
+                disableGameInputs(true);
+            }
+            return;
+        }
+        if(gameActive && questions.length && currentQIndex < 40) {
+            const q = questions[currentQIndex];
+            questionTextDiv.innerText = q.text;
+        }
+        progressCountSpan.innerText = `${levelScore} correct / ${currentQIndex} answered`;
+    }
+    
+    function disableGameInputs(disabled) {
+        submitBtn.disabled = disabled;
+        answerInput.disabled = disabled;
+    }
+    
+    function clearTimer() {
+        if(timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function startTimer() {
+        clearTimer();
+        if(!gameActive) return;
+        timeLeft = TIMER_DURATION;
+        timerSecSpan.innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            if(!gameActive) return;
+            if(timeLeft <= 1) {
+                clearTimer();
+                handleTimeout();
+            } else {
+                timeLeft--;
+                timerSecSpan.innerText = timeLeft;
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        if(!gameActive) return;
+        feedbackDiv.innerHTML = "⏰ TIME'S UP! No answer. Moving to next question.";
+        moveToNextQuestion();
+    }
+    
+    function normalizeAnswer(str) {
+        let ans = str.trim().toLowerCase();
+        ans = ans.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+        // extensive synonyms for light topics
+        if(ans === "rectilinear propagation" || ans === "straight line") ans = "rectilinear propagation";
+        if(ans === "transparent" || ans === "clear") ans = "transparent";
+        if(ans === "translucent" || ans === "frosted") ans = "translucent";
+        if(ans === "opaque" || ans === "solid") ans = "opaque";
+        if(ans === "reflection" || ans === "bounce") ans = "reflection";
+        if(ans === "reflection" && (questionTextDiv.innerText.includes("angle"))) ans = "reflection";
+        if(ans === "shadow" || ans === "dark area") ans = "shadow";
+        if(ans === "short" || ans === "small") ans = "short";
+        if(ans === "rainbow" || ans === "spectrum") ans = "rainbow";
+        if(ans === "red" || ans === "red color") ans = "red";
+        if(ans === "solar eclipse" || ans === "sun eclipse") ans = "solar eclipse";
+        if(ans === "earth" || ans === "earth's shadow") ans = "earth";
+        if(ans === "true" || ans === "t") ans = "true";
+        if(ans === "false" || ans === "f") ans = "false";
+        if(ans === "virtual" || ans === "not real") ans = "virtual";
+        if(ans === "incident ray" || ans === "incoming ray") ans = "incident ray";
+        if(ans === "reflected ray" || ans === "bounced ray") ans = "reflected ray";
+        if(ans === "normal" || ans === "perpendicular line") ans = "normal";
+        if(ans === "smooth" || ans === "polished") ans = "smooth";
+        if(ans === "move closer" || ans === "closer") ans = "move closer";
+        if(ans === "mirror" || ans === "looking glass") ans = "mirror";
+        if(ans === "light to electrical" || ans === "solar energy") ans = "light to electrical";
+        if(ans === "refraction dispersion" || ans === "dispersion") ans = "refraction dispersion";
+        if(ans === "rearview mirror" || ans === "car mirror") ans = "rearview mirror";
+        if(ans === "left and right swapped" || ans === "lateral inversion") ans = "left and right swapped";
+        if(ans === "umbra" || ans === "dark core") ans = "umbra";
+        if(ans === "penumbra" || ans === "partial shadow") ans = "penumbra";
+        if(ans === "diffuse reflection" || ans === "scattered reflection") ans = "diffuse reflection";
+        if(ans === "glass" || ans === "clear glass") ans = "glass";
+        if(ans === "periscope" || ans === "submarine viewer") ans = "periscope";
+        if(ans === "behind" || ans === "back") ans = "behind";
+        if(ans === "lunar eclipse" || ans === "moon eclipse") ans = "lunar eclipse";
+        if(ans === "scattering" || ans === "rayleigh scattering") ans = "scattering";
+        if(ans === "violet" || ans === "purple") ans = "violet";
+        if(ans === "bends" || ans === "refracts") ans = "bends";
+        if(ans === "wider" || ans === "broader") ans = "wider";
+        if(ans === "optics" || ans === "science of light") ans = "optics";
+        if(ans === "plane" || ans === "flat mirror") ans = "plane";
+        if(ans === "equal" || ans === "same") ans = "equal";
+        if(ans === "solar energy" || ans === "sun power") ans = "solar energy";
+        if(ans === "image" || ans === "picture") ans = "image";
+        if(ans === "sun" || ans === "sunlight") ans = "sun";
+        if(ans === "longer" || ans === "elongated") ans = "longer";
+        if(ans === "plane mirror" || ans === "flat mirror") ans = "plane mirror";
+        return ans;
+    }
+    
+    function checkAnswer() {
+        if(!gameActive) return;
+        if(currentQIndex >= 40) {
+            updateUI();
+            return;
+        }
+        const raw = answerInput.value;
+        if(raw.trim() === "") {
+            feedbackDiv.innerHTML = "📝 Please type an answer before submitting!";
+            return;
+        }
+        const normalizedUser = normalizeAnswer(raw);
+        const currentQ = questions[currentQIndex];
+        const correctNorm = normalizeAnswer(currentQ.answer);
+        let isCorrect = false;
+        if(normalizedUser === correctNorm) isCorrect = true;
+        else if(correctNorm === "rectilinear propagation" && (normalizedUser.includes("straight") || normalizedUser.includes("line"))) isCorrect = true;
+        else if(correctNorm === "reflection" && (normalizedUser === "bounce" || normalizedUser === "mirroring")) isCorrect = true;
+        else if(correctNorm === "virtual" && (normalizedUser === "not real" || normalizedUser === "imaginary")) isCorrect = true;
+        else if(correctNorm === "left and right swapped" && (normalizedUser.includes("swap") || normalizedUser.includes("inverted"))) isCorrect = true;
+        else if(correctNorm === "refraction dispersion" && (normalizedUser.includes("dispersion") || normalizedUser === "rainbow cause")) isCorrect = true;
+        else if((correctNorm === "true" && normalizedUser === "true") || (correctNorm === "false" && normalizedUser === "false")) isCorrect = true;
+        
+        if(isCorrect) {
+            levelScore++;
+            feedbackDiv.innerHTML = "✅ CORRECT! +1 point 🔆 " + (currentQ.text.includes("eclipse") ? "Eclipse expert!" : "Light master!");
+        } else {
+            feedbackDiv.innerHTML = `❌ WRONG! Correct answer: "${currentQ.answer}". Keep exploring light! 🌈`;
+        }
+        moveToNextQuestion();
+    }
+    
+    function moveToNextQuestion() {
+        clearTimer();
+        currentQIndex++;
+        answerInput.value = "";
+        if(currentQIndex >= 40) {
+            updateUI();
+            return;
+        }
+        updateUI();
+        if(gameActive && currentQIndex < 40) {
+            startTimer();
+        }
+    }
+    
+    function loadLevel(level) {
+        gameActive = true;
+        currentQIndex = 0;
+        levelScore = 0;
+        currentLevel = level;
+        questions = generateQuestionsForLevel(level);
+        clearTimer();
+        disableGameInputs(false);
+        answerInput.disabled = false;
+        answerInput.value = "";
+        updateUI();
+        if(questions.length) questionTextDiv.innerText = questions[0].text;
+        startTimer();
+        feedbackDiv.innerHTML = `🌟 LEVEL ${level} - 40 questions about LIGHT! Need 32 correct. Timer: ${TIMER_DURATION}s. Learn about shadows, rainbows, mirrors & eclipses! 🌟`;
+    }
+    
+    submitBtn.addEventListener("click", () => {
+        if(!gameActive) return;
+        if(timerInterval) clearTimer();
+        checkAnswer();
+    });
+    
+    restartBtn.addEventListener("click", () => {
+        clearTimer();
+        currentLevel = 1;
+        currentQIndex = 0;
+        levelScore = 0;
+        gameActive = true;
+        disableGameInputs(false);
+        loadLevel(1);
+    });
+    
+    loadLevel(1);
+</script>
+</body>
+</html>

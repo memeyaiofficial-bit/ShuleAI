@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shule AI - Social Studies Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .game-area {
+            padding: 30px;
+        }
+
+        .menu-screen, .game-screen, .results-screen {
+            display: none;
+        }
+
+        .menu-screen.active, .game-screen.active, .results-screen.active {
+            display: block;
+        }
+
+        .game-category {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .game-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-category h3 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+
+        .game-category p {
+            color: #666;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item span {
+            display: block;
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .score-item label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .question-card {
+            background: #fff;
+            border: 2px solid #e0e7ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #d0d7ff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            text-align: left;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            background: #f0f4ff;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option-btn.wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .results-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .results-card h2 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .results-stats {
+            background: #f0f4ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .results-stats p {
+            font-size: 1.3em;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .feedback {
+            font-size: 1.1em;
+            color: #666;
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            background: #e0e7ff;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Social Studies Adventure</h1>
+            <p>Grade 6 - Explore East Africa & Beyond!</p>
+        </div>
+
+        <div class="game-area">
+            <!-- Menu Screen -->
+            <div class="menu-screen active">
+                <h2 style="text-align: center; color: #333; margin-bottom: 30px;">Choose Your Challenge</h2>
+                
+                <div class="game-category" onclick="startGame('geography')">
+                    <h3>🗺️ East African Geography</h3>
+                    <p>Test your knowledge of countries, capitals, and physical features</p>
+                </div>
+
+                <div class="game-category" onclick="startGame('history')">
+                    <h3>📜 History & Culture</h3>
+                    <p>Learn about important historical events and cultural practices</p>
+                </div>
+
+                <div class="game-category" onclick="startGame('economy')">
+                    <h3>💰 Economic Activities</h3>
+                    <p>Explore trade, industries, and resources in East Africa</p>
+                </div>
+
+                <div class="game-category" onclick="startGame('mixed')">
+                    <h3>🎯 Mixed Challenge</h3>
+                    <p>Test yourself on all topics combined!</p>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div class="game-screen">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+
+                <div class="score-board">
+                    <div class="score-item">
+                        <span id="currentScore">0</span>
+                        <label>Score</label>
+                    </div>
+                    <div class="score-item">
+                        <span id="questionNumber">1</span>
+                        <label>Question</label>
+                    </div>
+                    <div class="score-item">
+                        <span id="totalQuestions">10</span>
+                        <label>Total</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text" id="questionText"></div>
+                    <div class="options" id="optionsContainer"></div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="btn btn-secondary" onclick="goToMenu()">Back to Menu</button>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="results-screen">
+                <div class="results-card">
+                    <h2 id="resultsTitle">Great Job!</h2>
+                    <div class="results-stats">
+                        <p><strong>Final Score:</strong> <span id="finalScore"></span></p>
+                        <p><strong>Correct Answers:</strong> <span id="correctAnswers"></span></p>
+                        <p><strong>Total Questions:</strong> <span id="totalQuestionsResult"></span></p>
+                        <p><strong>Percentage:</strong> <span id="percentage"></span>%</p>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                    <button class="btn" onclick="goToMenu()">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            geography: [
+                {
+                    q: "What is the largest lake in Africa?",
+                    options: ["Lake Tanganyika", "Lake Victoria", "Lake Malawi", "Lake Turkana"],
+                    correct: 1
+                },
+                {
+                    q: "Which country is NOT part of East Africa?",
+                    options: ["Kenya", "Uganda", "Tanzania", "Zambia"],
+                    correct: 3
+                },
+                {
+                    q: "What is the capital city of Tanzania?",
+                    options: ["Dar es Salaam", "Dodoma", "Arusha", "Mwanza"],
+                    correct: 1
+                },
+                {
+                    q: "Mount Kilimanjaro is located in which country?",
+                    options: ["Kenya", "Uganda", "Tanzania", "Ethiopia"],
+                    correct: 2
+                },
+                {
+                    q: "The Great Rift Valley passes through which East African countries?",
+                    options: ["Kenya and Tanzania only", "Kenya, Uganda, and Tanzania", "Uganda only", "Tanzania only"],
+                    correct: 1
+                },
+                {
+                    q: "Which is the longest river that flows through East Africa?",
+                    options: ["River Nile", "River Tana", "River Athi", "River Zambezi"],
+                    correct: 0
+                },
+                {
+                    q: "What is the main port city of Kenya?",
+                    options: ["Nairobi", "Mombasa", "Kisumu", "Nakuru"],
+                    correct: 1
+                },
+                {
+                    q: "Lake Turkana is also known as?",
+                    options: ["The Jade Sea", "The Red Sea", "The Dead Sea", "The Blue Lake"],
+                    correct: 0
+                },
+                {
+                    q: "Which country borders Kenya to the north?",
+                    options: ["Tanzania", "Uganda", "Ethiopia", "Somalia"],
+                    correct: 2
+                },
+                {
+                    q: "The Equator passes through which East African countries?",
+                    options: ["Kenya only", "Kenya and Uganda", "Kenya, Uganda, and Somalia", "All East African countries"],
+                    correct: 1
+                }
+            ],
+            history: [
+                {
+                    q: "When did Kenya gain independence?",
+                    options: ["1961", "1962", "1963", "1964"],
+                    correct: 2
+                },
+                {
+                    q: "Who was the first president of Kenya?",
+                    options: ["Daniel arap Moi", "Jomo Kenyatta", "Mwai Kibaki", "Uhuru Kenyatta"],
+                    correct: 1
+                },
+                {
+                    q: "The Maasai people are traditionally known for?",
+                    options: ["Fishing", "Pastoralism (herding livestock)", "Farming", "Trading"],
+                    correct: 1
+                },
+                {
+                    q: "Which colonial power ruled Kenya before independence?",
+                    options: ["France", "Germany", "Britain", "Portugal"],
+                    correct: 2
+                },
+                {
+                    q: "The Swahili language is a mixture of African languages and?",
+                    options: ["English", "French", "Arabic", "Portuguese"],
+                    correct: 2
+                },
+                {
+                    q: "What does the term 'Harambee' mean?",
+                    options: ["Freedom", "Pulling together", "Independence", "Victory"],
+                    correct: 1
+                },
+                {
+                    q: "The Mau Mau uprising fought against?",
+                    options: ["German rule", "Arab traders", "British colonial rule", "Portuguese invaders"],
+                    correct: 2
+                },
+                {
+                    q: "Which community is known for their ironworking skills in Kenya?",
+                    options: ["Luo", "Kikuyu", "Maasai", "Kamba"],
+                    correct: 3
+                },
+                {
+                    q: "When did Tanzania gain independence?",
+                    options: ["1959", "1961", "1963", "1965"],
+                    correct: 1
+                },
+                {
+                    q: "The Berlin Conference of 1884-1885 was important because it?",
+                    options: ["Ended World War I", "Divided Africa among European powers", "Granted African independence", "Created the African Union"],
+                    correct: 1
+                }
+            ],
+            economy: [
+                {
+                    q: "What is Kenya's main export crop?",
+                    options: ["Coffee", "Tea", "Cotton", "Cocoa"],
+                    correct: 1
+                },
+                {
+                    q: "Tourism in Kenya is mainly focused on?",
+                    options: ["Beach resorts only", "Wildlife and safaris", "Mountain climbing only", "City tours"],
+                    correct: 1
+                },
+                {
+                    q: "Which resource is mined in large quantities in Tanzania?",
+                    options: ["Gold", "Diamonds", "Coal", "Oil"],
+                    correct: 0
+                },
+                {
+                    q: "The main fishing grounds in Kenya are found in?",
+                    options: ["Rivers only", "Indian Ocean and Lake Victoria", "Dams only", "Lake Turkana only"],
+                    correct: 1
+                },
+                {
+                    q: "What is the currency used in Kenya?",
+                    options: ["Shilling", "Dollar", "Pound", "Rand"],
+                    correct: 0
+                },
+                {
+                    q: "Which industry has grown rapidly in Kenya in recent years?",
+                    options: ["Mining", "Technology (ICT)", "Textile", "Ship building"],
+                    correct: 1
+                },
+                {
+                    q: "What is the main cash crop in Uganda?",
+                    options: ["Tea", "Coffee", "Tobacco", "Sugarcane"],
+                    correct: 1
+                },
+                {
+                    q: "The Jua Kali sector in Kenya refers to?",
+                    options: ["Large factories", "Informal small-scale industries", "Government offices", "Agricultural farms"],
+                    correct: 1
+                },
+                {
+                    q: "Which port serves landlocked Uganda for international trade?",
+                    options: ["Dar es Salaam", "Mombasa", "Mogadishu", "Djibouti"],
+                    correct: 1
+                },
+                {
+                    q: "What is the main economic activity in most rural areas of East Africa?",
+                    options: ["Manufacturing", "Agriculture", "Mining", "Banking"],
+                    correct: 1
+                }
+            ]
+        };
+
+        let currentCategory = '';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctCount = 0;
+
+        function startGame(category) {
+            currentCategory = category;
+            currentQuestionIndex = 0;
+            score = 0;
+            correctCount = 0;
+
+            if (category === 'mixed') {
+                currentQuestions = [
+                    ...questions.geography.slice(0, 3),
+                    ...questions.history.slice(0, 4),
+                    ...questions.economy.slice(0, 3)
+                ].sort(() => Math.random() - 0.5);
+            } else {
+                currentQuestions = [...questions[category]].sort(() => Math.random() - 0.5).slice(0, 10);
+            }
+
+            document.querySelector('.menu-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.add('active');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= currentQuestions.length) {
+                showResults();
+                return;
+            }
+
+            const question = currentQuestions[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.q;
+            document.getElementById('questionNumber').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = currentQuestions.length;
+            document.getElementById('currentScore').textContent = score;
+
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btn) {
+            const question = currentQuestions[currentQuestionIndex];
+            const allButtons = document.querySelectorAll('.option-btn');
+            
+            allButtons.forEach(button => button.disabled = true);
+
+            if (selectedIndex === question.correct) {
+                btn.classList.add('correct');
+                score += 10;
+                correctCount++;
+                document.getElementById('currentScore').textContent = score;
+            } else {
+                btn.classList.add('wrong');
+                allButtons[question.correct].classList.add('correct');
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 1500);
+        }
+
+        function showResults() {
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.results-screen').classList.add('active');
+
+            const percentage = Math.round((correctCount / currentQuestions.length) * 100);
+            
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('correctAnswers').textContent = correctCount;
+            document.getElementById('totalQuestionsResult').textContent = currentQuestions.length;
+            document.getElementById('percentage').textContent = percentage;
+
+            let title, feedback;
+            if (percentage >= 90) {
+                title = "🌟 Outstanding!";
+                feedback = "You're a Social Studies champion! Excellent work!";
+            } else if (percentage >= 70) {
+                title = "🎉 Great Job!";
+                feedback = "You have a strong understanding of the topics. Keep it up!";
+            } else if (percentage >= 50) {
+                title = "👍 Good Effort!";
+                feedback = "You're making progress! Review the topics and try again.";
+            } else {
+                title = "📚 Keep Learning!";
+                feedback = "Don't give up! Practice more and you'll improve.";
+            }
+
+            document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('feedback').textContent = feedback;
+        }
+
+        function goToMenu() {
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.results-screen').classList.remove('active');
+            document.querySelector('.menu-screen').classList.add('active');
+        }
+    </script>
+</body>
+</html>
